@@ -4,7 +4,7 @@ library(magrittr)
 # iconv -f ISO8859-1 -t UTF8 1240K.anno > 1240K.anno.mod
 # sed 's/[Ê]/\ /g' 1240K.anno.mod > 1240K.anno.mod2
 
-anno_1240K_raw <- readr::read_tsv("data/1240K/1240K.anno.mod", na = c("..", "n/a"))
+anno_1240K_raw <- readr::read_tsv("data/1240K/1240K.anno.mod2", na = c("..", "n/a"))
 
 #### simplifiy rownames and clean/restructure some rows ####
 anno_1240K <- anno_1240K_raw %>%
