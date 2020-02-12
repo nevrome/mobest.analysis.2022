@@ -1,18 +1,21 @@
+library(magrittr)
+
 #### load dataset ####
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_raw.RData")
 anno <- anno_1240K_and_anno_1240K_HumanOrigins_raw
 
-#### clean and restructure temporal information
-
+#### clean and restructure temporal information ####
 source("R/data_preparation/helper_functions.R")
 
+# clean age string
 anno <- anno %>%
   # add age cols
   dplyr::bind_cols(
     reconstruct_age_info(anno$age_string)
   )
 
-anno$age_prob_distribution_BC <- lapply(anno$sample_id, function(x) tibble::tibble(age = numeric(), prob = numeric()))
+# age probability distribution list column template
+anno$age_prob_distribution_BC <- lapply(anno$sample_id, function(x) tibble::tibble(age = numeric(), dens_dist = numeric(), norm_dens = numeric(), center = numeric()))
 
 # archaeological dating: uniform distribution
 anno[!is.na(anno$age_arch_start_BC) & !is.na(anno$age_arch_stop_BC),] %<>% dplyr::mutate(
@@ -22,13 +25,17 @@ anno[!is.na(anno$age_arch_start_BC) & !is.na(anno$age_arch_stop_BC),] %<>% dplyr
       prop_in_window <- 1/length(time_window)
       tibble::tibble(
         age = time_window,
-        prob = prop_in_window
+        dens_dist = prop_in_window,
+        norm_dens = prop_in_window/max(prop_in_window),
+        center = time_window == time_window[which.min(abs(time_window - mean(time_window)))]
       )
     }
   )
 )
 
-# c14 dating: cal-distribution
+# c14 dating: calibrated distribution
+bol <- 1950 # c14 reference zero
+threshold <- (1 - 0.9545) / 2 # 2sigma range probability threshold
 anno[!is.na(anno$age_c14_uncal_BP) & !is.na(anno$age_c14_uncal_BP_dev),] %<>% dplyr::mutate(
   age_prob_distribution_BC =
     Bchron::BchronCalibrate(
@@ -36,43 +43,46 @@ anno[!is.na(anno$age_c14_uncal_BP) & !is.na(anno$age_c14_uncal_BP_dev),] %<>% dp
       ageSds    = age_c14_uncal_BP_dev,
       calCurves = rep("intcal13", nrow(.))
     ) %>%
-    purrr::map(
+    # transform BchronCalibrate result to a informative tibble
+    # this tibble includes the years, the density per year,
+    # the normalized density per year and the information,
+    # if this year is in the two_sigma range for the current date
+    pbapply::pblapply(
       function(x) {
-        dplyr::arrange(
-          tibble::tibble(
-            age = -x[["ageGrid"]] + 1950, 
-            prob = x[["densities"]]
-          ), 
-          age
+        a <- x$densities %>% cumsum # cumulated density
+        bottom <- x$ageGrid[which(a <= threshold) %>% max]
+        top <- x$ageGrid[which(a > 1 - threshold) %>% min]
+        center <- x$ageGrid[which.min(abs(a - 0.5))]
+        tibble::tibble(
+          age = -x$ageGrid + bol,
+          dens_dist = x$densities,
+          norm_dens = x$densities/max(x$densities),
+          two_sigma = x$ageGrid >= bottom & x$ageGrid <= top,
+          center = x$ageGrid == center
         )
       }
     )
 )
 
-# reduce age ranges to the 95% highest density region: https://stats.stackexchange.com/questions/240749/how-to-find-95-credible-interval
-anno$age_prob_distribution_BC_95 <- anno$age_prob_distribution_BC %>%
-  lapply(
-    function(x) {
-      if (nrow(x) < 1) {
-        return(tibble::tibble(age = as.numeric(), prob = as.numeric()))
-      } else {
-        samp <- sample(x$prob, 1e5, replace = TRUE, prob = x$prob)
-        crit <- quantile(samp, 0.05)
-        x[x$prob >= crit, ]
-      }
-    }
-  )
+# add center age column
+anno$calage_center <- sapply(anno$age_prob_distribution_BC, function(x) {
+  if (nrow(x) == 0) {
+    NA
+  } else {
+    x$age[x$center]
+  }
+})
 
-# get oldest and youngest age of reduced range
-anno %<>%
-  dplyr::mutate(
-    age_start_BC = purrr::map_dbl(age_prob_distribution_BC_95, function(x) {
-      if (nrow(x) < 1) { return(NA) } else { x$age[1] }
-    }),
-    age_stop_BC = purrr::map_dbl(age_prob_distribution_BC_95, function(x) {
-      if (nrow(x) < 1) { return(NA) } else { x$age[nrow(x)] }
-    })
-  )
+# temporal sampling
+anno$calage_sample <- lapply(
+  anno$age_prob_distribution_BC, function(x) {
+    if (nrow(x) < 2) {
+      NA
+    } else {
+      sample(x$age, 1000, replace = TRUE, prob = x$dens_dist)
+    }
+  }
+)
 
 #### finish and store modified anno file ####
 anno_1240K_and_anno_1240K_HumanOrigins <- anno
