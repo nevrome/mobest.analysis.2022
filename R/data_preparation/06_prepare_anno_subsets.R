@@ -1,0 +1,24 @@
+#### load data ####
+load("data/anno_1240K_and_anno_1240K_HumanOrigins_pca.RData")
+anno <- anno_1240K_and_anno_1240K_HumanOrigins_pca
+
+#### filter rows ####
+anno <- anno %>% dplyr::filter(
+  # temporal info available
+  sapply(anno$age_prob_distribution_BC, nrow) > 0,
+  # temporal: not modern
+  age_string != "present", 
+  # spatial info present
+  !is.na(lat) & !is.na(lon)
+)
+
+#### select colums ####
+anno <- anno %>% dplyr::select(
+  sample_id, group_label,
+  lat, lon,
+  calage_center, calage_sample,
+  PC1, PC2
+)
+
+#### store output dataset ####
+save(anno, file = "data/anno.RData")
