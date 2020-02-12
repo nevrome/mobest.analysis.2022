@@ -12,7 +12,7 @@ anno <- anno %>% dplyr::filter(
   !is.na(lat) & !is.na(lon)
 )
 
-#### select colums ####
+#### select columns ####
 anno <- anno %>% dplyr::select(
   sample_id, group_label,
   lat, lon,
@@ -21,4 +21,5 @@ anno <- anno %>% dplyr::select(
 )
 
 #### store output dataset ####
-save(anno, file = "data/anno.RData")
+anno_1240K_and_anno_1240K_HumanOrigins_simple <- anno
+save(anno_1240K_and_anno_1240K_HumanOrigins_simple, file = "data/anno_1240K_and_anno_1240K_HumanOrigins_simple.RData")
