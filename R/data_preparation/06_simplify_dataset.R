@@ -16,7 +16,7 @@ anno <- anno %>% dplyr::filter(
 anno <- anno %>% dplyr::select(
   sample_id, group_label,
   lat, lon,
-  calage_center, calage_sample,
+  age_prob_distribution_BC, calage_center, calage_sample,
   PC1, PC2
 )
 
