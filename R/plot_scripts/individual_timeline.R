@@ -9,7 +9,7 @@ hu <- pred_grid_spatial_cropped %>%
     f = list(.$x_real, .$y_real)
   )
 
-spu <- hu[[700]]
+spu <- hu[[1010]]
 
 ggplot() +
   geom_sf(
@@ -40,6 +40,24 @@ ggplot() +
     data = spu,
     aes(x = pred_PC1_mean, y = pred_PC2_mean)
   ) +
+  geom_errorbar(
+    data = spu,
+    aes(
+      x = pred_PC1_mean, 
+      ymin = pred_PC2_mean - pred_PC2_sd, ymax = pred_PC2_mean + pred_PC2_sd,
+      color = age_sample
+    ),
+    alpha = 0.5
+  ) +
+  geom_errorbarh(
+    data = spu,
+    aes(
+      y = pred_PC2_mean, 
+      xmin = pred_PC1_mean - pred_PC1_sd, xmax = pred_PC1_mean + pred_PC1_sd,
+      color = age_sample
+    ),
+    alpha = 0.5
+  ) +
   geom_point(
     data = spu,
     aes(
@@ -51,14 +69,4 @@ ggplot() +
   ) +
   scale_color_gradient2(
     low = "red", mid = "green", high = "blue", midpoint = -6000
-  ) +
-  geom_errorbar(
-    data = spu,
-    aes(x = pred_PC1_mean, ymin = pred_PC2_mean - pred_PC2_s2, ymax = pred_PC2_mean + pred_PC2_s2)
-  ) +
-  geom_errorbarh(
-    data = spu,
-    aes(y = pred_PC2_mean, xmin = pred_PC1_mean - pred_PC1_s2, xmax = pred_PC1_mean + pred_PC1_s2)
   )
-
-
