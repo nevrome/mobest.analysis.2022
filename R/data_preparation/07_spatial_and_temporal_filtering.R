@@ -25,7 +25,7 @@ anno %<>%
 anno %<>%
   dplyr::mutate(
     in_time_of_interest = purrr::map(age_prob_distribution_BC, function(x){
-          any(x$age >= -8000 & x$age <= 0 )
+          any(x$age >= -7500 & x$age <= -500 )
       }
     )
   ) %>%
