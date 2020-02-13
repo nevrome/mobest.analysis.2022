@@ -1,15 +1,28 @@
 library(ggplot2)
 
+poi <- tibble::tribble(
+  ~lat, ~lon,
+  48.5, 10.5,
+  44.2, 22.7,
+  35.5, 36.9
+) %>% st_as_sf(
+  coords = c("lon", "lat"),
+  crs = 4326
+) %>%
+  sf::st_transform("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
+
 load("data/gpr/pred_grid_spatial_cropped.RData")
 load("data/spatial/extended_area.RData")
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_pca.RData")
 
-hu <- pred_grid_spatial_cropped %>% 
-  split(
-    f = list(.$x_real, .$y_real)
-  )
+dm <- sf::st_distance(pred_grid_spatial_cropped, poi[1,])
+a <- pred_grid_spatial_cropped[which(min(dm) == dm),]
+dm <- sf::st_distance(pred_grid_spatial_cropped, poi[2,])
+b <- pred_grid_spatial_cropped[which(min(dm) == dm),]
+dm <- sf::st_distance(pred_grid_spatial_cropped, poi[3,])
+c <- pred_grid_spatial_cropped[which(min(dm) == dm),]
 
-spu <- hu[[1010]]
+spu <- b
 
 ggplot() +
   geom_sf(
@@ -20,7 +33,6 @@ ggplot() +
     data = spu,
     color = "red"
   )
-
 
 ref_pops <- readLines("data/population_lists/PCA_6.pops")
 
