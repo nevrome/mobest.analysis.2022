@@ -14,9 +14,11 @@ pca_ref <- anno_1240K_and_anno_1240K_HumanOrigins_pca %>%
 # dots on the map
 poi <- tibble::tribble(
   ~lat, ~lon,
+  43, -7.5,
   48.5, 10.5,
   44.2, 22.7,
-  35.5, 36.9
+  35.5, 36.9,
+  43.9, 43.9
 ) %>% sf::st_as_sf(
   coords = c("lon", "lat"),
   crs = 4326
@@ -39,6 +41,8 @@ toi_dots <- lapply(
   }
 ) %>% dplyr::bind_rows()
 
+names(toi) <- letters[1:length(toi)]
+toi_dots$id <- letters[1:length(toi)]
 
 # plot map 
 plot_map <- ggplot() +
@@ -50,6 +54,12 @@ plot_map <- ggplot() +
     data = toi_dots,
     aes(x = x, y = y),
     color = "red"
+  ) +
+  ggrepel::geom_text_repel(
+    data = toi_dots,
+    aes(x = x, y = y, label = id),
+    color = "red",
+    size = 5
   )
 
 # plot 
@@ -97,4 +107,12 @@ plots_pca <- lapply(toi, function(t) {
 
 # combine plots
 
-cowplot::plot_grid()
+top_row_right_column <- cowplot::plot_grid(plotlist = plots_pca[1:2], ncol = 1, labels = c("a", "b"))
+
+top_row <- cowplot::plot_grid(plot_map, top_row_right_column, ncol = 2, rel_widths = c(1, 0.5))
+
+bottom_row <- cowplot::plot_grid(plotlist = plots_pca[3:5], ncol = 3, labels = c("c", "d", "e"))
+
+cowplot::plot_grid(top_row, bottom_row, nrow = 2, rel_heights = c(1, 0.5))
+
+
