@@ -67,8 +67,10 @@ deleteGPsep(gp_PC2)
 
 pred_grid$pred_PC1_mean <- pred_PC1$mean
 pred_grid$pred_PC1_s2 <- pred_PC1$s2
+pred_grid$pred_PC1_sd <- sqrt(pred_PC1$s2)
 pred_grid$pred_PC2_mean <- pred_PC2$mean
 pred_grid$pred_PC2_s2 <- pred_PC2$s2
+pred_grid$pred_PC2_sd <- sqrt(pred_PC2$s2)
 
 #### spatially crop prediction grid ####
 
