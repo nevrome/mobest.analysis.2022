@@ -76,14 +76,15 @@ plots_individual <- lapply(toi, function(t) {
     coord_polar() +
     geom_point(
       data = t,
-      mapping = aes(x = angle_degree, y = age_sample, color = age_sample),
+      mapping = aes(x = angle_degree, y = spatial_distance/1000, color = age_sample),
       size = 5
     ) +
     theme_bw() +
     scale_color_gradient2(
       limits = c(-7000, -500), low = "red", mid = "green", high = "blue", midpoint = -3000
     ) +
-    scale_x_continuous(limits = c(0, 360))
+    scale_x_continuous(limits = c(0, 360)) +
+    scale_y_continuous(limits = c(0, 3000))
 })
 
 # combine plots
@@ -105,3 +106,4 @@ ggsave(
   width = 550, height = 280, units = "mm",
   limitsize = F
 )
+
