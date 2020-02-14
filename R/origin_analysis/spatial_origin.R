@@ -87,3 +87,20 @@ for (p1 in 2:length(time_pris)) {
 # rowbind distance table
 pri_ready <- time_pris[2:length(time_pris)] %>% do.call(rbind, .)
 
+# add angle in degrees
+pi_rad <- units::as_units(pri_ready$angle, "radians")
+pi_deg <- units::set_units(pi_rad, "degrees")
+pri_ready$angle_degree <- as.numeric(pi_deg)
+
+save(pri_ready, file = "data/pri_ready.RData")
+
+# spatialize
+pri_ready_spatial <- sf::st_as_sf(pri_ready, coords = c("x_real", "y_real"), crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs") %>%
+  #sf::st_intersection(research_area) %>%
+  dplyr::mutate(
+    x_real = sf::st_coordinates(.)[,1],
+    y_real = sf::st_coordinates(.)[,2]
+  )
+
+save(pri_ready_spatial, file = "data/pri_ready_spatial.RData")
+
