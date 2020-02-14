@@ -81,5 +81,9 @@ pred_grid_spatial_cropped <- sf::st_as_sf(pred_grid, coords = c("x_real", "y_rea
     y_real = sf::st_coordinates(.)[,2]
   )
 
+#### unspatial pred grid ####
+pred_grid_mean <- pred_grid_spatial_cropped %>% tibble::as_tibble() %>% dplyr::select(-geometry)
+
 #### store results ####
 save(pred_grid_spatial_cropped, file = "data/gpr/pred_grid_spatial_cropped.RData")
+save(pred_grid_mean, file = "data/gpr/pred_grid_mean.RData")
