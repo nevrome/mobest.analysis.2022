@@ -57,8 +57,30 @@ pred_grid <- pred_grid <- pred_points_space %>%
 # )
 # metric_Vgm <- fit.StVariogram(var, metric, method="L-BFGS-B",lower=pars.l,tunit="mins")
 
-#### gp regression ####
+gpr_optim <- function(data, par) {
+  gp_a <- try(newGPsep(
+    X = data$independent, 
+    Z = data$dependent, 
+    d = c(par[1], par[2], par[3]), 
+    g = par[4],
+    dK = TRUE
+  ))
+  pred_a <- predGPsep(gp_a, XX = data$independent, lite = T)
+  deleteGPsep(gp_a)
+  message(paste(c(par[1], par[2], par[3], par[4]), collapse = ", "))
+  sum(abs(pred_a$mean - data$dependent))
+}
 
+result <- optim(
+  par = c(0.1, 0.1, 0.1, 0.1), 
+  fn = gpr_optim, 
+  data = list(independent = independent, dependent = anno$PC1),
+  method = "L-BFGS-B",
+  lower = c(0.0001, 0.0001, 0.0001, 0.0001),
+  upper = c(0.2, 0.2, 0.2, 0.2)
+)
+
+#### gp regression ####
 gp_PC1 <- newGPsep(
   X = independent, 
   Z = anno$PC1, 
