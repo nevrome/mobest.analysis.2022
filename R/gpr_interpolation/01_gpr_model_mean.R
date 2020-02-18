@@ -41,6 +41,22 @@ pred_grid <- pred_grid <- pred_points_space %>%
     z_01 = range_01_z(age_sample)
   )
 
+#### fit spatiotemporal covariance function ####
+# anno_ordered <- anno %>% dplyr::arrange(calage_center)
+# stfdf <- stf <- spacetime::STF(
+#   sp = sp::SpatialPoints(anno_ordered %>% dplyr::select(x, y), sp::CRS("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")), 
+#   time = anno_ordered$calage_center %>% lubridate::as_datetime()
+# ) %>% as(., "STFDF")
+# variogram(
+#   PC1~1, stfdf
+# )
+# metric <- vgmST(
+#   "metric", 
+#   joint = vgm(psill = 1,"Exp", range=5e3, nugget = 1e1), 
+#   stAni = 1
+# )
+# metric_Vgm <- fit.StVariogram(var, metric, method="L-BFGS-B",lower=pars.l,tunit="mins")
+
 #### gp regression ####
 
 gp_PC1 <- newGPsep(
@@ -50,6 +66,7 @@ gp_PC1 <- newGPsep(
   g = 0.2,
   dK = TRUE
 )
+#mleGPsep(gpsepi = gp_PC1, param = "both")
 pred_PC1 <- predGPsep(gp_PC1, XX = pred_grid[, c("x_01", "y_01", "z_01")], lite = T)
 deleteGPsep(gp_PC1)
 
@@ -60,6 +77,7 @@ gp_PC2 <- newGPsep(
   g = 0.2,
   dK = TRUE
 )
+#mleGPsep(gpsepi = gp_PC2, param = "both")
 pred_PC2 <- predGPsep(gp_PC2, XX = pred_grid[, c("x_01", "y_01", "z_01")], lite = T)
 deleteGPsep(gp_PC2)
 
