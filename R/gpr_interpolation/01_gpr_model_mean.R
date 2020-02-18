@@ -41,45 +41,6 @@ pred_grid <- pred_grid <- pred_points_space %>%
     z_01 = range_01_z(age_sample)
   )
 
-#### fit spatiotemporal covariance function ####
-# anno_ordered <- anno %>% dplyr::arrange(calage_center)
-# stfdf <- stf <- spacetime::STF(
-#   sp = sp::SpatialPoints(anno_ordered %>% dplyr::select(x, y), sp::CRS("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")), 
-#   time = anno_ordered$calage_center %>% lubridate::as_datetime()
-# ) %>% as(., "STFDF")
-# variogram(
-#   PC1~1, stfdf
-# )
-# metric <- vgmST(
-#   "metric", 
-#   joint = vgm(psill = 1,"Exp", range=5e3, nugget = 1e1), 
-#   stAni = 1
-# )
-# metric_Vgm <- fit.StVariogram(var, metric, method="L-BFGS-B",lower=pars.l,tunit="mins")
-
-gpr_optim <- function(data, par) {
-  gp_a <- try(newGPsep(
-    X = data$independent, 
-    Z = data$dependent, 
-    d = c(par[1], par[2], par[3]), 
-    g = par[4],
-    dK = TRUE
-  ))
-  pred_a <- predGPsep(gp_a, XX = data$independent, lite = T)
-  deleteGPsep(gp_a)
-  message(paste(c(par[1], par[2], par[3], par[4]), collapse = ", "))
-  sum(abs(pred_a$mean - data$dependent))
-}
-
-result <- optim(
-  par = c(0.1, 0.1, 0.1, 0.1), 
-  fn = gpr_optim, 
-  data = list(independent = independent, dependent = anno$PC1),
-  method = "L-BFGS-B",
-  lower = c(0.0001, 0.0001, 0.0001, 0.0001),
-  upper = c(0.2, 0.2, 0.2, 0.2)
-)
-
 #### gp regression ####
 gp_PC1 <- newGPsep(
   X = independent, 
