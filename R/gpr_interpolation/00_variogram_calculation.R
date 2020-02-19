@@ -1,4 +1,5 @@
 # https://www.r-bloggers.com/spatio-temporal-kriging-in-r/
+library(magrittr)
 
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_filtered.RData")
 anno <- anno_1240K_and_anno_1240K_HumanOrigins_filtered
@@ -21,26 +22,47 @@ var <- gstat::variogramST(
   PC1~1, data = stfdf,
   tunit = "mins",
   tlags = 1:10,
+  #cutoff = 1000000,
   assumeRegular = F,
   na.omit = T
 )
 
-plot(var, map=F)
+plot(var, map = F)
 plot(var)
-plot(var, wireframe=T) 
- 
-metric1 <- gstat::vgmST("metric", joint = gstat::vgm(0.01, "Exp", 1000000, 0), stAni = 100000)
-metric2 <- gstat::vgmST("metric", joint = gstat::vgm(0.01, "Exp", 500000, 0), stAni = 50000)
+plot(var, wireframe = T) 
 
 pars.l <- c(sill.s = 0, range.s = 10, nugget.s = 0,sill.t = 0, range.t = 1, nugget.t = 0,sill.st = 0, range.st = 10, nugget.st = 0, anis = 0)
-metric_Vgm1 <- gstat::fit.StVariogram(var, metric1, method = "L-BFGS-B", lower = pars.l)
-metric_Vgm2 <- gstat::fit.StVariogram(var, metric2, method = "L-BFGS-B", lower = pars.l)
+finalVgmMSE <- Inf
+finalVgm <- NULL
+for( anisotropy in seq(10000, 100000, 10000)){
+  try( {
+    metric <- gstat::vgmST("metric", joint = gstat::vgm(psill = 0.01, model = "Exp", range = 1000000, nugget = 0), stAni = anisotropy)
+    metric_Vgm <- gstat::fit.StVariogram(var, metric, method = "L-BFGS-B", lower = pars.l)
+    mse <- attr(metric_Vgm,"MSE")
+    print(paste0("Anisotropy: ", anisotropy, "; MSE: ", mse))
+    if(mse < finalVgmMSE){
+      finalVgmMSE <- mse
+      finalVgm <- metric_Vgm
+    }
+  }, silent = FALSE)
+}
 
-attr(metric_Vgm1, "MSE")
-attr(metric_Vgm2, "MSE")
-
-plot(var, metric_Vgm1, map = F) 
-plot(var, metric_Vgm1, wireframe = T) 
+finalVgm
+ 
+# metric1 <- gstat::vgmST("metric", joint = gstat::vgm(psill = 0.01, model = "Exp", range = 1000000, nugget = 0), stAni = 100000)
+# metric2 <- gstat::vgmST("metric", joint = gstat::vgm(psill = 0.01, model = "Exp", range = 1000000, nugget = 0), stAni = 50000)
+# 
+# 
+# metric_Vgm1 <- gstat::fit.StVariogram(var, metric1, method = "L-BFGS-B", lower = pars.l)
+# metric_Vgm2 <- gstat::fit.StVariogram(var, metric2, method = "L-BFGS-B", lower = pars.l)
+# 
+# attr(metric_Vgm1, "MSE")
+# attr(metric_Vgm2, "MSE")
+# 
+# plot(var, metric_Vgm1, map = F) 
+# plot(var, metric_Vgm2, map = F) 
+# 
+# attributes(metric_Vgm1)
 
 # plot(
 #   var,
