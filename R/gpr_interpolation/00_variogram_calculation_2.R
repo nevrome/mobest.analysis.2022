@@ -1,12 +1,10 @@
 library(magrittr)
 library(ggplot2)
 
-# calculate distances
-
-
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_filtered.RData")
 anno <- anno_1240K_and_anno_1240K_HumanOrigins_filtered
 
+# calculate distances
 d_geo <- dist(anno %>% dplyr::select(x,y), "euclidean") %>% as.matrix()
 rownames(d_geo) <- anno$sample_id
 colnames(d_geo) <- anno$sample_id
@@ -26,10 +24,11 @@ rownames(d_pca) <- anno$sample_id
 colnames(d_pca) <- anno$sample_id
 d_pca_long <- d_pca %>% reshape2::melt(value.name = "pca_dist") %>%
   dplyr::mutate(
-    # m to km
+    # distance to closeness
     pca_close = max(pca_dist) - pca_dist
   )
 
+# merge distances
 d_all <- d_geo_long %>%
   dplyr::full_join(
     d_time_long,by = c("Var1", "Var2")
@@ -38,7 +37,7 @@ d_all <- d_geo_long %>%
     d_pca_long, by = c("Var1", "Var2")
   ) %>% tibble::as_tibble()
 
-# bin
+# binning of distances for simpler handling
 d_cut <- d_all %>%
   dplyr::mutate(
     geo_dist_cut = cut(geo_dist, breaks = seq(0, max(geo_dist), 100), labels = F),
@@ -68,22 +67,55 @@ d_cut %>% ggplot() +
 # fit model
 d_cut_xy <- d_cut %>%
   dplyr::mutate(
-    x = as.double(geo_dist_cut),
+    x = geo_dist_cut,
     y = mean_pca_close
   ) %>%
-  dplyr::filter(time_dist_cut == 20) 
+  dplyr::filter(time_dist_cut == 1) 
 
-d_cut_xy %>% ggplot() +
-  geom_path(aes(x, y))
+# kernel_theta <- function(distance, d) { exp(-(sum(distance^2)) / d) }
 
-# kernel_theta <- function(distance, d) { exp(-(sum(distance^2)) / d)}
-# kernel_theta(10, 100)
-
-fit = nls(y ~ I(exp((-(x^2) / d))), data = d_cut_xy, start = list(d = 1000))
+start <- c(k = 0.2, d = 1000)
+fit = nls(y ~ I(k * exp((-(x^2) / d))), data = d_cut_xy, start = start)
 
 d_cut_xy %>%
   ggplot(aes(x, y)) +
   geom_point() + 
-  stat_smooth(method = nls, formula = as.formula(fit), method.args = list(start = list(d = 1000)), se = FALSE, color = "black")
+  stat_smooth(method = nls, formula = as.formula(fit), method.args = list(start = start), se = FALSE, color = "black")
+
+## 2D
+d_cut_xyz <- d_cut %>%
+  dplyr::mutate(
+    x = geo_dist_cut,
+    y = time_dist_cut,
+    z = mean_pca_close
+  ) #%>%
+
+start <- c(k = 0.2, dspace = 1000, dtime = 1000)
+fit = nls(z ~ I((k * exp((-(x^2) / dspace))) * (k * exp((-(y^2) / dtime)))), data = d_cut_xyz, start = start)
+
+pred_grid <- expand.grid(
+  x = 1:max(d_cut_xyz$x, na.rm = T),
+  y = 1:max(d_cut_xyz$y, na.rm = T)
+)
+pred_grid$z <- predict(
+  fit,
+  pred_grid
+) %>% as.numeric()
+
+
+ggplot() +
+  geom_raster(
+    data = d_cut_xyz,
+    aes(x, y, fill = z)
+  ) +
+  viridis::scale_fill_viridis()
+
+ggplot() +
+  geom_raster(
+    data = pred_grid,
+    aes(x, y, fill = z),
+  ) +
+  viridis::scale_fill_viridis()
+
 
 
