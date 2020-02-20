@@ -23,6 +23,8 @@ anno_slices_geo <- anno_slices %>% sf::st_as_sf(
   crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs"
 )
 
+save(anno_slices_geo, file = "data/anno_slices_geo.RData")
+
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
