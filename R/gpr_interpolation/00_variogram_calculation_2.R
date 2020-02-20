@@ -45,6 +45,7 @@ d_cut <- d_all %>%
   ) %>%
   dplyr::group_by(geo_dist_cut, time_dist_cut) %>%
   dplyr::summarise(
+    n = dplyr::n(),
     mean_pca_dist = mean(pca_dist),
     mean_pca_close = mean(pca_close)
   ) %>%
@@ -61,6 +62,12 @@ d_cut %>% ggplot() +
 d_cut %>% ggplot() +
   geom_raster(
     aes(x = geo_dist_cut, y = time_dist_cut, fill = mean_pca_dist)
+  ) +
+  viridis::scale_fill_viridis()
+
+d_cut %>% ggplot() +
+  geom_raster(
+    aes(x = geo_dist_cut, y = time_dist_cut, fill = n)
   ) +
   viridis::scale_fill_viridis()
 
@@ -133,4 +140,4 @@ ggplot() +
     data = pred_test,
     aes(x, y, fill = dev),
   ) +
-  viridis::scale_fill_viridis()
+  viridis::scale_fill_viridis(option = "plasma")
