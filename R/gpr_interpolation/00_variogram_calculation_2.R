@@ -89,7 +89,7 @@ d_cut_xy %>%
 
 ## 2D
 d_cut_xyz <- d_cut %>%
-  dplyr::mutate(
+  dplyr::transmute(
     x = geo_dist_cut,
     y = time_dist_cut,
     z = mean_pca_close
@@ -118,5 +118,19 @@ ggplot() +
   geom_raster(
     data = pred_grid,
     aes(x, y, fill = z),
+  ) +
+  viridis::scale_fill_viridis()
+
+# distance between prediction and measurements
+pred_test <- pred_grid %>%
+  dplyr::left_join(d_cut_xyz, by = c("x", "y"), suffix = c(".pred", ".meas")) %>%
+  dplyr::mutate(
+    dev = abs(z.pred - z.meas) 
+  )
+
+ggplot() +
+  geom_raster(
+    data = pred_test,
+    aes(x, y, fill = dev),
   ) +
   viridis::scale_fill_viridis()
