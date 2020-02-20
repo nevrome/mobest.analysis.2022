@@ -40,8 +40,8 @@ d_all <- d_geo_long %>%
 # binning of distances for simpler handling
 d_cut <- d_all %>%
   dplyr::mutate(
-    geo_dist_cut = cut(geo_dist, breaks = seq(0, max(geo_dist), 100), labels = F),
-    time_dist_cut = cut(time_dist, breaks = seq(0, max(time_dist), 100), labels = F)
+    geo_dist_cut = cut(geo_dist, breaks = seq(0, max(geo_dist), 100), labels = F) * 100,
+    time_dist_cut = cut(time_dist, breaks = seq(0, max(time_dist), 100), labels = F) * 100
   ) %>%
   dplyr::group_by(geo_dist_cut, time_dist_cut) %>%
   dplyr::summarise(
@@ -77,9 +77,9 @@ d_cut_xy <- d_cut %>%
     x = geo_dist_cut,
     y = mean_pca_close
   ) %>%
-  dplyr::filter(time_dist_cut == 1) 
+  dplyr::filter(time_dist_cut == 100) 
 
-start <- c(k = 0.2, d = 1000)
+start <- c(k = 0.2, d = 100000)
 fit = nls(y ~ I(k * exp((-(x^2) / d))), data = d_cut_xy, start = start)
 
 d_cut_xy %>%
@@ -95,12 +95,12 @@ d_cut_xyz <- d_cut %>%
     z = mean_pca_close
   )
 
-start <- c(k = 0.2, dspace = 1000, dtime = 1000)
+start <- c(k = 0.2, dspace = 100000, dtime = 100000)
 fit = nls(z ~ I((k * exp((-(x^2) / dspace))) * (k * exp((-(y^2) / dtime)))), data = d_cut_xyz, start = start)
 
 pred_grid <- expand.grid(
-  x = 1:max(d_cut_xyz$x, na.rm = T),
-  y = 1:max(d_cut_xyz$y, na.rm = T)
+  x = seq(100, max(d_cut_xyz$x, na.rm = T), 100),
+  y = seq(100, max(d_cut_xyz$y, na.rm = T), 100)
 )
 pred_grid$z <- predict(
   fit,
