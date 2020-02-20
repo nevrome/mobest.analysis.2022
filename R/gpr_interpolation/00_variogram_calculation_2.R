@@ -141,3 +141,59 @@ ggplot() +
     aes(x, y, fill = dev),
   ) +
   viridis::scale_fill_viridis(option = "plasma")
+
+#### limit analysis to 1000km 1000years analysis ####
+d_cut_1000 <- d_all %>%
+  dplyr::filter(
+    geo_dist < 1000, time_dist < 1000
+  ) %>% dplyr::mutate(
+    geo_dist_cut = cut(geo_dist, breaks = seq(0, max(geo_dist), 100), labels = F) * 100,
+    time_dist_cut = cut(time_dist, breaks = seq(0, max(time_dist), 100), labels = F) * 100
+  ) %>%
+  dplyr::group_by(geo_dist_cut, time_dist_cut) %>%
+  dplyr::summarise(
+    n = dplyr::n(),
+    mean_pca_dist = mean(pca_dist),
+    mean_pca_close = mean(pca_close)
+  ) %>%
+  dplyr::ungroup()
+
+# line plot distance
+d_cut_1000 %>% ggplot() +
+  geom_path(
+    aes(x = geo_dist_cut, y = mean_pca_dist, group = time_dist_cut, color = time_dist_cut)
+  ) +
+  viridis::scale_color_viridis()
+
+# map plot
+d_cut_1000 %>% ggplot() +
+  geom_raster(
+    aes(x = geo_dist_cut, y = time_dist_cut, fill = mean_pca_dist)
+  ) +
+  viridis::scale_fill_viridis()
+
+d_cut_1000_xyz <- d_cut_1000 %>%
+  dplyr::transmute(
+    x = geo_dist_cut,
+    y = time_dist_cut,
+    z = mean_pca_close
+  )
+
+start_1000 <- c(k = 0.2, dspace = 100000, dtime = 100000)
+fit_1000 = nls(z ~ I((k * exp((-(x^2) / dspace))) * (k * exp((-(y^2) / dtime)))), data = d_cut_1000_xyz, start = start_1000)
+
+pred_grid_1000 <- expand.grid(
+  x = seq(100, max(d_cut_1000_xyz$x, na.rm = T), 100),
+  y = seq(100, max(d_cut_1000_xyz$y, na.rm = T), 100)
+)
+pred_grid_1000$z <- predict(
+  fit_1000,
+  pred_grid_1000
+) %>% as.numeric()
+
+ggplot() +
+  geom_raster(
+    data = pred_grid_1000,
+    aes(x, y, fill = z),
+  ) +
+  viridis::scale_fill_viridis()
