@@ -50,29 +50,34 @@ d_cut <- d_all %>%
   ) %>%
   dplyr::ungroup()
 
-# line plot
+# line plot distance
 d_cut %>% ggplot() +
   geom_path(
-    aes(x = geo_dist_cut, y = mean_pca_close, group = time_dist_cut, color = time_dist_cut)
+    aes(x = geo_dist_cut, y = mean_pca_dist, group = time_dist_cut, color = time_dist_cut)
   ) +
   viridis::scale_color_viridis()
 
 # map plot
 d_cut %>% ggplot() +
   geom_raster(
-    aes(x = geo_dist_cut, y = time_dist_cut, fill = mean_pca_close)
+    aes(x = geo_dist_cut, y = time_dist_cut, fill = mean_pca_dist)
   ) +
   viridis::scale_fill_viridis()
 
-# fit model
+# line plot closeness
+d_cut %>% ggplot() +
+  geom_path(
+    aes(x = geo_dist_cut, y = mean_pca_close, group = time_dist_cut, color = time_dist_cut)
+  ) +
+  viridis::scale_color_viridis()
+
+# fit model test for space
 d_cut_xy <- d_cut %>%
   dplyr::mutate(
     x = geo_dist_cut,
     y = mean_pca_close
   ) %>%
   dplyr::filter(time_dist_cut == 1) 
-
-# kernel_theta <- function(distance, d) { exp(-(sum(distance^2)) / d) }
 
 start <- c(k = 0.2, d = 1000)
 fit = nls(y ~ I(k * exp((-(x^2) / d))), data = d_cut_xy, start = start)
@@ -88,7 +93,7 @@ d_cut_xyz <- d_cut %>%
     x = geo_dist_cut,
     y = time_dist_cut,
     z = mean_pca_close
-  ) #%>%
+  )
 
 start <- c(k = 0.2, dspace = 1000, dtime = 1000)
 fit = nls(z ~ I((k * exp((-(x^2) / dspace))) * (k * exp((-(y^2) / dtime)))), data = d_cut_xyz, start = start)
@@ -101,7 +106,6 @@ pred_grid$z <- predict(
   fit,
   pred_grid
 ) %>% as.numeric()
-
 
 ggplot() +
   geom_raster(
@@ -116,6 +120,3 @@ ggplot() +
     aes(x, y, fill = z),
   ) +
   viridis::scale_fill_viridis()
-
-
-
