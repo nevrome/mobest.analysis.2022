@@ -17,7 +17,7 @@ anno <- anno %>% dplyr::select(
   sample_id, group_label,
   lat, lon,
   age_prob_distribution_BC, calage_center, calage_sample,
-  PC1, PC2
+  PC1, PC2, PC3, PC4
 )
 
 #### store output dataset ####

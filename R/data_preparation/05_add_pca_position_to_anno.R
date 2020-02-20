@@ -4,7 +4,7 @@ load("data/pca/pca.1240K_HumanOrigins.RData")
 
 #### merge ####
 anno_1240K_and_anno_1240K_HumanOrigins_pca <- anno_1240K_and_anno_1240K_HumanOrigins %>% dplyr::left_join(
-  pca[, 1:3], 
+  pca %>% dplyr::select(Name:PC4), 
   by = c("sample_id" = "Name")
 )
 
