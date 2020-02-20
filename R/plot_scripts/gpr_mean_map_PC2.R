@@ -4,6 +4,7 @@ library(ggplot2)
 load("data/gpr/pred_grid_spatial_cropped.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
+load("data/anno_slices_geo.RData")
 
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
@@ -18,10 +19,18 @@ p_PC2 <- ggplot() +
     aes(x = x_real, y = y_real, fill = pred_PC2_mean, alpha = pred_PC2_s2)
   ) +
   geom_sf(
+    data = anno_slices_geo %>% dplyr::mutate(age_sample = age),
+    mapping = aes(fill = PC2),
+    size = 3.5,
+    shape = 21,
+    color = "black"
+  ) +
+  geom_sf(
     data = research_area,
     fill = NA, colour = "red", size = 0.4
   ) +
   scale_fill_viridis_c(
+    limits = pred_grid_spatial_cropped$pred_PC2_mean %>% range,
     na.value = NA,
     oob = scales::squish,
     option = "plasma"
@@ -62,3 +71,4 @@ p_PC2 %>%
     width = 550, height = 260, units = "mm",
     limitsize = F
   )
+
