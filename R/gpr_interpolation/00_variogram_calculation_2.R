@@ -51,6 +51,8 @@ d_cut <- d_all %>%
   ) %>%
   dplyr::ungroup()
 
+save(d_cut, file = "data/d_cut.R")
+
 # line plot distance
 d_cut %>% ggplot() +
   geom_path(
