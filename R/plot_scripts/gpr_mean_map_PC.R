@@ -31,10 +31,10 @@ plotfun <- function(PC, color) {
       fill = NA, colour = "red", size = 0.4
     ) +
     scale_fill_viridis_c(
-      limits = pred_grid_spatial_cropped[[paste0("pred_", PC, "_mean")]]  %>% range,
+      limits = anno_slices_geo[[PC]] %>% range,
       na.value = NA,
       oob = scales::squish,
-      option = color
+      option = color,
     ) +
     scale_alpha_continuous(range = c(1, 0), na.value = 0) +
     theme_bw() +
