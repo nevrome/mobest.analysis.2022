@@ -62,7 +62,7 @@ predictgp <- function(independent, dependent, pred_grid) {
   # predictions from the global GP on the prediction
   pred <- predGPsep(gp, XX = pred_grid[, c("x_01", "y_01", "z_01")], lite = T)
   # delete GP object
-  deleteGPsep(gp_PC1)
+  deleteGPsep(gp)
   # return result 
   return(pred)
 }
