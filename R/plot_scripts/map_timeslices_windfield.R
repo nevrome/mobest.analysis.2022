@@ -2,7 +2,7 @@ library(ggplot2)
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 
-ggplot() +
+plot <- ggplot() +
   geom_sf(
     data = extended_area,
     fill = "white"
@@ -45,3 +45,15 @@ geom_spoke(
     axis.ticks = element_blank(),
     axis.title = element_blank()
   )
+
+plot %>%
+  ggsave(
+    paste0("plots/map_timeslices_windfield.jpeg"),
+    plot = .,
+    device = "jpeg",
+    scale = 1,
+    dpi = 300,
+    width = 550, height = 260, units = "mm",
+    limitsize = F
+  )
+
