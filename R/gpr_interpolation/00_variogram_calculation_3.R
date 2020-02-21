@@ -23,6 +23,12 @@ ggplot() +
   viridis::scale_fill_viridis(direction = -1) +
   theme(legend.position = "bottom")
 
+d_cut %>% ggplot() +
+  geom_path(
+    aes(x = geo_dist_cut, y = mean_pca_dist, group = time_dist_cut, color = time_dist_cut)
+  ) +
+  viridis::scale_color_viridis()
+
 ggplot() +
   geom_raster(
     data = var,
@@ -30,5 +36,12 @@ ggplot() +
   ) +
   viridis::scale_fill_viridis(direction = -1) +
   theme(legend.position = "bottom")
+
+var %>% ggplot() +
+  geom_path(
+    aes(x = spacelag, y = gamma, group = timelag, color = timelag)
+  ) +
+  viridis::scale_color_viridis()
+
 
 
