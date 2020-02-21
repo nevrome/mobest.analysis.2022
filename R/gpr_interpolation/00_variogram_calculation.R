@@ -12,7 +12,7 @@ sp::proj4string(space) <- sp::CRS("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_
 
 stfdf <- spacetime::STIDF(
   sp = space,
-  time = lubridate::as_date("0000-01-01", "Y-M-D") + lubridate::dseconds(anno$calage_center),
+  time = lubridate::as_date("0000-01-01", "Y-M-D") + lubridate::dseconds(anno$calage_center * (60/100)),
   data = data.frame(PC1 = anno$PC1)
 )
 
@@ -21,7 +21,8 @@ spacetime::stplot(stfdf)
 var <- gstat::variogramST(
   PC1~1, data = stfdf,
   tunit = "mins",
-  tlags = 1:10,
+  tlags = 1:80,
+  boundaries = seq(100000, 5100000, 100000),
   #cutoff = 1000000,
   assumeRegular = F,
   na.omit = T
