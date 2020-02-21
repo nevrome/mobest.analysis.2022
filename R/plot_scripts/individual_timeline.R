@@ -118,7 +118,7 @@ plots_pca <- lapply(toi, function(t) {
       size = 3
     ) +
     scale_color_gradient2(
-      limits = c(-7000, -500), low = "red", mid = "green", high = "blue", midpoint = -3000
+      limits = c(-7500, -500), low = "red", mid = "green", high = "blue", midpoint = -3000
     ) +
     theme_bw()
 })
