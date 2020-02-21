@@ -24,6 +24,8 @@ pri %<>%
     spatial_distance = NA,
     pred_PC1_mean_origin = NA,
     pred_PC2_mean_origin = NA,
+    pred_PC3_mean_origin = NA,
+    pred_PC4_mean_origin = NA,
     x_real_origin = NA,
     y_real_origin = NA,
   )
@@ -34,8 +36,8 @@ time_pris <- pri %>% split(pri$age_sample)
 for (p1 in 2:length(time_pris)) {
   
   # get PCA position for each spatial point in current and past age slice
-  current_pri <- as.matrix(time_pris[[p1]][c("pred_PC1_mean", "pred_PC2_mean")])
-  past_pri <- as.matrix(time_pris[[p1 - 1]][c("pred_PC1_mean", "pred_PC2_mean")])
+  current_pri <- as.matrix(time_pris[[p1]][c("pred_PC1_mean", "pred_PC2_mean", "pred_PC3_mean", "pred_PC4_mean")])
+  past_pri <- as.matrix(time_pris[[p1 - 1]][c("pred_PC1_mean", "pred_PC2_mean", "pred_PC3_mean", "pred_PC4_mean")])
   
   # calculate PCA distance matrix
   distance <- fields::rdist(current_pri, past_pri)
@@ -47,6 +49,8 @@ for (p1 in 2:length(time_pris)) {
   time_pris[[p1]] <- time_pris[[p1]] %>% dplyr::mutate(
     pred_PC1_mean_origin = time_pris[[p1 - 1]]$pred_PC1_mean[closest_point_indezes],
     pred_PC2_mean_origin = time_pris[[p1 - 1]]$pred_PC2_mean[closest_point_indezes],
+    pred_PC3_mean_origin = time_pris[[p1 - 1]]$pred_PC3_mean[closest_point_indezes],
+    pred_PC4_mean_origin = time_pris[[p1 - 1]]$pred_PC4_mean[closest_point_indezes],
     x_real_origin = time_pris[[p1 - 1]]$x_real[closest_point_indezes],
     y_real_origin = time_pris[[p1 - 1]]$y_real[closest_point_indezes]
   )
