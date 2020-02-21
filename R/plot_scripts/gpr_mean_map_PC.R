@@ -17,7 +17,7 @@ plotfun <- function(PC, color) {
     geom_sf(data = extended_area, fill = "white") +
     geom_raster(
       data = pred_grid_spatial_cropped,
-      aes_string(x = "x_real", y = "y_real", fill = paste0("pred_", PC, "_mean"), alpha = paste0("pred_", PC, "_s2"))
+      aes_string(x = "x_real", y = "y_real", fill = paste0("pred_", PC, "_mean"), alpha = paste0("pred_", PC, "_sd"))
     ) +
     geom_sf(
       data = anno_slices_geo %>% dplyr::mutate(age_sample = age),
