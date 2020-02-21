@@ -42,36 +42,50 @@ pred_grid <- pred_grid <- pred_points_space %>%
   )
 
 #### gp regression ####
-gp_PC1 <- newGPsep(
-  X = independent, 
-  Z = anno$PC1, 
-  d = c(dist_scale_01_x_km(50), dist_scale_01_y_km(50), dist_scale_01_z_y(200)), 
-  g = 0.2,
-  dK = TRUE
-)
-#mleGPsep(gpsepi = gp_PC1, param = "both")
-pred_PC1 <- predGPsep(gp_PC1, XX = pred_grid[, c("x_01", "y_01", "z_01")], lite = T)
-deleteGPsep(gp_PC1)
 
-gp_PC2 <- newGPsep(
-  X = independent,
-  Z = anno$PC2,
-  d = c(dist_scale_01_x_km(50), dist_scale_01_y_km(50), dist_scale_01_z_y(200)),
-  g = 0.2,
-  dK = TRUE
-)
-#mleGPsep(gpsepi = gp_PC2, param = "both")
-pred_PC2 <- predGPsep(gp_PC2, XX = pred_grid[, c("x_01", "y_01", "z_01")], lite = T)
-deleteGPsep(gp_PC2)
+predictgp <- function(independent, dependent, pred_grid) {
+  # priors for the global GP
+  da <- darg(list(mle = TRUE, max=10), independent)
+  ga <- garg(list(mle = TRUE, max=10), dependent)
+  # fit the global GP
+  gp <- newGPsep(
+    X = independent, Z = dependent, 
+    d = da$start, g = ga$start,
+    dK = TRUE
+  )
+  mleGPsep(
+    gpsepi = gp, 
+    param = "both", 
+    tmin = c(da$min, ga$min), tmax = c(da$max, ga$max), ab = c(da$ab, ga$ab), 
+    maxit = 200
+  )
+  # predictions from the global GP on the prediction
+  pred <- predGPsep(gp, XX = pred_grid[, c("x_01", "y_01", "z_01")], lite = T)
+  # delete GP object
+  deleteGPsep(gp_PC1)
+  # return result 
+  return(pred)
+}
 
-#### store prediction results #### 
-
+pred_PC1 <- predictgp(independent, anno$PC1, pred_grid)
 pred_grid$pred_PC1_mean <- pred_PC1$mean
 pred_grid$pred_PC1_s2 <- pred_PC1$s2
 pred_grid$pred_PC1_sd <- sqrt(pred_PC1$s2)
+
+pred_PC2 <- predictgp(independent, anno$PC2, pred_grid)
 pred_grid$pred_PC2_mean <- pred_PC2$mean
 pred_grid$pred_PC2_s2 <- pred_PC2$s2
 pred_grid$pred_PC2_sd <- sqrt(pred_PC2$s2)
+
+pred_PC3 <- predictgp(independent, anno$PC3, pred_grid)
+pred_grid$pred_PC3_mean <- pred_PC3$mean
+pred_grid$pred_PC3_s2 <- pred_PC3$s2
+pred_grid$pred_PC3_sd <- sqrt(pred_PC3$s2)
+
+pred_PC4 <- predictgp(independent, anno$PC4, pred_grid)
+pred_grid$pred_PC4_mean <- pred_PC4$mean
+pred_grid$pred_PC4_s2 <- pred_PC4$s2
+pred_grid$pred_PC4_sd <- sqrt(pred_PC4$s2)
 
 #### spatially crop prediction grid ####
 
