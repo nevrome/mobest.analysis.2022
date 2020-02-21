@@ -1,6 +1,8 @@
+install.packages("laGP", lib = "/projects1/clusterhomes/schmid/R/x86_64-pc-linux-gnu-library/3.4")
+
 library(magrittr)
 library(laGP)
-source("R/helper_functions.R")
+source("/projects1/coest_mobility/coest.interpol.2020/R/helper_functions.R")
 
 #### data ####
 
@@ -14,7 +16,7 @@ bb <- unname(sf::st_bbox(research_area))
 #### prep independent variables with temporal sampling ####
 
 independent_list <- lapply(
-  1:10,#1:length(anno$calage_sample[[1]]), 
+  1:3,#1:length(anno$calage_sample[[1]]), 
   function(i, anno) {
     age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
     dplyr::transmute(
@@ -98,13 +100,14 @@ prediction_per_point_df <- prediction_sample_df %>%
 pred_grid$pred_PC1_mean <- prediction_per_point_df$mean
 pred_grid$pred_PC1_sd <- prediction_per_point_df$sd
 
+# transform pred grid to spatial object
 pred_grid_spatial_cropped <- sf::st_as_sf(pred_grid, coords = c("x_real", "y_real"), crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs") %>%
-  #sf::st_intersection(research_area) %>%
   dplyr::mutate(
     x_real = sf::st_coordinates(.)[,1],
     y_real = sf::st_coordinates(.)[,2]
   )
 
-
+#### store results ####
+save(pred_grid_spatial_cropped, file = "/projects1/coest_mobility/coest.interpol.2020/data/gpr/pred_grid_spatial_cropped_temporal_sampling.RData")
 
 
