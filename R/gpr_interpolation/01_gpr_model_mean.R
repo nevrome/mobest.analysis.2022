@@ -87,6 +87,10 @@ pred_grid$pred_PC4_mean <- pred_PC4$mean
 pred_grid$pred_PC4_s2 <- pred_PC4$s2
 pred_grid$pred_PC4_sd <- sqrt(pred_PC4$s2)
 
+#### store results ####
+
+save(pred_grid_mean, file = "data/gpr/pred_grid_mean.RData")
+
 #### spatially crop prediction grid ####
 
 pred_grid_spatial_cropped <- sf::st_as_sf(pred_grid, coords = c("x_real", "y_real"), crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs") %>%
@@ -100,5 +104,4 @@ pred_grid_spatial_cropped <- sf::st_as_sf(pred_grid, coords = c("x_real", "y_rea
 pred_grid_mean <- pred_grid_spatial_cropped %>% tibble::as_tibble() %>% dplyr::select(-geometry)
 
 #### store results ####
-save(pred_grid_spatial_cropped, file = "data/gpr/pred_grid_spatial_cropped.RData")
-save(pred_grid_mean, file = "data/gpr/pred_grid_mean.RData")
+save(pred_grid_spatial_cropped, file = "data/gpr/pred_grid_spatial_cropped_mean.RData")

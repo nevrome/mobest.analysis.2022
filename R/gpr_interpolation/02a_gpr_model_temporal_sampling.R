@@ -14,7 +14,7 @@ bb <- unname(sf::st_bbox(research_area))
 #### prep independent variables with temporal sampling ####
 
 independent_list <- lapply(
-  1:30,#1:length(anno$calage_sample[[1]]), 
+  1:2,#1:length(anno$calage_sample[[1]]), 
   function(i, anno) {
     age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
     dplyr::transmute(
@@ -48,16 +48,4 @@ pred_grid <- pred_points_space %>%
     z_01 = range_01_z(age_sample)
   )
 
-save.image(file = "data/gpr/gpr_temporal_sampling.RData", version = 2)
-
-# # transform pred grid to spatial object
-# pred_grid_spatial_cropped <- sf::st_as_sf(pred_grid, coords = c("x_real", "y_real"), crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs") %>%
-#  dplyr::mutate(
-#    x_real = sf::st_coordinates(.)[,1],
-#    y_real = sf::st_coordinates(.)[,2]
-#  )
-
-# #### store results ####
-# save(pred_grid_spatial_cropped, file = "data/gpr/pred_grid_spatial_cropped_temporal_sampling.RData")
-
-
+save.image(file = "data/gpr/gpr_prep_temporal_sampling.RData", version = 2)
