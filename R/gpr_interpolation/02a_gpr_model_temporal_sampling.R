@@ -15,7 +15,7 @@ bb <- unname(sf::st_bbox(research_area))
 
 independent_tables <- tibble::tibble(
   independent_table = lapply(
-    1:5,#1:length(anno$calage_sample[[1]]), 
+    1:100,#1:length(anno$calage_sample[[1]]), 
     function(i, anno) {
       age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
       dplyr::transmute(
