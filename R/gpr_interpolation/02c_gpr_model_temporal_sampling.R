@@ -1,5 +1,6 @@
 library(magrittr)
 
+load("data/gpr/gpr_prep_temporal_sampling_v3.RData")
 load("data/gpr/prediction_list_temporal_sampling.RData")
 
 #### sample from kriging result for each point ####
