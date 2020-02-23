@@ -7,8 +7,8 @@ plotfun <- function(PC, color, type) {
   plot <- ggplot() +
     geom_sf(data = extended_area, fill = "white") +
     geom_raster(
-      data = pred_grid_spatial_cropped,
-      aes_string(x = "x_real", y = "y_real", fill = paste0("pred_", PC, "_mean"), alpha = paste0("pred_", PC, "_sd"))
+      data = pred_grid_spatial_cropped %>% dplyr::filter(dependent_var_id == PC),
+      aes(x = x_real, y = y_real, fill = mean, alpha = sd)
     ) +
     geom_sf(
       data = anno_slices_geo %>% dplyr::mutate(age_sample = age),
@@ -65,7 +65,7 @@ plotfun <- function(PC, color, type) {
     )
 }
 
-load("data/gpr/pred_grid_spatial_cropped_mean.RData")
+# load("data/gpr/pred_grid_spatial_cropped_mean.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/anno_slices_geo.RData")
@@ -73,11 +73,11 @@ load("data/anno_slices_geo.RData")
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
-
-plotfun("PC1", "viridis", "mean")
-plotfun("PC2", "plasma", "mean")
-plotfun("PC3", "cividis", "mean")
-plotfun("PC4", "inferno", "mean")
+# 
+# plotfun("PC1", "viridis", "mean")
+# plotfun("PC2", "plasma", "mean")
+# plotfun("PC3", "cividis", "mean")
+# plotfun("PC4", "inferno", "mean")
 
 load("data/gpr/pred_grid_spatial_cropped_temporal_sampling.RData")
 
