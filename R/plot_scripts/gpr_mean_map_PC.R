@@ -1,18 +1,9 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/gpr/pred_grid_spatial_cropped.RData")
-load("data/spatial/research_area.RData")
-load("data/spatial/extended_area.RData")
-load("data/anno_slices_geo.RData")
-
-ex <- raster::extent(research_area)
-xlimit <- c(ex[1], ex[2])
-ylimit <- c(ex[3], ex[4])
-
 #### plot resulting model ####
 
-plotfun <- function(PC, color) {
+plotfun <- function(PC, color, type) {
   plot <- ggplot() +
     geom_sf(data = extended_area, fill = "white") +
     geom_raster(
@@ -64,7 +55,7 @@ plotfun <- function(PC, color) {
   
   plot %>%
     ggsave(
-      paste0("plots/gpr_mean_map_", PC, ".jpeg"),
+      paste0("plots/gpr_map_", PC, "_", type, ".jpeg"),
       plot = .,
       device = "jpeg",
       scale = 1,
@@ -74,7 +65,23 @@ plotfun <- function(PC, color) {
     )
 }
 
-plotfun("PC1", "viridis")
-plotfun("PC2", "plasma")
-plotfun("PC3", "cividis")
-plotfun("PC4", "inferno")
+load("data/gpr/pred_grid_spatial_cropped_mean.RData")
+load("data/spatial/research_area.RData")
+load("data/spatial/extended_area.RData")
+load("data/anno_slices_geo.RData")
+
+ex <- raster::extent(research_area)
+xlimit <- c(ex[1], ex[2])
+ylimit <- c(ex[3], ex[4])
+
+plotfun("PC1", "viridis", "mean")
+plotfun("PC2", "plasma", "mean")
+plotfun("PC3", "cividis", "mean")
+plotfun("PC4", "inferno", "mean")
+
+load("data/gpr/pred_grid_spatial_cropped_temporal_sampling.RData")
+
+plotfun("PC1", "viridis", "temporal_sampling")
+plotfun("PC2", "plasma", "temporal_sampling")
+plotfun("PC3", "cividis", "temporal_sampling")
+plotfun("PC4", "inferno", "temporal_sampling")
