@@ -14,7 +14,7 @@ bb <- unname(sf::st_bbox(research_area))
 #### prep independent variables with temporal sampling ####
 
 independent_list <- lapply(
-  1:2,#1:length(anno$calage_sample[[1]]), 
+  1:10,#1:length(anno$calage_sample[[1]]), 
   function(i, anno) {
     age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
     dplyr::transmute(
@@ -48,4 +48,5 @@ pred_grid <- pred_points_space %>%
     z_01 = range_01_z(age_sample)
   )
 
-save.image(file = "data/gpr/gpr_prep_temporal_sampling.RData", version = 2)
+save.image(file = "data/gpr/gpr_prep_temporal_sampling_v2.RData", version = 2)
+save.image(file = "data/gpr/gpr_prep_temporal_sampling_v3.RData", version = 3)
