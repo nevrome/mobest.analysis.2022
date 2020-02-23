@@ -3,11 +3,11 @@ library(ggplot2)
 
 #### plot resulting model ####
 
-plotfun <- function(PC, color, type) {
+plotfun <- function(PC, kernel, color) {
   plot <- ggplot() +
     geom_sf(data = extended_area, fill = "white") +
     geom_raster(
-      data = pred_grid_spatial_cropped %>% dplyr::filter(dependent_var_id == PC),
+      data = pred_grid_spatial_cropped %>% dplyr::filter(dependent_var_id == PC, kernel_setting_id == kernel),
       aes(x = x_real, y = y_real, fill = mean, alpha = sd)
     ) +
     geom_sf(
@@ -55,7 +55,7 @@ plotfun <- function(PC, color, type) {
   
   plot %>%
     ggsave(
-      paste0("plots/gpr_map_", PC, "_", type, ".jpeg"),
+      paste0("plots/gpr_map_", PC, "_", kernel, ".jpeg"),
       plot = .,
       device = "jpeg",
       scale = 1,
@@ -81,7 +81,17 @@ ylimit <- c(ex[3], ex[4])
 
 load("data/gpr/pred_grid_spatial_cropped_temporal_sampling.RData")
 
-plotfun("PC1", "viridis", "temporal_sampling")
-plotfun("PC2", "plasma", "temporal_sampling")
-plotfun("PC3", "cividis", "temporal_sampling")
-plotfun("PC4", "inferno", "temporal_sampling")
+plotfun("PC1", "A", "viridis")
+plotfun("PC2", "A", "plasma")
+plotfun("PC3", "A", "cividis")
+plotfun("PC4", "A", "inferno")
+
+plotfun("PC1", "B", "viridis")
+plotfun("PC2", "B", "plasma")
+plotfun("PC3", "B", "cividis")
+plotfun("PC4", "B", "inferno")
+
+plotfun("PC1", "C", "viridis")
+plotfun("PC2", "C", "plasma")
+plotfun("PC3", "C", "cividis")
+plotfun("PC4", "C", "inferno")
