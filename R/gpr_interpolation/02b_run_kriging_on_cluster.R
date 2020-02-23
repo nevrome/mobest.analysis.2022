@@ -48,7 +48,7 @@ predictgp <- function(independent, dependent, pred_grid, auto = T, d, g) {
 
 #### run kriging ####
 
-model_grid$prediction <- lapply(1:nrow(model_grid), function(i) {
+prediction <- lapply(1:nrow(model_grid), function(i) {
   predictgp(
     model_grid[["independent_table"]][[i]], 
     model_grid[["dependent_var"]][[i]], 
@@ -59,4 +59,4 @@ model_grid$prediction <- lapply(1:nrow(model_grid), function(i) {
   )
 })
 
-save(model_grid, file = "/projects1/coest_mobility/coest.interpol.2020/data/gpr/model_grid_temporal_sampling.RData")
+save(prediction, file = "/projects1/coest_mobility/coest.interpol.2020/data/gpr/prediction_temporal_sampling.RData")
