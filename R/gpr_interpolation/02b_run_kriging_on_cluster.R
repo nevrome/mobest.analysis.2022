@@ -2,13 +2,16 @@ v <- floor(as.numeric(R.Version()$minor))
 
 if (v == 4) {
   .libPaths( c( "/projects1/clusterhomes/schmid/R/x86_64-pc-linux-gnu-library/3.4" , .libPaths() ) )
-  load("/projects1/coest_mobility/coest.interpol.2020/data/gpr/gpr_prep_temporal_sampling_v2.RData")
+  load("/projects1/coest_mobility/coest.interpol.2020/data/gpr/gpr_pred_grid_temporal_sampling_v2.RData")
+  load("/projects1/coest_mobility/coest.interpol.2020/data/gpr/gpr_model_grid_temporal_sampling_v2.RData")
 } else if ( v == 5) {
   .libPaths( c( "/projects1/clusterhomes/schmid/R/x86_64-pc-linux-gnu-library/3.5" , .libPaths() ) )
-  load("/projects1/coest_mobility/coest.interpol.2020/data/gpr/gpr_prep_temporal_sampling_v3.RData")
+  load("/projects1/coest_mobility/coest.interpol.2020/data/gpr/gpr_pred_grid_temporal_sampling_v3.RData")
+  load("/projects1/coest_mobility/coest.interpol.2020/data/gpr/gpr_model_grid_temporal_sampling_v3.RData")
 } else if ( v == 6) {
   .libPaths( c( "/projects1/clusterhomes/schmid/R/x86_64-pc-linux-gnu-library/3.6" , .libPaths() ) )
-  load("/projects1/coest_mobility/coest.interpol.2020/data/gpr/gpr_prep_temporal_sampling_v3.RData")
+  load("/projects1/coest_mobility/coest.interpol.2020/data/gpr/gpr_pred_grid_temporal_sampling_v3.RData")
+  load("/projects1/coest_mobility/coest.interpol.2020/data/gpr/gpr_model_grid_temporal_sampling_v3.RData")
 }
   
 #library(magrittr)
@@ -55,19 +58,5 @@ model_grid$prediction <- lapply(1:nrow(model_grid), function(i) {
     model_grid[["kernel_setting"]][[i]][["g"]]
   )
 })
-
-# # for every kernel setting
-# prediction_list <- lapply(kernel_settings, function(z) {
-#   # for every PC
-#   PCs <- c("PC1", "PC2", "PC3", "PC4")
-#   res <- lapply(PCs, function(x) {
-#     # for every time sampling run
-#     lapply(independent_list, function(y) {
-#         predictgp(y, anno[[x]], pred_grid, z$auto, z$d, z$g)
-#     })
-#   })
-#   names(res) <- PCs
-#   return(res)
-# })
 
 save(model_grid, file = "/projects1/coest_mobility/coest.interpol.2020/data/gpr/model_grid_temporal_sampling.RData")

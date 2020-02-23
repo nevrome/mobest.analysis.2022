@@ -82,6 +82,9 @@ model_grid <- expand.grid(
     dependent_var = lapply(dependent_var_id, function(x) { anno[[x]] })
   )
 
+#### store intermediate data ###
 
-save.image(file = "data/gpr/gpr_prep_temporal_sampling_v2.RData", version = 2)
-save.image(file = "data/gpr/gpr_prep_temporal_sampling_v3.RData", version = 3)
+save(pred_grid, file = "data/gpr/gpr_pred_grid_temporal_sampling_v2.RData", version = 2)
+save(pred_grid, file = "data/gpr/gpr_pred_grid_temporal_sampling_v3.RData", version = 3)
+save(model_grid, file = "data/gpr/gpr_model_grid_temporal_sampling_v2.RData", version = 2)
+save(model_grid, file = "data/gpr/gpr_model_grid_temporal_sampling_v3.RData", version = 3)

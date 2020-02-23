@@ -1,16 +1,15 @@
 library(magrittr)
 
-load("data/gpr/gpr_prep_temporal_sampling_v3.RData")
+load("data/gpr/gpr_pred_grid_temporal_sampling_v3.RData")
+load("data/gpr/gpr_model_grid_temporal_sampling_v3.RData")
 load("data/gpr/model_grid_temporal_sampling.RData")
 
 #### sample from kriging result for each point ####
-# for every kernel setting
 prediction_sample_list <- lapply(model_grid$prediction, function(y) {
   sapply(1:length(y$mean), function(i) { rnorm(1, y$mean[i], sqrt(y$s2[i])) })
 })
 
 #### transform to long data.frame ####
-# for every kernel setting
 model_grid$prediction_sample <- lapply(1:length(prediction_sample_list), function(i) {
   data.frame(
     point_id = 1:length(prediction_sample_list[[i]]),
