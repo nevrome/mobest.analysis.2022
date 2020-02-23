@@ -1,5 +1,6 @@
 library(magrittr)
 
+load("data/gpr/gpr_prep_temporal_sampling_v3.RData")
 load("data/gpr/model_grid_temporal_sampling.RData")
 
 #### sample from kriging result for each point ####
@@ -19,10 +20,12 @@ model_grid$prediction_sample <- lapply(1:length(prediction_sample_list), functio
 })
 
 #### combine prediction for each kernel, each PC and each run (mean) ####
-
-prediction_per_point_df <- prediction_sample_df %>%
-  dplyr::group_by(kernel, PC, point_id) %>%
-  dplyr::summarize(mean = mean(pred_samples), sd = sd(pred_samples))
+prediction_per_point_df <- model_grid %>%
+  dplyr::select(kernel_setting_id, dependent_var_id, independent_table_id, prediction_sample) %>%
+  tidyr::unnest(cols = "prediction_sample") %>%
+  dplyr::group_by(kernel_setting_id, dependent_var_id, point_id) %>%
+  dplyr::summarize(mean = mean(pred_samples), sd = sd(pred_samples)) %>%
+  dplyr::ungroup()
 
 #### add prediction to pred_grid ####
 pred_grid <- pred_grid %>%
