@@ -1,38 +1,22 @@
 library(magrittr)
 
-load("data/gpr/gpr_prep_temporal_sampling_v3.RData")
-load("data/gpr/prediction_list_temporal_sampling.RData")
+load("data/gpr/model_grid_temporal_sampling.RData")
 
 #### sample from kriging result for each point ####
 # for every kernel setting
-prediction_sample_list <- lapply(prediction_list, function(z) {
-  # for every PC
-  prediction_sample_list <- lapply(z, function(x) {
-    # for every time sampling run
-    lapply(x, function(y) {
-        sapply(1:length(y$mean), function(i) { rnorm(1, y$mean[i], sqrt(y$s2[i])) })
-    })
-  })
+prediction_sample_list <- lapply(model_grid$prediction, function(y) {
+  sapply(1:length(y$mean), function(i) { rnorm(1, y$mean[i], sqrt(y$s2[i])) })
 })
 
 #### transform to long data.frame ####
 # for every kernel setting
-prediction_sample_df <- lapply(names(prediction_sample_list), function(z) {
-  # for every PC
-  lapply(names(prediction_sample_list[[z]]), function(x) {
-    # for every time sampling run
-    lapply(1:length(prediction_sample_list[[z]][[x]]), function(i) {
-      data.frame(
-        kernel = z,
-        PC = x,
-        run_id = i,
-        point_id = 1:length(prediction_sample_list[[z]][[x]][[i]]),
-        pred_samples = prediction_sample_list[[z]][[x]][[i]],
-        stringsAsFactors = F
-      )
-    }) %>% dplyr::bind_rows()
-  }) %>% dplyr::bind_rows()
-}) %>% dplyr::bind_rows() %>% tibble::as_tibble()
+model_grid$prediction_sample <- lapply(1:length(prediction_sample_list), function(i) {
+  data.frame(
+    point_id = 1:length(prediction_sample_list[[i]]),
+    pred_samples = prediction_sample_list[[i]],
+    stringsAsFactors = F
+  )
+})
 
 #### combine prediction for each kernel, each PC and each run (mean) ####
 

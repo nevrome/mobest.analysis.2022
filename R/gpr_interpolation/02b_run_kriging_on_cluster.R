@@ -44,18 +44,30 @@ predictgp <- function(independent, dependent, pred_grid, auto = T, d, g) {
 }
 
 #### run kriging ####
-# for every kernel setting
-prediction_list <- lapply(kernel_settings, function(z) {
-  # for every PC
-  PCs <- c("PC1", "PC2", "PC3", "PC4")
-  res <- lapply(PCs, function(x) {
-    # for every time sampling run
-    lapply(independent_list, function(y) {
-        predictgp(y, anno[[x]], pred_grid, z$auto, z$d, z$g)
-    })
-  })
-  names(res) <- PCs
-  return(res)
+
+model_grid$prediction <- lapply(1:nrow(model_grid), function(i) {
+  predictgp(
+    model_grid[["independent_table"]][[i]], 
+    model_grid[["dependent_var"]][[i]], 
+    pred_grid,
+    model_grid[["kernel_setting"]][[i]][["auto"]], 
+    model_grid[["kernel_setting"]][[i]][["d"]], 
+    model_grid[["kernel_setting"]][[i]][["g"]]
+  )
 })
 
-save(prediction_list, file = "/projects1/coest_mobility/coest.interpol.2020/data/gpr/prediction_list_temporal_sampling.RData")
+# # for every kernel setting
+# prediction_list <- lapply(kernel_settings, function(z) {
+#   # for every PC
+#   PCs <- c("PC1", "PC2", "PC3", "PC4")
+#   res <- lapply(PCs, function(x) {
+#     # for every time sampling run
+#     lapply(independent_list, function(y) {
+#         predictgp(y, anno[[x]], pred_grid, z$auto, z$d, z$g)
+#     })
+#   })
+#   names(res) <- PCs
+#   return(res)
+# })
+
+save(model_grid, file = "/projects1/coest_mobility/coest.interpol.2020/data/gpr/model_grid_temporal_sampling.RData")
