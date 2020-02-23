@@ -43,10 +43,19 @@ time_layers <- tibble::tibble(
 pred_grid <- pred_points_space %>% 
   tidyr::crossing(time_layers) %>%
   dplyr::mutate(
+    point_id = 1:nrow(.),
     x_01 = range_01_x(x_real),
     y_01 = range_01_y(y_real),
     z_01 = range_01_z(age_sample)
   )
+
+#### create kernel parameters ####
+
+kernel_settings <- list(
+  A = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_y(200)), g = 0.1),
+  B = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_y(800)), g = 0.1),
+  C = list(auto = T, d = NA, g = NA)
+)
 
 save.image(file = "data/gpr/gpr_prep_temporal_sampling_v2.RData", version = 2)
 save.image(file = "data/gpr/gpr_prep_temporal_sampling_v3.RData", version = 3)

@@ -16,22 +16,25 @@ library(laGP)
 
 #### kriging function ####
 
-predictgp <- function(independent, dependent, pred_grid) {
+predictgp <- function(independent, dependent, pred_grid, auto = T, d, g) {
   # priors for the global GP
-  da <- darg(list(mle = TRUE, max=10), independent)
-  ga <- garg(list(mle = TRUE, max=10), dependent)
+  if (auto) {
+    da <- darg(list(mle = TRUE, max=10), independent)
+    ga <- garg(list(mle = TRUE, max=10), dependent)
+    d <- da$start
+    g <- ga$start
+  }
   # fit the global GP
-  gp <- newGPsep(
-    X = independent, Z = dependent, 
-    d = da$start, g = ga$start,
-    dK = TRUE
-  )
-  mleGPsep(
-    gpsepi = gp, 
-    param = "both", 
-    tmin = c(da$min, ga$min), tmax = c(da$max, ga$max), ab = c(da$ab, ga$ab), 
-    maxit = 200
-  )
+  gp <- newGPsep(X = independent, Z = dependent, d = d, g = g, dK = auto)
+  # optimise fit automatically
+  if (auto) {
+    mleGPsep(
+      gpsepi = gp, 
+      param = "both", 
+      tmin = c(da$min, ga$min), tmax = c(da$max, ga$max), ab = c(da$ab, ga$ab), 
+      maxit = 200
+    )
+  }
   # predictions from the global GP on the prediction
   pred <- predGPsep(gp, XX = pred_grid[, c("x_01", "y_01", "z_01")], lite = T)
   # delete GP object
@@ -41,12 +44,18 @@ predictgp <- function(independent, dependent, pred_grid) {
 }
 
 #### run kriging ####
-# for every PC
-prediction_list <- lapply(c("PC1", "PC2", "PC3", "PC4"), function(x, anno, pred_grid) {
-  # for every time sampling run
-  lapply(independent_list, function(y, x) {
-      predictgp(y, anno[[x]], pred_grid)
-  }, x)
-}, anno, pred_grid)
+# for every kernel setting
+prediction_list <- lapply(kernel_settings, function(z) {
+  # for every PC
+  PCs <- c("PC1", "PC2", "PC3", "PC4")
+  res <- lapply(PCs, function(x) {
+    # for every time sampling run
+    lapply(independent_list, function(y) {
+        predictgp(y, anno[[x]], pred_grid, z$auto, z$d, z$g)
+    })
+  })
+  names(res) <- PCs
+  return(res)
+})
 
 save(prediction_list, file = "/projects1/coest_mobility/coest.interpol.2020/data/gpr/prediction_list_temporal_sampling.RData")
