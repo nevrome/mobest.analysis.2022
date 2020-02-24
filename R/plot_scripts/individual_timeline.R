@@ -1,7 +1,7 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/gpr/pred_grid_spatial_cropped.RData")
+load("data/gpr/pred_grid_spatial_cropped_temporal_sampling.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_pca.RData")
@@ -80,6 +80,11 @@ plot_map <- ggplot() +
 
 # plot 
 plots_pca <- lapply(toi, function(t) {
+  tu <- t %>% tibble::as_tibble() %>% dplyr::filter(kernel_setting_id == "A") %>% dplyr::select(
+    age_sample, dependent_var_id, mean, sd
+  ) %>%
+    tidyr::pivot_wider(names_from = "dependent_var_id", values_from = c("mean", "sd"))
+  
   ggplot() +
     geom_point(
       data = pca_ref,
@@ -87,32 +92,32 @@ plots_pca <- lapply(toi, function(t) {
       color = "grey"
     ) +
     geom_path(
-      data = t,
-      aes(x = pred_PC1_mean, y = pred_PC2_mean)
+      data = tu,
+      aes(x = mean_PC1, y = mean_PC2)
     ) +
     geom_errorbar(
-      data = t,
+      data = tu,
       aes(
-        x = pred_PC1_mean, 
-        ymin = pred_PC2_mean - pred_PC2_sd, ymax = pred_PC2_mean + pred_PC2_sd,
+        x = mean_PC1, 
+        ymin = mean_PC2 - sd_PC2, ymax = mean_PC2 + sd_PC2,
         color = age_sample
       ),
       alpha = 0.5
     ) +
     geom_errorbarh(
-      data = t,
+      data = tu,
       aes(
-        y = pred_PC2_mean, 
-        xmin = pred_PC1_mean - pred_PC1_sd, xmax = pred_PC1_mean + pred_PC1_sd,
+        y = mean_PC2, 
+        xmin = mean_PC1 - sd_PC1, xmax = mean_PC1 + sd_PC1,
         color = age_sample
       ),
       alpha = 0.5
     ) +
     geom_point(
-      data = t,
+      data = tu,
       aes(
-        x = pred_PC1_mean, 
-        y = pred_PC2_mean,
+        x = mean_PC1, 
+        y = mean_PC2,
         color = age_sample
       ),
       size = 3
@@ -134,7 +139,7 @@ bottom_row <- cowplot::plot_grid(plotlist = plots_pca[3:5], ncol = 3, labels = c
 p <- cowplot::plot_grid(top_row, bottom_row, nrow = 2, rel_heights = c(1, 0.5))
 
 ggsave(
-  "plots/individual_timeline.jpeg",
+  "plots/individual_timelineb.jpeg",
   plot = p,
   device = "jpeg",
   scale = 1,
