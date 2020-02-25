@@ -1,7 +1,7 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/gpr/pred_grid_spatial_cropped_temporal_sampling.RData")
+load("data/gpr/pred_grid_spatial.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_pca.RData")
@@ -15,12 +15,12 @@ pca_ref <- anno_1240K_and_anno_1240K_HumanOrigins_pca %>%
 
 # dots on the map
 poi <- tibble::tribble(
-  ~lat, ~lon,
-  43, -7.5,
-  48.5, 10.5,
-  44.2, 22.7,
-  35.5, 36.9,
-  43.9, 43.9
+  ~poi_id, ~lat, ~lon,
+  "Madrid", 40.4, -3.6,
+  "London", 51.5, -0.1,
+  "Munich", 48.1, 11.6,
+  "Bucharest", 44.4, 26.1,
+  "Tbilisi", 41.7, 44.8
 ) %>% sf::st_as_sf(
   coords = c("lon", "lat"),
   crs = 4326
@@ -43,8 +43,8 @@ toi_dots <- lapply(
   }
 ) %>% dplyr::bind_rows()
 
-names(toi) <- letters[1:length(toi)]
-toi_dots$id <- letters[1:length(toi)]
+names(toi) <- poi$poi_id
+toi_dots$poi_id <- poi$poi_id
 
 # plot map 
 ex <- raster::extent(research_area)
@@ -63,7 +63,7 @@ plot_map <- ggplot() +
   ) +
   ggrepel::geom_text_repel(
     data = toi_dots,
-    aes(x = x, y = y, label = id),
+    aes(x = x, y = y, label = poi_id),
     color = "red",
     size = 5
   ) +
@@ -80,7 +80,10 @@ plot_map <- ggplot() +
 
 # plot 
 plots_pca <- lapply(toi, function(t) {
-  tu <- t %>% tibble::as_tibble() %>% dplyr::filter(kernel_setting_id == "A") %>% dplyr::select(
+  tu <- t %>% tibble::as_tibble() %>% dplyr::filter(
+    kernel_setting_id == "ds50_dt200_g01",
+    independent_table_id == "age_sampled"
+  ) %>% dplyr::select(
     age_sample, dependent_var_id, mean, sd
   ) %>%
     tidyr::pivot_wider(names_from = "dependent_var_id", values_from = c("mean", "sd"))
