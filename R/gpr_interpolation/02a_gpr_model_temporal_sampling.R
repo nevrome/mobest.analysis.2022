@@ -6,15 +6,15 @@ dist_scale_01 <- function(x, min, max) { x / abs(min - max) }
 range_real <- function(x, min, max) { min + x * abs(min - max) }
 dist_scale_real <- function(x, min, max) { x * abs(min - max) }
 
-range_01_x <- function(x) { range_01(x, bb[1], bb[3]) }
-range_01_y <- function(y) { range_01(y, bb[2], bb[4]) }
-range_01_z <- function(z) { range_01(z, min(anno$calage_center), max(anno$calage_center)) }
-dist_scale_01_x_km <- function(x) { dist_scale_01(x * 1000, bb[1], bb[3]) }
-dist_scale_01_y_km <- function(y) { dist_scale_01(y * 1000, bb[2], bb[4]) }
-dist_scale_01_z_y <- function(z) { dist_scale_01(z, min(anno$calage_center), max(anno$calage_center)) }
-range_real_x <- function(x) { range_real(x, bb[1], bb[3]) }
-range_real_y <- function(y) { range_real(y, bb[2], bb[4]) }
-range_real_z <- function(z) { range_real(z, min(anno$calage_center), max(anno$calage_center)) }
+range_01_x <- function(x) { range_01(x, bbs[1], bbs[3]) }
+range_01_y <- function(y) { range_01(y, bbs[2], bbs[4]) }
+range_01_z <- function(z) { range_01(z, bbt[1], bbt[2]) }
+dist_scale_01_x_km <- function(x) { dist_scale_01(x * 1000, bbs[1], bbs[3]) }
+dist_scale_01_y_km <- function(y) { dist_scale_01(y * 1000, bbs[2], bbs[4]) }
+dist_scale_01_z_years <- function(z) { dist_scale_01(z, bbt[1], bbt[2]) }
+# range_real_x <- function(x) { range_real(x, bbs[1], bbs[3]) }
+# range_real_y <- function(y) { range_real(y, bbs[2], bbs[4]) }
+# range_real_z <- function(z) { range_real(z, bbt[1], bbt[2]) }
 
 #### data ####
 
@@ -23,11 +23,12 @@ anno <- anno_1240K_and_anno_1240K_HumanOrigins_filtered
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/area.RData")
-bb <- unname(sf::st_bbox(research_area))
+bbs <- c(min(anno$x), min(anno$y), max(anno$x), max(anno$y)) #unname(sf::st_bbox(research_area))
+bbt <- c(min(anno$calage_center), max(anno$calage_center)) #c(-7500, -500)
 
 #### prep independent variables with temporal sampling ####
 
-number_of_age_samples <- 3 #length(anno$calage_sample[[1]])
+number_of_age_samples <- 5 #length(anno$calage_sample[[1]])
 independent_tables <- tibble::tibble(
   independent_table = c(
     list(
@@ -67,7 +68,7 @@ pred_points_space <- area %>%
   dplyr::rename(x_real = X, y_real = Y)
 
 time_layers <- tibble::tibble(
-  age_sample = seq(-7500, -500, 100)
+  age_sample = seq(bbt[1], bbt[2], 100)
 )
 
 pred_grid <- pred_points_space %>% 
@@ -83,8 +84,8 @@ pred_grid <- pred_points_space %>%
 
 kernel_settings <- tibble::tibble(
   kernel_setting = list(
-    A = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_y(200)), g = 0.1),
-    B = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_y(800)), g = 0.1),
+    A = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(200)), g = 0.1),
+    B = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(800)), g = 0.1),
     C = list(auto = T, d = NA, g = NA)
   ),
   kernel_setting_id = LETTERS[1:length(kernel_setting)]
