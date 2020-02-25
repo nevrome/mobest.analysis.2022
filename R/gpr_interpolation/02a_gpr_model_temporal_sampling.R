@@ -13,21 +13,32 @@ bb <- unname(sf::st_bbox(research_area))
 
 #### prep independent variables with temporal sampling ####
 
+number_of_age_samples <- 3 #length(anno$calage_sample[[1]])
 independent_tables <- tibble::tibble(
-  independent_table = lapply(
-    1:100,#1:length(anno$calage_sample[[1]]), 
-    function(i, anno) {
-      age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
+  independent_table = c(
+    list(
       dplyr::transmute(
         .data = anno,
         x_01 = range_01_x(x),
         y_01 = range_01_y(y),
-        z_01 = range_01_z(age_sample)
+        z_01 = range_01_z(calage_center)
       )
-    },
-    anno
+    ), 
+    lapply(
+      1:number_of_age_samples, 
+      function(i, anno) {
+        age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
+        dplyr::transmute(
+          .data = anno,
+          x_01 = range_01_x(x),
+          y_01 = range_01_y(y),
+          z_01 = range_01_z(age_sample)
+        )
+      },
+      anno
+    )
   ),
-  independent_table_id = 1:length(independent_table)
+  independent_table_id = c("age_center", paste0("age_sample_", 1:(length(independent_table) - 1)))
 )
   
   
