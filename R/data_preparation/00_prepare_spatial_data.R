@@ -60,3 +60,15 @@ bb[3:4] <- bb[3:4] + 200000
 extended_research_area <- bb %>% sf::st_as_sfc()
 extended_area <- sf::st_intersection(sf::st_buffer(land_outline_small, 0), extended_research_area)
 save(extended_area, file = "data/spatial/extended_area.RData")
+
+
+
+#### mobility regions ####
+
+# load manually crafted mobility regions shape file, transform it to
+# EPSG:102013 and store the result
+mobility_regions <- sf::st_read(
+  "data_tracked/mobility_regions/mobility_regions.shp", quiet = TRUE
+) %>% sf::st_transform("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
+save(mobility_regions, file = "data/spatial/mobility_regions.RData")
+
