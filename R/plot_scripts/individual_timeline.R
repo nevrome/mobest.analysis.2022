@@ -29,8 +29,8 @@ poi <- tibble::tribble(
 
 toi <- lapply(
   1:nrow(poi), function(i) {
-    dm <- sf::st_distance(pred_grid_spatial_cropped, poi[i,])
-    pred_grid_spatial_cropped[which(min(dm) == dm),]
+    dm <- sf::st_distance(pred_grid_spatial, poi[i,])
+    pred_grid_spatial[which(min(dm) == dm),]
   }
 )
 
@@ -78,28 +78,31 @@ plot_map <- ggplot() +
     crs = sf::st_crs("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
   )
 
-# plot 
-plots_pca <- lapply(toi, function(t) {
-  tu <- t %>% tibble::as_tibble() %>% dplyr::filter(
-    kernel_setting_id == "ds50_dt200_g01",
-    independent_table_id == "age_sampled"
-  ) %>% dplyr::select(
-    age_sample, dependent_var_id, mean, sd
-  ) %>%
-    tidyr::pivot_wider(names_from = "dependent_var_id", values_from = c("mean", "sd"))
-  
-  ggplot() +
+ggsave(
+  "plots/individual_timelines/map.jpeg",
+  plot = plot_map,
+  device = "jpeg",
+  scale = 1,
+  dpi = 300,
+  width = 550, height = 280, units = "mm",
+  limitsize = F
+)
+
+#### plot timelines ####
+
+plotfun <- function(pdi, poi, iti, ksi) {
+  plot <- ggplot() +
     geom_point(
       data = pca_ref,
       aes(x = PC1, y = PC2),
       color = "grey"
     ) +
     geom_path(
-      data = tu,
+      data = pdi,
       aes(x = mean_PC1, y = mean_PC2)
     ) +
     geom_errorbar(
-      data = tu,
+      data = pdi,
       aes(
         x = mean_PC1, 
         ymin = mean_PC2 - sd_PC2, ymax = mean_PC2 + sd_PC2,
@@ -108,7 +111,7 @@ plots_pca <- lapply(toi, function(t) {
       alpha = 0.5
     ) +
     geom_errorbarh(
-      data = tu,
+      data = pdi,
       aes(
         y = mean_PC2, 
         xmin = mean_PC1 - sd_PC1, xmax = mean_PC1 + sd_PC1,
@@ -117,7 +120,7 @@ plots_pca <- lapply(toi, function(t) {
       alpha = 0.5
     ) +
     geom_point(
-      data = tu,
+      data = pdi,
       aes(
         x = mean_PC1, 
         y = mean_PC2,
@@ -129,24 +132,48 @@ plots_pca <- lapply(toi, function(t) {
       limits = c(-7500, -500), low = "red", mid = "green", high = "blue", midpoint = -3000
     ) +
     theme_bw()
+  
+  plot %>% 
+    ggsave(
+      paste0("plots/individual_timelines/timeline_", paste(c(poi, ksi, iti), collapse = "_"), ".jpeg"),
+      plot = .,
+      device = "jpeg",
+      scale = 1,
+      dpi = 300,
+      width = 550, height = 280, units = "mm",
+      limitsize = F
+    )
+  
+}
+  
+plot_grid <- pred_grid_spatial %>% 
+  tibble::as_tibble() %>%
+  dplyr::select(kernel_setting_id, independent_table_id) %>%
+  unique %>%
+  tidyr::crossing(
+    toi_dots
+  )
+
+pred_data <- pred_grid_spatial %>%
+  dplyr::filter(
+    age_sample %% 500 == 0
+  )
+
+lapply(1:nrow(plot_grid), function(i) {
+  poi <- plot_grid$poi_id[i]
+  iti <- plot_grid$independent_table_id[i]
+  ksi <- plot_grid$kernel_setting_id[i] 
+  pdi <- pred_data %>% 
+    tibble::as_tibble() %>% 
+    dplyr::filter(
+      independent_table_id == plot_grid$independent_table_id[i], 
+      kernel_setting_id == plot_grid$kernel_setting_id[i],
+      x_real == plot_grid$x[i],
+      y_real == plot_grid$y[i]
+    ) %>% dplyr::select(
+      x_real, y_real, age_sample, dependent_var_id, mean, sd
+    ) %>%
+      tidyr::pivot_wider(names_from = "dependent_var_id", values_from = c("mean", "sd"))
+  plotfun(pdi, poi, iti, ksi)
 })
 
-# combine plots
-
-top_row_right_column <- cowplot::plot_grid(plotlist = plots_pca[1:2], ncol = 1, labels = c("a", "b"))
-
-top_row <- cowplot::plot_grid(plot_map, top_row_right_column, ncol = 2, rel_widths = c(1, 0.5))
-
-bottom_row <- cowplot::plot_grid(plotlist = plots_pca[3:5], ncol = 3, labels = c("c", "d", "e"))
-
-p <- cowplot::plot_grid(top_row, bottom_row, nrow = 2, rel_heights = c(1, 0.5))
-
-ggsave(
-  "plots/individual_timelineb.jpeg",
-  plot = p,
-  device = "jpeg",
-  scale = 1,
-  dpi = 300,
-  width = 550, height = 280, units = "mm",
-  limitsize = F
-)
