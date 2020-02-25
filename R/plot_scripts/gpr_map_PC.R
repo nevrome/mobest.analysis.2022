@@ -3,16 +3,16 @@ library(ggplot2)
 
 #### plot resulting model ####
 
-plotfun <- function(PC, kernel, color) {
+plotfun <- function(pdi, iti, ksi, dvi, color = "viridis") {
   plot <- ggplot() +
     geom_sf(data = extended_area, fill = "white") +
     geom_raster(
-      data = pred_grid_spatial_cropped %>% dplyr::filter(dependent_var_id == PC, kernel_setting_id == kernel),
+      data = pdi,
       aes(x = x_real, y = y_real, fill = mean, alpha = sd)
     ) +
     geom_sf(
       data = anno_slices_geo %>% dplyr::mutate(age_sample = age),
-      mapping = aes_string(fill = PC),
+      mapping = aes_string(fill = dvi),
       size = 3.5,
       shape = 21,
       color = "black"
@@ -22,7 +22,7 @@ plotfun <- function(PC, kernel, color) {
       fill = NA, colour = "red", size = 0.4
     ) +
     scale_fill_viridis_c(
-      limits = anno_slices_geo[[PC]] %>% range,
+      limits = anno_slices_geo[[dvi]] %>% range,
       na.value = NA,
       oob = scales::squish,
       option = color,
@@ -55,7 +55,7 @@ plotfun <- function(PC, kernel, color) {
   
   plot %>%
     ggsave(
-      paste0("plots/gpr_map_", PC, "_", kernel, ".jpeg"),
+      paste0("plots/gpr_maps/gpr_map_", paste(c(dvi, ksi, iti), collapse = "_"), ".jpeg"),
       plot = .,
       device = "jpeg",
       scale = 1,
@@ -65,33 +65,32 @@ plotfun <- function(PC, kernel, color) {
     )
 }
 
-# load("data/gpr/pred_grid_spatial_cropped_mean.RData")
+load("data/gpr/pred_grid_spatial.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/anno_slices_geo.RData")
-
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
-# 
-# plotfun("PC1", "viridis", "mean")
-# plotfun("PC2", "plasma", "mean")
-# plotfun("PC3", "cividis", "mean")
-# plotfun("PC4", "inferno", "mean")
 
-load("data/gpr/pred_grid_spatial_cropped_temporal_sampling.RData")
+plot_grid <- pred_grid_spatial %>% 
+  tibble::as_tibble() %>%
+  dplyr::select(dependent_var_id, kernel_setting_id, independent_table_id) %>%
+  unique
 
-plotfun("PC1", "A", "viridis")
-plotfun("PC2", "A", "plasma")
-plotfun("PC3", "A", "cividis")
-plotfun("PC4", "A", "inferno")
+pred_data <- pred_grid_spatial %>%
+  dplyr::filter(
+    age_sample %% 500 == 0
+  )
 
-plotfun("PC1", "B", "viridis")
-plotfun("PC2", "B", "plasma")
-plotfun("PC3", "B", "cividis")
-plotfun("PC4", "B", "inferno")
-
-plotfun("PC1", "C", "viridis")
-plotfun("PC2", "C", "plasma")
-plotfun("PC3", "C", "cividis")
-plotfun("PC4", "C", "inferno")
+lapply(1:nrow(plot_grid), function(i) {
+  iti <- plot_grid$independent_table_id[i]
+  ksi <- plot_grid$kernel_setting_id[i] 
+  dvi <- plot_grid$dependent_var_id[i]
+  pdi <- pred_data %>% dplyr::filter(
+    independent_table_id == plot_grid$independent_table_id[i], 
+    kernel_setting_id == plot_grid$kernel_setting_id[i],
+    dependent_var_id == plot_grid$dependent_var_id[i]
+  )
+  plotfun(pdi, iti, ksi, dvi)
+})
