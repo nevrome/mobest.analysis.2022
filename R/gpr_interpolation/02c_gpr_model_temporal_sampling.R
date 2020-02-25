@@ -5,9 +5,9 @@ load("data/gpr/gpr_model_grid_temporal_sampling_v3.RData")
 load("data/gpr/prediction_temporal_sampling.RData")
 
 #### sample from kriging result for each point ####
-prediction_sample_list <- lapply(prediction, function(y) {
+prediction_sample_list <- pbapply::pblapply(prediction, function(y) {
   sapply(1:length(y$mean), function(i) { rnorm(1, y$mean[i], sqrt(y$s2[i])) })
-})
+}, cl = 8)
 
 #### transform to long data.frame ####
 model_grid$prediction_sample <- lapply(1:length(prediction_sample_list), function(i) {
