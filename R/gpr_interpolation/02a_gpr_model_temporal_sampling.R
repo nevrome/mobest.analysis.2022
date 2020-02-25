@@ -28,7 +28,7 @@ bbt <- c(min(anno$calage_center), max(anno$calage_center)) #c(-7500, -500)
 
 #### prep independent variables with temporal sampling ####
 
-number_of_age_samples <- 5 #length(anno$calage_sample[[1]])
+number_of_age_samples <- 100 #length(anno$calage_sample[[1]])
 independent_tables <- tibble::tibble(
   independent_table = c(
     list(
