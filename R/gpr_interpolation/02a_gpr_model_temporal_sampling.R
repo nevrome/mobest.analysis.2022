@@ -84,11 +84,11 @@ pred_grid <- pred_points_space %>%
 
 kernel_settings <- tibble::tibble(
   kernel_setting = list(
-    A = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(200)), g = 0.1),
-    B = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(800)), g = 0.1),
-    C = list(auto = T, d = NA, g = NA)
+    ds50_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(200)), g = 0.1),
+    ds200_dt800_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(800)), g = 0.1),
+    auto = list(auto = T, d = NA, g = NA)
   ),
-  kernel_setting_id = LETTERS[1:length(kernel_setting)]
+  kernel_setting_id = names(kernel_setting)
 )
 
 #### prepare model grid ####
