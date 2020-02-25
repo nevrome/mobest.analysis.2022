@@ -68,7 +68,7 @@ pred_points_space <- area %>%
   dplyr::rename(x_real = X, y_real = Y)
 
 time_layers <- tibble::tibble(
-  age_sample = seq(bbt[1], bbt[2], 100)
+  age_sample = seq(-7500, -500, 100)
 )
 
 pred_grid <- pred_points_space %>% 
