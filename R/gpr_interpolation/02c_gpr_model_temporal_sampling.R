@@ -22,7 +22,9 @@ model_grid$prediction_sample <- lapply(1:length(prediction_sample_list), functio
 prediction_per_point_df <- model_grid %>%
   dplyr::select(kernel_setting_id, dependent_var_id, independent_table_id, prediction_sample) %>%
   tidyr::unnest(cols = "prediction_sample") %>%
-  dplyr::group_by(kernel_setting_id, dependent_var_id, point_id) %>%
+  # special treatment of independent_table_id == "age_center"
+  dplyr::mutate(independent_table_id = ifelse(independent_table_id == "age_center", "age_center", "age_sampled")) %>%
+  dplyr::group_by(independent_table_id, kernel_setting_id, dependent_var_id, point_id) %>%
   dplyr::summarize(mean = mean(pred_samples), sd = sd(pred_samples)) %>%
   dplyr::ungroup()
 
@@ -32,11 +34,11 @@ pred_grid <- pred_grid %>%
     prediction_per_point_df, by = "point_id"
   )
 
-save(pred_grid, file = "data/gpr/pred_grid_temporal_sampling.RData")
+save(pred_grid, file = "data/gpr/pred_grid.RData")
 
 #### transform pred grid to spatial object ####
 
-pred_grid_spatial_cropped <- sf::st_as_sf(pred_grid, coords = c("x_real", "y_real"), crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs") %>%
+pred_grid_spatial <- sf::st_as_sf(pred_grid, coords = c("x_real", "y_real"), crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs") %>%
   dplyr::mutate(
     x_real = sf::st_coordinates(.)[,1],
     y_real = sf::st_coordinates(.)[,2]
@@ -44,4 +46,4 @@ pred_grid_spatial_cropped <- sf::st_as_sf(pred_grid, coords = c("x_real", "y_rea
 
 #### store results ####
 
-save(pred_grid_spatial_cropped, file = "data/gpr/pred_grid_spatial_cropped_temporal_sampling.RData")
+save(pred_grid_spatial, file = "data/gpr/pred_grid_spatial.RData")
