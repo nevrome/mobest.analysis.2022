@@ -27,7 +27,7 @@ pri <- pred_grid %>%
 pri %<>%
   dplyr::mutate(
     angle = NA,
-    gen_distance = NA,
+    genetic_distance = NA,
     spatial_distance = NA,
     mean_PC1_origin = NA,
     mean_PC2_origin = NA,
@@ -42,15 +42,22 @@ time_pris <- pri %>% split(pri$age_sample)
 
 for (p1 in 2:length(time_pris)) {
   
-  # get PCA position for each spatial point in current and past age slice
-  current_pri <- as.matrix(time_pris[[p1]][c("mean_PC1", "mean_PC2", "mean_PC3", "mean_PC4")])
-  past_pri <- as.matrix(time_pris[[p1 - 1]][c("mean_PC1", "mean_PC2", "mean_PC3", "mean_PC4")])
+  # calculate spatial distance matrix between past and current points
+  current_pri_spatial <- as.matrix(time_pris[[p1]][c("x_real", "y_real")])
+  past_pri_spatial <- as.matrix(time_pris[[p1 - 1]][c("x_real", "y_real")])
+  spatial_distance <- fields::rdist(current_pri_spatial, past_pri_spatial)
   
-  # calculate PCA distance matrix
-  distance <- fields::rdist(current_pri, past_pri)
+  # calculate PCA distance matrix between past and current points
+  current_pri_genetics <- as.matrix(time_pris[[p1]][c("mean_PC1", "mean_PC2", "mean_PC3", "mean_PC4")])
+  past_pri_genetics <- as.matrix(time_pris[[p1 - 1]][c("mean_PC1", "mean_PC2", "mean_PC3", "mean_PC4")])
+  genetic_distance <- fields::rdist(current_pri_genetics, past_pri_genetics)
   
   # get points with least distance in the past
-  closest_point_indezes <- sapply(1:nrow(current_pri), function(x) { which.min(distance[x,]) })
+  closest_point_indezes <- sapply(1:nrow(current_pri_genetics), function(x) { 
+    gendists <- genetic_distance[x,]
+    gendists[spatial_distance[x,] > 500000] <- NA
+    which.min(gendists) 
+  })
   
   # add closest points info to current age slice points
   time_pris[[p1]] <- time_pris[[p1]] %>% dplyr::mutate(
@@ -61,6 +68,8 @@ for (p1 in 2:length(time_pris)) {
     x_real_origin = time_pris[[p1 - 1]]$x_real[closest_point_indezes],
     y_real_origin = time_pris[[p1 - 1]]$y_real[closest_point_indezes]
   )
+  time_pris[[p1]]$spatial_distance <- purrr::map2_dbl(1:817, closest_point_indezes, function(i, j) { spatial_distance[i, j] })
+  time_pris[[p1]]$genetic_distance <- purrr::map2_dbl(1:817, closest_point_indezes, function(i, j) { genetic_distance[i, j] })
   
   # get spatial position of entangled points
   A <- as.matrix(time_pris[[p1]][c("x_real", "y_real")])
@@ -76,20 +85,6 @@ for (p1 in 2:length(time_pris)) {
       } else {
         matlib::angle(AB[i,], AC, degree = FALSE)
       }
-    }
-  )
-  
-  # store genetic distance between points
-  time_pris[[p1]]$gen_distance <- sapply(
-    1:nrow(time_pris[[p1]]), function(i) {
-      distance[i,  which.min(distance[i,])]
-    }
-  )
-  
-  # calculate spatial distance between points
-  time_pris[[p1]]$spatial_distance <- sapply(
-    1:nrow(time_pris[[p1]]), function(i) {
-      sqrt((time_pris[[p1]]$x_real[i] - time_pris[[p1]]$x_real_origin[i])^2 + (time_pris[[p1]]$y_real[i] - time_pris[[p1]]$y_real_origin[i])^2)
     }
   )
   
