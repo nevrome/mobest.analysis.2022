@@ -16,8 +16,6 @@ pca_ref <- anno_1240K_and_anno_1240K_HumanOrigins_pca %>%
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_filtered.RData")
 anno <- anno_1240K_and_anno_1240K_HumanOrigins_filtered
 
-anno
-
 p <- ggplot() +
   geom_point(
     data = pca_ref,

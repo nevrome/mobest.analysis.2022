@@ -13,7 +13,13 @@ ver <- anno %>%
     z = calage_center * 1000,
     PC1 = PC1,
     PC2 = PC2
-  )
+  ) %>%
+  dplyr::group_by(
+    x, y, z
+  ) %>%
+  dplyr::filter(
+    dplyr::row_number() == 1
+  ) %>% dplyr::ungroup()
 
 #### tessellate and read result ####
 bb <- sf::st_bbox(research_area)
