@@ -41,9 +41,9 @@ ggsave(
   paste0("plots/samples_PCA.jpeg"),
   plot = p,
   device = "jpeg",
-  scale = 1,
+  scale = 0.8,
   dpi = 300,
-  width = 550, height = 260, units = "mm",
+  width = 300, height = 250, units = "mm",
   limitsize = F
 )
 
