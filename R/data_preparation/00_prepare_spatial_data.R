@@ -44,7 +44,7 @@ save(research_area, file = "data/spatial/research_area.RData")
 # load natural earth data land outline shape, crop it approximately to
 # Europe, transform it to EPSG:102013, crop it to the research area and store the result
 land_outline_small <- land_outline %>%
-  sf::st_crop(xmin = -20, ymin = 15, xmax = 60, ymax = 65) %>%
+  sf::st_crop(xmin = -20, ymin = 15, xmax = 75, ymax = 65) %>%
   sf::st_transform("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
 area <- sf::st_intersection(sf::st_buffer(land_outline_small, 0), research_area)
 save(area, file = "data/spatial/area.RData")
