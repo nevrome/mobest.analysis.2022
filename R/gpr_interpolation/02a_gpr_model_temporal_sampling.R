@@ -1,20 +1,19 @@
 library(magrittr)
 library(laGP)
 
+#### helper functions ####
+
 range_01 <- function(x, min, max) { (x - min) / (max - min) }
 dist_scale_01 <- function(x, min, max) { x / abs(min - max) }
 range_real <- function(x, min, max) { min + x * abs(min - max) }
 dist_scale_real <- function(x, min, max) { x * abs(min - max) }
 
-range_01_x <- function(x) { range_01(x, bbs[1], bbs[3]) }
-range_01_y <- function(y) { range_01(y, bbs[2], bbs[4]) }
-range_01_z <- function(z) { range_01(z, bbt[1], bbt[2]) }
-dist_scale_01_x_km <- function(x) { dist_scale_01(x * 1000, bbs[1], bbs[3]) }
-dist_scale_01_y_km <- function(y) { dist_scale_01(y * 1000, bbs[2], bbs[4]) }
-dist_scale_01_z_years <- function(z) { dist_scale_01(z, bbt[1], bbt[2]) }
-# range_real_x <- function(x) { range_real(x, bbs[1], bbs[3]) }
-# range_real_y <- function(y) { range_real(y, bbs[2], bbs[4]) }
-# range_real_z <- function(z) { range_real(z, bbt[1], bbt[2]) }
+range_01_x <- function(x, start = min(anno$x), stop = max(anno$x)) { range_01(x, start, stop) }
+range_01_y <- function(y, start = min(anno$y), stop = max(anno$y)) { range_01(y, start, stop) }
+range_01_z <- function(z, start = min(anno$calage_center), stop = max(anno$calage_center)) { range_01(z, start, stop) }
+dist_scale_01_x_km <- function(x, start = min(anno$x), stop = max(anno$x)) { dist_scale_01(x * 1000, start, stop) }
+dist_scale_01_y_km <- function(y, start = min(anno$y), stop = max(anno$y)) { dist_scale_01(y * 1000, start, stop) }
+dist_scale_01_z_years <- function(z, start = min(anno$calage_center), stop = max(anno$calage_center)) { dist_scale_01(z, start, stop) }
 
 #### data ####
 
@@ -23,12 +22,10 @@ anno <- anno_1240K_and_anno_1240K_HumanOrigins_filtered
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/area.RData")
-bbs <- c(min(anno$x), min(anno$y), max(anno$x), max(anno$y)) #unname(sf::st_bbox(research_area))
-bbt <- c(min(anno$calage_center), max(anno$calage_center)) #c(-7500, -500)
 
 #### prep independent variables with temporal sampling ####
 
-number_of_age_samples <- 100 #length(anno$calage_sample[[1]])
+number_of_age_samples <- 50 #max: length(anno$calage_sample[[1]])
 independent_tables <- tibble::tibble(
   independent_table = c(
     list(
@@ -55,10 +52,8 @@ independent_tables <- tibble::tibble(
   ),
   independent_table_id = c("age_center", paste0("age_sample_", 1:(length(independent_table) - 1)))
 )
-  
-  
 
-#### create prediction grid ####
+#### create spatial prediction grid ####
 
 pred_points_space <- area %>% 
   sf::st_make_grid(cellsize = 100000, what = "centers") %>%
@@ -84,9 +79,9 @@ pred_grid <- pred_points_space %>%
 
 kernel_settings <- tibble::tibble(
   kernel_setting = list(
-    ds50_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(200)), g = 0.1),
-    ds200_dt800_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(800)), g = 0.1),
-    auto = list(auto = T, d = NA, g = NA)
+    #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
+    ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
+    ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(400)), g = 0.1)
   ),
   kernel_setting_id = names(kernel_setting)
 )
