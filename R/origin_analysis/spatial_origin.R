@@ -1,7 +1,7 @@
 library(magrittr)
 
-load("data/gpr/pred_grid_ind.RData")
-pri <- pred_grid_ind %>%
+load("data/gpr/pred_grid_filled.RData")
+pri <- pred_grid_filled %>%
   tidyr::pivot_wider(names_from = "dependent_var_id", values_from = c("mean", "sd"))
 
 # add new columns for output dataset
@@ -18,7 +18,7 @@ pri %<>%
     y_real_origin = NA,
   )
 
-age_sample_run_pris <- pri %>% split(pri$independent_table_id)
+age_sample_run_pris <- pri %>% split(list(pri$independent_table_id, pri$kernel_setting_id))
 
 pri_ready_large <- pbapply::pblapply(age_sample_run_pris, function(age_sample_run_pri) {
 
@@ -92,12 +92,12 @@ pri_ready$angle_degree <- as.numeric(pi_deg)
 save(pri_ready, file = "data/pri_ready.RData")
 
 # spatialize
-pri_ready_spatial <- sf::st_as_sf(pri_ready, coords = c("x_real", "y_real"), crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs") %>%
-  #sf::st_intersection(research_area) %>%
-  dplyr::mutate(
-    x_real = sf::st_coordinates(.)[,1],
-    y_real = sf::st_coordinates(.)[,2]
-  )
+pri_ready_spatial <- sf::st_as_sf(
+  pri_ready, 
+  coords = c("x_real", "y_real"), 
+  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
+  remove = F
+)
 
 save(pri_ready_spatial, file = "data/pri_ready_spatial.RData")
 

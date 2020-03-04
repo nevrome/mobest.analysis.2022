@@ -19,28 +19,23 @@ pri <- pri_ready %>%
 
 pri_mean <- pri %>%
   dplyr::group_by(
-    independent_table_id, age_sample, region_id
+    independent_table_id, kernel_setting_id, age_sample, region_id
   ) %>%
   dplyr::summarise(
     mean_km_per_decade = mean(spatial_distance)/1000/10,
     mean_angle = mean(circular::circular(angle_degree, type="angles", units="degrees",modulo="2pi", template='geographics'), na.rm = T)
-  )
+  ) %>%
+  dplyr::ungroup()
 
 library(ggplot2)
 pri_mean %>%
   ggplot() +
   geom_line(
-    aes(x = age_sample, y = mean_km_per_decade, group = independent_table_id, color = region_id),
+    aes(
+      x = age_sample, y = mean_km_per_decade, 
+      group = interaction(independent_table_id, kernel_setting_id), 
+      color = kernel_setting_id
+    ),
     alpha = 0.1
   ) +
   facet_wrap(~region_id)
-
-pri_mean %>%
-  ggplot() +
-  coord_polar() +  
-  geom_point(
-    aes(x = mean_angle, y = age_sample, group = independent_table_id, color = age_sample),
-    alpha = 0.1
-  ) +
-  facet_wrap(~region_id)
-
