@@ -65,7 +65,7 @@ plotfun <- function(pdi, iti, ksi, dvi, color = "viridis") {
     )
 }
 
-load("data/gpr/pred_grid_spatial.RData")
+load("data/gpr/pred_grid_filled_grouped_spatial.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/anno_slices_geo.RData")
@@ -73,24 +73,25 @@ ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
 
-plot_grid <- pred_grid_spatial %>% 
+plot_grid <- pred_grid_filled_grouped_spatial %>% 
   tibble::as_tibble() %>%
-  dplyr::select(dependent_var_id, kernel_setting_id, independent_table_id) %>%
+  dplyr::select(dependent_var_id, kernel_setting_id, independent_table_type) %>%
   unique
 
-pred_data <- pred_grid_spatial %>%
+pred_data <- pred_grid_filled_grouped_spatial %>%
   dplyr::filter(
     age_sample %% 500 == 0
   )
 
 lapply(1:nrow(plot_grid), function(i) {
-  iti <- plot_grid$independent_table_id[i]
+  iti <- plot_grid$independent_table_type[i]
   ksi <- plot_grid$kernel_setting_id[i] 
   dvi <- plot_grid$dependent_var_id[i]
   pdi <- pred_data %>% dplyr::filter(
-    independent_table_id == plot_grid$independent_table_id[i], 
+    independent_table_type == plot_grid$independent_table_type[i], 
     kernel_setting_id == plot_grid$kernel_setting_id[i],
     dependent_var_id == plot_grid$dependent_var_id[i]
   )
   plotfun(pdi, iti, ksi, dvi)
 })
+
