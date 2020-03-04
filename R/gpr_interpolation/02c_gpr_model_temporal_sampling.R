@@ -1,13 +1,18 @@
 library(magrittr)
 
+#### load data ####
+
 load("data/gpr/gpr_pred_grid_temporal_sampling_v3.RData")
 load("data/gpr/gpr_model_grid_temporal_sampling_v3.RData")
 load("data/gpr/prediction_temporal_sampling.RData")
+
+#### distnguish age_center and age_sampled runs ####
 
 age_center_runs <- which(model_grid$independent_table_id == "age_center")
 age_sampled_runs <- which(model_grid$independent_table_id != "age_center")
 
 #### age_center_runs ####
+
 model_grid$prediction_sample[age_center_runs] <- lapply(prediction[age_center_runs], function(x) {
   data.frame(
     point_id = 1:length(x$mean),
@@ -22,9 +27,11 @@ prediction_per_point_age_center <- model_grid[age_center_runs,] %>%
   tidyr::unnest(cols = "prediction_sample")
 
 #### age_sampled_runs ####
-#sample from kriging result for each point
 prediction_sample_list <- pbapply::pblapply(prediction[age_sampled_runs], function(y) {
-  sapply(1:length(y$mean), function(i) { rnorm(1, y$mean[i], sqrt(y$s2[i])) })
+  # sample from kriging result for each point
+  #sapply(1:length(y$mean), function(i) { rnorm(1, y$mean[i], sqrt(y$s2[i])) })
+  # get kriging mean values
+  y$mean
 }, cl = 8)
 
 # transform to long data.frame
