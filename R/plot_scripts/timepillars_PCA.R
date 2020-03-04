@@ -1,6 +1,34 @@
 library(magrittr)
 library(ggplot2)
 
+load("data/anno_1240K_and_anno_1240K_HumanOrigins_pca.RData")
+ref_pops <- readLines("data/population_lists/PCA_6.pops")
+
+# pca reference table
+pca_ref <- anno_1240K_and_anno_1240K_HumanOrigins_pca %>%
+  dplyr::filter(
+    group_label %in% ref_pops
+  )
+
+toi <- lapply(
+  1:nrow(poi), function(i) {
+    dm <- sf::st_distance(pred_grid_spatial, poi[i,])
+    pred_grid_spatial[which(min(dm) == dm),]
+  }
+)
+
+toi_dots <- lapply(
+  toi, function(t) {
+    tibble::tibble(
+      x = t$x_real[1],
+      y = t$y_real[1]
+    )
+  }
+) %>% dplyr::bind_rows()
+
+names(toi) <- poi$poi_id
+toi_dots$poi_id <- poi$poi_id
+
 #### plot timelines ####
 
 plotfun <- function(pdi, poi, iti, ksi) {

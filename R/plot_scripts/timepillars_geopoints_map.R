@@ -1,50 +1,21 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/gpr/pred_grid_spatial.RData")
+load("data/gpr/pred_grid_filled_grouped_spatial.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
-load("data/anno_1240K_and_anno_1240K_HumanOrigins_pca.RData")
-ref_pops <- readLines("data/population_lists/PCA_6.pops")
-
-# pca reference table
-pca_ref <- anno_1240K_and_anno_1240K_HumanOrigins_pca %>%
-  dplyr::filter(
-    group_label %in% ref_pops
-  )
 
 # dots on the map
 poi <- tibble::tribble(
   ~poi_id, ~lat, ~lon,
   "Madrid", 40.4, -3.6,
-  "London", 51.5, -0.1,
-  "Munich", 48.1, 11.6,
+  "Berlin", 52.5, 13.4,
   "Bucharest", 44.4, 26.1,
-  "Tbilisi", 41.7, 44.8
 ) %>% sf::st_as_sf(
   coords = c("lon", "lat"),
   crs = 4326
 ) %>%
   sf::st_transform("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
-
-toi <- lapply(
-  1:nrow(poi), function(i) {
-    dm <- sf::st_distance(pred_grid_spatial, poi[i,])
-    pred_grid_spatial[which(min(dm) == dm),]
-  }
-)
-
-toi_dots <- lapply(
-  toi, function(t) {
-    tibble::tibble(
-      x = t$x_real[1],
-      y = t$y_real[1]
-    )
-  }
-) %>% dplyr::bind_rows()
-
-names(toi) <- poi$poi_id
-toi_dots$poi_id <- poi$poi_id
 
 # plot map 
 ex <- raster::extent(research_area)
@@ -56,21 +27,23 @@ plot_map <- ggplot() +
     data = extended_area,
     fill = "white", colour = "black", size = 0.4
   ) +
-  geom_point(
-    data = toi_dots,
-    aes(x = x, y = y),
-    color = "red"
-  ) +
-  ggrepel::geom_text_repel(
-    data = toi_dots,
-    aes(x = x, y = y, label = poi_id),
+  geom_sf(
+    data = poi,
     color = "red",
+    shape = 4,
     size = 5
+  ) +
+  geom_sf_text(
+    data = poi,
+    aes(label = poi_id),
+    color = "red",
+    size = 7,
+    nudge_y = -150000
   ) +
   theme_bw() +
   theme(
     axis.title = element_blank(),
-    axis.text = element_blank(),
+    axis.text = element_text(size = 15),
     panel.grid.major = element_line(colour = "grey", size = 0.3),
   ) +
   coord_sf(
@@ -79,11 +52,11 @@ plot_map <- ggplot() +
   )
 
 ggsave(
-  "plots/individual_timelines/map.jpeg",
+  "plots/timepillars_geopoints_map.jpeg",
   plot = plot_map,
   device = "jpeg",
-  scale = 1,
+  scale = 0.5,
   dpi = 300,
-  width = 550, height = 280, units = "mm",
+  width = 550, height = 300, units = "mm",
   limitsize = F
 )
