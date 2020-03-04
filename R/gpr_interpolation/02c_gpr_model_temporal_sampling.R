@@ -59,7 +59,8 @@ age_center_catering_sd <- function(independent_table_type, input_mean, input_sd)
   if (unique(independent_table_type) == "age_center") {
     input_sd
   } else {
-    sd(input_mean)
+    #sd(input_mean)
+    sd(sapply(1:length(input_mean), function(i) { rnorm(1, input_mean[i], input_sd[i]) }))
   }
 }
 
