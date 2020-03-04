@@ -20,18 +20,22 @@ polygon_edges$y.b <- polygon_edges$y.b/1000
 png(filename = "plots/3D_plot_tessellation.png", width = 22, height = 18, units = "cm", res = 300)
 
 s <- scatterplot3d::scatterplot3d(
-  threed$x, threed$y, threed$z, color = "red",
-  cex.symbols = 0.7, angle = 70,
-  xlab = "x", ylab = "y", zlab = "time calBC",
+  threed$x, threed$y, threed$z, color = "black",
+  cex.symbols = 1.5, 
+  angle = 70,
+  xlab = "x [km]", ylab = "y [km]", zlab = "time calBC [y]",
+  cex.axis = 0.8,
+  cex.lab = 1.5,
   col.axis = "grey",
-  zlim = c(-7500, -500)
+  zlim = c(-7500, -500),
+  mar = c(3,3,0,2)
 )
 
 #### tesselation ####
 csstart <- s$xyz.convert(polygon_edges[[1]], polygon_edges[[2]], polygon_edges[[3]])
 csstop <- s$xyz.convert(polygon_edges[[4]], polygon_edges[[5]], polygon_edges[[6]])
 for(i in 1:length(csstart$x)) {
-  segments(csstart$x[i], csstart$y[i], csstop$x[i], csstop$y[i], lwd = 0.1, col = "black")
+  segments(csstart$x[i], csstart$y[i], csstop$x[i], csstop$y[i], lwd = 0.1, col = "red")
 }
 
 dev.off()
