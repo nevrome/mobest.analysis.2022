@@ -1,19 +1,26 @@
 library(magrittr)
 library(ggplot2)
 
+load("data/gpr/pred_grid_filled_grouped_spatial.RData")
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_pca.RData")
+load("data/timepillars/poi.RData")
 ref_pops <- readLines("data/population_lists/PCA_6.pops")
+ref_pops_grouping <- readr::read_tsv("data/population_lists/contemporary_group_info_180131.txt", col_names = T)
 
 # pca reference table
 pca_ref <- anno_1240K_and_anno_1240K_HumanOrigins_pca %>%
   dplyr::filter(
     group_label %in% ref_pops
+  ) %>%
+  dplyr::left_join(
+    ref_pops_grouping, by = c("group_label" = "Pop")
   )
 
+# pois
 toi <- lapply(
   1:nrow(poi), function(i) {
-    dm <- sf::st_distance(pred_grid_spatial, poi[i,])
-    pred_grid_spatial[which(min(dm) == dm),]
+    dm <- sf::st_distance(pred_grid_filled_grouped_spatial, poi[i,])
+    pred_grid_filled_grouped_spatial[which(min(dm) == dm),]
   }
 )
 
@@ -70,44 +77,50 @@ plotfun <- function(pdi, poi, iti, ksi) {
       size = 3
     ) +
     scale_color_gradient2(
-      limits = c(-7500, -500), low = "red", mid = "green", high = "blue", midpoint = -3000
+      limits = c(-7500, -500), low = "black", mid = "red", high = "green", midpoint = -5000
     ) +
-    theme_bw()
+    theme_bw() +
+    theme(
+      legend.position = "bottom"
+    ) +
+    guides(
+      color = guide_colorbar(title = "time calBC [y]", barwidth = 20)
+    )
   
   plot %>% 
     ggsave(
-      paste0("plots/individual_timelines/timeline_", paste(c(poi, ksi, iti), collapse = "_"), ".jpeg"),
+      paste0("plots/timepillars_PCA/timepillar_", paste(c(poi, ksi, iti), collapse = "_"), ".jpeg"),
       plot = .,
       device = "jpeg",
-      scale = 1,
+      scale = 0.5,
       dpi = 300,
-      width = 550, height = 280, units = "mm",
+      width = 550, height = 300, units = "mm",
       limitsize = F
     )
   
 }
   
-plot_grid <- pred_grid_spatial %>% 
+plot_grid <- pred_grid_filled_grouped_spatial %>% 
   tibble::as_tibble() %>%
-  dplyr::select(kernel_setting_id, independent_table_id) %>%
+  dplyr::select(kernel_setting_id, independent_table_type) %>%
   unique %>%
   tidyr::crossing(
     toi_dots
   )
 
-pred_data <- pred_grid_spatial %>%
+pred_data <- pred_grid_filled_grouped_spatial %>%
   dplyr::filter(
     age_sample %% 500 == 0
   )
 
 lapply(1:nrow(plot_grid), function(i) {
   poi <- plot_grid$poi_id[i]
-  iti <- plot_grid$independent_table_id[i]
+  iti <- plot_grid$independent_table_type[i]
   ksi <- plot_grid$kernel_setting_id[i] 
   pdi <- pred_data %>% 
     tibble::as_tibble() %>% 
     dplyr::filter(
-      independent_table_id == plot_grid$independent_table_id[i], 
+      independent_table_type == plot_grid$independent_table_type[i], 
       kernel_setting_id == plot_grid$kernel_setting_id[i],
       x_real == plot_grid$x[i],
       y_real == plot_grid$y[i]

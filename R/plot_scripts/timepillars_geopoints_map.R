@@ -1,7 +1,6 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/gpr/pred_grid_filled_grouped_spatial.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 
@@ -16,6 +15,8 @@ poi <- tibble::tribble(
   crs = 4326
 ) %>%
   sf::st_transform("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
+
+save(poi, file = "data/timepillars/poi.RData")
 
 # plot map 
 ex <- raster::extent(research_area)
