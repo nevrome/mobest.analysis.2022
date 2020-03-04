@@ -27,15 +27,4 @@ pri_mean <- pri %>%
   ) %>%
   dplyr::ungroup()
 
-library(ggplot2)
-pri_mean %>%
-  ggplot() +
-  geom_line(
-    aes(
-      x = age_sample, y = mean_km_per_decade, 
-      group = interaction(independent_table_id, kernel_setting_id), 
-      color = kernel_setting_id
-    ),
-    alpha = 0.1
-  ) +
-  facet_wrap(~region_id)
+save(pri_mean, file = "data/mobility_estimation/pri_mean.RData")
