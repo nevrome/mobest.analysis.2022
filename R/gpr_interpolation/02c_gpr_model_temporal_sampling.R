@@ -6,14 +6,15 @@ load("data/gpr/gpr_pred_grid_temporal_sampling_v3.RData")
 load("data/gpr/gpr_model_grid_temporal_sampling_v3.RData")
 load("data/gpr/prediction_temporal_sampling.RData")
 
-#### distnguish age_center and age_sampled runs ####
+#### simplified model_grid ####
 
-age_center_runs <- which(model_grid$independent_table_id == "age_center")
-age_sampled_runs <- which(model_grid$independent_table_id != "age_center")
+model_grid_simplified <- model_grid %>% 
+  dplyr::mutate(independent_table_type = ifelse(independent_table_id == "age_center", "age_center", "age_sampled")) %>%
+  dplyr::select(-kernel_setting, -independent_table, -dependent_var)
 
-#### age_center_runs ####
+#### add prediction results for each run as a data.frame in a list column to model_grid ####
 
-model_grid$prediction_sample[age_center_runs] <- lapply(prediction[age_center_runs], function(x) {
+model_grid_simplified$prediction_sample <- lapply(prediction, function(x) {
   data.frame(
     point_id = 1:length(x$mean),
     mean = x$mean,
@@ -22,58 +23,67 @@ model_grid$prediction_sample[age_center_runs] <- lapply(prediction[age_center_ru
   )
 })
 
-prediction_per_point_age_center <- model_grid[age_center_runs,] %>%
-  dplyr::select(kernel_setting_id, dependent_var_id, independent_table_id, prediction_sample) %>%
+#### unnest prediction to get a point-wise prediction table ####
+
+pred_grid_filled_without_pos <- model_grid_simplified %>%
   tidyr::unnest(cols = "prediction_sample")
 
-#### age_sampled_runs ####
-prediction_sample_list <- pbapply::pblapply(prediction[age_sampled_runs], function(y) {
-  # sample from kriging result for each point
-  #sapply(1:length(y$mean), function(i) { rnorm(1, y$mean[i], sqrt(y$s2[i])) })
-  # get kriging mean values
-  y$mean
-}, cl = 8)
+#### merge with pred_grid to add other relevant, spatial information ####
 
-# transform to long data.frame
-model_grid$prediction_sample <- NA
-model_grid$prediction_sample[age_sampled_runs] <- lapply(1:length(prediction_sample_list), function(i) {
-  data.frame(
-    point_id = 1:length(prediction_sample_list[[i]]),
-    pred_samples = prediction_sample_list[[i]],
-    stringsAsFactors = F
-  )
-})
-
-# combine prediction for each kernel, each PC and each run (mean)
-prediction_per_point_age_sampled <- model_grid[age_sampled_runs,] %>%
-  dplyr::select(kernel_setting_id, dependent_var_id, independent_table_id, prediction_sample) %>%
-  tidyr::unnest(cols = "prediction_sample") %>%
-  # special treatment of independent_table_id == "age_center"
-  dplyr::mutate(independent_table_id = ifelse(independent_table_id == "age_center", "age_center", "age_sampled")) %>%
-  dplyr::group_by(independent_table_id, kernel_setting_id, dependent_var_id, point_id) %>%
-  dplyr::summarize(mean = mean(pred_samples), sd = sd(pred_samples)) %>%
-  dplyr::ungroup()
-
-
-#### rbind age_center_runs and age_sampled_runs ####
-prediction_per_point_df <- rbind(prediction_per_point_age_center, prediction_per_point_age_sampled)
-
-#### add prediction to pred_grid ####
-pred_grid <- pred_grid %>%
+pred_grid_filled <- pred_grid %>%
+  dplyr::select(-c("x_01", "y_01", "z_01")) %>%
   dplyr::left_join(
-    prediction_per_point_df, by = "point_id"
+    pred_grid_filled_without_pos, by = "point_id"
   )
 
-save(pred_grid, file = "data/gpr/pred_grid.RData")
+#### store result ####
+
+save(pred_grid_filled, file = "data/gpr/pred_grid_filled.RData")
 
 #### transform pred grid to spatial object ####
 
-pred_grid_spatial <- sf::st_as_sf(pred_grid, coords = c("x_real", "y_real"), crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs") %>%
-  dplyr::mutate(
-    x_real = sf::st_coordinates(.)[,1],
-    y_real = sf::st_coordinates(.)[,2]
-  )
+pred_grid_filled_spatial <- sf::st_as_sf(
+  pred_grid_filled, 
+  coords = c("x_real", "y_real"), 
+  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
+  remove = FALSE
+)
 
 #### store results ####
 
-save(pred_grid_spatial, file = "data/gpr/pred_grid_spatial.RData")
+save(pred_grid_filled_spatial, file = "data/gpr/pred_grid_filled_spatial.RData")
+
+#### group all age_sampling runs in pred_grid_filled #### 
+
+age_center_catering_sd <- function(independent_table_type, input_mean, input_sd) {
+  if (unique(independent_table_type) == "age_center") {
+    input_sd
+  } else {
+    sd(input_mean)
+  }
+}
+
+pred_grid_filled_grouped <- pred_grid_filled %>%
+  dplyr::group_by(x_real, y_real, age_sample, point_id, independent_table_type, kernel_setting_id, dependent_var_id) %>%
+  dplyr::summarize(
+    sd = age_center_catering_sd(independent_table_type, mean, sd),
+    mean = mean(mean)
+  ) %>%
+  dplyr::ungroup()
+
+#### store result ####
+
+save(pred_grid_filled_grouped, file = "data/gpr/pred_grid_filled_grouped.RData")
+
+#### transform pred grid to spatial object ####
+
+pred_grid_filled_grouped_spatial <- sf::st_as_sf(
+  pred_grid_filled_grouped, 
+  coords = c("x_real", "y_real"), 
+  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
+  remove = FALSE
+)
+
+#### store results ####
+
+save(pred_grid_filled_grouped_spatial, file = "data/gpr/pred_grid_filled_grouped_spatial.RData")
