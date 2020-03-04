@@ -55,8 +55,8 @@ save(area, file = "data/spatial/area.RData")
 
 # crop land outline to enlarged bbox of research area
 bb <- sf::st_bbox(research_area)
-bb[1:2] <- bb[1:2] - 200000
-bb[3:4] <- bb[3:4] + 200000
+bb[1:2] <- bb[1:2] - 500000
+bb[3:4] <- bb[3:4] + 500000
 extended_research_area <- bb %>% sf::st_as_sfc()
 extended_area <- sf::st_intersection(sf::st_buffer(land_outline_small, 0), extended_research_area)
 save(extended_area, file = "data/spatial/extended_area.RData")
