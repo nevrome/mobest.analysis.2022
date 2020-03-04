@@ -22,16 +22,19 @@ p <- cut_surfaces_info %>%
   ) +
   geom_sf(
     data = research_area,
-    fill = NA, colour = "red", size = 0.5
+    fill = NA, colour = "red", size = 0.6
   ) +
-  scale_fill_viridis_c(option = "viridis") +
+  scale_fill_viridis_c(
+    option = "viridis",
+    breaks = round(seq(min(cut_surfaces_info[["PC1"]]), max(cut_surfaces_info[["PC1"]]), 0.03), 2)
+  ) +
   facet_wrap(~time, nrow = 3) +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
     crs = sf::st_crs("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
   ) +
   guides(
-    color = guide_colorbar(barwidth = 25)
+    fill = guide_colorbar(barwidth = 50)
   ) +
   theme_bw() +
   theme(
@@ -43,16 +46,16 @@ p <- cut_surfaces_info %>%
     legend.text = element_text(size = 20),
     panel.grid.major = element_line(colour = "grey", size = 0.3),
     strip.text.x = element_text(size = 20)
-  ) 
+  )
 
-p %>% 
+p %>%
   ggsave(
     "plots/bleiglas_map_PC1.png",
     plot = .,
     device = "png",
     scale = 1,
     dpi = 300,
-    width = 550, height = 280, units = "mm",
+    width = 550, height = 260, units = "mm",
     limitsize = F
   )
 
