@@ -19,7 +19,7 @@ plotfun <- function(PC, color) {
     ) +
     geom_sf(
       data = research_area,
-      fill = NA, colour = "red", size = 0.4
+      fill = NA, colour = "red", size = 0.6
     ) +
     geom_sf(
       data = anno_slices_geo,
@@ -27,7 +27,7 @@ plotfun <- function(PC, color) {
         color = PC,
         alpha = "norm_dens"
       ),
-      size = 3.5,
+      size = 6,
       show.legend = "point"
     ) +
     theme_bw() +
@@ -35,7 +35,10 @@ plotfun <- function(PC, color) {
       xlim = xlimit, ylim = ylimit,
       crs = sf::st_crs("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
     ) + 
-    scale_color_viridis_c(option = color) +
+    scale_color_viridis_c(
+      option = color, 
+      breaks = round(seq(min(anno_slices_geo[[PC]]), max(anno_slices_geo[[PC]]), 0.03), 2)
+    ) +
     theme(
       plot.title = element_text(size = 30, face = "bold"),
       legend.position = "bottom",
@@ -47,7 +50,7 @@ plotfun <- function(PC, color) {
       strip.text.x = element_text(size = 20)
     ) +
     guides(
-      color = guide_colorbar(barwidth = 25),
+      color = guide_colorbar(barwidth = 50),
       alpha = FALSE
     ) +
     facet_wrap(
