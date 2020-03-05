@@ -1,49 +1,67 @@
 library(ggplot2)
+
+load("data/pri_ready.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
+
+ex <- raster::extent(research_area)
+xlimit <- c(ex[1], ex[2])
+ylimit <- c(ex[3], ex[4])
+
+pri <- pri_ready %>%
+  dplyr::filter(
+    # only look at age center data
+    independent_table_id == "age_center",
+    # only look at big kernel
+    kernel_setting_id == "ds200_dt400_g01",
+    # only timesteps every 500 years 
+    age_sample %% 1000 == 0
+  ) %>%
+  dplyr::mutate(
+    spatial_distance_km = spatial_distance/1000
+  )
 
 plot <- ggplot() +
   geom_sf(
     data = extended_area,
     fill = "white"
   ) +
-  # geom_segment(
-  #   data = pri_ready,
-  #   mapping = aes(x = x_real, y = y_real, xend = x_real_origin, yend = y_real_origin),
-  #   arrow = arrow(length = unit(.05, 'inches')),
-  #   color = "red",
-  #   alpha = 0.2
-  # ) +
-  # geom_raster(
-  #   data = pri_ready, 
-  #   aes(x = x_real, y = y_real, fill = pred_1)
-  # ) +
-geom_spoke(
-  data = pri_ready %>% dplyr::filter(!((x_real == x_real_origin) & (y_real == y_real_origin))),
-  mapping = aes(x = x_real, y_real, angle = angle, size = spatial_distance, alpha = spatial_distance),
-  radius = 200000,
-  arrow = arrow(length = unit(.05, 'inches')),
-  color = "blue"
-) +
-  # geom_text(
-  #   data = pri_ready,
-  #   mapping = aes(x_real, y_real, label = 1:nrow(pri_ready)),
-  #   size = 1.7
-  # ) +
-  facet_wrap(~age_sample) +
+  geom_spoke(
+    data = pri %>% dplyr::filter(!((x_real == x_real_origin) & (y_real == y_real_origin))),
+    mapping = aes(x = x_real, y_real, angle = angle, size = spatial_distance, color = spatial_distance_km),
+    radius = 200000,
+    arrow = arrow(length = unit(.05, 'inches'))
+  ) +
+  facet_wrap(
+    ~age_sample,
+    nrow = 2
+  ) +
   scale_size_continuous(
     guide = FALSE,
-    range = c(0.01, 1.5)
-  ) +
-  scale_alpha_continuous(
-    guide = FALSE,
-    range = c(0.5, 1)
+    range = c(0.2, 0.7)
   ) +
   theme_bw() +
+  scale_color_viridis_c(
+    option = "cividis",
+    direction = -1
+  ) +
   theme(
+    plot.title = element_text(size = 30, face = "bold"),
+    legend.position = "bottom",
+    legend.title = element_text(size = 20, face = "bold"),
+    axis.title = element_blank(),
     axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    axis.title = element_blank()
+    legend.text = element_text(size = 20),
+    panel.grid.major = element_line(colour = "grey", size = 0.3),
+    strip.text.x = element_text(size = 20)
+  ) +
+  guides(
+    color = guide_colorbar(title = "spatial distance [km]", barwidth = 50),
+    alpha = FALSE
+  ) +
+  coord_sf(
+    xlim = xlimit, ylim = ylimit,
+    crs = sf::st_crs("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
   )
 
 plot %>%
@@ -53,7 +71,7 @@ plot %>%
     device = "jpeg",
     scale = 1,
     dpi = 300,
-    width = 550, height = 260, units = "mm",
+    width = 550, height = 220, units = "mm",
     limitsize = F
   )
 
