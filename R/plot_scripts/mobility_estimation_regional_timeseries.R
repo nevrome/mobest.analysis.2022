@@ -2,7 +2,7 @@ library(ggplot2)
 
 load("data/mobility_estimation/pri_mean.RData")
 
-pri_mean %>%
+p <- pri_mean %>%
   dplyr::mutate(
     kernel_setting_id = dplyr::recode(
       kernel_setting_id, "ds100_dt200_g01" = "small kernel", "ds200_dt400_g01" = "big kernel"
