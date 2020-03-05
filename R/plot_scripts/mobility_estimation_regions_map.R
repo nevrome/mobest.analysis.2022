@@ -15,19 +15,16 @@ plot <- ggplot() +
     fill = "white", colour = "black", size = 0.4
   ) +
   geom_sf(
-    data = research_area,
-    fill = NA, colour = "red", size = 1
-  ) +
-  geom_sf(
     data = mobility_regions,
     fill = "blue",
     color = "blue",
-    alpha = 0.2
+    alpha = 0.1
   ) +
-  geom_sf_text(
+  geom_sf_label(
     data = mobility_regions,
     aes(label = region_id),
-    color = "red"
+    color = "black",
+    size = 4.7
   ) +
   theme_bw() +
   coord_sf(
@@ -36,7 +33,7 @@ plot <- ggplot() +
   ) + 
   theme(
     axis.title = element_blank(),
-    axis.text = element_text(size = 10),
+    axis.text = element_text(size = 15),
     panel.grid.major = element_line(colour = "grey", size = 0.3)
   )
 
