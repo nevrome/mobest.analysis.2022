@@ -92,6 +92,12 @@ lapply(1:nrow(plot_grid), function(i) {
     kernel_setting_id == plot_grid$kernel_setting_id[i],
     dependent_var_id == plot_grid$dependent_var_id[i]
   )
-  plotfun(pdi, iti, ksi, dvi)
+  color <- switch (plot_grid$dependent_var_id[i],
+    "PC1" = "viridis",
+    "PC2" = "magma",
+    "PC3" = "cividis",
+    "PC4" = "plasma"
+  )
+  plotfun(pdi, iti, ksi, dvi, color)
 })
 
