@@ -2,6 +2,21 @@ library(ggplot2)
 
 load("data/mobility_estimation/pri_mean.RData")
 
+pri_mean$region_id <- factor(
+  pri_mean$region_id, levels = c(
+    "Britain and Ireland",
+    "Central Europe",
+    "Eastern Europe",
+    "Caucasus",
+    "France",
+    "Italy",
+    "Southeastern Europe",
+    "Turkey",
+    "Iberia",
+    "Near East"
+  )
+)
+
 p <- pri_mean %>%
   dplyr::mutate(
     kernel_setting_id = dplyr::recode(
