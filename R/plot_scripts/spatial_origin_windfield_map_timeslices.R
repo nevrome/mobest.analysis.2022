@@ -15,7 +15,7 @@ pri <- pri_ready %>%
     # only look at big kernel
     kernel_setting_id == "ds200_dt400_g01",
     # only timesteps every 500 years 
-    age_sample %% 1000 == 0
+    age_sample %in% c(-6500, -5500, -4500, -3500, -2500, -1500)
   ) %>%
   dplyr::mutate(
     spatial_distance_km = spatial_distance/1000
@@ -38,12 +38,12 @@ plot <- ggplot() +
   ) +
   scale_size_continuous(
     guide = FALSE,
-    range = c(0.2, 0.7)
+    range = c(0.2, 0.8)
   ) +
   theme_bw() +
-  scale_color_viridis_c(
-    option = "cividis",
-    direction = -1
+  scale_color_gradient(
+    low = "blue",
+    high = "red"
   ) +
   theme(
     plot.title = element_text(size = 30, face = "bold"),
@@ -71,7 +71,7 @@ plot %>%
     device = "jpeg",
     scale = 1,
     dpi = 300,
-    width = 550, height = 220, units = "mm",
+    width = 550, height = 260, units = "mm",
     limitsize = F
   )
 
