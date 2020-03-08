@@ -79,6 +79,8 @@ plotfun <- function(pdi, poi, iti, ksi) {
     scale_color_gradient2(
       limits = c(-7500, -500), low = "black", mid = "red", high = "green", midpoint = -5000
     ) +
+    xlim(-0.08, 0.08) +
+    ylim(-0.1, 0.06) +
     theme_bw() +
     theme(
       legend.position = "bottom"
