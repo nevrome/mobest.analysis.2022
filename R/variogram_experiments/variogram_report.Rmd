@@ -1,0 +1,108 @@
+---
+title: "Variogram calculations"
+output: html_notebook
+---
+
+```{r include=FALSE}
+load("data/binned_data.RData")
+```
+
+
+How is the variogram and the correlation function connected?
+
+The variogram is defined as
+
+$$
+V(r, \tau) = \langle(g(x, t) - g(x + r, t + \tau))^2   \rangle_{x,t}
+$$
+where $r$ is a spatial distance, and $\tau$ is a time distance. The average runs over all space and time points $x$ and $t$. 
+
+We can compute:
+$$
+\begin{split}
+V(r, \tau) &= \langle (g(x, t) - g(x + r, t + \tau))^2   \rangle \\
+           &= \langle g(x, t)^2 -2g(x, t)g(x + r, t + \tau) + g(x + r, t + \tau)^2   \rangle \\
+           &= \langle g(x, t)^2 \rangle -2 \langle g(x, t)g(x + r, t + \tau)\rangle + \langle g(x + r, t + \tau)^2 \rangle \\
+           &= 2 (\text{Cov}(0) - \text{Cov}(r, \tau))
+\end{split}
+$$
+with
+$$
+\text{Cov}(r, \tau) = \langle g(x, t)g(x + r, t + \tau)\rangle
+$$
+under the assumption of constant variance:
+$$
+\langle g(x, t)^2 \rangle = \langle g(x', t')^2 \rangle
+$$
+for all points $x$, $x'$ and all times $t$, $t'$.
+
+So the variogram is directly related to the covariance of the gaussian process:
+
+$$
+V(r, \tau) = 2 (\text{Cov}(0) - \text{Cov}(r, \tau))
+$$
+In order to model a nugget effect of $g$, we would add a constant to this equation, I guess, so 
+$$
+V(r, \tau) = 2 (\text{Cov}(0) - \text{Cov}(r, \tau)) + g
+$$
+I am _not_ sure how the nugget exactly works, though, so this is just a pragmatic guess.
+
+We can assume a functional form fo rthe covariance function:
+$$
+\text{Cov}(r, \tau) = \text{Cov}(0)\exp\left(-\left(\frac{r}{\rho}\right)^2-\left(\frac{\tau}{\alpha}\right)^2\right)
+$$
+with parameters $\text{Cov}(0)$ (variance), $\rho$ (spatial kernel radius) and $\alpha$ (temporal kernel radius).
+
+OK, so here is the variogram:
+
+```{r echo=FALSE, warning=FALSE}
+ggplot(d_binned) + geom_line(mapping = aes(x = geo_dist_cut,
+                                           y = mean_sq_pca_dist,
+                                           group = time_dist_cut,
+                                           col = time_dist_cut))
+```
+
+I'm not gonna attempt to fit this, but two problems become immediately apparent:
+
+1. This really looks like a linear function, and not a squared negative exponential.
+2. We cannot co-estimate $\text{Cov}(0)$ and the kernel radiuses ($\rho$ and $\alpha$), simultaneously.
+
+We define a function family:
+
+```{r}
+var_model <- function(cov0, rho, g, r) {
+  2 * (cov0 - cov0*exp(-(r / rho)^2)) + g
+}
+```
+
+
+To illustrate this, consider only a single cut through the variogram, and two vastly different exponential models that look almost the same:
+
+```{R, warning=FALSE}
+ggplot(dplyr::filter(d_binned, time_dist_cut == 500)) +
+  geom_line(mapping = aes(x = geo_dist_cut, y = mean_sq_pca_dist)) +
+  stat_function(fun = function(r) {var_model(0.25, 35000, 0.001, r)}, mapping = aes(col="Cov0=0.25, rho=35000")) + 
+  stat_function(fun = function(r) {var_model(25, 350000, 0.001, r)}, mapping = aes(col="Cov0=25, rho=350000")) +
+  scale_colour_manual("Models", values = c("red", "blue"))
+```
+
+So it's clear that this curve can't be unambiguously fitted with a squared exponential model. And it's clear that it can't. Because for $(r/\rho)\ll 1$ we have
+
+$$
+\begin{split}
+  \text{Cov}_0 - \text{Cov}_0*\exp(-(r / rho)^2) &= \\
+  \text{Cov}_0\left(1 - \exp(-(r / rho)^2)\right) &\approx \\
+  \text{Cov}_0\left(1 - (1-(r / rho)^2)\right) &= \\
+  \frac{\text{Cov}_0}{\rho^2} r^2
+\end{split}
+$$
+where we've used the Taylor expansion for the exponential function: $\exp(x)=1+x+\mathcal{O}(x^2)$. So for small values of $r\ll \rho$ we get an approximate squared function with a coefficient of $\text{Cov}_0/(\rho^2)$, which shows that the model is approximately invariant under changes of $\text{Cov}_0$ and $\rho^2$ that leave the ratio constant. This is the case in the two curves above. So the dilemma is that we don't get into the plateau of the variogram, so can't fit $\text{Cov}_0$ and $\rho$ independently. 
+
+Two points:
+
+1. Even though the parameters appear to be overspecifying the model with respect to the data (so there's overfitting), we might at least be able to determine some lower bound for rho. Something like: For any $\rho<\rho_0$ we find that _no_ model fits. This could give some pointers at what kernel width to use.
+2. One issue here is clearly that this PC-space violates the assumption of stationarity. We clearly have long-range effects here that aren't standard in geo-spatial modelling. That's why you don't see a plateau in the variogram. I don't know how to fix that, but classical geo-spatial literature must have solutions for that.
+
+
+
+
