@@ -44,3 +44,6 @@ data/
 # plots
 plots/
 
+# schemata 
+schemata/*.png
+
