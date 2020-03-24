@@ -15,41 +15,10 @@ if (v == 4) {
   load("/projects1/coest_mobility/coest.interpol.2020/data/gpr/gpr_model_grid_temporal_sampling_v3.RData")
 }
   
-library(laGP)
-
-#### kriging function ####
-
-predictgp <- function(independent, dependent, pred_grid, auto = T, d, g) {
-  # priors for the global GP
-  if (auto) {
-    da <- darg(list(mle = TRUE, max=10), independent)
-    ga <- garg(list(mle = TRUE, max=10), dependent)
-    d <- da$start
-    g <- ga$start
-  }
-  # fit the global GP
-  gp <- newGPsep(X = independent, Z = dependent, d = d, g = g, dK = auto)
-  # optimise fit automatically
-  if (auto) {
-    mleGPsep(
-      gpsepi = gp, 
-      param = "both", 
-      tmin = c(da$min, ga$min), tmax = c(da$max, ga$max), ab = c(da$ab, ga$ab), 
-      maxit = 200
-    )
-  }
-  # predictions from the global GP on the prediction
-  pred <- predGPsep(gp, XX = pred_grid[, c("x_01", "y_01", "z_01")], lite = T)
-  # delete GP object
-  deleteGPsep(gp)
-  # return result 
-  return(pred)
-}
-
 #### run kriging ####
 
 prediction <- lapply(1:nrow(model_grid), function(i) {
-  predictgp(
+  mobest::interpolate_laGP(
     model_grid[["independent_table"]][[i]], 
     model_grid[["dependent_var"]][[i]], 
     pred_grid,
