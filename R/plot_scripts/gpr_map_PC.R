@@ -8,10 +8,10 @@ plotfun <- function(pdi, iti, ksi, dvi, color = "viridis") {
     geom_sf(data = extended_area, fill = "white") +
     geom_raster(
       data = pdi,
-      aes(x = x_real, y = y_real, fill = mean, alpha = sd)
+      aes(x = x, y = y, fill = mean, alpha = sd)
     ) +
     geom_sf(
-      data = anno_slices_geo %>% dplyr::mutate(age_sample = age),
+      data = anno_slices_geo %>% dplyr::mutate(z = age),
       mapping = aes_string(fill = dvi),
       size = 3.5,
       shape = 21,
@@ -49,7 +49,7 @@ plotfun <- function(pdi, iti, ksi, dvi, color = "viridis") {
       strip.text.x = element_text(size = 20)
     ) +
     facet_wrap(
-      ~age_sample, 
+      ~z, 
       nrow = 3
     )
   
@@ -80,7 +80,7 @@ plot_grid <- pred_grid_filled_grouped_spatial %>%
 
 pred_data <- pred_grid_filled_grouped_spatial %>%
   dplyr::filter(
-    age_sample %% 500 == 0
+    z %% 500 == 0
   )
 
 lapply(1:nrow(plot_grid), function(i) {

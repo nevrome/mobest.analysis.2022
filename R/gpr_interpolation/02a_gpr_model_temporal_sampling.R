@@ -13,24 +13,12 @@ load("data/spatial/area.RData")
 number_of_age_samples <- 1#50 #max: length(anno$calage_sample[[1]])
 independent_tables <- tibble::tibble(
   independent_table = c(
-    list(
-      dplyr::transmute(
-        .data = anno,
-        x = x,
-        y = y,
-        z = calage_center
-      )
-    ), 
+    list(dplyr::transmute(.data = anno, x = x, y = y, z = calage_center)), 
     lapply(
       1:number_of_age_samples, 
       function(i, anno) {
         age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
-        dplyr::transmute(
-          .data = anno,
-          x = x,
-          y = y,
-          z = age_sample
-        )
+        dplyr::transmute(.data = anno, x = x, y = y, z = age_sample)
       },
       anno
     )
@@ -47,8 +35,8 @@ pred_grid <- mobest::create_prediction_grid(area, spatial_cell_size = 100000, ti
 kernel_settings <- tibble::tibble(
   kernel_setting = list(
     #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
-    ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
-    ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(400)), g = 0.1)
+    #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
+    ds200_dt400_g01 = list(auto = F, d = c(200000, 200000, 400), g = 0.1)
   ),
   kernel_setting_id = names(kernel_setting)
 )
@@ -72,7 +60,5 @@ model_grid <- expand.grid(
 
 #### store intermediate data ###
 
-save(pred_grid, file = "data/gpr/gpr_pred_grid_temporal_sampling_v2.RData", version = 2)
-save(pred_grid, file = "data/gpr/gpr_pred_grid_temporal_sampling_v3.RData", version = 3)
-save(model_grid, file = "data/gpr/gpr_model_grid_temporal_sampling_v2.RData", version = 2)
-save(model_grid, file = "data/gpr/gpr_model_grid_temporal_sampling_v3.RData", version = 3)
+save(pred_grid, file = "data/gpr/gpr_pred_grid_temporal_sampling.RData")
+save(model_grid, file = "data/gpr/gpr_model_grid_temporal_sampling.RData")

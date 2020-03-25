@@ -2,8 +2,8 @@ library(magrittr)
 
 #### load data ####
 
-load("data/gpr/gpr_pred_grid_temporal_sampling_v3.RData")
-load("data/gpr/gpr_model_grid_temporal_sampling_v3.RData")
+load("data/gpr/gpr_pred_grid_temporal_sampling.RData")
+load("data/gpr/gpr_model_grid_temporal_sampling.RData")
 load("data/gpr/prediction_temporal_sampling.RData")
 
 #### simplified model_grid ####
@@ -31,10 +31,11 @@ pred_grid_filled_without_pos <- model_grid_simplified %>%
 #### merge with pred_grid to add other relevant, spatial information ####
 
 pred_grid_filled <- pred_grid %>%
-  dplyr::select(-c("x_01", "y_01", "z_01")) %>%
   dplyr::left_join(
     pred_grid_filled_without_pos, by = "point_id"
   )
+
+pred_grid_filled %>% dplyr::filter(independent_table_id == "age_center", dependent_var_id == "PC1", z == -4000) %>% ggplot() + geom_raster(aes(x,y, fill = mean))
 
 #### store result ####
 
@@ -44,7 +45,7 @@ save(pred_grid_filled, file = "data/gpr/pred_grid_filled.RData")
 
 pred_grid_filled_spatial <- sf::st_as_sf(
   pred_grid_filled, 
-  coords = c("x_real", "y_real"), 
+  coords = c("x", "y"), 
   crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
   remove = FALSE
 )
@@ -65,7 +66,7 @@ age_center_catering_sd <- function(independent_table_type, input_mean, input_sd)
 }
 
 pred_grid_filled_grouped <- pred_grid_filled %>%
-  dplyr::group_by(x_real, y_real, age_sample, point_id, independent_table_type, kernel_setting_id, dependent_var_id) %>%
+  dplyr::group_by(x, y, z, point_id, independent_table_type, kernel_setting_id, dependent_var_id) %>%
   dplyr::summarize(
     sd = age_center_catering_sd(independent_table_type, mean, sd),
     mean = mean(mean)
@@ -80,7 +81,7 @@ save(pred_grid_filled_grouped, file = "data/gpr/pred_grid_filled_grouped.RData")
 
 pred_grid_filled_grouped_spatial <- sf::st_as_sf(
   pred_grid_filled_grouped, 
-  coords = c("x_real", "y_real"), 
+  coords = c("x", "y"), 
   crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
   remove = FALSE
 )
