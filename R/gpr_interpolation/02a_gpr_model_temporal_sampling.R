@@ -1,19 +1,4 @@
 library(magrittr)
-library(laGP)
-
-#### helper functions ####
-
-range_01 <- function(x, min, max) { (x - min) / (max - min) }
-dist_scale_01 <- function(x, min, max) { x / abs(min - max) }
-range_real <- function(x, min, max) { min + x * abs(min - max) }
-dist_scale_real <- function(x, min, max) { x * abs(min - max) }
-
-range_01_x <- function(x, start = min(anno$x), stop = max(anno$x)) { range_01(x, start, stop) }
-range_01_y <- function(y, start = min(anno$y), stop = max(anno$y)) { range_01(y, start, stop) }
-range_01_z <- function(z, start = min(anno$calage_center), stop = max(anno$calage_center)) { range_01(z, start, stop) }
-dist_scale_01_x_km <- function(x, start = min(anno$x), stop = max(anno$x)) { dist_scale_01(x * 1000, start, stop) }
-dist_scale_01_y_km <- function(y, start = min(anno$y), stop = max(anno$y)) { dist_scale_01(y * 1000, start, stop) }
-dist_scale_01_z_years <- function(z, start = min(anno$calage_center), stop = max(anno$calage_center)) { dist_scale_01(z, start, stop) }
 
 #### data ####
 
@@ -25,15 +10,15 @@ load("data/spatial/area.RData")
 
 #### prep independent variables with temporal sampling ####
 
-number_of_age_samples <- 50 #max: length(anno$calage_sample[[1]])
+number_of_age_samples <- 1#50 #max: length(anno$calage_sample[[1]])
 independent_tables <- tibble::tibble(
   independent_table = c(
     list(
       dplyr::transmute(
         .data = anno,
-        x_01 = range_01_x(x),
-        y_01 = range_01_y(y),
-        z_01 = range_01_z(calage_center)
+        x = x,
+        y = y,
+        z = calage_center
       )
     ), 
     lapply(
@@ -42,9 +27,9 @@ independent_tables <- tibble::tibble(
         age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
         dplyr::transmute(
           .data = anno,
-          x_01 = range_01_x(x),
-          y_01 = range_01_y(y),
-          z_01 = range_01_z(age_sample)
+          x = x,
+          y = y,
+          z = age_sample
         )
       },
       anno
@@ -55,25 +40,7 @@ independent_tables <- tibble::tibble(
 
 #### create spatial prediction grid ####
 
-pred_points_space <- area %>% 
-  sf::st_make_grid(cellsize = 100000, what = "centers") %>%
-  sf::st_intersection(area) %>%
-  sf::st_coordinates() %>%
-  tibble::as_tibble() %>%
-  dplyr::rename(x_real = X, y_real = Y)
-
-time_layers <- tibble::tibble(
-  age_sample = seq(-7500, -500, 100)
-)
-
-pred_grid <- pred_points_space %>% 
-  tidyr::crossing(time_layers) %>%
-  dplyr::mutate(
-    point_id = 1:nrow(.),
-    x_01 = range_01_x(x_real),
-    y_01 = range_01_y(y_real),
-    z_01 = range_01_z(age_sample)
-  )
+pred_grid <- mobest::create_prediction_grid(area, spatial_cell_size = 100000, time_layers = seq(-7500, -500, 100))
 
 #### create kernel parameters ####
 
