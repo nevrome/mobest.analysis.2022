@@ -2,12 +2,7 @@ library(magrittr)
 
 load("data/gpr/interpol_grid.RData")
 
-pri_ready <- mobest::spatial_origin(interpol_grid)
-
-# add angle in degrees
-pi_rad <- units::as_units(pri_ready$angle, "radians")
-pi_deg <- units::set_units(pi_rad, "degrees")
-pri_ready$angle_degree <- as.numeric(pi_deg)
+pri_ready <- mobest::search_spatial_origin(interpol_grid)
 
 save(pri_ready, file = "data/pri_ready.RData")
 
