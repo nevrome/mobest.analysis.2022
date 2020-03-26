@@ -55,7 +55,7 @@ model_grid <- mobest::create_model_grid(
 
 #### run interpolation on model grid ####
 
-model_grid_result <- mobest::run_model_grid(model_grid, pred_grid)
+model_grid_result <- mobest::run_model_grid(model_grid)
 
 #### unnest prediction to get a point-wise prediction table ####
 
