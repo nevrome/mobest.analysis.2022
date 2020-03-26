@@ -65,9 +65,9 @@ sf::st_as_sf(
 ) %>% 
   save(file = "data/gpr/interpol_grid_spatial.RData")
 
-#### group all age_sampling runs in pred_grid_filled #### 
+#### group all age_sampling runs in interpol_grid #### 
 
-interpol_grid_condensed <- mobest::condense_interpol_grid(pred_grid_filled)
+interpol_grid_condensed <- mobest::condense_interpol_grid(interpol_grid)
 
 save(interpol_grid_condensed, file = "data/gpr/interpol_grid_condensed.RData")
 
