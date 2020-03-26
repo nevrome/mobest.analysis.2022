@@ -6,8 +6,7 @@ load("data/gpr/model_grid_simplified.RData")
 
 #### unnest prediction to get a point-wise prediction table ####
 
-pred_grid_filled <- model_grid_simplified %>%
-  tidyr::unnest(cols = "prediction_sample")
+pred_grid_filled <- mobest::unnest_model_grid(model_grid_simplified)
 
 #### store result ####
 
@@ -28,22 +27,7 @@ save(pred_grid_filled_spatial, file = "data/gpr/pred_grid_filled_spatial.RData")
 
 #### group all age_sampling runs in pred_grid_filled #### 
 
-age_center_catering_sd <- function(independent_table_type, input_mean, input_sd) {
-  if (unique(independent_table_type) == "age_center") {
-    input_sd
-  } else {
-    #sd(input_mean)
-    sd(sapply(1:length(input_mean), function(i) { rnorm(1, input_mean[i], input_sd[i]) }))
-  }
-}
-
-pred_grid_filled_grouped <- pred_grid_filled %>%
-  dplyr::group_by(x, y, z, point_id, independent_table_type, kernel_setting_id, dependent_var_id) %>%
-  dplyr::summarize(
-    sd = age_center_catering_sd(independent_table_type, mean, sd),
-    mean = mean(mean)
-  ) %>%
-  dplyr::ungroup()
+pred_grid_filled_grouped <- mobest::condense_interpol_grid(pred_grid_filled)
 
 #### store result ####
 
