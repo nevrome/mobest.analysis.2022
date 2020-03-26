@@ -26,25 +26,31 @@ independent_tables <- tibble::tibble(
   independent_table_id = c("age_center", paste0("age_sample_", 1:(length(independent_table) - 1)))
 )
 
-# create spatiotemporal prediction grid
-pred_grid <- mobest::create_prediction_grid(
-  area, 
-  spatial_cell_size = 100000,
-  time_layers = seq(-7500, -500, 100)
+# create kernel parameters
+kernel_settings <- tibble::tibble(
+  kernel_setting = list(
+    #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
+    #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
+    ds200_dt400_g01 = list(auto = F, d = c(200000, 200000, 400), g = 0.1)
+  ), 
+  kernel_setting_id = names(kernel_setting)
 )
 
-# create kernel parameters
-kernel_settings <- tibble::tibble(kernel_setting = list(
-  #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
-  #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
-  ds200_dt400_g01 = list(auto = F, d = c(200000, 200000, 400), g = 0.1)
-), kernel_setting_id = names(kernel_setting))
+# create spatiotemporal prediction grid
+pred_grids <- tibble::tibble(
+  pred_grid = list(
+    scs100_tl100 = mobest::create_prediction_grid(area, spatial_cell_size = 100000, time_layers = seq(-7500, -500, 100)),
+    scs200_tl200 = mobest::create_prediction_grid(area, spatial_cell_size = 200000, time_layers = seq(-7500, -500, 200))
+  ),
+  pred_grid_id = names(pred_grid)
+)
 
 # merge info in prepare model grid
 model_grid <- mobest::create_model_grid(
   independent_tables = independent_tables, 
-  dependent_vars = c("PC1", "PC2", "PC3", "PC4"), 
-  kernel_settings = kernel_settings
+  dependent_vars = c("PC1", "PC2", "PC3", "PC4"),
+  kernel_settings = kernel_settings,
+  pred_grids = pred_grids
 )
 
 #### run interpolation on model grid ####
