@@ -35,10 +35,10 @@ pred_grid <- mobest::create_prediction_grid(
 
 # create kernel parameters
 kernel_settings <- tibble::tibble(kernel_setting = list(
-    #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
-    #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
-    ds200_dt400_g01 = list(auto = F, d = c(200000, 200000, 400), g = 0.1)
-  ), kernel_setting_id = names(kernel_setting))
+  #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
+  #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
+  ds200_dt400_g01 = list(auto = F, d = c(200000, 200000, 400), g = 0.1)
+), kernel_setting_id = names(kernel_setting))
 
 # merge info in prepare model grid
 model_grid <- mobest::create_model_grid(
@@ -78,4 +78,32 @@ sf::st_as_sf(
   remove = FALSE
 ) %>%
   save(file = "data/gpr/interpol_grid_condensed_spatial.RData")
+
+
+#### spatial origin ####
+
+load("data/gpr/interpol_grid.RData")
+
+pri_ready <- mobest::search_spatial_origin(interpol_grid)
+
+save(pri_ready, file = "data/pri_ready.RData")
+
+# spatialize
+pri_ready_spatial <- sf::st_as_sf(
+  pri_ready, 
+  coords = c("x_real", "y_real"), 
+  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
+  remove = F
+)
+
+save(pri_ready_spatial, file = "data/pri_ready_spatial.RData")
+
+#### mobility proxy ####
+
+load("data/pri_ready.RData")
+load("data/spatial/mobility_regions.RData")
+
+pri_mean <- mobest::estimate_mobility(pri_ready, mobility_regions)
+
+save(pri_mean, file = "data/mobility_estimation/pri_mean.RData")
 
