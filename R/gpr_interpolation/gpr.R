@@ -8,8 +8,8 @@ load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/area.RData")
 
-#### prep independent variables with temporal sampling ####
-
+#### prepare model grid ####
+# prep independent variables with temporal sampling
 number_of_age_samples <- 1#50 #max: length(anno$calage_sample[[1]])
 independent_tables <- tibble::tibble(
   independent_table = c(
@@ -26,34 +26,56 @@ independent_tables <- tibble::tibble(
   independent_table_id = c("age_center", paste0("age_sample_", 1:(length(independent_table) - 1)))
 )
 
-#### create spatial prediction grid ####
-
+# create spatiotemporal prediction grid
 pred_grid <- mobest::create_prediction_grid(
   area, 
   spatial_cell_size = 100000,
   time_layers = seq(-7500, -500, 100)
 )
 
-#### create kernel parameters ####
-
-kernel_settings <- tibble::tibble(
-  kernel_setting = list(
+# create kernel parameters
+kernel_settings <- tibble::tibble(kernel_setting = list(
     #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
     #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
     ds200_dt400_g01 = list(auto = F, d = c(200000, 200000, 400), g = 0.1)
-  ),
-  kernel_setting_id = names(kernel_setting)
-)
+  ), kernel_setting_id = names(kernel_setting))
 
-#### prepare model grid ####
-
+# merge info in prepare model grid
 model_grid <- mobest::create_model_grid(
   independent_tables = independent_tables, 
   dependent_vars = c("PC1", "PC2", "PC3", "PC4"), 
   kernel_settings = kernel_settings
 )
 
-#### store intermediate data ###
+#### run interpolation on model grid ####
 
-save(pred_grid, file = "data/gpr/gpr_pred_grid_temporal_sampling.RData")
-save(model_grid, file = "data/gpr/gpr_model_grid_temporal_sampling.RData")
+model_grid_result <- mobest::run_model_grid(model_grid, pred_grid)
+
+#### unnest prediction to get a point-wise prediction table ####
+
+interpol_grid <- mobest::unnest_model_grid(model_grid_result)
+
+save(interpol_grid, file = "data/gpr/interpol_grid.RData")
+
+sf::st_as_sf(
+  interpol_grid, 
+  coords = c("x", "y"), 
+  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
+  remove = FALSE
+) %>% 
+  save(file = "data/gpr/interpol_grid_spatial.RData")
+
+#### group all age_sampling runs in pred_grid_filled #### 
+
+interpol_grid_condensed <- mobest::condense_interpol_grid(pred_grid_filled)
+
+save(interpol_grid_condensed, file = "data/gpr/interpol_grid_condensed.RData")
+
+sf::st_as_sf(
+  interpol_grid_condensed, 
+  coords = c("x", "y"), 
+  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
+  remove = FALSE
+) %>%
+  save(file = "data/gpr/interpol_grid_condensed_spatial.RData")
+
