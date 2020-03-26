@@ -43,20 +43,11 @@ kernel_settings <- tibble::tibble(
 
 #### prepare model grid ####
 
-model_grid <- expand.grid(
-  kernel_setting_id = kernel_settings$kernel_setting_id,
-  dependent_var_id = c("PC1", "PC2", "PC3", "PC4"),
-  independent_table_id = independent_tables$independent_table_id,
-  stringsAsFactors = F
-) %>%
-  dplyr::left_join(
-    kernel_settings, by = "kernel_setting_id"
-  ) %>%
-  dplyr::left_join(
-    independent_tables, by = "independent_table_id"
-  ) %>% dplyr::mutate(
-    dependent_var = lapply(dependent_var_id, function(x) { anno[[x]] })
-  ) %>% tibble::as_tibble()
+model_grid <- mobest::create_model_grid(
+  independent_tables = independent_tables, 
+  dependent_vars = c("PC1", "PC2", "PC3", "PC4"), 
+  kernel_settings = kernel_settings
+)
 
 #### store intermediate data ###
 
