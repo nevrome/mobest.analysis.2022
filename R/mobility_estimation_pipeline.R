@@ -61,38 +61,52 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 
 interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
-save(interpol_grid, file = "data/gpr/interpol_grid.RData")
-
-sf::st_as_sf(
-  interpol_grid, 
-  coords = c("x", "y"), 
-  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
-  remove = FALSE
-) %>% 
-  save(file = "data/gpr/interpol_grid_spatial.RData")
+# save(interpol_grid, file = "data/gpr/interpol_grid.RData")
+# 
+# sf::st_as_sf(
+#   interpol_grid, 
+#   coords = c("x", "y"), 
+#   crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
+#   remove = FALSE
+# ) %>% 
+#   save(file = "data/gpr/interpol_grid_spatial.RData")
 
 #### group all age_sampling runs in interpol_grid #### 
 
 interpol_grid_condensed <- mobest::condense_interpol_grid(interpol_grid)
 
-save(interpol_grid_condensed, file = "data/gpr/interpol_grid_condensed.RData")
-
-sf::st_as_sf(
-  interpol_grid_condensed, 
-  coords = c("x", "y"), 
-  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
-  remove = FALSE
-) %>%
-  save(file = "data/gpr/interpol_grid_condensed_spatial.RData")
+# save(interpol_grid_condensed, file = "data/gpr/interpol_grid_condensed.RData")
+# 
+# sf::st_as_sf(
+#   interpol_grid_condensed, 
+#   coords = c("x", "y"), 
+#   crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
+#   remove = FALSE
+# ) %>%
+#   save(file = "data/gpr/interpol_grid_condensed_spatial.RData")
 
 
 #### spatial origin ####
 
-load("data/gpr/interpol_grid.RData")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### TODO from here ####
 
 pri_ready <- mobest::search_spatial_origin(interpol_grid)
 
-save(pri_ready, file = "data/pri_ready.RData")
+#save(pri_ready, file = "data/pri_ready.RData")
 
 # spatialize
 pri_ready_spatial <- sf::st_as_sf(
