@@ -2,40 +2,12 @@ library(magrittr)
 
 #### load data ####
 
-load("data/gpr/gpr_pred_grid_temporal_sampling.RData")
-load("data/gpr/gpr_model_grid_temporal_sampling.RData")
-load("data/gpr/prediction_temporal_sampling.RData")
-
-#### simplified model_grid ####
-
-model_grid_simplified <- model_grid %>% 
-  dplyr::mutate(independent_table_type = ifelse(independent_table_id == "age_center", "age_center", "age_sampled")) %>%
-  dplyr::select(-kernel_setting, -independent_table, -dependent_var)
-
-#### add prediction results for each run as a data.frame in a list column to model_grid ####
-
-model_grid_simplified$prediction_sample <- lapply(prediction, function(x) {
-  data.frame(
-    point_id = 1:length(x$mean),
-    mean = x$mean,
-    sd = sqrt(x$s2),
-    stringsAsFactors = F
-  )
-})
+load("data/gpr/model_grid_simplified.RData")
 
 #### unnest prediction to get a point-wise prediction table ####
 
-pred_grid_filled_without_pos <- model_grid_simplified %>%
+pred_grid_filled <- model_grid_simplified %>%
   tidyr::unnest(cols = "prediction_sample")
-
-#### merge with pred_grid to add other relevant, spatial information ####
-
-pred_grid_filled <- pred_grid %>%
-  dplyr::left_join(
-    pred_grid_filled_without_pos, by = "point_id"
-  )
-
-pred_grid_filled %>% dplyr::filter(independent_table_id == "age_center", dependent_var_id == "PC1", z == -4000) %>% ggplot() + geom_raster(aes(x,y, fill = mean))
 
 #### store result ####
 

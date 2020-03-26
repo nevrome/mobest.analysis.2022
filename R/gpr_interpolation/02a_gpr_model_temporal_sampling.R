@@ -28,7 +28,11 @@ independent_tables <- tibble::tibble(
 
 #### create spatial prediction grid ####
 
-pred_grid <- mobest::create_prediction_grid(area, spatial_cell_size = 100000, time_layers = seq(-7500, -500, 100))
+pred_grid <- mobest::create_prediction_grid(
+  area, 
+  spatial_cell_size = 100000,
+  time_layers = seq(-7500, -500, 100)
+)
 
 #### create kernel parameters ####
 
