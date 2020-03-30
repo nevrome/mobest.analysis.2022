@@ -7,8 +7,10 @@ anno <- anno_1240K_and_anno_1240K_HumanOrigins_filtered
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/area.RData")
+load("data/spatial/mobility_regions.RData")
 
 #### prepare model grid ####
+
 # prep independent variables with temporal sampling
 number_of_age_samples <- 1#50 #max: length(anno$calage_sample[[1]])
 independent_tables <- tibble::tibble(
@@ -61,69 +63,48 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 
 interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
-# save(interpol_grid, file = "data/gpr/interpol_grid.RData")
-# 
-# sf::st_as_sf(
-#   interpol_grid, 
-#   coords = c("x", "y"), 
-#   crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
-#   remove = FALSE
-# ) %>% 
-#   save(file = "data/gpr/interpol_grid_spatial.RData")
+save(interpol_grid, file = "data/gpr/interpol_grid.RData")
+
+interpol_grid_spatial <- sf::st_as_sf(
+  interpol_grid,
+  coords = c("x", "y"),
+  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
+  remove = FALSE
+)
+save(interpol_grid_spatial, file = "data/gpr/interpol_grid_spatial.RData")
 
 #### group all age_sampling runs in interpol_grid #### 
 
 interpol_grid_condensed <- mobest::condense_interpol_grid(interpol_grid)
 
-# save(interpol_grid_condensed, file = "data/gpr/interpol_grid_condensed.RData")
-# 
-# sf::st_as_sf(
-#   interpol_grid_condensed, 
-#   coords = c("x", "y"), 
-#   crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
-#   remove = FALSE
-# ) %>%
-#   save(file = "data/gpr/interpol_grid_condensed_spatial.RData")
+save(interpol_grid_condensed, file = "data/gpr/interpol_grid_condensed.RData")
+
+interpol_grid_condensed_spatial <- sf::st_as_sf(
+  interpol_grid_condensed,
+  coords = c("x", "y"),
+  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
+  remove = FALSE
+)
+save(interpol_grid_condensed_spatial, file = "data/gpr/interpol_grid_condensed_spatial.RData")
 
 
 #### spatial origin ####
 
+interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid) 
 
+save(interpol_grid_origin, file = "data/interpol_grid_origin.RData")
 
-
-
-
-
-
-
-
-
-
-
-
-
-#### TODO from here ####
-
-pri_ready <- mobest::search_spatial_origin(interpol_grid)
-
-#save(pri_ready, file = "data/pri_ready.RData")
-
-# spatialize
-pri_ready_spatial <- sf::st_as_sf(
-  pri_ready, 
-  coords = c("x_real", "y_real"), 
+interpol_grid_origin_spatial <- sf::st_as_sf(
+  interpol_grid_origin,
+  coords = c("x", "y"),
   crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
   remove = F
 )
-
-save(pri_ready_spatial, file = "data/pri_ready_spatial.RData")
+save(interpol_grid_origin_spatial, file = "data/interpol_grid_origin_spatial.RData")
 
 #### mobility proxy ####
 
-load("data/pri_ready.RData")
-load("data/spatial/mobility_regions.RData")
+mobility_proxy <- mobest::estimate_mobility(interpol_grid_origin, mobility_regions)
 
-pri_mean <- mobest::estimate_mobility(pri_ready, mobility_regions)
-
-save(pri_mean, file = "data/mobility_estimation/pri_mean.RData")
+save(mobility_proxy, file = "data/mobility_estimation/mobility_proxy.RData")
 
