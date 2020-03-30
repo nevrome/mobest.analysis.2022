@@ -1,9 +1,9 @@
 library(ggplot2)
 
-load("data/mobility_estimation/pri_mean.RData")
+load("data/mobility_estimation/mobility_proxy.RData")
 
-pri_mean$region_id <- factor(
-  pri_mean$region_id, levels = c(
+mobility_proxy$region_id <- factor(
+  mobility_proxy$region_id, levels = c(
     "Britain and Ireland",
     "Central Europe",
     "Eastern Europe",
@@ -17,26 +17,21 @@ pri_mean$region_id <- factor(
   )
 )
 
-p <- pri_mean %>%
-  dplyr::mutate(
-    kernel_setting_id = dplyr::recode(
-      kernel_setting_id, "ds100_dt200_g01" = "small kernel", "ds200_dt400_g01" = "big kernel"
-    )
-  ) %>%
+p <- mobility_proxy %>%
+  # dplyr::mutate(
+  #   kernel_setting_id = dplyr::recode(
+  #     kernel_setting_id, "ds100_dt200_g01" = "small kernel", "ds200_dt400_g01" = "big kernel"
+  #   )
+  # ) %>%
   ggplot() +
   geom_line(
     aes(
-      x = age_sample, y = mean_km_per_decade, 
+      x = z, y = mean_km_per_decade, 
       group = interaction(independent_table_id, kernel_setting_id), 
-      color = kernel_setting_id
+      color = angle_deg
     ),
-    alpha = 0.1
+    alpha = 0.5
   ) +
-  # geom_point(
-  #   data = pri_mean %>% dplyr::summarise()
-  #   aes(x = age_sample, y = 20, fill = mean_angle),
-  #   shape = 21
-  # ) +
   facet_wrap(~region_id, nrow = 3) +
   theme_bw() +
   theme(
@@ -44,21 +39,22 @@ p <- pri_mean %>%
   ) +
   xlab("time calBC [y]") +
   ylab("\"Speed\" [km/decade]") +
-  guides(
-    color = guide_legend(title = "kernels", override.aes = list(size = 10, alpha = 1))
-  ) +
-  scale_color_manual(
-    values = c(
-      "small kernel" = "orange",
-      "big kernel" = "darkgreen"
-    )
-  ) +
+  # guides(
+  #   color = guide_legend(title = "kernels", override.aes = list(size = 10, alpha = 1))
+  # ) +
+  # scale_color_manual(
+  #   values = c(
+  #     "small kernel" = "orange",
+  #     "big kernel" = "darkgreen"
+  #   )
+  # ) +
   # scale_fill_gradient2(
   #   low = "blue",
   #   mid = "red",
   #   high = "blue",
   #   midpoint = 180
   # ) +
+  scale_color_gradientn(colours = c("blue", "red", "yellow", "green", "blue")) +
   NULL
 
 ggsave(
