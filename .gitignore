@@ -47,3 +47,5 @@ plots/
 # schemata 
 schemata/*.png
 
+# singularity images
+*.sif
