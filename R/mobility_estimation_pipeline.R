@@ -1,7 +1,5 @@
 library(magrittr)
 
-remotes::install_github("nevrome/mobest", auth_token = readLines(".github_pat")[1], dependencies = TRUE)
-
 #### data ####
 
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_filtered.RData")
