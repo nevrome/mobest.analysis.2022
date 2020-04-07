@@ -49,3 +49,6 @@ schemata/*.png
 
 # singularity images
 *.sif
+
+# github access token
+.github_pat
