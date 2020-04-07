@@ -28,6 +28,14 @@ independent_tables <- tibble::tibble(
   independent_table_id = c("age_center", paste0("age_sample_", 1:(length(independent_table) - 1)))
 )
 
+# prep dependent vars
+dependent_vars <- tibble::tibble(
+  dependent_var_id = c("PC1", "PC2", "PC3", "PC4")
+) %>%
+  dplyr::mutate(
+    dependent_var = lapply(dependent_var_id, function(x) { anno[[x]] })
+  )
+
 # create kernel parameters
 kernel_settings <- tibble::tibble(
   kernel_setting = list(
@@ -50,7 +58,7 @@ pred_grids <- tibble::tibble(
 # merge info in prepare model grid
 model_grid <- mobest::create_model_grid(
   independent_tables = independent_tables, 
-  dependent_vars = c("PC1", "PC2", "PC3", "PC4"),
+  dependent_vars = dependent_vars,
   kernel_settings = kernel_settings,
   pred_grids = pred_grids
 )
@@ -90,7 +98,7 @@ save(interpol_grid_condensed_spatial, file = "data/gpr/interpol_grid_condensed_s
 
 #### spatial origin ####
 
-interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid) 
+interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid)
 
 save(interpol_grid_origin, file = "data/interpol_grid_origin.RData")
 
