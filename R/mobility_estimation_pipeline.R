@@ -1,6 +1,6 @@
 library(magrittr)
 
-remotes::install_github("nevrome/mobest", auth_token = readLines(".github_pat"), dependencies = TRUE)
+remotes::install_github("nevrome/mobest", auth_token = readLines(".github_pat")[1], dependencies = TRUE)
 
 #### data ####
 
