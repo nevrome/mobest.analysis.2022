@@ -170,7 +170,7 @@ interpol_comparison_group <- interpol_comparison %>%
     mean_difference = mean(abs(difference)),
     median_difference = median(abs(difference)),
     sd_difference = sd(difference),
-    diff_5_95_difference = diff(quantile(c(1,2,34,55,6,7,78), probs = c(0.05, 0.95)))
+    diff_5_95_difference = diff(quantile(differences, probs = c(0.05, 0.95)))
   ) %>%
   dplyr::ungroup()
 
