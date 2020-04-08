@@ -102,8 +102,45 @@ gnu <- lapply(
   }
 ) %>% dplyr::bind_rows()
 
+plu <- gnu %>% 
+  dplyr::mutate(
+    PC1_dist = PC1 - mean_PC1,
+    PC2_dist = PC2 - mean_PC2,
+    PC3_dist = PC3 - mean_PC3,
+    PC4_dist = PC4 - mean_PC4,
+    PC1_dist_norm = PC1_dist / diff(range(PC1)),
+    PC2_dist_norm = PC2_dist / diff(range(PC2)),
+    PC3_dist_norm = PC3_dist / diff(range(PC3)),
+    PC4_dist_norm = PC4_dist / diff(range(PC4))
+  ) %>%
+  dplyr::select(
+    kernel_setting_id, tidyselect::contains("_dist")
+  ) %>%
+  tidyr::pivot_longer(
+    cols = tidyselect::starts_with("PC"),
+    names_to = "PC",
+    values_to = "difference"
+  )
+
 library(ggplot2)
 
-gnu %>%
-  ggplot
+plu %>%
+  dplyr::filter(!grepl("norm", PC)) %>%
+  ggplot() +
+  geom_histogram(
+    aes(x = difference, fill = kernel_setting_id), bins = 30
+  ) +
+  facet_grid(rows = vars(PC), cols = vars(kernel_setting_id)) +
+  geom_vline(aes(xintercept = 0)) +
+  theme_bw() +
+  xlab("")
 
+plu %>%
+  dplyr::filter(grepl("norm", PC)) %>%
+  ggplot() +
+  geom_histogram(
+    aes(x = difference, fill = kernel_setting_id), bins = 30
+  ) +
+  facet_grid(rows = vars(PC), cols = vars(kernel_setting_id)) +
+  geom_vline(aes(xintercept = 0)) +
+  theme_bw()
