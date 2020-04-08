@@ -27,8 +27,8 @@ dist_table <- tidyr::expand_grid(d1 = dat_w_resid, d2 = dat_w_resid) %>%
 # binning
 dist_table_binned <- dist_table %>%
   dplyr::mutate(
-    geo_dist_cut = cut(geo_dist, breaks = 100, labels = F),
-    time_dist_cut = cut(time_dist, breaks = 100, labels = F)
+    geo_dist_cut = cut(geo_dist, breaks = 50, labels = F),
+    time_dist_cut = cut(time_dist, breaks = 10, labels = F)
   ) %>%
   dplyr::group_by(geo_dist_cut, time_dist_cut) %>%
   dplyr::summarise(
@@ -39,14 +39,9 @@ dist_table_binned <- dist_table %>%
   dplyr::ungroup()
 
 dist_table_binned %>%
-  tidyr::piv
+  tidyr::pivot_longer(cols = c(mean_sq_pca_dist, mean_sq_pca_resid_dist),
+                      names_to = "PC1_type", values_to = "PC1_val") %>%
+  ggplot() +
+  geom_line(mapping = aes(x = geo_dist_cut, y = PC1_val, group = time_dist_cut, col = time_dist_cut)) +
+  facet_wrap(~PC1_type)
 
-ggplot(dist_table_binned) + geom_line(mapping = aes(x = geo_dist_cut,
-                                                    y = mean_sq_pca_dist,
-                                                    group = time_dist_cut,
-                                                    col = time_dist_cut))
-
-ggplot(dist_table_binned) + geom_line(mapping = aes(x = geo_dist_cut,
-                                                    y = mean_sq_pca_resid_dist,
-                                                    group = time_dist_cut,
-                                                    col = time_dist_cut))
