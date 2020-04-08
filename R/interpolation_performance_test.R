@@ -10,7 +10,7 @@ load("data/spatial/mobility_regions.RData")
 
 #### compile randomly reordered versions of anno ####
 
-anno_mixed_list <- lapply(1:2, function(i) { anno[sample(1:nrow(anno), replace = F), ] })
+anno_mixed_list <- lapply(1:1, function(i) { anno[sample(1:nrow(anno), replace = F), ] })
 
 #### run prediction test for each of this versions ####
 
@@ -58,19 +58,30 @@ lapply(anno_mixed_list, function(anno_mixed) {
         )
       
       # create kernel parameters
+      
+      ks <- expand.grid(
+        ds = seq(50000, 500000, 50000),
+        dt = seq(50, 500, 50),
+        g = seq(0.05, 0.50, 0.05)
+      )
+      
+      # ks <- expand.grid(
+      #   ds = c(50000, 100000),
+      #   dt = c(50, 100),
+      #   g = c(0.05, 0.1)
+      # )
+      
       kernel_settings <- tibble::tibble(
-        kernel_setting = list(
-          ds50_dt50_g001 = list(auto = F, d = c(50000, 50000, 50), g = 0.01),
-          ds50_dt50_g01 = list(auto = F, d = c(50000, 50000, 50), g = 0.1),
-          ds50_dt50_g05 = list(auto = F, d = c(50000, 50000, 50), g = 0.5),
-          ds200_dt200_g001 = list(auto = F, d = c(200000, 200000, 200), g = 0.01),
-          ds200_dt200_g01 = list(auto = F, d = c(200000, 200000, 200), g = 0.1),
-          ds200_dt200_g05 = list(auto = F, d = c(200000, 200000, 200), g = 0.5),
-          ds1000_dt1000_g001 = list(auto = F, d = c(1000000, 1000000, 1000), g = 0.01),
-          ds1000_dt1000_g01 = list(auto = F, d = c(1000000, 1000000, 1000), g = 0.1),
-          ds1000_dt1000_g05 = list(auto = F, d = c(1000000, 1000000, 1000), g = 0.5)
+        kernel_setting = lapply(
+          1:nrow(ks), function(i) {
+            list(auto = F, d = c(ks[["ds"]][i], ks[["ds"]][i], ks[["dt"]][i]), g = ks[["g"]][i])
+          }
         ),
-        kernel_setting_id = factor(names(kernel_setting), levels = names(kernel_setting))
+        kernel_setting_id = sapply(
+          1:nrow(ks), function(i) {
+            paste0(ks[["ds"]][i]/1000, "_", ks[["dt"]][i], "_", ks[["g"]][i])
+          }
+        )
       )
       
       # create spatiotemporal prediction grid
@@ -133,11 +144,7 @@ interpol_grid_dist <- interpol_grid_merged_all %>%
     PC1_dist = PC1 - mean_PC1,
     PC2_dist = PC2 - mean_PC2,
     PC3_dist = PC3 - mean_PC3,
-    PC4_dist = PC4 - mean_PC4,
-    PC1_dist_norm = PC1_dist / diff(range(PC1)),
-    PC2_dist_norm = PC2_dist / diff(range(PC2)),
-    PC3_dist_norm = PC3_dist / diff(range(PC3)),
-    PC4_dist_norm = PC4_dist / diff(range(PC4))
+    PC4_dist = PC4 - mean_PC4
   ) %>%
   dplyr::select(
     kernel_setting_id, tidyselect::contains("_dist")
@@ -153,47 +160,52 @@ interpol_comparison <- interpol_grid_dist %>%
     kernel_setting_id, 
     c("ds", "dt", "g"),
     sep = "_",
+    convert = T,
     remove = F
   ) 
 
-interpol_comparison_sd <- interpol_comparison %>%
+interpol_comparison_group <- interpol_comparison %>%
   dplyr::group_by(kernel_setting_id, ds, dt, g, PC) %>%
   dplyr::summarise(
-    sd_difference = sd(difference)
+    mean_difference = mean(abs(difference)),
+    median_difference = median(abs(difference)),
+    sd_difference = sd(difference),
+    diff_5_95_difference = diff(quantile(c(1,2,34,55,6,7,78), probs = c(0.05, 0.95)))
   ) %>%
   dplyr::ungroup()
 
+save(interpol_comparison_group, file = "data/crossvalidation/interpol_comparison_group.RData")
 
-ggplot() +
-  geom_histogram(
-    data = interpol_comparison %>% dplyr::filter(!grepl("norm", PC)),
-    mapping = aes(x = difference, fill = kernel_setting_id), bins = 100
-  ) +
-  facet_grid(cols = vars(PC), rows = vars(kernel_setting_id)) +
-  geom_vline(
-    data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)), 
-    mapping = aes(xintercept = sd_difference),
-    color = "red"
-  ) +
-  geom_vline(
-    data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)), 
-    mapping = aes(xintercept = 0),
-    color = "black"
-  ) +
-  geom_vline(
-    data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)), 
-    mapping = aes(xintercept = -sd_difference),
-    color = "red"
-  ) +
-  theme_bw() +
-  xlim(-0.05, 0.05)
-
-interpol_comparison %>%
-  dplyr::filter(grepl("norm", PC)) %>%
-  ggplot() +
-  geom_histogram(
-    aes(x = difference, fill = kernel_setting_id), bins = 100
-  ) +
-  facet_grid(cols = vars(PC), rows = vars(kernel_setting_id)) +
-  geom_vline(aes(xintercept = 0)) +
-  theme_bw()
+# ggplot() +
+#   geom_histogram(
+#     data = interpol_comparison %>% dplyr::filter(!grepl("norm", PC)),
+#     mapping = aes(x = difference, fill = kernel_setting_id), bins = 100
+#   ) +
+#   facet_grid(cols = vars(PC), rows = vars(kernel_setting_id)) +
+#   geom_vline(
+#     data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)), 
+#     mapping = aes(xintercept = sd_difference),
+#     color = "red"
+#   ) +
+#   geom_vline(
+#     data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)), 
+#     mapping = aes(xintercept = 0),
+#     color = "black"
+#   ) +
+#   geom_vline(
+#     data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)), 
+#     mapping = aes(xintercept = -sd_difference),
+#     color = "red"
+#   ) +
+#   theme_bw() +
+#   xlim(-0.05, 0.05)
+# 
+# interpol_comparison %>%
+#   dplyr::filter(grepl("norm", PC)) %>%
+#   ggplot() +
+#   geom_histogram(
+#     aes(x = difference, fill = kernel_setting_id), bins = 100
+#   ) +
+#   facet_grid(cols = vars(PC), rows = vars(kernel_setting_id)) +
+#   geom_vline(aes(xintercept = 0)) +
+#   theme_bw()
