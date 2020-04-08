@@ -37,7 +37,7 @@ model_grid <- lapply(
     # prep independent variables with temporal sampling
     independent_tables <- tibble::tibble(
       independent_table = list(dplyr::transmute(.data = anno, x = x, y = y, z = calage_center)),
-      independent_table_id = paste0("age_center_", i)
+      independent_table_id = i
     )
     
     # prep dependent vars
@@ -60,10 +60,8 @@ model_grid <- lapply(
     
     # create spatiotemporal prediction grid
     pred_grids <- tibble::tibble(
-      pred_grid = list(
-        Test = anno_9_test[[i]] %>% dplyr::transmute(x, y, z = calage_center, point_id = 1:nrow(.))
-      ),
-      pred_grid_id = names(pred_grid)
+      pred_grid = list(anno_9_test[[i]] %>% dplyr::transmute(x, y, z = calage_center, point_id = 1:nrow(.))),
+      pred_grid_id = i
     )
     
     # merge info in prepare model grid
@@ -77,3 +75,35 @@ model_grid <- lapply(
   }
 ) %>% dplyr::bind_rows()
  
+#### run interpolation on model grid ####
+
+model_grid_result <- mobest::run_model_grid(model_grid)
+
+#### unnest prediction to get a point-wise prediction table ####
+
+interpol_grid <- mobest::unnest_model_grid(model_grid_result)
+
+#### compare prediction and real values #### 
+
+hu <- interpol_grid %>% tidyr::pivot_wider(
+  names_from = "dependent_var_id",
+  values_from = c("mean", "sd")
+)
+
+spu <- hu %>% split(hu$pred_grid_id)
+
+gnu <- lapply(
+  unique(hu$pred_grid_id), function(i) {
+    spu[[i]] %>%
+      dplyr::left_join(
+        anno_9_test[[i]] %>% dplyr::transmute(PC1, PC2, PC3, PC4, point_id = 1:nrow(.)),
+        by = "point_id"
+      )
+  }
+) %>% dplyr::bind_rows()
+
+library(ggplot2)
+
+gnu %>%
+  ggplot
+
