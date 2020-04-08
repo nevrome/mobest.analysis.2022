@@ -29,45 +29,51 @@ anno_9_test <- lapply(
 
 #### prepare model grid ####
 
-# prep independent variables with temporal sampling
-independent_tables <- tibble::tibble(
-  independent_table = lapply(
-    anno_9_training, function(x) { dplyr::transmute(.data = x, x = x, y = y, z = calage_center) }
-  ),
-  independent_table_id = paste0("age_center_", 1:(length(independent_table)))
-)
-
-# prep dependent vars
-dependent_vars <- tibble::tibble(
-  dependent_var_id = c("PC1", "PC2", "PC3", "PC4")
-) %>%
-  dplyr::mutate(
-    dependent_var = lapply(dependent_var_id, function(x) { anno[[x]] })
-  )
-
-# create kernel parameters
-kernel_settings <- tibble::tibble(
-  kernel_setting = list(
-    #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
-    #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
-    ds200_dt400_g01 = list(auto = F, d = c(200000, 200000, 400), g = 0.1)
-  ), 
-  kernel_setting_id = names(kernel_setting)
-)
-
-# create spatiotemporal prediction grid
-pred_grids <- tibble::tibble(
-  pred_grid = list(
-    scs100_tl100 = mobest::create_prediction_grid(area, spatial_cell_size = 100000, time_layers = seq(-7500, -500, 100)),
-    scs200_tl200 = mobest::create_prediction_grid(area, spatial_cell_size = 200000, time_layers = seq(-7500, -500, 200))
-  ),
-  pred_grid_id = names(pred_grid)
-)
-
-# merge info in prepare model grid
-model_grid <- mobest::create_model_grid(
-  independent_tables = independent_tables, 
-  dependent_vars = dependent_vars,
-  kernel_settings = kernel_settings,
-  pred_grids = pred_grids
-)
+model_grid <- lapply(
+  1:n, function(i) {
+    
+    anno <- anno_9_training[[i]]
+    
+    # prep independent variables with temporal sampling
+    independent_tables <- tibble::tibble(
+      independent_table = list(dplyr::transmute(.data = anno, x = x, y = y, z = calage_center)),
+      independent_table_id = paste0("age_center_", i)
+    )
+    
+    # prep dependent vars
+    dependent_vars <- tibble::tibble(
+      dependent_var_id = c("PC1", "PC2", "PC3", "PC4")
+    ) %>%
+      dplyr::mutate(
+        dependent_var = lapply(dependent_var_id, function(x) { anno[[x]] })
+      )
+    
+    # create kernel parameters
+    kernel_settings <- tibble::tibble(
+      kernel_setting = list(
+        ds50_dt100_g01 = list(auto = F, d = c(50000, 50000, 100), g = 0.1),
+        ds100_dt200_g01 = list(auto = F, d = c(100000, 100000, 200), g = 0.1),
+        ds200_dt400_g01 = list(auto = F, d = c(200000, 200000, 400), g = 0.1)
+      ),
+      kernel_setting_id = names(kernel_setting)
+    )
+    
+    # create spatiotemporal prediction grid
+    pred_grids <- tibble::tibble(
+      pred_grid = list(
+        Test = anno_9_test[[i]] %>% dplyr::transmute(x, y, z = calage_center, point_id = 1:nrow(.))
+      ),
+      pred_grid_id = names(pred_grid)
+    )
+    
+    # merge info in prepare model grid
+    model_grid <- mobest::create_model_grid(
+      independent_tables = independent_tables, 
+      dependent_vars = dependent_vars,
+      kernel_settings = kernel_settings,
+      pred_grids = pred_grids
+    )
+    
+  }
+) %>% dplyr::bind_rows()
+ 
