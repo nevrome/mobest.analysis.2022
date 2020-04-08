@@ -4,8 +4,6 @@ library(magrittr)
 
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_filtered.RData")
 anno <- anno_1240K_and_anno_1240K_HumanOrigins_filtered
-load("data/spatial/research_area.RData")
-load("data/spatial/extended_area.RData")
 load("data/spatial/area.RData")
 load("data/spatial/mobility_regions.RData")
 
