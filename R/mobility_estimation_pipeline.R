@@ -79,6 +79,19 @@ interpol_grid_spatial <- sf::st_as_sf(
 )
 save(interpol_grid_spatial, file = "data/gpr/interpol_grid_spatial.RData")
 
+# library(ggplot2)
+# interpol_grid_spatial %>%
+#   dplyr::filter(
+#     independent_table_id == "age_center",
+#     dependent_var_id == "PC1",
+#     kernel_setting_id == "ds200_dt400_g01",
+#     pred_grid_id == "scs100_tl100",
+#     z %% 500 == 0
+#   ) %>%
+#   ggplot() +
+#     geom_raster(aes(x, y, fill = mean)) +
+#     facet_wrap(~z)
+
 #### group all age_sampling runs in interpol_grid #### 
 
 interpol_grid_condensed <- mobest::condense_interpol_grid(interpol_grid)
