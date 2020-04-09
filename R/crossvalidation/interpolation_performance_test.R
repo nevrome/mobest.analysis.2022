@@ -167,8 +167,10 @@ interpol_comparison_group <- interpol_comparison %>%
     mean_difference = mean(abs(difference)),
     median_difference = median(abs(difference)),
     sd_difference = sd(difference),
-    diff_5_95_difference = diff(quantile(differences, probs = c(0.05, 0.95)))
+    diff_5_95_difference = diff(quantile(difference, probs = c(0.05, 0.95)))
   ) %>%
   dplyr::ungroup()
 
 save(interpol_comparison_group, file = "data/crossvalidation/interpol_comparison_group_1.RData")
+
+# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/crossvalidation/interpol_comparison_group_1.RData interpol_comparison_group_1.RData
