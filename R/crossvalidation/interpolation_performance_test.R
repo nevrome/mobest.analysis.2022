@@ -172,37 +172,3 @@ interpol_comparison_group <- interpol_comparison %>%
   dplyr::ungroup()
 
 save(interpol_comparison_group, file = "data/crossvalidation/interpol_comparison_group_1.RData")
-
-# ggplot() +
-#   geom_histogram(
-#     data = interpol_comparison %>% dplyr::filter(!grepl("norm", PC)),
-#     mapping = aes(x = difference, fill = kernel_setting_id), bins = 100
-#   ) +
-#   facet_grid(cols = vars(PC), rows = vars(kernel_setting_id)) +
-#   geom_vline(
-#     data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)), 
-#     mapping = aes(xintercept = sd_difference),
-#     color = "red"
-#   ) +
-#   geom_vline(
-#     data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)), 
-#     mapping = aes(xintercept = 0),
-#     color = "black"
-#   ) +
-#   geom_vline(
-#     data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)), 
-#     mapping = aes(xintercept = -sd_difference),
-#     color = "red"
-#   ) +
-#   theme_bw() +
-#   xlim(-0.05, 0.05)
-# 
-# interpol_comparison %>%
-#   dplyr::filter(grepl("norm", PC)) %>%
-#   ggplot() +
-#   geom_histogram(
-#     aes(x = difference, fill = kernel_setting_id), bins = 100
-#   ) +
-#   facet_grid(cols = vars(PC), rows = vars(kernel_setting_id)) +
-#   geom_vline(aes(xintercept = 0)) +
-#   theme_bw()
