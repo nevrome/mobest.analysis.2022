@@ -39,7 +39,7 @@ kernel_settings <- tibble::tibble(
   kernel_setting = list(
     #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
     #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
-    ds500_dt500_g01 = list(auto = F, d = c(500000, 500000, 500)^2, g = 0.1)
+    ds500_dt500_g01 = list(d = c(500000, 500000, 500)^2, g = 0.1, on_residuals = T, auto = F)
   ), 
   kernel_setting_id = names(kernel_setting)
 )
@@ -47,8 +47,8 @@ kernel_settings <- tibble::tibble(
 # create spatiotemporal prediction grid
 pred_grids <- tibble::tibble(
   pred_grid = list(
-    scs100_tl100 = mobest::create_prediction_grid(area, spatial_cell_size = 100000, time_layers = seq(-7500, -500, 100)),
-    scs200_tl200 = mobest::create_prediction_grid(area, spatial_cell_size = 200000, time_layers = seq(-7500, -500, 200))
+    scs100_tl100 = mobest::create_prediction_grid(area, spatial_cell_size = 100000, time_layers = seq(-7500, -500, 100))#,
+    #scs200_tl200 = mobest::create_prediction_grid(area, spatial_cell_size = 200000, time_layers = seq(-7500, -500, 200))
   ),
   pred_grid_id = names(pred_grid)
 )
