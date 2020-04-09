@@ -13,17 +13,17 @@ load("data/spatial/mobility_regions.RData")
 number_of_age_samples <- 1#50 #max: length(anno$calage_sample[[1]])
 independent_tables <- tibble::tibble(
   independent_table = c(
-    list(dplyr::transmute(.data = anno, x = x, y = y, z = calage_center)), 
-    lapply(
-      1:number_of_age_samples, 
-      function(i, anno) {
-        age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
-        dplyr::transmute(.data = anno, x = x, y = y, z = age_sample)
-      },
-      anno
-    )
+    list(dplyr::transmute(.data = anno, x = x, y = y, z = calage_center))#, 
+    # lapply(
+    #   1:number_of_age_samples, 
+    #   function(i, anno) {
+    #     age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
+    #     dplyr::transmute(.data = anno, x = x, y = y, z = age_sample)
+    #   },
+    #   anno
+    # )
   ),
-  independent_table_id = c("age_center", paste0("age_sample_", 1:(length(independent_table) - 1)))
+  independent_table_id = c("age_center")#, paste0("age_sample_", 1:(length(independent_table) - 1)))
 )
 
 # prep dependent vars
@@ -39,7 +39,7 @@ kernel_settings <- tibble::tibble(
   kernel_setting = list(
     #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
     #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
-    ds200_dt400_g01 = list(auto = F, d = c(200000, 200000, 400), g = 0.1)
+    ds500_dt500_g01 = list(auto = F, d = c(500000, 500000, 500)^2, g = 0.1)
   ), 
   kernel_setting_id = names(kernel_setting)
 )
@@ -79,18 +79,20 @@ interpol_grid_spatial <- sf::st_as_sf(
 )
 save(interpol_grid_spatial, file = "data/gpr/interpol_grid_spatial.RData")
 
-# library(ggplot2)
-# interpol_grid_spatial %>%
-#   dplyr::filter(
-#     independent_table_id == "age_center",
-#     dependent_var_id == "PC1",
-#     kernel_setting_id == "ds200_dt400_g01",
-#     pred_grid_id == "scs100_tl100",
-#     z %% 500 == 0
-#   ) %>%
-#   ggplot() +
-#     geom_raster(aes(x, y, fill = mean)) +
-#     facet_wrap(~z)
+library(ggplot2)
+interpol_grid_spatial %>%
+  dplyr::filter(
+    independent_table_id == "age_center",
+    dependent_var_id == "PC1",
+    kernel_setting_id == "ds500_dt500_g01",
+    pred_grid_id == "scs100_tl100",
+    z %% 500 == 0
+  ) %>%
+  ggplot() +
+  geom_raster(aes(x, y, fill = mean)) +
+  facet_wrap(~z) +
+  scale_fill_viridis_c()
+
 
 #### group all age_sampling runs in interpol_grid #### 
 
