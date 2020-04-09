@@ -59,17 +59,12 @@ lapply(anno_mixed_list, function(anno_mixed) {
       
       # create kernel parameters
       
+      # run 1
       ks <- expand.grid(
-        ds = seq(50000, 500000, 50000),
-        dt = seq(50, 500, 50),
-        g = seq(0.05, 0.50, 0.05)
+        ds = seq(10, 1010, 100)*1000,
+        dt = seq(10, 1010, 100),
+        g = c(0.001, 0.01, 0.1, 0.5)
       )
-      
-      # ks <- expand.grid(
-      #   ds = c(50000, 100000),
-      #   dt = c(50, 100),
-      #   g = c(0.05, 0.1)
-      # )
       
       kernel_settings <- tibble::tibble(
         kernel_setting = lapply(
@@ -136,9 +131,9 @@ lapply(anno_mixed_list, function(anno_mixed) {
 }) %>% dplyr::bind_rows() -> interpol_grid_merged_all
 
 
-#### prepare for plotting ####
+#### further data preparation ####
 
-# calculate distances
+# calculate difference between observed and predicted PC values
 interpol_grid_dist <- interpol_grid_merged_all %>% 
   dplyr::mutate(
     PC1_dist = PC1 - mean_PC1,
@@ -155,6 +150,7 @@ interpol_grid_dist <- interpol_grid_merged_all %>%
     values_to = "difference"
   ) 
 
+# turn kernel parameters into distinct columns again
 interpol_comparison <- interpol_grid_dist %>%
   tidyr::separate(
     kernel_setting_id, 
@@ -164,6 +160,7 @@ interpol_comparison <- interpol_grid_dist %>%
     remove = F
   ) 
 
+# group difference by kernel and PC (grtouping with different mechanisms like mean/meadian/sd)
 interpol_comparison_group <- interpol_comparison %>%
   dplyr::group_by(kernel_setting_id, ds, dt, g, PC) %>%
   dplyr::summarise(
@@ -174,7 +171,7 @@ interpol_comparison_group <- interpol_comparison %>%
   ) %>%
   dplyr::ungroup()
 
-save(interpol_comparison_group, file = "data/crossvalidation/interpol_comparison_group.RData")
+save(interpol_comparison_group, file = "data/crossvalidation/interpol_comparison_group_1.RData")
 
 # ggplot() +
 #   geom_histogram(
