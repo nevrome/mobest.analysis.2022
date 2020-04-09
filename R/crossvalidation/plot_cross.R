@@ -1,38 +1,55 @@
-load("data/crossvalidation/interpol_comparison_group.RData")
+load("data/crossvalidation/interpol_comparison_group_1.RData")
 
 library(magrittr)
 library(ggplot2)
 
-interpol_comparison_group %>%
-  ggplot() +
-  geom_raster(
-    aes(x = ds, y = dt, fill = sd_difference)
-  ) +
-  scale_fill_viridis_c() +
-  facet_grid(rows = vars(PC), cols = vars(g))
+# all PCs
+# interpol_comparison_group %>%
+#   ggplot() +
+#   geom_raster(
+#     aes(x = ds, y = dt, fill = sd_difference)
+#   ) +
+#   scale_fill_viridis_c() +
+#   facet_grid(rows = vars(PC), cols = vars(g))
 
 
 icg <- interpol_comparison_group %>%
+  # rank of kernel for each PC within each difference-type
+  dplyr::group_by(
+    PC
+  ) %>%
+  dplyr::mutate(
+    rank_mean_difference = rank(mean_difference),
+    rank_median_difference = rank(median_difference),
+    rank_sd_difference = rank(sd_difference),
+    rank_diff_5_95_difference = rank(diff_5_95_difference)
+  ) %>%
+  dplyr::ungroup() %>%
+  # median rank of kernel for all PCs and all difference-types
   dplyr::group_by(
     ds, dt, g
   ) %>%
-  dplyr::summarise(
-    mean_mean_difference = mean(mean_difference),
-    mean_median_difference = mean(median_difference),
-    mean_sd_difference = mean(sd_difference),
-    mean_diff_5_95_difference = mean(diff_5_95_difference)
+  dplyr::mutate(
+    median_rank = median(c(
+      rank_mean_difference, 
+      rank_median_difference, 
+      rank_sd_difference, 
+      rank_diff_5_95_difference)
+    )
   ) %>%
   dplyr::ungroup()
 
 
 minicg <- icg %>% dplyr::filter(
-  mean_median_difference == min(mean_median_difference)
-)
+  median_rank == min(median_rank)
+) %>% dplyr::select(
+  ds, dt, g
+) %>% unique
 
 ggplot() +
   geom_raster(
     data = icg,
-    aes(x = ds, y = dt, fill = mean_median_difference)
+    aes(x = ds, y = dt, fill = median_rank)
   ) +
   scale_fill_viridis_c() +
   facet_wrap(~g) +
