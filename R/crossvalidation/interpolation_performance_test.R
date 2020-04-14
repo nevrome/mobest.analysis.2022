@@ -3,13 +3,7 @@ library(ggplot2)
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
 run <- args[1]
-
-message(args[1])
-message(args[2])
-
 g_for_this_run <- as.numeric(args[2])
-
-message(g_for_this_run)
 
 #### data ####
 
@@ -20,7 +14,7 @@ load("data/spatial/mobility_regions.RData")
 
 #### compile randomly reordered versions of anno ####
 
-anno_mixed_list <- lapply(1:10, function(i) { anno[sample(1:nrow(anno), replace = F), ] })
+anno_mixed_list <- lapply(1:1, function(i) { anno[sample(1:nrow(anno), replace = F), ] })
 
 #### run prediction test for each of this versions ####
 
