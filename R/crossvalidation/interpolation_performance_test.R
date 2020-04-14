@@ -1,6 +1,10 @@
 library(magrittr)
 library(ggplot2)
 
+args <- commandArgs(trailingOnly = TRUE)
+run <- args[1]
+g_for_this_run <- args[2]
+
 #### data ####
 
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_filtered.RData")
@@ -61,7 +65,7 @@ lapply(anno_mixed_list, function(anno_mixed) {
       ks <- expand.grid(
         ds = seq(20, 500, 20)*1000,
         dt = seq(20, 500, 20),
-        g = c(0.001, 0.005, 0.01, 0.05, 0.1)
+        g = g_for_this_run#c(0.001, 0.005, 0.01, 0.05, 0.1)
       )
 
       kernel_settings <- tibble::tibble(
@@ -169,6 +173,6 @@ interpol_comparison_group <- interpol_comparison %>%
   ) %>%
   dplyr::ungroup()
 
-save(interpol_comparison_group, file = "data/crossvalidation/interpol_comparison_group.RData")
+save(interpol_comparison_group, file = paste0("data/crossvalidation/interpol_comparison_group_", run, ".RData"))
 
 # scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/crossvalidation/interpol_comparison_group_1.RData interpol_comparison_group_1.RData
