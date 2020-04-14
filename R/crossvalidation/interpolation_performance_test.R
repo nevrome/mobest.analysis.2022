@@ -1,9 +1,15 @@
 library(magrittr)
 library(ggplot2)
 
-args <- commandArgs(trailingOnly = TRUE)
+args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
 run <- args[1]
-g_for_this_run <- args[2]
+
+message(args[1])
+message(args[2])
+
+g_for_this_run <- as.numeric(args[2])
+
+message(g_for_this_run)
 
 #### data ####
 
