@@ -10,7 +10,7 @@ load("data/spatial/mobility_regions.RData")
 
 #### compile randomly reordered versions of anno ####
 
-anno_mixed_list <- lapply(1:1, function(i) { anno[sample(1:nrow(anno), replace = F), ] })
+anno_mixed_list <- lapply(1:10, function(i) { anno[sample(1:nrow(anno), replace = F), ] })
 
 #### run prediction test for each of this versions ####
 
@@ -58,25 +58,16 @@ lapply(anno_mixed_list, function(anno_mixed) {
         )
       
       # create kernel parameters
-      
-      # run 1
-      # ks <- expand.grid(
-      #   ds = seq(10, 1010, 100)*1000,
-      #   dt = seq(10, 1010, 100),
-      #   g = c(0.001, 0.01, 0.1, 0.5)
-      # )
-      
-      # run 2
       ks <- expand.grid(
-        ds = seq(1, 51, 10)*1000,
-        dt = seq(200, 600, 50),
-        g = seq(0.05, 0.15, 0.02)
+        ds = seq(20, 500, 20)*1000,
+        dt = seq(20, 500, 20),
+        g = c(0.001, 0.005, 0.01, 0.05, 0.1)
       )
 
       kernel_settings <- tibble::tibble(
         kernel_setting = lapply(
           1:nrow(ks), function(i) {
-            list(auto = F, d = c(ks[["ds"]][i], ks[["ds"]][i], ks[["dt"]][i]), g = ks[["g"]][i])
+            list(d = c(ks[["ds"]][i], ks[["ds"]][i], ks[["dt"]][i]), g = ks[["g"]][i], on_residuals = T, auto = F)
           }
         ),
         kernel_setting_id = sapply(
@@ -178,6 +169,6 @@ interpol_comparison_group <- interpol_comparison %>%
   ) %>%
   dplyr::ungroup()
 
-save(interpol_comparison_group, file = "data/crossvalidation/interpol_comparison_group_2.RData")
+save(interpol_comparison_group, file = "data/crossvalidation/interpol_comparison_group.RData")
 
 # scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/crossvalidation/interpol_comparison_group_1.RData interpol_comparison_group_1.RData
