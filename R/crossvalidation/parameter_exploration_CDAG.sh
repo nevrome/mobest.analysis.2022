@@ -5,7 +5,7 @@ task () {
 }
 
 jobcount=0
-simuljobs=4
+simuljobs=10
 simuljobcount=0
 
 gstotal=(0.001 0.005 0.01 0.05 0.1)
