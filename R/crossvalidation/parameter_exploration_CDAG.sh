@@ -2,11 +2,11 @@
 
 jobcount=0
 simuljobs=4
-sleeptime=10  #10*60
+sleeptime=180
 simuljobcount=0
 
-gstotal=(0.001 0.005) #0.005 0.01 0.05 0.1
-dtstotal=(20 40 60) # 80 100) #{20..300..20}
+gstotal=(0.001 0.005 0.01 0.05 0.1)
+dtstotal=($(seq 20 20 300))  #(20 40 60) # 80 100) #{20..300..20}
 jobs=$((${#gstotal[@]}*${#dtstotal[@]}))
 
 gs=()
