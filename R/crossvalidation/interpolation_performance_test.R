@@ -175,5 +175,3 @@ interpol_comparison_group <- interpol_comparison %>%
   dplyr::ungroup()
 
 save(interpol_comparison_group, file = paste0("data/crossvalidation/interpol_comparison_group_", run, ".RData"))
-
-# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/crossvalidation/interpol_comparison_group_1.RData interpol_comparison_group_1.RData

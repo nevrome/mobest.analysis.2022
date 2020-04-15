@@ -1,3 +1,5 @@
+# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/crossvalidation/interpol_comparison_group_* .
+
 interpol_comparison_group <- lapply(
   list.files("data/crossvalidation", full.names = T), function(x) {
     load(x)
