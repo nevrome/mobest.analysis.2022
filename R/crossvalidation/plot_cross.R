@@ -1,4 +1,12 @@
-load("data/crossvalidation/interpol_comparison_group_1.RData")
+interpol_comparison_group <- lapply(
+  list.files("data/crossvalidation", full.names = T), function(x) {
+    load(x)
+    interpol_comparison_group
+  }
+) %>% dplyr::bind_rows()
+
+
+
 
 library(magrittr)
 library(ggplot2)
@@ -98,5 +106,6 @@ ggplot() +
 #   theme_bw()
 
 
+  
   
   
