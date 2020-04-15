@@ -64,7 +64,7 @@ lapply(anno_mixed_list, function(anno_mixed) {
       
       # create kernel parameters
       ks <- expand.grid(
-        ds = seq(400, 800, 20)*1000,
+        ds = seq(20, 1000, 20)*1000,
         dt = dt_for_this_run,#seq(20, 500, 20),
         g = g_for_this_run#c(0.001, 0.005, 0.01, 0.05, 0.1)
       )
@@ -174,4 +174,4 @@ interpol_comparison_group <- interpol_comparison %>%
   ) %>%
   dplyr::ungroup()
 
-save(interpol_comparison_group, file = paste0("data/crossvalidation2/interpol_comparison_group_", run, ".RData"))
+save(interpol_comparison_group, file = paste0("data/crossvalidation/interpol_comparison_group_", run, ".RData"))
