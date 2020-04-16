@@ -1,26 +1,27 @@
 # scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/crossvalidation/interpol_comparison_group_* .
 
+library(magrittr)
+library(ggplot2)
+
 interpol_comparison_group <- lapply(
-  list.files("data/crossvalidation", full.names = T), function(x) {
+  list.files("data/crossvalidation4", full.names = T), function(x) {
     load(x)
     interpol_comparison_group
   }
 ) %>% dplyr::bind_rows()
 
 
-
-
-library(magrittr)
-library(ggplot2)
-
 # all PCs
-# interpol_comparison_group %>%
-#   ggplot() +
-#   geom_raster(
-#     aes(x = ds, y = dt, fill = sd_difference)
-#   ) +
-#   scale_fill_viridis_c() +
-#   facet_grid(rows = vars(PC), cols = vars(g))
+interpol_comparison_group %>%
+  ggplot() +
+  geom_raster(
+    #aes(x = ds, y = dt, fill = mean_difference)
+    #aes(x = ds, y = dt, fill = median_difference)
+    #aes(x = ds, y = dt, fill = sd_difference)
+    aes(x = ds, y = dt, fill = diff_5_95_difference)
+  ) +
+  scale_fill_viridis_c() +
+  facet_grid(rows = vars(PC), cols = vars(g))
 
 
 icg <- interpol_comparison_group %>%
