@@ -15,7 +15,7 @@ load("data/spatial/mobility_regions.RData")
 
 #### compile randomly reordered versions of anno ####
 
-anno_mixed_list <- lapply(1:1, function(i) { anno[sample(1:nrow(anno), replace = F), ] })
+anno_mixed_list <- lapply(1:2, function(i) { anno[sample(1:nrow(anno), replace = F), ] })
 
 #### run prediction test for each of this versions ####
 
@@ -64,9 +64,9 @@ lapply(anno_mixed_list, function(anno_mixed) {
       
       # create kernel parameters
       ks <- expand.grid(
-        ds = seq(20, 1000, 20)*1000,
-        dt = dt_for_this_run,#seq(20, 500, 20),
-        g = g_for_this_run#c(0.001, 0.005, 0.01, 0.05, 0.1)
+        ds = seq(50, 2050, 100)*1000,
+        dt = seq(50, 2050, 100),#seq(20, 500, 20),
+        g = c(0.001, 0.005, 0.01, 0.05, 0.1)
       )
 
       kernel_settings <- tibble::tibble(
