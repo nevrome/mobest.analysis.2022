@@ -163,15 +163,4 @@ interpol_comparison <- interpol_grid_dist %>%
     remove = F
   ) 
 
-# group difference by kernel and PC (grtouping with different mechanisms like mean/meadian/sd)
-interpol_comparison_group <- interpol_comparison %>%
-  dplyr::group_by(kernel_setting_id, ds, dt, g, PC) %>%
-  dplyr::summarise(
-    mean_difference = mean(abs(difference)),
-    median_difference = median(abs(difference)),
-    sd_difference = sd(difference),
-    diff_5_95_difference = diff(quantile(difference, probs = c(0.05, 0.95)))
-  ) %>%
-  dplyr::ungroup()
-
-save(interpol_comparison_group, file = paste0("data/crossvalidation/interpol_comparison_group_", run, ".RData"))
+save(interpol_comparison, file = paste0("data/crossvalidation/interpol_comparison_", run, ".RData"))
