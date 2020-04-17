@@ -1,76 +1,57 @@
-# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/crossvalidation/interpol_comparison_group_* .
+# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/crossvalidation/interpol_comparison_* .
 
 library(magrittr)
 library(ggplot2)
 
-interpol_comparison_group <- lapply(
-  list.files("data/crossvalidation4", full.names = T), function(x) {
+interpol_comparison <- lapply(
+  list.files("data/crossvalidation", full.names = T), function(x) {
     load(x)
-    interpol_comparison_group
+    interpol_comparison
   }
 ) %>% dplyr::bind_rows()
 
-
-# all PCs
-interpol_comparison_group %>%
-  ggplot() +
-  geom_raster(
-    #aes(x = ds, y = dt, fill = mean_difference)
-    #aes(x = ds, y = dt, fill = median_difference)
-    #aes(x = ds, y = dt, fill = sd_difference)
-    aes(x = ds, y = dt, fill = diff_5_95_difference)
-  ) +
-  scale_fill_viridis_c() +
-  facet_grid(rows = vars(PC), cols = vars(g))
-
-
-icg <- interpol_comparison_group %>%
-  # rank of kernel for each PC within each difference-type
-  dplyr::group_by(
-    PC
-  ) %>%
-  dplyr::mutate(
-    rank_mean_difference = rank(mean_difference),
-    rank_median_difference = rank(median_difference),
-    rank_sd_difference = rank(sd_difference),
-    rank_diff_5_95_difference = rank(diff_5_95_difference)
-  ) %>%
-  dplyr::ungroup() %>%
-  # median rank of kernel for all PCs and all difference-types
-  dplyr::group_by(
-    ds, dt, g
-  ) %>%
-  dplyr::mutate(
-    median_rank = median(c(
-      rank_mean_difference, 
-      rank_median_difference, 
-      rank_sd_difference, 
-      rank_diff_5_95_difference)
-    )
+# group difference by kernel and PC
+interpol_comparison_group <- interpol_comparison %>%
+  dplyr::group_by(kernel_setting_id, ds, dt, g, PC) %>%
+  dplyr::summarise(
+    mean_difference = mean(difference^2),
   ) %>%
   dplyr::ungroup()
 
+PCs <- interpol_comparison_group$PC
 
-minicg <- icg %>% dplyr::filter(
-  median_rank == min(median_rank)
-) %>% dplyr::select(
-  ds, dt, g
-) %>% unique
-
-ggplot() +
-  geom_raster(
-    data = icg,
-    aes(x = ds, y = dt, fill = median_rank)
-  ) +
-  scale_fill_viridis_c() +
-  facet_wrap(~g) +
-  geom_point(
-    data = minicg,
-    aes(x = ds, y = dt),
-    shape = 4,
-    color = "red",
-    size = 3
+ps <- lapply(PCs %>% unique, function(cur_PC) {
+  
+  interpol_comparison_group_PC <- interpol_comparison_group %>% dplyr::filter(PC == cur_PC)
+  
+  minicg <- interpol_comparison_group_PC %>% dplyr::filter(
+    mean_difference == min(mean_difference)
+  ) %>% dplyr::select(
+    ds, dt, g
   )
+  
+  p <- interpol_comparison_group_PC %>%
+    ggplot() +
+    geom_raster(
+      aes(x = ds, y = dt, fill = mean_difference)
+    ) +
+    scale_fill_viridis_c(direction = -1) +
+    facet_grid(cols = vars(g)) +
+    geom_point(
+      data = minicg,
+      aes(x = ds, y = dt),
+      shape = 4,
+      color = "red",
+      size = 3
+    )
+  
+  return(p)
+  
+})
+
+cowplot::plot_grid(plotlist = ps, nrow = length(ps), labels = PCs)
+
+
 
 ###
 
