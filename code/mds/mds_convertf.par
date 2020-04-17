@@ -1,0 +1,8 @@
+genotypename: /projects1/coest_mobility/coest.interpol.2020/data/1240K_HumanOrigins/1240K_HumanOrigins.geno             
+snpname: /projects1/coest_mobility/coest.interpol.2020/data/1240K_HumanOrigins/1240K_HumanOrigins.snp                   
+indivname: /projects1/coest_mobility/coest.interpol.2020/data/1240K_HumanOrigins/1240K_HumanOrigins.ind                 
+outputformat: PED                                                                     
+genooutfilename: /projects1/coest_mobility/coest.interpol.2020/data/mds/1240K_HumanOrigins.ped  
+snpoutfilename: /projects1/coest_mobility/coest.interpol.2020/data/mds/1240K_HumanOrigins.pedsnp
+indoutfilename: /projects1/coest_mobility/coest.interpol.2020/data/mds/1240K_HumanOrigins.pedind
+poplistname: /projects1/coest_mobility/coest.interpol.2020/code/mds/old_pops_1240K_HumanOrigins.txt
