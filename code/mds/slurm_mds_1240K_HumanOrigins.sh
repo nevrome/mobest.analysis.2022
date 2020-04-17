@@ -1,27 +1,33 @@
 #!/bin/bash
 
 #SBATCH -p short                                          # The queue or 'partition' you want to submit to
-#SBATCH -c 11                                             # number of CPUs
-#SBATCH --mem=20G                                         # memory pool for all cores
+#SBATCH -c 10                                             # number of CPUs
+#SBATCH --mem=100G                                        # memory pool for all cores
 #SBATCH -o /projects1/coest_mobility/log/%j.out           # STDOUT (the standard output stream) into file <JOB_NUMBER>.out
 #SBATCH -e /projects1/coest_mobility/log/%j.err           # STDERR (the output stream for errors) into file <JOB_NUMBER>.err
-#SBATCH -J "cross"
+#SBATCH -J "mds"
 
 date 
 
-eigenstrat -> convertf + config-file (.par) + hier filtering mit option poplistname -> ped
+cd /projects1/coest_mobility/coest.interpol.2020
 
-cp Data.merged.pedsnp Data.merged.map
+# convert eigenstrat to ped and filter to old populations
+convertf -p code/mds/mds_convertf.par
+
+cd data/mds
+
+# rename .pedsnp to .map
+cp 1240K_HumanOrigins.pedsnp 1240K_HumanOrigins.map
 
 # pruning
-plink --file Data.merged --exclude myrange.txt --range --maf --make-bed --out Data.merged.pruned
+plink --file 1240K_HumanOrigins --exclude ../../code/mds/myrange.txt --range --maf --make-bed --out 1240K_HumanOrigins.pruned
 
 # generate general pairwise stats
-plink --file Data.merged --genome
+plink --file 1240K_HumanOrigins.pruned --genome
 
 # create mds table
-plink --bfile Data.merged --cluster --mds-plot 4 --read-genome Data.merged.genome
+plink --bfile 1240K_HumanOrigins.pruned --cluster --mds-plot 4 --read-genome 1240K_HumanOrigins.pruned.genome
 
 date
- 
+
 exit 0
