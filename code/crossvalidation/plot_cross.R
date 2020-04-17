@@ -4,7 +4,7 @@ library(magrittr)
 library(ggplot2)
 
 interpol_comparison <- lapply(
-  list.files("data/crossvalidation", full.names = T), function(x) {
+  list.files("data/crossvalidation", pattern = "interpol_comparison_[0-9]", full.names = T), function(x) {
     load(x)
     interpol_comparison
   }
@@ -14,7 +14,7 @@ interpol_comparison <- lapply(
 interpol_comparison_group <- interpol_comparison %>%
   dplyr::group_by(kernel_setting_id, ds, dt, g, PC) %>%
   dplyr::summarise(
-    mean_difference = mean(difference^2),
+    mean_squared_difference = mean(difference^2),
   ) %>%
   dplyr::ungroup()
 
@@ -25,7 +25,7 @@ ps <- lapply(PCs %>% unique, function(cur_PC) {
   interpol_comparison_group_PC <- interpol_comparison_group %>% dplyr::filter(PC == cur_PC)
   
   minicg <- interpol_comparison_group_PC %>% dplyr::filter(
-    mean_difference == min(mean_difference)
+    mean_squared_difference == min(mean_squared_difference)
   ) %>% dplyr::select(
     ds, dt, g
   )
@@ -33,7 +33,7 @@ ps <- lapply(PCs %>% unique, function(cur_PC) {
   p <- interpol_comparison_group_PC %>%
     ggplot() +
     geom_raster(
-      aes(x = ds, y = dt, fill = mean_difference)
+      aes(x = ds, y = dt, fill = mean_squared_difference)
     ) +
     scale_fill_viridis_c(direction = -1) +
     facet_grid(cols = vars(g)) +
