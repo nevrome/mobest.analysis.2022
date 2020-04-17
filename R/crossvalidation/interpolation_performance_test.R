@@ -64,7 +64,7 @@ lapply(anno_mixed_list, function(anno_mixed) {
       
       # create kernel parameters
       ks <- expand.grid(
-        ds = seq(50, 2050, 100)*1000,
+        ds = seq(50, 2050, 200)*1000,
         dt = dt_for_this_run, #seq(50, 2050, 100),#seq(20, 500, 20),
         g = g_for_this_run #c(0.001, 0.005, 0.01, 0.05, 0.1)
       )
