@@ -55,41 +55,24 @@ cowplot::plot_grid(plotlist = ps, nrow = length(ps), labels = PCs)
 
 ###
 
-# ggplot() +
-#   geom_histogram(
-#     data = interpol_comparison %>% dplyr::filter(!grepl("norm", PC)),
-#     mapping = aes(x = difference, fill = kernel_setting_id), bins = 100
-#   ) +
-#   facet_grid(cols = vars(PC), rows = vars(kernel_setting_id)) +
-#   geom_vline(
-#     data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)), 
-#     mapping = aes(xintercept = sd_difference),
-#     color = "red"
-#   ) +
-#   geom_vline(
-#     data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)), 
-#     mapping = aes(xintercept = 0),
-#     color = "black"
-#   ) +
-#   geom_vline(
-#     data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)), 
-#     mapping = aes(xintercept = -sd_difference),
-#     color = "red"
-#   ) +
-#   theme_bw() +
-#   xlim(-0.05, 0.05)
-# 
-# interpol_comparison %>%
-#   dplyr::filter(grepl("norm", PC)) %>%
-#   ggplot() +
-#   geom_histogram(
-#     aes(x = difference, fill = kernel_setting_id), bins = 100
-#   ) +
-#   facet_grid(cols = vars(PC), rows = vars(kernel_setting_id)) +
-#   geom_vline(aes(xintercept = 0)) +
-#   theme_bw()
-
-
-  
-  
-  
+ggplot(interpol_comparison) +
+  geom_histogram(
+    mapping = aes(x = difference), bins = 100
+  ) +
+  facet_grid(rows = vars(PC)) +
+  # geom_vline(
+  #   data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)),
+  #   mapping = aes(xintercept = sd_difference),
+  #   color = "red"
+  # ) +
+  # geom_vline(
+  #   mapping = aes(xintercept = 0),
+  #   color = "black"
+  # ) +
+  # geom_vline(
+  #   data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)),
+  #   mapping = aes(xintercept = -sd_difference),
+  #   color = "red"
+  # ) +
+  # theme_bw() +
+  xlim(-0.05, 0.05)
