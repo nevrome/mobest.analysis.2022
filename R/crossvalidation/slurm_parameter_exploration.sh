@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #SBATCH -p short                                          # The queue or 'partition' you want to submit to
-#SBATCH -c 11                                             # number of CPUs
-#SBATCH --mem=20G                                         # memory pool for all cores
+#SBATCH -c 4                                             # number of CPUs
+#SBATCH --mem=10G                                         # memory pool for all cores
 #SBATCH -o /projects1/coest_mobility/log/%j.out           # STDOUT (the standard output stream) into file <JOB_NUMBER>.out
 #SBATCH -e /projects1/coest_mobility/log/%j.err           # STDERR (the output stream for errors) into file <JOB_NUMBER>.err
-#SBATCH --array 0-55%5
+#SBATCH --array 0-54%5
 #SBATCH -J "cross"
 
 # parameters
