@@ -15,7 +15,7 @@ cd /projects1/coest_mobility/coest.interpol.2020/data/mds
 plink --file 1240K_HumanOrigins --remove ../../code/mds/outlier_individuals.txt --make-bed --out 1240K_HumanOrigins.filtered
 
 # pruning
-plink --bfile 1240K_HumanOrigins.filtered --exclude ../../code/mds/myrange.txt --range --maf --out 1240K_HumanOrigins.filtered.pruned
+plink --bfile 1240K_HumanOrigins.filtered --exclude ../../code/mds/myrange.txt --range --maf --make-bed --out 1240K_HumanOrigins.filtered.pruned
 
 # generate general pairwise stats
 plink --bfile 1240K_HumanOrigins.filtered.pruned --genome --out 1240K_HumanOrigins.filtered.pruned
