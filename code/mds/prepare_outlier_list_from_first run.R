@@ -1,6 +1,7 @@
+#scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/mds/1240K_HumanOrigins.pruned.mds .
 library(magrittr)
 
-mds <- readr::read_delim("data/mds/plink.mds", " ", trim_ws = T) %>%
+mds <- readr::read_delim("data/mds/1240K_HumanOrigins.pruned.mds", " ", trim_ws = T) %>%
   dplyr::select(-X8)
 
 inquant <- function(x) {
@@ -18,6 +19,6 @@ mds %>%
   dplyr::filter(
     !in_95
   ) %$%
-  paste(IID, IID) %>% 
+  paste(FID, IID) %>% 
   writeLines("code/mds/outlier_individuals.txt")
 
