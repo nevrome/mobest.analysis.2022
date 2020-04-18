@@ -19,15 +19,6 @@ cd data/mds
 # rename .pedsnp to .map
 cp 1240K_HumanOrigins.pedsnp 1240K_HumanOrigins.map
 
-# pruning
-plink --file 1240K_HumanOrigins --exclude ../../code/mds/myrange.txt --range --maf --make-bed --out 1240K_HumanOrigins.pruned
-
-# generate general pairwise stats
-plink --bfile 1240K_HumanOrigins.pruned --genome
-
-# create mds table
-plink --bfile 1240K_HumanOrigins.pruned --cluster --mds-plot 4 --read-genome plink.genome
-
 date
 
 exit 0
