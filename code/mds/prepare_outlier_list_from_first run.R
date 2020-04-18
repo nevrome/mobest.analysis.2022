@@ -18,6 +18,6 @@ mds %>%
   dplyr::filter(
     !in_95
   ) %$%
-  IID %>% 
+  paste(IID, IID) %>% 
   writeLines("code/mds/outlier_individuals.txt")
 
