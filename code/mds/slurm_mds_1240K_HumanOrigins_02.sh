@@ -15,10 +15,10 @@ cd /projects1/coest_mobility/coest.interpol.2020/data/mds
 plink --file 1240K_HumanOrigins --exclude ../../code/mds/myrange.txt --range --maf --make-bed --out 1240K_HumanOrigins.pruned
 
 # generate general pairwise stats
-plink --bfile 1240K_HumanOrigins.pruned --genome --out 1240K_HumanOrigins.pruned.genome
+plink --bfile 1240K_HumanOrigins.pruned --genome --out 1240K_HumanOrigins.pruned
 
 # create mds table
-plink --bfile 1240K_HumanOrigins.pruned --cluster --mds-plot 4 --read-genome 1240K_HumanOrigins.pruned.genome --out 1240K_HumanOrigins.pruned.mds
+plink --bfile 1240K_HumanOrigins.pruned --cluster --mds-plot 4 --read-genome 1240K_HumanOrigins.pruned.genome --out 1240K_HumanOrigins.pruned
 
 date
 

@@ -18,10 +18,10 @@ plink --file 1240K_HumanOrigins --remove ../../code/mds/outlier_individuals.txt 
 plink --bfile 1240K_HumanOrigins.filtered --exclude ../../code/mds/myrange.txt --range --maf --out 1240K_HumanOrigins.filtered.pruned
 
 # generate general pairwise stats
-plink --bfile 1240K_HumanOrigins.filtered.pruned --genome --out 1240K_HumanOrigins.filtered.pruned.genome
+plink --bfile 1240K_HumanOrigins.filtered.pruned --genome --out 1240K_HumanOrigins.filtered.pruned
 
 # create mds table
-plink --bfile 1240K_HumanOrigins.filtered.pruned --cluster --mds-plot 4 --read-genome 1240K_HumanOrigins.filtered.pruned.genome --out 1240K_HumanOrigins.filtered.pruned.mds
+plink --bfile 1240K_HumanOrigins.filtered.pruned --cluster --mds-plot 4 --read-genome 1240K_HumanOrigins.filtered.pruned.genome --out 1240K_HumanOrigins.filtered.pruned
 
 date
 
