@@ -70,5 +70,19 @@ save(extended_area, file = "data/spatial/extended_area.RData")
 mobility_regions <- sf::st_read(
   "data_tracked/mobility_regions/mobility_regions.shp", quiet = TRUE
 ) %>% sf::st_transform("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
+mobility_regions$region_id <- factor(
+  mobility_regions$region_id, levels = c(
+    "Britain and Ireland",
+    "Central Europe",
+    "Eastern Europe",
+    "Caucasus",
+    "France",
+    "Italy",
+    "Southeastern Europe",
+    "Turkey",
+    "Iberia",
+    "Near East"
+  )
+)
 save(mobility_regions, file = "data/spatial/mobility_regions.RData")
 
