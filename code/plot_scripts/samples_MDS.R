@@ -1,27 +1,13 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/anno_1240K_and_anno_1240K_HumanOrigins_pca.RData")
-ref_pops <- readLines("data/population_lists/PCA_6.pops")
-
-pca_ref <- anno_1240K_and_anno_1240K_HumanOrigins_pca %>%
-  dplyr::filter(
-    group_label %in% ref_pops
-  )
-
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
 anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
 
 p <- ggplot() +
   geom_point(
-    data = pca_ref,
-    aes(x = PC1, y = PC2),
-    shape = 20,
-    size = 0.2
-  ) +
-  geom_point(
     data = anno,
-    aes(x = PC1, y = PC2, color = region_id, shape = age_group_id),
+    aes(x = C1, y = C2, color = region_id, shape = age_group_id),
     alpha = 0.7,
     size = 2
   ) +
@@ -49,10 +35,11 @@ p <- ggplot() +
       "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#2fff00"
     )
   ) +
-  coord_fixed()
+  coord_fixed() +
+  scale_y_reverse()
 
 ggsave(
-  paste0("plots/samples_PCA.jpeg"),
+  paste0("plots/samples_MDS.jpeg"),
   plot = p,
   device = "jpeg",
   scale = 0.8,
@@ -60,4 +47,3 @@ ggsave(
   width = 330, height = 250, units = "mm",
   limitsize = F
 )
-
