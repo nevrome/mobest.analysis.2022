@@ -6,10 +6,10 @@ mds <- readr::read_delim("data/mds/1240K_HumanOrigins.filtered.pruned.mds", " ",
   dplyr::select(-FID, -SOL, -X8)
 
 #### merge ####
-anno_1240K_and_anno_1240K_HumanOrigins_final <- anno_1240K_and_anno_1240K_HumanOrigins_filtered %>% dplyr::left_join(
+anno_1240K_and_anno_1240K_HumanOrigins_mds <- anno_1240K_and_anno_1240K_HumanOrigins_filtered %>% dplyr::left_join(
   mds, 
   by = c("sample_id" = "IID")
 )
 
 #### save ####
-save(anno_1240K_and_anno_1240K_HumanOrigins_final, file = "data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
+save(anno_1240K_and_anno_1240K_HumanOrigins_mds, file = "data/anno_1240K_and_anno_1240K_HumanOrigins_mds.RData")

@@ -1,8 +1,8 @@
-load("data/anno_1240K_and_anno_1240K_HumanOrigins_filtered.RData")
-anno <- anno_1240K_and_anno_1240K_HumanOrigins_filtered
+load("data/anno_1240K_and_anno_1240K_HumanOrigins_class.RData")
+anno <- anno_1240K_and_anno_1240K_HumanOrigins_class
 
 anno_unnested <- anno %>% 
-  dplyr::select(age_prob_distribution_BC, PC1, PC2, PC3, PC4, x, y) %>%
+  dplyr::select(age_prob_distribution_BC, PC1, PC2, PC3, PC4, x, y, C1, C2, C3, C4, region_id, age_group_id) %>%
   tidyr::unnest("age_prob_distribution_BC")
 
 anno_slices <- anno_unnested <- anno_unnested %>%
