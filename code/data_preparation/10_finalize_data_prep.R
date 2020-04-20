@@ -1,0 +1,5 @@
+load("data/anno_1240K_and_anno_1240K_HumanOrigins_class.RData")
+
+anno_1240K_and_anno_1240K_HumanOrigins_final <- anno_1240K_and_anno_1240K_HumanOrigins_class
+
+save(anno_1240K_and_anno_1240K_HumanOrigins_final, file = "data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
