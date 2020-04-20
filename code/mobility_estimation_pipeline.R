@@ -2,12 +2,12 @@ library(magrittr)
 
 #### data ####
 
-load("data/anno_1240K_and_anno_1240K_HumanOrigins_filtered.RData")
-anno <- anno_1240K_and_anno_1240K_HumanOrigins_filtered
+load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
+anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
 load("data/spatial/area.RData")
 load("data/spatial/mobility_regions.RData")
 
-#### prepare model grid ####
+#### prepare pca model grid ####
 
 # prep independent variables with temporal sampling
 number_of_age_samples <- 1#50 #max: length(anno$calage_sample[[1]])
@@ -54,12 +54,46 @@ pred_grids <- tibble::tibble(
 )
 
 # merge info in prepare model grid
-model_grid <- mobest::create_model_grid(
+model_grid_pca <- mobest::create_model_grid(
   independent_tables = independent_tables, 
   dependent_vars = dependent_vars,
   kernel_settings = kernel_settings,
   pred_grids = pred_grids
 )
+
+#### prepare mds model grid ####
+
+anno_mds <- anno %>% dplyr::filter(
+  !is.na(C1)
+)
+
+# prep independent variables with temporal sampling
+independent_tables <- tibble::tibble(
+  independent_table = c(
+    list(dplyr::transmute(.data = anno_mds, x = x, y = y, z = calage_center)) 
+  ),
+  independent_table_id = c("age_center")
+)
+
+# prep dependent vars
+dependent_vars <- tibble::tibble(
+  dependent_var_id = c("C1", "C2", "C3", "C4")
+) %>%
+  dplyr::mutate(
+    dependent_var = lapply(dependent_var_id, function(x) { anno_mds[[x]] })
+  )
+
+# merge info in prepare model grid
+model_grid_mds <- mobest::create_model_grid(
+  independent_tables = independent_tables, 
+  dependent_vars = dependent_vars,
+  kernel_settings = kernel_settings,
+  pred_grids = pred_grids
+)
+
+#### merge model grids ####
+
+model_grid <- rbind(model_grid_pca, model_grid_mds)
 
 #### run interpolation on model grid ####
 
@@ -83,7 +117,7 @@ library(ggplot2)
 interpol_grid_spatial %>%
   dplyr::filter(
     independent_table_id == "age_center",
-    dependent_var_id == "PC1",
+    dependent_var_id == "C1",
     kernel_setting_id == "ds500_dt500_g01",
     pred_grid_id == "scs100_tl100",
     z %% 500 == 0
