@@ -35,7 +35,7 @@ poi_timeseries <- interpol_grid %>%
     dependent_var_id %in% c("C1", "C2"),
     # x == toi_dots$x[2],
     # y == toi_dots$y[2],
-    #z %% 500 == 0
+    z %% 200 == 0
   ) %>% 
   tidyr::pivot_wider(
     id_cols = z,
