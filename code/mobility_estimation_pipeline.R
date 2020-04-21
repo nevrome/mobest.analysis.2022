@@ -9,42 +9,6 @@ load("data/spatial/mobility_regions.RData")
 
 #### prepare pca model grid ####
 
-# prep independent variables with temporal sampling
-number_of_age_samples <- 1#50 #max: length(anno$calage_sample[[1]])
-independent_tables <- tibble::tibble(
-  independent_table = c(
-    list(dplyr::transmute(.data = anno, x = x, y = y, z = calage_center))#, 
-    # lapply(
-    #   1:number_of_age_samples, 
-    #   function(i, anno) {
-    #     age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
-    #     dplyr::transmute(.data = anno, x = x, y = y, z = age_sample)
-    #   },
-    #   anno
-    # )
-  ),
-  independent_table_id = c("age_center")#, paste0("age_sample_", 1:(length(independent_table) - 1)))
-)
-
-# prep dependent vars
-dependent_vars <- tibble::tibble(
-  dependent_var_id = c("PC1", "PC2", "PC3", "PC4")
-) %>%
-  dplyr::mutate(
-    dependent_var = lapply(dependent_var_id, function(x) { anno[[x]] })
-  )
-
-# create kernel parameters
-kernel_settings <- tibble::tibble(
-  kernel_setting = list(
-    #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
-    #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
-    #ds500_dt500_g01 = list(d = c(500000, 500000, 500), g = 0.1, on_residuals = T, auto = F),
-    ds1000_dt1000_g01 = list(d = c(1000000, 1000000, 1000), g = 0.1, on_residuals = T, auto = F)
-  ), 
-  kernel_setting_id = names(kernel_setting)
-)
-
 # individual point
 sf::st_as_sf(
   tibble::tibble(lon = 9.05, lat = 48.52),
@@ -56,22 +20,35 @@ sf::st_as_sf(
     crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
   ) %>% sf::st_coordinates()
 
-# create spatiotemporal prediction grid
-pred_grids <- tibble::tibble(
-  pred_grid = list(
+
+mobest::create_model_grid(
+  independent = c(
+    list(age_center = tibble::tibble(x = anno$x, y = anno$y, z = anno$calage_center))#,
+    # lapply(
+    #   1:50,
+    #   function(i) {
+    #     age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
+    #     tibble::tibble(x = anno$x, y = anno$y, z = age_sample)
+    #   }
+    # ) %>% stats::setNames(paste0("age_sample_", 1:50))
+  ),
+  dependent = list(
+    PC1 = anno$PC1,
+    PC2 = anno$PC2,
+    PC3 = anno$PC3,
+    PC4 = anno$PC4
+  ),
+  kernel = list(
+    #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
+    #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
+    #ds500_dt500_g01 = list(d = c(500000, 500000, 500), g = 0.1, on_residuals = T, auto = F),
+    ds1000_dt1000_g01 = list(d = c(1000000, 1000000, 1000), g = 0.1, on_residuals = T, auto = F)
+  ),
+  prediction_grid = list(
     #scs100_tl100 = mobest::create_prediction_grid(area, spatial_cell_size = 100000, time_layers = seq(-7500, -500, 100)),
     #scs200_tl200 = mobest::create_prediction_grid(area, spatial_cell_size = 200000, time_layers = seq(-7500, -500, 200))
     tuebingen = tibble::tibble(x = -69459.46, y = 2031623, z = seq(-7500, -500, 100), point_id = 1:71)
-  ),
-  pred_grid_id = names(pred_grid)
-)
-
-# merge info in prepare model grid
-model_grid_pca <- mobest::create_model_grid(
-  independent_tables = independent_tables, 
-  dependent_vars = dependent_vars,
-  kernel_settings = kernel_settings,
-  pred_grids = pred_grids
+  )
 )
 
 #### prepare mds model grid ####
