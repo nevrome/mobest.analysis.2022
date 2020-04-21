@@ -33,10 +33,10 @@ toi_dots$poi_id <- poi$poi_id
 poi_timeseries <- interpol_grid %>%
   dplyr::filter(
     dependent_var_id %in% c("C1", "C2"),
-    x == toi_dots$x[2],
-    y == toi_dots$y[2],
-    z %% 500 == 0
-  ) %>%
+    # x == toi_dots$x[2],
+    # y == toi_dots$y[2],
+    #z %% 500 == 0
+  ) %>% 
   tidyr::pivot_wider(
     id_cols = z,
     names_from = "dependent_var_id",
