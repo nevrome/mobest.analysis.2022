@@ -48,52 +48,25 @@ lapply(anno_mixed_list, function(anno_mixed) {
       
       anno <- anno_9_training[[i]]
       
-      # prep independent variables with temporal sampling
-      independent_tables <- tibble::tibble(
-        independent_table = list(dplyr::transmute(.data = anno, x = x, y = y, z = calage_center)),
-        independent_table_id = i
-      )
-      
-      # prep dependent vars
-      dependent_vars <- tibble::tibble(
-        dependent_var_id = c("PC1", "PC2", "PC3", "PC4")
-      ) %>%
-        dplyr::mutate(
-          dependent_var = lapply(dependent_var_id, function(x) { anno[[x]] })
-        )
-      
-      # create kernel parameters
-      ks <- expand.grid(
-        ds = seq(50, 2050, 200)*1000,
-        dt = dt_for_this_run, #seq(50, 2050, 100),#seq(20, 500, 20),
-        g = g_for_this_run #c(0.001, 0.005, 0.01, 0.05, 0.1)
-      )
-
-      kernel_settings <- tibble::tibble(
-        kernel_setting = lapply(
-          1:nrow(ks), function(i) {
-            list(d = c(ks[["ds"]][i], ks[["ds"]][i], ks[["dt"]][i]), g = ks[["g"]][i], on_residuals = T, auto = F)
-          }
-        ),
-        kernel_setting_id = sapply(
-          1:nrow(ks), function(i) {
-            paste0(ks[["ds"]][i]/1000, "_", ks[["dt"]][i], "_", ks[["g"]][i])
-          }
-        )
-      )
-      
-      # create spatiotemporal prediction grid
-      pred_grids <- tibble::tibble(
-        pred_grid = list(anno_9_test[[i]] %>% dplyr::transmute(x, y, z = calage_center, point_id = 1:nrow(.))),
-        pred_grid_id = i
-      )
-      
-      # merge info in prepare model grid
+      # create model grid
       model_grid <- mobest::create_model_grid(
-        independent_tables = independent_tables, 
-        dependent_vars = dependent_vars,
-        kernel_settings = kernel_settings,
-        pred_grids = pred_grids
+        independent = c(
+          list(age_center = tibble::tibble(x = anno$x, y = anno$y, z = anno$calage_center))
+        ),
+        dependent = list(
+          PC1 = anno$PC1,
+          PC2 = anno$PC2,
+          PC3 = anno$PC3,
+          PC4 = anno$PC4
+        ),
+        kernel = mobest::create_kernel_grid(
+          ds = seq(50, 2050, 200)*1000, 
+          dt = dt_for_this_run, 
+          g = g_for_this_run
+        ),
+        prediction_grid = list(
+          anno_9_test[[i]] %>% dplyr::transmute(x, y, z = calage_center, point_id = 1:nrow(.))
+        ) %>% setNames(i)
       ) %>% 
         dplyr::select(-independent_table_type)
       
@@ -120,7 +93,7 @@ lapply(anno_mixed_list, function(anno_mixed) {
   interpol_grid_wide_split <- interpol_grid_wide %>% split(interpol_grid_wide$pred_grid_id)
   
   interpol_grid_merged <- lapply(
-    unique(interpol_grid_wide$pred_grid_id), function(i) {
+    as.numeric(unique(interpol_grid_wide$pred_grid_id)), function(i) {
       interpol_grid_wide_split[[i]] %>%
         dplyr::left_join(
           anno_9_test[[i]] %>% dplyr::transmute(PC1, PC2, PC3, PC4, point_id = 1:nrow(.)),
