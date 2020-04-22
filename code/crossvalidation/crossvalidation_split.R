@@ -37,7 +37,7 @@ cross_one <- function(anno, dependent_var_type) {
       paste0(dependent_var_type, 4)
     )),
     kernel = mobest::create_kernel_grid(
-      ds = seq(50, 2050, 50)*1000, 
+      ds = seq(50, 2000, 50)*1000, 
       dt = dt_for_this_run,#seq(50, 2050, 500),# 
       g = g_for_this_run#c(0.001, 0.01, 0.1)#
     )
