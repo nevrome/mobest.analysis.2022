@@ -37,9 +37,9 @@ cross_one <- function(anno, dependent_var_type) {
       paste0(dependent_var_type, 4)
     )),
     kernel = mobest::create_kernel_grid(
-      ds = seq(50, 2050, 500)*1000, 
-      dt = seq(50, 2050, 500),#dt_for_this_run, 
-      g = c(0.001, 0.01, 0.1)#g_for_this_run
+      ds = seq(50, 2050, 50)*1000, 
+      dt = dt_for_this_run,#seq(50, 2050, 500),# 
+      g = g_for_this_run#c(0.001, 0.01, 0.1)#
     )
   )
   
@@ -66,5 +66,4 @@ interpol_comparison_split <- rbind(
   interpol_comparison_mds_1, interpol_comparison_mds_2, interpol_comparison_mds_3
 )
 
-
-save(interpol_comparison_split, file = paste0("data/crossvalidation/interpol_comparison_split", run, ".RData"))
+save(interpol_comparison_split, file = paste0("data/crossvalidation/interpol_comparison_split_", run, ".RData"))
