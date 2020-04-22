@@ -10,27 +10,27 @@ interpol_comparison <- lapply(
   }
 ) %>% dplyr::bind_rows()
 
-# group difference by kernel and PC
+# group difference by kernel and dependent_dist
 interpol_comparison_group <- interpol_comparison %>%
-  dplyr::group_by(kernel_setting_id, ds, dt, g, PC) %>%
+  dplyr::group_by(kernel_setting_id, ds, dt, g, dependent_var) %>%
   dplyr::summarise(
     mean_squared_difference = mean(difference^2),
   ) %>%
   dplyr::ungroup()
 
-PCs <- interpol_comparison_group$PC
+dependent_vars <- interpol_comparison_group$dependent_var
 
-ps <- lapply(PCs %>% unique, function(cur_PC) {
+ps <- lapply(dependent_vars %>% unique, function(cur_dependent_var) {
   
-  interpol_comparison_group_PC <- interpol_comparison_group %>% dplyr::filter(PC == cur_PC)
+  interpol_comparison_group_dependent_var <- interpol_comparison_group %>% dplyr::filter(dependent_var == cur_dependent_var)
   
-  minicg <- interpol_comparison_group_PC %>% dplyr::filter(
+  minicg <- interpol_comparison_group_dependent_var %>% dplyr::filter(
     mean_squared_difference == min(mean_squared_difference)
   ) %>% dplyr::select(
     ds, dt, g
   )
   
-  p <- interpol_comparison_group_PC %>%
+  p <- interpol_comparison_group_dependent_var %>%
     ggplot() +
     geom_raster(
       aes(x = ds, y = dt, fill = mean_squared_difference)
@@ -49,7 +49,7 @@ ps <- lapply(PCs %>% unique, function(cur_PC) {
   
 })
 
-cowplot::plot_grid(plotlist = ps, nrow = length(ps), labels = PCs)
+cowplot::plot_grid(plotlist = ps, nrow = length(ps), labels = dependent_vars)
 
 
 
