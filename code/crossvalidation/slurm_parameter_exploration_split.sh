@@ -34,7 +34,7 @@ done
 current_g=${gs[${SLURM_ARRAY_TASK_ID}]}
 current_dt=${dts[${SLURM_ARRAY_TASK_ID}]}
 
-singularity exec --bind=/projects1 ~/singularity/singularity_images/nevrome_coest/nevrome_coest.sif Rscript R/crossvalidation/crossvalidation_split.R ${SLURM_ARRAY_TASK_ID} ${current_dt} ${current_g}
+singularity exec --bind=/projects1 ~/singularity/singularity_images/nevrome_coest/nevrome_coest.sif Rscript code/crossvalidation/crossvalidation_split.R ${SLURM_ARRAY_TASK_ID} ${current_dt} ${current_g}
 
 date
  
