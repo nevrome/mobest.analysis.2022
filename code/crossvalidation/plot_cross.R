@@ -59,7 +59,7 @@ ggplot(interpol_comparison) +
   geom_histogram(
     mapping = aes(x = difference), bins = 100
   ) +
-  facet_grid(rows = vars(PC)) +
+  facet_grid(rows = vars(dependent_var)) +
   # geom_vline(
   #   data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)),
   #   mapping = aes(xintercept = sd_difference),
