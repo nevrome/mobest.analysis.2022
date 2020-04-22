@@ -37,9 +37,9 @@ cross_one <- function(anno, dependent_var_type) {
       paste0(dependent_var_type, 4)
     )),
     kernel = mobest::create_kernel_grid(
-      ds = seq(50, 2050, 1000)*1000, 
-      dt = dt_for_this_run, 
-      g = g_for_this_run
+      ds = seq(50, 2050, 500)*1000, 
+      dt = seq(50, 2050, 500),#dt_for_this_run, 
+      g = c(0.001, 0.01, 0.1)#g_for_this_run
     )
   )
   
@@ -53,10 +53,18 @@ interpol_comparison_mds_1 <- cross_one(anno_mds_1, "C")
 interpol_comparison_mds_2 <- cross_one(anno_mds_2, "C")
 interpol_comparison_mds_3 <- cross_one(anno_mds_3, "C")
 
-interpol_comparison <- rbind(
+interpol_comparison_pca_1 %<>% dplyr::mutate(setup = "1. < -5500")
+interpol_comparison_pca_2 %<>% dplyr::mutate(setup = "2. -5500 - -2500")
+interpol_comparison_pca_3 %<>% dplyr::mutate(setup = "3. > -2500")
+
+interpol_comparison_mds_1 %<>% dplyr::mutate(setup = "1. < -5500")
+interpol_comparison_mds_2 %<>% dplyr::mutate(setup = "2. -5500 - -2500")
+interpol_comparison_mds_3 %<>% dplyr::mutate(setup = "3. > -2500")
+
+interpol_comparison_split <- rbind(
   interpol_comparison_pca_1, interpol_comparison_pca_2, interpol_comparison_pca_3,
   interpol_comparison_mds_1, interpol_comparison_mds_2, interpol_comparison_mds_3
 )
 
 
-save(interpol_comparison, file = paste0("data/crossvalidation/interpol_comparison_split", run, ".RData"))
+save(interpol_comparison_split, file = paste0("data/crossvalidation/interpol_comparison_split", run, ".RData"))
