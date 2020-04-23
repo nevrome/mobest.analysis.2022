@@ -2,26 +2,24 @@ functions {
   
   matrix L_cov_exp_quad_ARD(
     vector[] x,
-    real alpha,
-    vector rho,
-    real delta
+    vector theta,
+    real nugget
   ) {
     
     // prepare variables
     int N = size(x);
     matrix[N, N] K;
     matrix[N, N] K_cholesky;
-    real sq_alpha = square(alpha);
-    
+
     // calculate covariance matrix
     for (i in 1:(N-1)) {
-      K[i, i] = sq_alpha + delta;
+      K[i, i] = nugget;
       for (j in (i + 1):N) {
-        K[i, j] = exp(-dot_self((x[i] - x[j]) ./ rho));
+        K[i, j] = exp(-dot_self((x[i] - x[j]) ./ theta)) + nugget;
         K[j, i] = K[i, j];
       }
     }
-    K[N, N] = sq_alpha + delta;
+    K[N, N] = nugget;
     
     // apply cholesky decomposition on covariance matrix
     K_cholesky = cholesky_decompose(K);
@@ -40,11 +38,12 @@ data {
   vector[N] y;
 }
 
+
 parameters {
-  vector<lower=0>[D] rho;
+  vector<lower=0>[D] theta;
   real<lower=0> alpha;
   real<lower=0> sigma;
-  real <lower=0, upper=1> delta;
+  real <lower=0, upper=1> nugget;
   vector[N] eta;
 }
 
@@ -52,12 +51,11 @@ parameters {
 model {
   vector[N] f;
   {
-    matrix[N, N] L_K = L_cov_exp_quad_ARD(x, alpha, rho, delta);
+    matrix[N, N] L_K = L_cov_exp_quad_ARD(x, theta, nugget);
     f = L_K * eta;
   }
 
-  rho ~ inv_gamma(5, 5);
-  alpha ~ std_normal();
+  theta ~ inv_gamma(5, 5);
   sigma ~ std_normal();
   eta ~ std_normal();
 
