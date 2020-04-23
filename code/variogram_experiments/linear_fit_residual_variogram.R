@@ -45,3 +45,12 @@ dist_table_binned %>%
   geom_line(mapping = aes(x = geo_dist_cut, y = PC1_val, group = time_dist_cut, col = time_dist_cut)) +
   facet_wrap(~PC1_type)
 
+dist_table %>%
+  dplyr::filter(time_dist < 20 & geo_dist < 2000) %>%
+  ggplot(mapping = aes(x = geo_dist, y = PC1resid_dist)) + geom_point(alpha=0.01) +
+  geom_smooth()
+
+dist_table %>%
+  dplyr::filter(time_dist < 4000 & geo_dist < 50) %>%
+  ggplot(mapping = aes(x = time_dist, y = PC1resid_dist)) + geom_point(alpha=0.01) +
+  geom_smooth()
