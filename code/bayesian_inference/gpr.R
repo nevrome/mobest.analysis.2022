@@ -20,8 +20,8 @@ fit <- rstan::stan(
     N = length(y),
     y = y
   ),
-  chains = 3,
-  cores = 3
+  chains = 1,
+  cores = 5
 )
 
 rstan::plot(fit)
