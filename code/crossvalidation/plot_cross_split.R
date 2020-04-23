@@ -1,12 +1,14 @@
+# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/crossvalidation/interpol_comparison_split_* .
+
 library(magrittr)
 library(ggplot2)
 
-# interpol_comparison <- lapply(
-#   list.files("data/crossvalidation", pattern = "interpol_comparison_[0-9]", full.names = T), function(x) {
-#     load(x)
-#     interpol_comparison
-#   }
-# ) %>% dplyr::bind_rows()
+interpol_comparison_split <- lapply(
+  list.files("data/crossvalidation", pattern = "interpol_comparison_split_[0-9]*", full.names = T), function(x) {
+    load(x)
+    interpol_comparison_split
+  }
+) %>% dplyr::bind_rows()
 
 interpol_comparison_group_split <- interpol_comparison_split %>% dplyr::filter(
     dependent_var %in% c("PC1_dist", "C1_dist")
