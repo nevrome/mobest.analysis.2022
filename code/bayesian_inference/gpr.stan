@@ -41,7 +41,6 @@ data {
 
 parameters {
   vector<lower=0>[D] theta;
-  real<lower=0> alpha;
   real<lower=0> sigma;
   real <lower=0, upper=1> nugget;
   vector[N] eta;
