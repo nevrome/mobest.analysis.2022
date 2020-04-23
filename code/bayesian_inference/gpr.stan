@@ -57,6 +57,7 @@ model {
   theta ~ inv_gamma(5, 5);
   sigma ~ std_normal();
   eta ~ std_normal();
+  nugget ~ inv_gamma(3, 0.3);
 
   y ~ normal(f, sigma);
 }
