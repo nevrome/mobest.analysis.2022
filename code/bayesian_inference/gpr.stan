@@ -15,7 +15,7 @@ functions {
     for (i in 1:(N-1)) {
       K[i, i] = nugget;
       for (j in (i + 1):N) {
-        K[i, j] = exp(-dot_self((x[i] - x[j]) ./ theta)) + nugget;
+        K[i, j] = exp((-1) * dot_self((x[i] - x[j]) ./ theta));
         K[j, i] = K[i, j];
       }
     }
@@ -42,7 +42,7 @@ data {
 parameters {
   vector<lower=0>[D] theta;
   real<lower=0> sigma;
-  real <lower=0, upper=1> nugget;
+  real <lower=1e-9, upper=1> nugget;
   vector[N] eta;
 }
 
