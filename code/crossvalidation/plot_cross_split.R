@@ -17,12 +17,26 @@ interpol_comparison_group_split <- interpol_comparison_split %>% dplyr::filter(
   dplyr::summarise(
     mean_squared_difference = mean(difference^2),
   ) %>%
+  dplyr::ungroup() %>% 
+  dplyr::group_by(dependent_var, setup, g) %>%
+  dplyr::mutate(
+    min = mean_squared_difference == min(mean_squared_difference),
+    #mean_squared_difference = mean_squared_difference - min(mean_squared_difference)
+  ) %>%
   dplyr::ungroup()
 
-interpol_comparison_group_split %>%
-  ggplot() +
+
+ggplot() +
   geom_raster(
-    aes(x = ds, y = dt, fill = mean_squared_difference)
+    data = interpol_comparison_group_split,
+    mapping = aes(x = ds, y = dt, fill = mean_squared_difference)
+  ) +
+  geom_point(
+    data = interpol_comparison_group_split %>% dplyr::filter(min),
+    mapping = aes(x = ds, y = dt),
+    shape = 4,
+    color = "red",
+    size = 3
   ) +
   #scale_fill_viridis_c(direction = -1) +
   scale_fill_distiller(palette = "Spectral") +
