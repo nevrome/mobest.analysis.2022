@@ -12,29 +12,47 @@ library(magrittr)
 # x3 <- anno$calage_center
 # y <- anno$PC1
 
-independent <- tibble::tibble(
-  x1 <- seq(10, 200, 10),
-  x2 <- 21:40,
-  x3 <- 41:60
+# world <- expand.grid(
+#   x1 = 1:3,
+#   x2 = 1:3,
+#   x3 = c(1, 10, 100)
+# ) %>%
+#   dplyr::mutate(
+#     y = x1 + x2
+#   ) %>%
+#   dplyr::group_by(x1, x2) %>%
+#   dplyr::mutate(
+#     y = y / x3
+#   ) %>% 
+#   dplyr::ungroup()
+# 
+# # linear fit
+# # model <- stats::lm(y ~ x1 + x2 + x3, data = world)
+# 
+# ind <- world %>% dplyr::select(x1, x2, x3)
+# # dep <- model[["residuals"]]
+# dep <- world$y
+
+world <- expand.grid(
+  x1 = 1:3,
+  x2 = 1:3,
+  x3 = 1:3
 )
-dependent <- x1 + x2 + x3 + rnorm(length(x1), 0, 5)
+world$y <- c(rep(-100, 9), rep(0, 9), rep(100, 9))
 
-# linear fit
-combined <- independent %>% dplyr::mutate(d = dependent)
-model <- stats::lm(d ~ x1 + x2 + x3, data = combined)
-dependent <- model[["residuals"]]
-
+ind <- world %>% dplyr::select(x1, x2, x3)
+dep <- world$y
 
 fit <- rstan::stan(
   file = "code/bayesian_inference/gpr.stan", 
   data = list(
     D = 3,
-    x = data.frame(x1, x2, x3),
-    N = length(dependent),
-    y = dependent
+    x = ind,
+    N = length(dep),
+    y = dep
   ),
   chains = 1,
-  cores = 5
+  cores = 1
 )
 
 rstan::plot(fit)
