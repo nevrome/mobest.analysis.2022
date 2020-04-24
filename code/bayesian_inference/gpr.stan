@@ -1,6 +1,6 @@
 functions {
   
-  matrix L_cov_exp_quad_ARD(
+  matrix cov(
     vector[] x,
     vector theta,
     real nugget
@@ -50,14 +50,14 @@ parameters {
 model {
   vector[N] f;
   {
-    matrix[N, N] L_K = L_cov_exp_quad_ARD(x, theta, nugget);
+    matrix[N, N] L_K = cov(x, theta, nugget);
     f = L_K * eta;
   }
 
-  theta ~ inv_gamma(5, 5);
+  theta ~ uniform(1, 2000);
   sigma ~ std_normal();
   eta ~ std_normal();
-  nugget ~ inv_gamma(3, 0.3);
+  nugget ~ normal(0, 0.2);
 
   y ~ normal(f, sigma);
 }
