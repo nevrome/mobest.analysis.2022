@@ -40,21 +40,22 @@ data {
   vector[N] y;
 }
 
-transformed data {
-  real delta = 1e-9;
-}
+// transformed data {
+//   real delta = 1e-9;
+// }
 
 parameters {
-  real<lower=0> alpha;
+  //real<lower=0> alpha;
   vector<lower=0>[D] theta;
   real<lower=0> sigma;
   vector[N] eta;
+  real<lower=0> delta;
 }
 
 transformed parameters {
   vector[N] f;
   {
-    matrix[N, N] L_K = cov(x, alpha, theta, delta);
+    matrix[N, N] L_K = cov(x, 1, theta, delta);
     f = L_K * eta;
   }
 }
@@ -62,8 +63,9 @@ transformed parameters {
 model {
   
   theta ~ normal(0, 1.5);
-  sigma ~ std_normal();
+  sigma ~ normal(0, 0.01);
   eta ~ std_normal();
+  delta ~ normal(0, 0.01);
 
   //print(f);
 
