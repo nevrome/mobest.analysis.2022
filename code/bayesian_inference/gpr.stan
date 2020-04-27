@@ -4,7 +4,7 @@ functions {
     vector[] x,
     real alpha,
     vector theta,
-    real epsilon
+    real delta
   ) {
     
     // prepare variables
@@ -15,13 +15,13 @@ functions {
 
     // calculate covariance matrix
     for (i in 1:(N-1)) {
-      K[i, i] = sq_alpha + epsilon;
+      K[i, i] = sq_alpha + delta;
       for (j in (i + 1):N) {
         K[i, j] = sq_alpha * exp((-1) * dot_self((x[i] - x[j]) ./ theta));
         K[j, i] = K[i, j];
       }
     }
-    K[N, N] = sq_alpha + epsilon;
+    K[N, N] = sq_alpha + delta;
     
     // apply cholesky decomposition on covariance matrix
     K_cholesky = cholesky_decompose(K);
@@ -40,12 +40,14 @@ data {
   vector[N] y;
 }
 
+transformed data {
+  real delta = 1e-9;
+}
 
 parameters {
   real<lower=0> alpha;
   vector<lower=0>[D] theta;
   real<lower=0> sigma;
-  real <lower=1e-9, upper=1> epsilon;
   vector[N] eta;
 }
 
@@ -53,14 +55,13 @@ model {
   
   vector[N] f;
   {
-    matrix[N, N] L_K = cov(x, alpha, theta, epsilon);
+    matrix[N, N] L_K = cov(x, alpha, theta, delta);
     f = L_K * eta;
   }
 
-  theta ~ uniform(0, 3);
+  theta ~ normal(0, 1.5);
   sigma ~ std_normal();
   eta ~ std_normal();
-  epsilon ~ std_normal();
 
   y ~ normal(f, sigma);
   
