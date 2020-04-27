@@ -51,18 +51,34 @@ parameters {
   vector[N] eta;
 }
 
-model {
-  
+transformed parameters {
   vector[N] f;
   {
     matrix[N, N] L_K = cov(x, alpha, theta, delta);
     f = L_K * eta;
   }
+}
 
+model {
+  
   theta ~ normal(0, 1.5);
   sigma ~ std_normal();
   eta ~ std_normal();
 
+  //print(f);
+
   y ~ normal(f, sigma);
   
 }
+
+// generate simulated observations
+generated quantities {
+  real y_sim[N];
+  y_sim = normal_rng(f, sigma);
+}
+
+
+
+
+
+

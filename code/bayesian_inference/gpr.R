@@ -12,39 +12,24 @@ library(magrittr)
 # x3 <- anno$calage_center
 # y <- anno$PC1
 
-# world <- expand.grid(
-#   x1 = 1:3,
-#   x2 = 1:3,
-#   x3 = c(1, 10, 100)
-# ) %>%
-#   dplyr::mutate(
-#     y = x1 + x2
-#   ) %>%
-#   dplyr::group_by(x1, x2) %>%
-#   dplyr::mutate(
-#     y = y / x3
-#   ) %>% 
-#   dplyr::ungroup()
-# 
-# # linear fit
-# # model <- stats::lm(y ~ x1 + x2 + x3, data = world)
-# 
-# ind <- world %>% dplyr::select(x1, x2, x3)
-# # dep <- model[["residuals"]]
-# dep <- world$y
-
 world <- expand.grid(
   x1 = 1:3,
   x2 = 1:3,
   x3 = 1:3
-)
-world$y <- c(rep(-100, 9), rep(0, 9), rep(100, 9))
+) %>%
+  dplyr::mutate(
+    x1 = x1 + rnorm(nrow(.), 0, 0.2),
+    x2 = x2 + rnorm(nrow(.), 0, 0.2),
+    x3 = x3 + rnorm(nrow(.), 0, 0.2)
+  )
+world$y <- c(rep(-100, 9), rep(0, 9), rep(100, 9)) + rnorm(nrow(world), 0, 5)
 
 ind <- world %>% dplyr::select(x1, x2, x3)
 dep <- world$y
 
+
 fit <- rstan::stan(
-  file = "code/bayesian_inference/gpr.stan", 
+  file = "code/bayesian_inference/gpr.stan",
   data = list(
     D = 3,
     x = ind,
@@ -52,8 +37,10 @@ fit <- rstan::stan(
     y = dep
   ),
   chains = 1,
-  cores = 1
+  cores = 1,
+  control = list(max_treedepth = 10)
 )
+
 
 rstan::plot(fit)
 
@@ -64,4 +51,8 @@ ex$theta[,2] %>% hist()
 ex$theta[,3] %>% hist()
 
 ex$nugget %>% hist()
+
+####
+
+
 
