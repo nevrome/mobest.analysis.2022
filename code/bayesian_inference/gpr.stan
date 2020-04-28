@@ -52,9 +52,9 @@ data {
 parameters {
   //real<lower=0> alpha;
   vector<lower=0>[2] theta;
+  real<lower=0> delta;
   real<lower=0> sigma;
   vector[N] eta;
-  real<lower=0> delta;
 }
 
 transformed parameters {
@@ -69,8 +69,8 @@ model {
   
   theta ~ normal(0, 1.5);
   sigma ~ normal(0, 0.01);
-  eta ~ std_normal();
   delta ~ normal(0, 0.01);
+  eta ~ std_normal();
 
   //print(f);
 
