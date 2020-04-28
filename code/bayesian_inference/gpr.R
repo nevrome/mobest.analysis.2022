@@ -31,7 +31,6 @@ dep <- world$y
 fit <- rstan::stan(
   file = "code/bayesian_inference/gpr.stan",
   data = list(
-    D = 3,
     x = ind,
     N = length(dep),
     y = dep
