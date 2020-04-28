@@ -10,7 +10,6 @@ functions {
     // prepare variables
     int N = size(x);
     matrix[N, N] K;
-    matrix[N, N] K_cholesky;
     real sq_alpha = square(alpha);
     
     // theta_1 and theta_2 (the spatial dimensions) should be equal
@@ -29,15 +28,11 @@ functions {
     }
     K[N, N] = sq_alpha + delta;
     
-    // apply cholesky decomposition on covariance matrix
-    K_cholesky = cholesky_decompose(K);
-    
-    return K_cholesky;
+    return K;
     
   }
   
 }
-
 
 data {
   int<lower=1> N;
@@ -45,48 +40,25 @@ data {
   vector[N] y;
 }
 
-// transformed data {
-//   real delta = 1e-9;
-// }
-
 parameters {
   real<lower=0> alpha;
   vector<lower=0>[2] theta;
   real<lower=0> delta;
-  real<lower=0> sigma;
-  vector[N] eta;
 }
 
 transformed parameters {
-  vector[N] f;
-  {
-    matrix[N, N] L_K = cov(x, alpha, theta, delta);
-    f = L_K * eta;
-  }
+  matrix[N, N] Sigma = cov(x, alpha, theta, delta);
 }
 
 model {
-  
-  theta ~ normal(500, 500);
-  sigma ~ normal(0, 0.0001);
-  delta ~ normal(0, 0.01);
-  eta ~ std_normal();
-  // alpha: no prior at all, which in Stan is equivalent to a noninformative uniform prior on the parameter
-
-  //print(f);
-
-  y ~ normal(f, sigma);
-  
+  theta ~ normal(0, 50);
+  delta ~ normal(0, 0.1);
+  target += -log(alpha);
+  y ~ multi_normal(rep_vector(0, N), Sigma);
 }
 
 // generate simulated observations
-generated quantities {
-  real y_sim[N];
-  y_sim = normal_rng(f, sigma);
-}
-
-
-
-
-
-
+// generated quantities {
+//   vector[N] y_sim;
+//   y_sim = multi_normal_rng(rep_vector(0, N), Sigma);
+// }
