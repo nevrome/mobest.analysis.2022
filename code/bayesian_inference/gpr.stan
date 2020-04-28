@@ -67,7 +67,7 @@ transformed parameters {
 
 model {
   
-  theta ~ normal(0, 1.5);
+  theta ~ normal(500, 500);
   sigma ~ normal(0, 0.0001);
   delta ~ normal(0, 0.01);
   eta ~ std_normal();

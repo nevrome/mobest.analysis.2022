@@ -41,15 +41,42 @@ ex$nugget %>% hist()
 
 ####
 
-# load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
-# anno <- anno_1240K_and_anno_1240K_HumanOrigins_final %>%
-#   dplyr::filter(
-#     region_id == "Central Europe",
-#     calage_center > -4000, calage_center < -2300
-#   )
-# 
-# x1 <- anno$x
-# x2 <- anno$y
-# x3 <- anno$calage_center
-# y <- anno$PC1
+load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
+
+anno <- anno_1240K_and_anno_1240K_HumanOrigins_final %>%
+  dplyr::filter(
+    region_id == "Central Europe",
+    calage_center > -4000, calage_center < -2300
+  )
+# ds = 97.65 +- 6.78
+# dt = 2700.05 +- 169.37
+# g = 0.00 +- 0.000
+# sigma = 0.00 +- 0.000
+
+anno <- anno_1240K_and_anno_1240K_HumanOrigins_final %>%
+  dplyr::filter(
+    region_id == "Central Europe",
+    calage_center > -3000, calage_center < -1000
+  )
+# ds = 2534.68 +- 39.58
+# dt = 282.67 +- 5.49
+# g = 0.00 +- 0.000
+# sigma = 0.00 +- 0.000
+
+fit <- rstan::stan(
+  file = "code/bayesian_inference/gpr.stan",
+  data = list(
+    x = data.frame(x1 = anno$x/1000, x2 = anno$y/1000, x3 = anno$calage_center),
+    N = length(anno$PC1),
+    y = anno$PC1
+  ),
+  chains = 1,
+  cores = 1,
+  warmup = 300,
+  iter = 400,
+  control = list(max_treedepth = 10)
+)
+
+
+
 
