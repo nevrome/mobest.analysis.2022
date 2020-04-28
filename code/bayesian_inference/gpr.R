@@ -62,21 +62,35 @@ anno <- anno_1240K_and_anno_1240K_HumanOrigins_final %>%
 # g = 0.00 +- 0.000
 # sigma = 0.00 +- 0.000
 
-anno <- anno_1240K_and_anno_1240K_HumanOrigins_final %>%
-  dplyr::sample_n(200)
+anno <- anno_1240K_and_anno_1240K_HumanOrigins_final# %>%
+  #dplyr::sample_n(600)
+
+world <- anno %>% 
+  dplyr::transmute(
+   x1 = x/1000, 
+   x2 = y/1000, 
+   x3 = calage_center, 
+   y = PC1
+  )
+
+ind <- world %>% dplyr::select(x1, x2, x3)
+model <- stats::lm(y ~ x1 + x2 + x3, data = world)
+dep <- model[["residuals"]]
 
 fit <- rstan::stan(
   file = "code/bayesian_inference/gpr.stan",
   data = list(
-    x = data.frame(x1 = anno$x/1000, x2 = anno$y/1000, x3 = anno$calage_center),
-    N = length(anno$PC1),
-    y = anno$PC1
+    x = ind,
+    N = length(dep),
+    y = dep
   ),
-  chains = 4,
-  cores = 4,
+  chains = 1,
+  cores = 1,
   warmup = 1000,
   iter = 1200,
-  control = list(max_treedepth = 10)
+  control = list(max_treedepth = 10),
+  include = FALSE,
+  pars = "Sigma"
 )
 
 save(fit, file = "code/bayesian_inference/fit.RData")

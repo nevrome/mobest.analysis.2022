@@ -51,8 +51,8 @@ transformed parameters {
 }
 
 model {
-  theta ~ normal(0, 50);
-  delta ~ normal(0, 0.1);
+  theta ~ uniform(1, 1000);
+  delta ~ normal(0, 0.2);
   target += -log(alpha);
   y ~ multi_normal(rep_vector(0, N), Sigma);
 }
