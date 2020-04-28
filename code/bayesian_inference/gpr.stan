@@ -50,7 +50,7 @@ data {
 // }
 
 parameters {
-  //real<lower=0> alpha;
+  real<lower=0> alpha;
   vector<lower=0>[2] theta;
   real<lower=0> delta;
   real<lower=0> sigma;
@@ -60,7 +60,7 @@ parameters {
 transformed parameters {
   vector[N] f;
   {
-    matrix[N, N] L_K = cov(x, 1, theta, delta);
+    matrix[N, N] L_K = cov(x, alpha, theta, delta);
     f = L_K * eta;
   }
 }
@@ -71,6 +71,7 @@ model {
   sigma ~ normal(0, 0.0001);
   delta ~ normal(0, 0.01);
   eta ~ std_normal();
+  // alpha: no prior at all, which in Stan is equivalent to a noninformative uniform prior on the parameter
 
   //print(f);
 
