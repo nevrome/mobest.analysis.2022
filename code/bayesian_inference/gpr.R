@@ -15,6 +15,9 @@ world$y <- c(rep(-100, 9), rep(0, 9), rep(100, 9)) + rnorm(nrow(world), 0, 5)
 ind <- world %>% dplyr::select(x1, x2, x3)
 dep <- world$y
 
+# linear model
+model <- stats::lm(y ~ x1 + x2 + x3, data = world)
+dep <- model[["residuals"]]
 
 fit <- rstan::stan(
   file = "code/bayesian_inference/gpr.stan",
@@ -25,19 +28,15 @@ fit <- rstan::stan(
   ),
   chains = 1,
   cores = 1,
-  control = list(max_treedepth = 10)
+  control = list(max_treedepth = 10),
+  include = FALSE,
+  pars = "Sigma"
 )
-
-
-rstan::plot(fit)
 
 ex <- rstan::extract(fit)
 
-ex$theta[,1] %>% hist()
-ex$theta[,2] %>% hist()
-ex$theta[,3] %>% hist()
-
-ex$nugget %>% hist()
+# linear model
+pred$mean <- pred$mean + stats::predict(model, ind)
 
 ####
 
@@ -63,6 +62,9 @@ anno <- anno_1240K_and_anno_1240K_HumanOrigins_final %>%
 # g = 0.00 +- 0.000
 # sigma = 0.00 +- 0.000
 
+anno <- anno_1240K_and_anno_1240K_HumanOrigins_final %>%
+  dplyr::sample_n(200)
+
 fit <- rstan::stan(
   file = "code/bayesian_inference/gpr.stan",
   data = list(
@@ -70,13 +72,18 @@ fit <- rstan::stan(
     N = length(anno$PC1),
     y = anno$PC1
   ),
-  chains = 1,
-  cores = 1,
-  warmup = 300,
-  iter = 400,
+  chains = 4,
+  cores = 4,
+  warmup = 1000,
+  iter = 1200,
   control = list(max_treedepth = 10)
 )
 
+save(fit, file = "code/bayesian_inference/fit.RData")
 
-
+# ex <- as.data.frame(fit) %>% tibble::as_tibble()
+# 
+# ex$`y_sim[150]`
+# 
+# anno$PC1[150]
 
