@@ -43,9 +43,11 @@ plink --bfile 1240K_HumanOrigins.pruned --cluster --mds-plot 4
 
 ## First result
 
+![](../../plots/samples_MDS_unfiltered.jpeg)
 
 ## Removing outliers (95% range for each of the 4 dimensions)
 
+![](../../plots/samples_MDS.jpeg)
 
 ## Comparison with PCA
 

@@ -1,13 +1,21 @@
 library(magrittr)
 library(ggplot2)
 
+mds_unfiltered <- readr::read_delim("data/mds/1240K_HumanOrigins.pruned.mds", " ", trim_ws = T) %>%
+  dplyr::select(-FID, -X8, -SOL)
+
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
 anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
+
+anno <- anno %>%
+  dplyr::left_join(
+    mds_unfiltered, by = c("sample_id" = "IID"), suffix = c("", "_unfiltered")
+  )
 
 p <- ggplot() +
   geom_point(
     data = anno,
-    aes(x = C1, y = C2, color = region_id, shape = age_group_id),
+    aes(x = C1_unfiltered, y = C2_unfiltered, color = region_id, shape = age_group_id),
     alpha = 0.7,
     size = 2
   ) +
@@ -38,11 +46,11 @@ p <- ggplot() +
     color = guide_legend(title = ""),
     shape = guide_legend(title = "median age calBC")
   ) +
-  coord_fixed() +
+  #coord_fixed() +
   scale_y_reverse()
 
 ggsave(
-  paste0("plots/samples_MDS.jpeg"),
+  paste0("plots/samples_MDS_unfiltered.jpeg"),
   plot = p,
   device = "jpeg",
   scale = 0.5,
