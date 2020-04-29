@@ -1,6 +1,6 @@
 ---
 title: "MDS"
-subtitle: "A small exploration" 
+subtitle: "A quick exploration in 9 slides" 
 output: beamer_presentation
 classoption: "aspectratio=169"
 editor_options: 
@@ -21,17 +21,18 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ![](MDS_vikings.jpg)
 
-## My exploration (with significant help by Joscha)
+## My exploration (with significant help from Joscha)
 
-- Data: European and Near Eastern subset with samples between 7500 and 500 calBC from the (old) 1240K+HumanOrigins dataset
-- Steps:
+- Data: Western Eurasian subset with samples between 7500 and 500 calBC from the (old) 1240K+HumanOrigins dataset
+
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
 
 ```
 # pruning (removing region with much linkage disequilibrium)
 plink --file 1240K_HumanOrigins --exclude code/mds/myrange.txt 
 --range --maf --make-bed --out 1240K_HumanOrigins.pruned
 
-# generate pairwise IBS distance (1 - F2)
+# calculate pairwise IBS distance (1 - F2)
 plink --bfile 1240K_HumanOrigins.pruned --genome 
 --out 1240K_HumanOrigins.pruned
 
@@ -57,6 +58,6 @@ plink --bfile 1240K_HumanOrigins.pruned --cluster --mds-plot 4
 
 ![](../../plots/samples_PCA_MDS_comparison.jpeg)
 
-# Pointless linear models
+## What makes MDS outliers MDS outliers?
 
-
+![](../../plots/mds_outlier_analysis.jpeg)
