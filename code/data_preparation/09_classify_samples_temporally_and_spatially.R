@@ -34,7 +34,7 @@ anno <- anno %>%
     age_group_id = cut(
       calage_center, 
       breaks = seq(-10000, 2000, 2000), 
-      labels = c(">-10000", paste0(seq(-8000, -2000, 2000), " - ", seq(-6000, -0, 2000)), ">0")
+      labels = c(">-8000", paste0(seq(-8000, -2000, 2000), " - ", seq(-6000, -0, 2000)), ">0")
     )
   )
 
