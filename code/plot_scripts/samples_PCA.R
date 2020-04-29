@@ -30,13 +30,12 @@ p <- ggplot() +
     axis.title = element_text(size = 12),
     axis.text = element_text(size = 12),
     legend.text = element_text(size = 12),
-    legend.title = element_blank(),
     legend.position = "right"
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
   scale_shape_manual(
     values = c(
-      ">-10000" = 15,
+      ">-8000" = 15,
       "-8000 - -6000" = 15,
       "-6000 - -4000" = 17,
       "-4000 - -2000" = 6,
@@ -49,15 +48,19 @@ p <- ggplot() +
       "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#2fff00"
     )
   ) +
+  guides(
+    color = guide_legend(title = ""),
+    shape = guide_legend(title = "median age calBC")
+  ) +
   coord_fixed()
 
 ggsave(
   paste0("plots/samples_PCA.jpeg"),
   plot = p,
   device = "jpeg",
-  scale = 0.8,
+  scale = 0.5,
   dpi = 300,
-  width = 330, height = 250, units = "mm",
+  width = 400, height = 230, units = "mm",
   limitsize = F
 )
 

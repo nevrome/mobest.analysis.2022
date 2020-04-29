@@ -51,6 +51,7 @@ plink --bfile 1240K_HumanOrigins.pruned --cluster --mds-plot 4
 
 ## Comparison with PCA
 
+![](../../plots/samples_PCA.jpeg)
 
 ## Comparison with PCA
 
