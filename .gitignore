@@ -52,3 +52,7 @@ schemata/*.png
 
 # github access token
 .github_pat
+
+# rendered stuff
+*.pdf
+*.html
