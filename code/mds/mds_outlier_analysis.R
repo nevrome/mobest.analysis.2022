@@ -1,4 +1,5 @@
 library(magrittr)
+library(ggplot2)
 
 mds <- readr::read_delim("data/mds/1240K_HumanOrigins.pruned.mds", " ", trim_ws = T) %>%
   dplyr::select(-X8)
@@ -14,8 +15,7 @@ mds <- mds %>%
     C3_in_95 = inquant(C3),
     C4_in_95 = inquant(C4),
     in_95 = C1_in_95 & C2_in_95 & C3_in_95 & C4_in_95
-  ) %>% 
-  dplyr::select(IID, in_95)
+  )
 
 load("data/anno_1240K.RData")
 anno_1240K
@@ -90,4 +90,111 @@ ggsave(
   width = 400, height = 230, units = "mm",
   limitsize = F
 )
+
+# linear model
+
+out_meas <- function(x) {
+  low_quant <- quantile(x, probs = 0.025)
+  up_quant <- quantile(x, probs = 0.975)
+  ifelse(x < low_quant, abs(x - low_quant), ifelse(x > up_quant, abs(up_quant - x), 0))
+}
+
+ou <- mds2 %>%
+  dplyr::mutate(
+    C1_out = out_meas(C1),
+    C2_out = out_meas(C2),
+    C3_out = out_meas(C3),
+    C4_out = out_meas(C4)
+  ) %>% 
+  dplyr::filter(!C1_in_95, C1_out < 0.05)
+  
+
+ou %>%
+  ggplot(aes(x = coverage, y = C1_out)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+ou %>%
+  ggplot(aes(x = snps_hit_on_autosomes, y = C1_out)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+prior_sample_1 <- tibble::tibble(
+  alpha = rnorm(100, median(ou$C1_out), sd(ou$C1_out)),
+  beta = rnorm(100, 0.00000001, 0.00000002)
+)
+
+ggplot() +
+  geom_point(
+    data = ou,
+    mapping =  aes(x = snps_hit_on_autosomes, y = C1_out)
+  ) +
+  geom_abline(
+    intercept = prior_sample_1$alpha,
+    slope = prior_sample_1$beta,
+    alpha = 0.1,
+    color = "red"
+  )
+
+prior_sample_2 <- tibble::tibble(
+  alpha = rnorm(100, median(ou$C1_out), sd(ou$C1_out)),
+  beta = rnorm(100, 0.001, 0.002)
+)
+
+ggplot() +
+  geom_point(
+    data = ou,
+    mapping =  aes(x = coverage, y = C1_out)
+  ) +
+  geom_abline(
+    intercept = prior_sample_2$alpha,
+    slope = prior_sample_2$beta,
+    alpha = 0.1,
+    color = "red"
+  )
+
+fit <- rstan::stan(
+  file = "code/mds/lm.stan", 
+  data = list(
+    N = nrow(ou),
+    x1 = ou$snps_hit_on_autosomes,
+    x2 = ou$coverage,
+    y = ou$C1_out,
+    alpha_mean = median(ou$C1_out),
+    alpha_sd = sd(ou$C1_out),
+    beta_x1_mean = 0.00000001,
+    beta_x1_sd = 0.00000002,
+    beta_x2_mean = 0.001,
+    beta_x2_sd = 0.002
+  ),
+  chains = 1,
+  cores = 1
+)
+
+ex <- rstan::extract(fit)
+
+ggplot() +
+  geom_point(
+    data = ou,
+    mapping =  aes(x = snps_hit_on_autosomes, y = C1_out)
+  ) +
+  geom_abline(
+    intercept = ex$alpha,
+    slope = ex$beta_x1,
+    alpha = 0.01,
+    color = "red"
+  )
+
+ggplot() +
+  geom_point(
+    data = ou,
+    mapping =  aes(x = coverage, y = C1_out)
+  ) +
+  geom_abline(
+    intercept = ex$alpha,
+    slope = ex$beta_x2,
+    alpha = 0.01,
+    color = "red"
+  )
+
 
