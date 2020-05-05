@@ -33,13 +33,13 @@ p_map <- ggplot() +
   theme(
     axis.title = element_blank(),
     axis.text = element_text(size = 10),
-    panel.grid.major = element_line(colour = "grey", size = 0.3),
     legend.position = "none",
     legend.background = element_blank(),
     legend.title = element_text(size = 13),
     legend.spacing.x = unit(0.2, 'cm'),
     legend.key.height = unit(0.4, 'cm'),
-    legend.text = element_text(size = 9)
+    legend.text = element_text(size = 9),
+    panel.background = element_rect(fill = "#BFD5E3")
   ) +
   scale_color_manual(
     values = c(
