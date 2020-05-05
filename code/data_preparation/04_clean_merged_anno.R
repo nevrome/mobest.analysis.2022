@@ -5,7 +5,7 @@ load("data/anno_1240K_and_anno_1240K_HumanOrigins_raw.RData")
 anno <- anno_1240K_and_anno_1240K_HumanOrigins_raw
 
 #### clean and restructure temporal information ####
-source("R/data_preparation/helper_functions.R")
+source("code/data_preparation/helper_functions.R")
 
 # clean age string
 anno <- anno %>%
