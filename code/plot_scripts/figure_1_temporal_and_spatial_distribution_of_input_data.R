@@ -34,11 +34,12 @@ p_map <- ggplot() +
     axis.title = element_blank(),
     axis.text = element_text(size = 10),
     panel.grid.major = element_line(colour = "grey", size = 0.3),
-    legend.position = "bottom",
+    legend.position = "none",
     legend.background = element_blank(),
     legend.title = element_text(size = 13),
     legend.spacing.x = unit(0.2, 'cm'),
-    legend.key.height = unit(0.4, 'cm')
+    legend.key.height = unit(0.4, 'cm'),
+    legend.text = element_text(size = 9)
   ) +
   scale_color_manual(
     values = c(
@@ -64,8 +65,8 @@ p_map <- ggplot() +
     )
   ) +
   guides(
-    color = guide_legend(title = "Region", nrow = 4, ncol = 3),
-    shape = guide_legend(title = "Time", ncol = 1)
+    color = guide_legend(title = "Region", nrow = 3, ncol = 4),
+    shape = guide_legend(title = "Time", nrow = 3, col = 2)
   )
 
 # 3D plot
@@ -140,7 +141,11 @@ p_tempdist <- summed_normalized_probability_distribution %>%
 
 right <- cowplot::plot_grid(p_3D, p_tempdist, ncol = 1, labels = c("B", "C"), hjust = 0.6, vjust = 0.8)
 
-p <- cowplot::plot_grid(p_map, right, ncol = , rel_widths = c(1, 0.45), labels = c("A", NA), scale = 0.97)
+top <- cowplot::plot_grid(p_map, right, nrow = 1, ncol = 2, rel_widths = c(1, 0.4), labels = c("A", NA), scale = 0.97)
+
+legend <- cowplot::get_legend(p_map + theme(legend.position = "bottom"))
+
+p <- cowplot::plot_grid(top, legend, nrow = 2, rel_heights = c(1, 0.1))
 
 ggsave(
   paste0("plots/figure_1_temporal_and_spatial_distribution_of_input_data.tiff"),
@@ -148,7 +153,7 @@ ggsave(
   device = "tiff",
   scale = 0.5,
   dpi = 300,
-  width = 550, height = 300, units = "mm",
+  width = 630, height = 300, units = "mm",
   limitsize = F
 )
 
