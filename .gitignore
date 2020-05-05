@@ -39,7 +39,8 @@ vignettes/*.pdf
 .Renviron
 
 # data
-data/
+*.RData
+!data_tracked/**/*.RData
 
 # plots
 plots/
