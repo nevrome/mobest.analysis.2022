@@ -148,9 +148,9 @@ legend <- cowplot::get_legend(p_map + theme(legend.position = "bottom"))
 p <- cowplot::plot_grid(top, legend, nrow = 2, rel_heights = c(1, 0.1))
 
 ggsave(
-  paste0("plots/figure_1_temporal_and_spatial_distribution_of_input_data.tiff"),
+  paste0("plots/figure_1_temporal_and_spatial_distribution_of_input_data.jpeg"),
   plot = p,
-  device = "tiff",
+  device = "jpeg",
   scale = 0.5,
   dpi = 300,
   width = 630, height = 300, units = "mm",
