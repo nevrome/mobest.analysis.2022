@@ -117,7 +117,7 @@ p_pca_large_kernel <- ggplot() +
     axis.text = element_text(size = 12),
     legend.text = element_text(size = 12),
     legend.title = element_blank(),
-    legend.position = "right"
+    legend.position = "none"
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
   coord_fixed()
@@ -290,9 +290,6 @@ p_pca_small_kernel <- ggplot() +
   guides(color = guide_legend(override.aes = list(size = 2))) +
   coord_fixed()
 
-p_pca_bottom <- cowplot::plot_grid(p_pca_medium_kernel, p_pca_small_kernel, nrow = 1)
-p_pca <- cowplot::plot_grid(p_pca_large_kernel, p_pca_bottom, ncol = 1, rel_heights = c(1, 0.7))
-
 #### MDS ####
 
 # large kernel
@@ -371,7 +368,7 @@ p_mds_large_kernel <- ggplot() +
     axis.text = element_text(size = 12),
     legend.text = element_text(size = 12),
     legend.title = element_blank(),
-    legend.position = "right"
+    legend.position = "none"
   ) +
   coord_fixed() +
   scale_y_reverse()
@@ -477,7 +474,8 @@ p_mds_small_kernel <- ggplot() +
       "Caucasus" = "#D55E00", 
       "Italy" = "#CC79A7", 
       "Southeastern Europe" = "#2fff00"
-    )
+    ),
+    guide = guide_legend(title = "Region", ncol = 2)
   ) +
   scale_shape_manual(
     values = c(
@@ -487,9 +485,6 @@ p_mds_small_kernel <- ggplot() +
       "-4000 - -2000" = 6,
       "-2000 - 0" = 4
     )
-  ) +
-  guides(
-    color = guide_legend()
   ) +
   ggnewscale::new_scale_color() +
   geom_path(
@@ -533,24 +528,57 @@ p_mds_small_kernel <- ggplot() +
     axis.text = element_text(size = 12),
     legend.text = element_text(size = 12),
     legend.title = element_blank(),
-    legend.position = "none"
+    legend.position = "bottom"
   ) +
   coord_fixed() +
-  scale_y_reverse()
-
-p_mds_bottom <- cowplot::plot_grid(p_mds_medium_kernel, p_mds_small_kernel, nrow = 1)
-p_mds <- cowplot::plot_grid(p_mds_large_kernel, p_mds_bottom, ncol = 1, rel_heights = c(1, 0.7))
+  scale_y_reverse() +
+  guides(
+    color = guide_legend(title = "Time prediction", ncol = 1),
+    shape = guide_legend(title = "Time", ncol = 1)
+  )
 
 #### merge plots ####
 
-p <- cowplot::plot_grid(p_pca, p_mds, ncol = 1)
+p_mds_bottom <- cowplot::plot_grid(
+  p_mds_medium_kernel, 
+  p_mds_small_kernel + theme(legend.position = "none"), 
+  nrow = 1, 
+  labels = c("E", "F"), label_size = 17
+)
+p_mds <- cowplot::plot_grid(
+  p_mds_large_kernel, 
+  p_mds_bottom, 
+  ncol = 1, rel_heights = c(1, 0.8), 
+  labels = c("D", NA), label_size = 17
+)
+
+p_pca_bottom <- cowplot::plot_grid(
+  p_pca_medium_kernel, 
+  p_pca_small_kernel, 
+  nrow = 1, 
+  labels = c("B", "C"), label_size = 17
+)
+p_pca <- cowplot::plot_grid(
+  p_pca_large_kernel, 
+  p_pca_bottom, 
+  ncol = 1, rel_heights = c(1, 0.8), 
+  labels = c("A", NA), label_size = 17
+)
+
+p <- cowplot::plot_grid(
+  p_pca, 
+  cowplot::get_legend(p_mds_small_kernel), 
+  p_mds, 
+  ncol = 1, rel_heights = c(1, 0.3, 1)
+)
 
 ggsave(
   paste0("plots/figure_4_timepillars_Berlin.jpeg"),
   plot = p,
   device = "jpeg",
-  scale = 1,
+  scale = 0.7,
   dpi = 300,
-  width = 300, height = 600, units = "mm",
+  width = 300, height = 700, units = "mm",
   limitsize = F
 )
+
