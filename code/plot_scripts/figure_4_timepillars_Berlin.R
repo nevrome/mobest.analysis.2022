@@ -78,7 +78,8 @@ p_pca_large_kernel <- ggplot() +
   ggnewscale::new_scale_color() +
   geom_path(
     data = poi_timeseries_large_kernel,
-    aes(x = mean_PC1, y = mean_PC2)
+    aes(x = mean_PC1, y = mean_PC2),
+    size = 2
   ) +
   geom_errorbar(
     data = poi_timeseries_large_kernel,
@@ -120,7 +121,8 @@ p_pca_large_kernel <- ggplot() +
     legend.position = "none"
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
-  coord_fixed()
+  coord_fixed(xlim = c(-0.12, 0.09), ylim = c(-0.11, 0.08)) +
+  ggtitle("PCA: large kernel")
 
 # medium kernel
 p_pca_medium_kernel <- ggplot() +
@@ -162,7 +164,8 @@ p_pca_medium_kernel <- ggplot() +
   ggnewscale::new_scale_color() +
   geom_path(
     data = poi_timeseries_medium_kernel,
-    aes(x = mean_PC1, y = mean_PC2)
+    aes(x = mean_PC1, y = mean_PC2),
+    size = 2
   ) +
   geom_errorbar(
     data = poi_timeseries_medium_kernel,
@@ -204,7 +207,8 @@ p_pca_medium_kernel <- ggplot() +
     legend.position = "none"
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
-  coord_fixed()
+  coord_fixed(xlim = c(-0.12, 0.09), ylim = c(-0.11, 0.08)) +
+  ggtitle("PCA: medium kernel")
 
 # small kernel
 p_pca_small_kernel <- ggplot() +
@@ -246,7 +250,8 @@ p_pca_small_kernel <- ggplot() +
   ggnewscale::new_scale_color() +
   geom_path(
     data = poi_timeseries_small_kernel,
-    aes(x = mean_PC1, y = mean_PC2)
+    aes(x = mean_PC1, y = mean_PC2),
+    size = 2
   ) +
   geom_errorbar(
     data = poi_timeseries_small_kernel,
@@ -288,7 +293,8 @@ p_pca_small_kernel <- ggplot() +
     legend.position = "none"
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
-  coord_fixed()
+  coord_fixed(xlim = c(-0.12, 0.09), ylim = c(-0.11, 0.08)) +
+  ggtitle("PCA: small kernel")
 
 #### MDS ####
 
@@ -329,7 +335,8 @@ p_mds_large_kernel <- ggplot() +
   ggnewscale::new_scale_color() +
   geom_path(
     data = poi_timeseries_large_kernel,
-    aes(x = mean_C1, y = mean_C2)
+    aes(x = mean_C1, y = mean_C2),
+    size = 2
   ) +
   geom_errorbar(
     data = poi_timeseries_large_kernel,
@@ -370,8 +377,9 @@ p_mds_large_kernel <- ggplot() +
     legend.title = element_blank(),
     legend.position = "none"
   ) +
-  coord_fixed() +
-  scale_y_reverse()
+  coord_fixed(xlim = c(-0.09, 0.07), ylim = c(0.07, -0.06)) +
+  scale_y_reverse() +
+  ggtitle("MDS: large kernel")
 
 # medium kernel
 p_mds_medium_kernel <- ggplot() +
@@ -410,7 +418,8 @@ p_mds_medium_kernel <- ggplot() +
   ggnewscale::new_scale_color() +
   geom_path(
     data = poi_timeseries_medium_kernel,
-    aes(x = mean_C1, y = mean_C2)
+    aes(x = mean_C1, y = mean_C2),
+    size = 2
   ) +
   geom_errorbar(
     data = poi_timeseries_medium_kernel,
@@ -451,8 +460,9 @@ p_mds_medium_kernel <- ggplot() +
     legend.title = element_blank(),
     legend.position = "none"
   ) +
-  coord_fixed() +
-  scale_y_reverse()
+  coord_fixed(xlim = c(-0.09, 0.07), ylim = c(0.07, -0.06)) +
+  scale_y_reverse() +
+  ggtitle("MDS: medium kernel")
 
 # small kernel
 p_mds_small_kernel <- ggplot() +
@@ -489,7 +499,8 @@ p_mds_small_kernel <- ggplot() +
   ggnewscale::new_scale_color() +
   geom_path(
     data = poi_timeseries_small_kernel,
-    aes(x = mean_C1, y = mean_C2)
+    aes(x = mean_C1, y = mean_C2),
+    size = 2
   ) +
   geom_errorbar(
     data = poi_timeseries_small_kernel,
@@ -530,27 +541,15 @@ p_mds_small_kernel <- ggplot() +
     legend.title = element_blank(),
     legend.position = "bottom"
   ) +
-  coord_fixed() +
+  coord_fixed(xlim = c(-0.09, 0.07), ylim = c(0.07, -0.06)) +
   scale_y_reverse() +
   guides(
     color = guide_legend(title = "Time prediction", ncol = 1),
     shape = guide_legend(title = "Time", ncol = 1)
-  )
+  ) +
+  ggtitle("MDS: small kernel")
 
 #### merge plots ####
-
-p_mds_bottom <- cowplot::plot_grid(
-  p_mds_medium_kernel, 
-  p_mds_small_kernel + theme(legend.position = "none"), 
-  nrow = 1, 
-  labels = c("E", "F"), label_size = 17
-)
-p_mds <- cowplot::plot_grid(
-  p_mds_large_kernel, 
-  p_mds_bottom, 
-  ncol = 1, rel_heights = c(1, 0.8), 
-  labels = c("D", NA), label_size = 17
-)
 
 p_pca_bottom <- cowplot::plot_grid(
   p_pca_medium_kernel, 
@@ -561,15 +560,28 @@ p_pca_bottom <- cowplot::plot_grid(
 p_pca <- cowplot::plot_grid(
   p_pca_large_kernel, 
   p_pca_bottom, 
-  ncol = 1, rel_heights = c(1, 0.8), 
+  ncol = 1, rel_heights = c(1, 0.7), 
   labels = c("A", NA), label_size = 17
+)
+
+p_mds_bottom <- cowplot::plot_grid(
+  p_mds_medium_kernel, 
+  p_mds_small_kernel + theme(legend.position = "none"), 
+  nrow = 1, 
+  labels = c("E", "F"), label_size = 17
+)
+p_mds <- cowplot::plot_grid(
+  p_mds_large_kernel, 
+  p_mds_bottom, 
+  ncol = 1, rel_heights = c(1, 0.7), 
+  labels = c("D", NA), label_size = 17
 )
 
 p <- cowplot::plot_grid(
   p_pca, 
   cowplot::get_legend(p_mds_small_kernel), 
   p_mds, 
-  ncol = 1, rel_heights = c(1, 0.3, 1)
+  ncol = 1, rel_heights = c(1, 0.2, 1)
 )
 
 ggsave(
@@ -578,7 +590,7 @@ ggsave(
   device = "jpeg",
   scale = 0.7,
   dpi = 300,
-  width = 300, height = 700, units = "mm",
+  width = 300, height = 750, units = "mm",
   limitsize = F
 )
 
