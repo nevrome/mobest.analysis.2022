@@ -66,7 +66,7 @@ p_map <- ggplot() +
   ) +
   guides(
     color = guide_legend(title = "Region", nrow = 3, ncol = 4),
-    shape = guide_legend(title = "Time", nrow = 3, col = 2)
+    shape = guide_legend(title = "Time", nrow = 3, ncol = 2)
   )
 
 # 3D plot
