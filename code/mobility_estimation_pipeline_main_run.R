@@ -52,9 +52,9 @@ anno_mds <- anno %>% dplyr::filter(
 model_grid_mds <- mobest::create_model_grid(
   independent = list(
     tibble::tibble(
-      x = anno$x, 
-      y = anno$y, 
-      z = sapply(anno$calage_sample, function(x){ x[age_resampling_run] })
+      x = anno_mds$x, 
+      y = anno_mds$y, 
+      z = sapply(anno_mds$calage_sample, function(x){ x[age_resampling_run] })
     )
   ) %>% stats::setNames(paste0("age_sample_", age_resampling_run)),
   dependent = list(
