@@ -1,5 +1,10 @@
 library(magrittr)
 
+#### read parameters ####
+
+args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
+age_resampling_run <- as.numeric(args[1]) + 1
+
 #### data ####
 
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
@@ -12,16 +17,13 @@ load("data/spatial/mobility_regions.RData")
 number_of_age_resampling_runs <- 3
 
 model_grid_pca <- mobest::create_model_grid(
-  independent = c(
-    list(age_center = tibble::tibble(x = anno$x, y = anno$y, z = anno$calage_center)),
-    lapply(
-      1:number_of_age_resampling_runs,
-      function(i) {
-        age_sample <- sapply(anno$calage_sample, function(x){ x[i] })
-        tibble::tibble(x = anno$x, y = anno$y, z = age_sample)
-      }
-    ) %>% stats::setNames(paste0("age_sample_", 1:number_of_age_resampling_runs))
-  ),
+  independent = list(
+      tibble::tibble(
+        x = anno$x, 
+        y = anno$y, 
+        z = sapply(anno$calage_sample, function(x){ x[age_resampling_run] })
+      )
+    ) %>% stats::setNames(paste0("age_sample_", age_resampling_run)),
   dependent = list(
     PC1 = anno$PC1,
     PC2 = anno$PC2,
@@ -48,16 +50,13 @@ anno_mds <- anno %>% dplyr::filter(
 )
 
 model_grid_mds <- mobest::create_model_grid(
-  independent = c(
-    list(age_center = tibble::tibble(x = anno_mds$x, y = anno_mds$y, z = anno_mds$calage_center)),
-    lapply(
-      1:number_of_age_resampling_runs,
-      function(i) {
-        age_sample <- sapply(anno_mds$calage_sample, function(x){ x[i] })
-        tibble::tibble(x = anno_mds$x, y = anno_mds$y, z = age_sample)
-      }
-    ) %>% stats::setNames(paste0("age_sample_", 1:number_of_age_resampling_runs))
-  ),
+  independent = list(
+    tibble::tibble(
+      x = anno$x, 
+      y = anno$y, 
+      z = sapply(anno$calage_sample, function(x){ x[age_resampling_run] })
+    )
+  ) %>% stats::setNames(paste0("age_sample_", age_resampling_run)),
   dependent = list(
     C1 = anno_mds$C1,
     C2 = anno_mds$C2,
@@ -89,63 +88,13 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 
 interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
-save(interpol_grid, file = "data/gpr/interpol_grid.RData")
-
-interpol_grid_spatial <- sf::st_as_sf(
-  interpol_grid,
-  coords = c("x", "y"),
-  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
-  remove = FALSE
-)
-save(interpol_grid_spatial, file = "data/gpr/interpol_grid_spatial.RData")
-
-library(ggplot2)
-interpol_grid_spatial %>%
-  dplyr::filter(
-    independent_table_id == "age_center",
-    dependent_var_id == "C1",
-    kernel_setting_id == "ds500_dt500_g01",
-    pred_grid_id == "scs100_tl100",
-    z %% 500 == 0
-  ) %>%
-  ggplot() +
-  geom_raster(aes(x, y, fill = mean)) +
-  facet_wrap(~z) +
-  scale_fill_viridis_c()
-
-
-#### group all age_sampling runs in interpol_grid #### 
-
-interpol_grid_condensed <- mobest::condense_interpol_grid(interpol_grid)
-
-save(interpol_grid_condensed, file = "data/gpr/interpol_grid_condensed.RData")
-
-interpol_grid_condensed_spatial <- sf::st_as_sf(
-  interpol_grid_condensed,
-  coords = c("x", "y"),
-  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
-  remove = FALSE
-)
-save(interpol_grid_condensed_spatial, file = "data/gpr/interpol_grid_condensed_spatial.RData")
-
-
 #### spatial origin ####
 
 interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid)
-
-save(interpol_grid_origin, file = "data/interpol_grid_origin.RData")
-
-interpol_grid_origin_spatial <- sf::st_as_sf(
-  interpol_grid_origin,
-  coords = c("x", "y"),
-  crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
-  remove = F
-)
-save(interpol_grid_origin_spatial, file = "data/interpol_grid_origin_spatial.RData")
 
 #### mobility proxy ####
 
 mobility_proxy <- mobest::estimate_mobility(interpol_grid_origin, mobility_regions)
 
-save(mobility_proxy, file = "data/mobility_estimation/mobility_proxy.RData")
+save(mobility_proxy, file = paste0("data/mobility_estimation_main_run/mobility_proxy_", age_resampling_run, ".RData"))
 
