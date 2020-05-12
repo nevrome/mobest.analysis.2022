@@ -1,3 +1,4 @@
+library(magrittr)
 library(ggplot2)
 
 load("data/mobility_estimation/mobility_proxy.RData")
@@ -58,9 +59,9 @@ p <- mobility_proxy %>%
   NULL
 
 ggsave(
-  paste0("plots/mobility_estimation_regional_timeseries.jpeg"),
+  paste0("plots/mobility_estimation_regional_timeseries.png"),
   plot = p,
-  device = "jpeg",
+  device = "png",
   scale = 0.5,
   dpi = 300,
   width = 550, height = 260, units = "mm",
