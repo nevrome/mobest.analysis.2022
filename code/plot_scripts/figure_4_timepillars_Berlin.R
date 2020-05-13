@@ -79,7 +79,7 @@ p_pca_large_kernel <- ggplot() +
   geom_path(
     data = poi_timeseries_large_kernel,
     aes(x = mean_PC1, y = mean_PC2),
-    size = 2
+    size = 1
   ) +
   geom_errorbar(
     data = poi_timeseries_large_kernel,
@@ -165,7 +165,7 @@ p_pca_medium_kernel <- ggplot() +
   geom_path(
     data = poi_timeseries_medium_kernel,
     aes(x = mean_PC1, y = mean_PC2),
-    size = 2
+    size = 1
   ) +
   geom_errorbar(
     data = poi_timeseries_medium_kernel,
@@ -251,7 +251,7 @@ p_pca_small_kernel <- ggplot() +
   geom_path(
     data = poi_timeseries_small_kernel,
     aes(x = mean_PC1, y = mean_PC2),
-    size = 2
+    size = 1
   ) +
   geom_errorbar(
     data = poi_timeseries_small_kernel,
@@ -336,7 +336,7 @@ p_mds_large_kernel <- ggplot() +
   geom_path(
     data = poi_timeseries_large_kernel,
     aes(x = mean_C1, y = mean_C2),
-    size = 2
+    size = 1
   ) +
   geom_errorbar(
     data = poi_timeseries_large_kernel,
@@ -419,7 +419,7 @@ p_mds_medium_kernel <- ggplot() +
   geom_path(
     data = poi_timeseries_medium_kernel,
     aes(x = mean_C1, y = mean_C2),
-    size = 2
+    size = 1
   ) +
   geom_errorbar(
     data = poi_timeseries_medium_kernel,
@@ -500,7 +500,7 @@ p_mds_small_kernel <- ggplot() +
   geom_path(
     data = poi_timeseries_small_kernel,
     aes(x = mean_C1, y = mean_C2),
-    size = 2
+    size = 1
   ) +
   geom_errorbar(
     data = poi_timeseries_small_kernel,
