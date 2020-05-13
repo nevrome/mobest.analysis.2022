@@ -9,7 +9,7 @@ load("data/spatial/mobility_regions.RData")
 
 # individual point
 Berlin <- sf::st_as_sf(
-  tibble::tibble(lon = 13.41, lat = 52.52),
+  tibble::tibble(lon = 19.04, lat = 47.50),
   coords = c("lon", "lat"),
   crs = 4326,
   remove = FALSE
