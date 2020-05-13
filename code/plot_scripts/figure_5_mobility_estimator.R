@@ -180,7 +180,7 @@ p_legend <- tibble::tibble(
 
 p_bottom_right <- cowplot::plot_grid(p_legend, p_arrows_legend, nrow = 2, rel_heights = c(1, 0.7))
 p_bottom <- cowplot::plot_grid(p_map, p_bottom_right, nrow = 1, rel_widths = c(1, 0.3))
-p <- cowplot::plot_grid(p_estimator, p_bottom, nrow =2, rel_heights = c(1, 0.5))
+p <- cowplot::plot_grid(p_estimator, p_bottom, nrow = 2, rel_heights = c(1, 0.5), labels = c("A", "B"))
 
 ggsave(
   paste0("plots/figure_5_mobility_estimator.png"),
