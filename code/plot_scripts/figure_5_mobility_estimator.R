@@ -7,7 +7,11 @@ mobility <- lapply(
     load(x)
     mobility_proxy
   }
-) %>% dplyr::bind_rows()
+) %>% dplyr::bind_rows() %>%
+  # remove kernel selection
+  dplyr::filter(
+    !(kernel_setting_id %in% c("ds1000_dt1000_g001", "ds2000_dt2000_g001"))
+  )
 
 mobility$kernel_setting_id <- factor(mobility$kernel_setting_id, levels = c(
   "ds100_dt100_g001",
@@ -16,6 +20,8 @@ mobility$kernel_setting_id <- factor(mobility$kernel_setting_id, levels = c(
   "ds1000_dt1000_g001",
   "ds2000_dt2000_g001"
 ))
+
+#### mobility estimator curves ####
 
 p_estimator <- mobility %>%
   # dplyr::mutate(
@@ -58,6 +64,8 @@ p_estimator <- mobility %>%
 scale_color_gradientn(colours = RColorBrewer::brewer.pal(10, "PiYG"), guide = F) +
   NULL
 
+#### map series ####
+
 load("data/spatial/mobility_regions.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
@@ -68,7 +76,7 @@ ylimit <- c(ex[3], ex[4])
 
 mobility_maps <- mobility %>% 
   dplyr::mutate(
-    z_cut = cut(z, breaks = c(-7500, -5000, -3000, -2000, 0))
+    z_cut = cut(z, breaks = c(-7500, -5000, -3000, 0))
   ) %>% 
   dplyr::group_by(region_id, z_cut) %>%
   dplyr::summarise(
@@ -88,7 +96,6 @@ mobility_maps_center <- mobility_maps %>%
     x = sf::st_coordinates(.)[,1],
     y = sf::st_coordinates(.)[,2]
   )
-  
 
 p_map <- ggplot() +
   geom_sf(
@@ -104,24 +111,34 @@ p_map <- ggplot() +
     mapping = aes(
       x = x, y = y, 
       color = mean_angle_deg, 
-      angle = mean_angle_deg_text
+      angle = mean_angle_deg_text,
+      size = mean_mean_km_per_decade
     ),
-    label="\u2191",
-    size = 7
+    label="\u2191"
   ) +
+  scale_size_continuous(
+    range = c(3, 12), name = "mean \"Speed\" [km/decade]",
+    guide = guide_legend(nrow = 1, label.position = "bottom")
+  ) +
+  scale_color_gradientn(colours = RColorBrewer::brewer.pal(10, "PiYG"), guide = F) +
   facet_grid(cols = dplyr::vars(z_cut)) +
   theme_bw() +
   theme(
-    legend.position = "bottom"
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title = element_blank(),
+    panel.background = element_rect(fill = "#BFD5E3")
   ) +
-  scale_color_gradientn(colours = RColorBrewer::brewer.pal(10, "PiYG"), guide = F) +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
     crs = sf::st_crs("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
   )
 
+p_arrows_legend <- cowplot::get_legend(p_map)
+p_map <- p_map + theme(legend.position = "none")
 
-#p_legend <- 
+#### direction legend ####
+
 p_legend <- tibble::tibble(
   ID = letters[1:10],
   angle_start = seq(0, 324, 36),
@@ -133,7 +150,7 @@ p_legend <- tibble::tibble(
   ) +
   scale_fill_manual(values = RColorBrewer::brewer.pal(10, "PiYG"), guide = FALSE) +
   coord_polar(theta = "y") +
-  xlim(c(2, 4)) +
+  xlim(c(2, 5)) +
   scale_y_continuous(
     breaks = c(0, 45, 90, 135, 180, 225, 270, 315),
     labels = c("N", "NE", "E", "SE", "S", "SW", "W", "NW")
@@ -148,8 +165,9 @@ p_legend <- tibble::tibble(
   
 
 #### compile plots ####
-p_bottom <- cowplot::plot_grid(p_map, p_legend, nrow = 1, rel_widths = c(1, 0.2))
-p <- cowplot::plot_grid(p_estimator, p_bottom, nrow =2, rel_heights = c(1, 0.6))
+p_bottom_right <- cowplot::plot_grid(p_legend, p_arrows_legend, nrow = 2, rel_heights = c(1, 0.7))
+p_bottom <- cowplot::plot_grid(p_map, p_bottom_right, nrow = 1, rel_widths = c(1, 0.3))
+p <- cowplot::plot_grid(p_estimator, p_bottom, nrow =2, rel_heights = c(1, 0.5))
 
 ggsave(
   paste0("plots/figure_5_mobility_estimator.png"),
