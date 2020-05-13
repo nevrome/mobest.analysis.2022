@@ -67,7 +67,7 @@ mobility_maps <- mobility %>%
   dplyr::group_by(region_id, z_cut) %>%
   dplyr::summarise(
     mean_mean_km_per_decade = mean(mean_km_per_decade),
-    mean_angle_deg = CircStats::deg(CircStats::circ.mean(CircStats::rad(angle_deg %>% na.omit())))
+    mean_angle_deg = mobest::mean_deg(angle_deg %>% na.omit())
   ) %>%
   dplyr::ungroup() %>%
   dplyr::left_join(
@@ -90,8 +90,23 @@ p_map <- ggplot() +
   facet_grid(cols = dplyr::vars(z_cut)) +
   theme_bw() +
   theme(legend.position = "bottom") +
-  scale_color_gradientn(colours = c("blue", "red", "yellow", "green", "blue"))
+  scale_color_gradientn(colours = RColorBrewer::brewer.pal(10, "PiYG"))
 
+
+#p_legend <- 
+tibble::tibble(
+  ID = letters[1:10],
+  angle_start = seq(0, 324, 36),
+  angle_stop = seq(36, 360, 36)
+) %>%
+  ggplot() + 
+  geom_rect(
+    aes(xmin = 3, xmax = 4, ymin = angle_start, ymax = angle_stop, fill = ID)
+  ) +
+  scale_fill_manual(values = RColorBrewer::brewer.pal(10, "PiYG")) +
+  coord_polar(theta = "y") +
+  xlim(c(2, 4))
+  
 
 p <- cowplot::plot_grid(p_estimator, p_map, nrow =2, rel_heights = c(1, 0.6))
 
