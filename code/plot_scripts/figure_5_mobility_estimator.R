@@ -8,7 +8,7 @@ mobility <- lapply(
     mobility_proxy
   }
 ) %>% dplyr::bind_rows() %>%
-  # remove kernel selection
+  # kernel selection
   dplyr::filter(
     !(kernel_setting_id %in% c("ds1000_dt1000_g001", "ds2000_dt2000_g001"))
   ) %>%
@@ -61,23 +61,11 @@ p_estimator <- mobility %>%
   ) +
   xlab("time calBC [y]") +
   ylab("\"Speed\" [km/decade]") +
-  # guides(
-  #   color = guide_legend(title = "kernels", override.aes = list(size = 10, alpha = 1))
-  # ) +
-  # scale_color_manual(
-  #   values = c(
-  #     "small kernel" = "orange",
-  #     "big kernel" = "darkgreen"
-  #   )
-  # ) +
-  # scale_fill_gradient2(
-  #   low = "blue",
-#   mid = "red",
-#   high = "blue",
-#   midpoint = 180
-# ) +
-scale_color_gradientn(colours = c(c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange")), guide = F) +
-  NULL
+  scale_color_gradientn(
+    colours = c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange"), 
+    guide = F
+  )
+
 #### map series ####
 
 load("data/spatial/mobility_regions.RData")
@@ -90,7 +78,7 @@ ylimit <- c(ex[3], ex[4])
 
 mobility_maps <- mobility %>% 
   dplyr::mutate(
-    z_cut = cut(z, breaks = c(-7500, -5000, -3000, 0))
+    z_cut = cut(z, breaks = c(-7500, -5000, -3000, 0), labels = c("-7500 - -5000 calBC", "-5000 - -3000 calBC", "-3000 - 0 calBC"))
   ) %>% 
   dplyr::group_by(region_id, z_cut) %>%
   dplyr::summarise(
@@ -118,7 +106,10 @@ p_map <- ggplot() +
   ) +
   geom_sf(
     data = mobility_maps,
-    fill = NA
+    fill = "white",
+    alpha = 0.8,
+    color = "black",
+    size = 0.4
   ) +
   geom_text(
     data = mobility_maps_center,
@@ -134,14 +125,18 @@ p_map <- ggplot() +
     range = c(3, 12), name = "mean \"Speed\" [km/decade]",
     guide = guide_legend(nrow = 1, label.position = "bottom")
   ) +
-  scale_color_gradientn(colours = c(c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange")), guide = F) +
+  scale_color_gradientn(
+    colours = c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange"), 
+    guide = F
+  ) +
   facet_grid(cols = dplyr::vars(z_cut)) +
   theme_bw() +
   theme(
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     axis.title = element_blank(),
-    panel.background = element_rect(fill = "#BFD5E3")
+    panel.background = element_rect(fill = "#BFD5E3"),
+    strip.background = element_rect(fill = NA)
   ) +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
@@ -162,9 +157,12 @@ p_legend <- tibble::tibble(
   geom_rect(
     aes(xmin = 3, xmax = 4, ymin = angle_start, ymax = angle_stop, fill = ID)
   ) +
-  scale_fill_manual(values = c(c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange")), guide = FALSE) +
+  scale_fill_manual(
+    values = c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange"), 
+    guide = FALSE
+  ) +
   coord_polar(theta = "y") +
-  xlim(c(2, 4.5)) +
+  xlim(2, 4.5) +
   scale_y_continuous(
     breaks = c(0, 45, 90, 135, 180, 225, 270, 315),
     labels = c("N", "NE", "E", "SE", "S", "SW", "W", "NW")
@@ -179,6 +177,7 @@ p_legend <- tibble::tibble(
   
 
 #### compile plots ####
+
 p_bottom_right <- cowplot::plot_grid(p_legend, p_arrows_legend, nrow = 2, rel_heights = c(1, 0.7))
 p_bottom <- cowplot::plot_grid(p_map, p_bottom_right, nrow = 1, rel_widths = c(1, 0.3))
 p <- cowplot::plot_grid(p_estimator, p_bottom, nrow =2, rel_heights = c(1, 0.5))
