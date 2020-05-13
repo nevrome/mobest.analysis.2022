@@ -68,12 +68,13 @@ ylimit <- c(ex[3], ex[4])
 
 mobility_maps <- mobility %>% 
   dplyr::mutate(
-    z_cut = cut(z, breaks = c(-7500, -5000, -4000, -3000, -2000, 0))
+    z_cut = cut(z, breaks = c(-7500, -5000, -3000, -2000, 0))
   ) %>% 
   dplyr::group_by(region_id, z_cut) %>%
   dplyr::summarise(
     mean_mean_km_per_decade = mean(mean_km_per_decade),
-    mean_angle_deg = mobest::mean_deg(angle_deg %>% na.omit())
+    mean_angle_deg = mobest::mean_deg(angle_deg %>% na.omit()),
+    mean_angle_deg_text = 360 - mean_angle_deg
   ) %>%
   dplyr::ungroup() %>%
   dplyr::left_join(
@@ -98,19 +99,15 @@ p_map <- ggplot() +
     data = mobility_maps,
     fill = NA
   ) +
-  geom_spoke(
+  geom_text(
     data = mobility_maps_center,
     mapping = aes(
       x = x, y = y, 
       color = mean_angle_deg, 
-      angle = ifelse(
-        (mean_angle_deg - 90) < 0, 
-        360 - (mean_angle_deg - 90), 
-        mean_angle_deg - 90
-      )
+      angle = mean_angle_deg_text
     ),
-    radius = 200000,
-    size = 5
+    label="\u2191",
+    size = 7
   ) +
   facet_grid(cols = dplyr::vars(z_cut)) +
   theme_bw() +
