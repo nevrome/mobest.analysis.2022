@@ -11,24 +11,38 @@ mobility <- lapply(
   # remove kernel selection
   dplyr::filter(
     !(kernel_setting_id %in% c("ds1000_dt1000_g001", "ds2000_dt2000_g001"))
+  ) %>%
+  dplyr::mutate(
+    kernel_setting_id = dplyr::recode(
+      kernel_setting_id, 
+      "ds100_dt100_g001" = "100km / 100y", 
+      "ds200_dt200_g001" = "200km / 200y",
+      "ds500_dt500_g001" = "500km / 500y"
+    )
   )
 
-mobility$kernel_setting_id <- factor(mobility$kernel_setting_id, levels = c(
-  "ds100_dt100_g001",
-  "ds200_dt200_g001",
-  "ds500_dt500_g001",
-  "ds1000_dt1000_g001",
-  "ds2000_dt2000_g001"
+mobility$kernel_setting_id = factor(mobility$kernel_setting_id, levels = c(
+  "100km / 100y",
+  "200km / 200y",
+  "500km / 500y"
+))
+
+mobility$region_id = factor(mobility$region_id, levels = c(
+  "Britain and Ireland",
+  "France", 
+  "Iberia",
+  "Italy",
+  "Central Europe",
+  "Eastern Europe",
+  "Southeastern Europe",
+  "Turkey",
+  "Caucasus",
+  "Near East"
 ))
 
 #### mobility estimator curves ####
 
 p_estimator <- mobility %>%
-  # dplyr::mutate(
-  #   kernel_setting_id = dplyr::recode(
-  #     kernel_setting_id, "ds100_dt200_g01" = "small kernel", "ds200_dt400_g01" = "big kernel"
-  #   )
-  # ) %>%
   ggplot() +
   geom_line(
     aes(
@@ -42,7 +56,8 @@ p_estimator <- mobility %>%
   theme_bw() +
   theme(
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 45, hjust = 1)
+    axis.text.x = element_text(angle = 20, hjust = 1),
+    strip.background = element_rect(fill = NA)
   ) +
   xlab("time calBC [y]") +
   ylab("\"Speed\" [km/decade]") +
@@ -61,9 +76,8 @@ p_estimator <- mobility %>%
 #   high = "blue",
 #   midpoint = 180
 # ) +
-scale_color_gradientn(colours = RColorBrewer::brewer.pal(10, "PiYG"), guide = F) +
+scale_color_gradientn(colours = c(c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange")), guide = F) +
   NULL
-
 #### map series ####
 
 load("data/spatial/mobility_regions.RData")
@@ -120,7 +134,7 @@ p_map <- ggplot() +
     range = c(3, 12), name = "mean \"Speed\" [km/decade]",
     guide = guide_legend(nrow = 1, label.position = "bottom")
   ) +
-  scale_color_gradientn(colours = RColorBrewer::brewer.pal(10, "PiYG"), guide = F) +
+  scale_color_gradientn(colours = c(c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange")), guide = F) +
   facet_grid(cols = dplyr::vars(z_cut)) +
   theme_bw() +
   theme(
@@ -140,17 +154,17 @@ p_map <- p_map + theme(legend.position = "none")
 #### direction legend ####
 
 p_legend <- tibble::tibble(
-  ID = letters[1:10],
-  angle_start = seq(0, 324, 36),
-  angle_stop = seq(36, 360, 36)
+  ID = letters[1:8],
+  angle_start = seq(0, 325, 45),
+  angle_stop = seq(45, 360, 45)
 ) %>%
   ggplot() + 
   geom_rect(
     aes(xmin = 3, xmax = 4, ymin = angle_start, ymax = angle_stop, fill = ID)
   ) +
-  scale_fill_manual(values = RColorBrewer::brewer.pal(10, "PiYG"), guide = FALSE) +
+  scale_fill_manual(values = c(c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange")), guide = FALSE) +
   coord_polar(theta = "y") +
-  xlim(c(2, 5)) +
+  xlim(c(2, 4.5)) +
   scale_y_continuous(
     breaks = c(0, 45, 90, 135, 180, 225, 270, 315),
     labels = c("N", "NE", "E", "SE", "S", "SW", "W", "NW")
@@ -175,7 +189,7 @@ ggsave(
   device = "png",
   scale = 0.5,
   dpi = 300,
-  width = 550, height = 350, units = "mm",
+  width = 700, height = 350, units = "mm",
   limitsize = F
 )
 
