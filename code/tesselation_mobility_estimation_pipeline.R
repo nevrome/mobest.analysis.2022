@@ -5,7 +5,7 @@ anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
 load("data/spatial/area.RData")
 load("data/spatial/mobility_regions.RData")
 
-input_list <- lapply(1:10, function(age_resampling_run) {
+input_list <- lapply(1:3, function(age_resampling_run) {
   tibble::tibble(
     id = 1:nrow(anno),
     x = anno$x / 1000, 
@@ -16,6 +16,7 @@ input_list <- lapply(1:10, function(age_resampling_run) {
     PC3 = anno$PC3,
     PC4 = anno$PC4
   ) %>% 
+    # merge overlapping sample points
     dplyr::group_by(x, y, z) %>%
     dplyr::summarise(
       id = dplyr::first(id),
@@ -27,15 +28,13 @@ input_list <- lapply(1:10, function(age_resampling_run) {
     dplyr::ungroup()
 })
 
-dependent <- anno %>% dplyr::select(sample_id, PC1, PC2, PC3, PC4)
-
-pred_grid <- mobest::create_prediction_grid(area, spatial_cell_size = 200000, time_layers = seq(-7500, -500, 500)) %>%
+pred_grid <- mobest::create_prediction_grid(area, spatial_cell_size = 50000, time_layers = seq(-7500, -500, 1000)) %>%
   dplyr::mutate(
     x = x / 1000,
     y = y / 1000
   )
 
-res <- lapply(1:3, function(i) {
+res <- lapply(1:length(input_list), function(i) {
   
   input <- input_list[[i]]
   
@@ -48,15 +47,10 @@ res <- lapply(1:3, function(i) {
   
   polygon_edges <- bleiglas::read_polygon_edges(raw_voro_output) 
   
-  point_polygon <- data.table::data.table(
-    point_id = pred_grid$point_id,
-    id = bleiglas::attribute_grid_points(polygon_edges, pred_grid)
-  )
+  attributed_pred_grid <- bleiglas::attribute_grid_points_to_polygons(pred_grid, polygon_edges)
   
-  spu <- point_polygon %>% data.table::merge.data.table(
-    pred_grid, by = "point_id"
-  ) %>% data.table::merge.data.table(
-    input, by = "id"
+  spu <- attributed_pred_grid %>% data.table::merge.data.table(
+    input[, c("id", "PC1", "PC2", "PC3", "PC4")], by.x = "polygon_id", by.y = "id"
   )
   
   spu$run <- i
@@ -65,8 +59,28 @@ res <- lapply(1:3, function(i) {
   
 })
 
+res_total <- res %>% data.table::rbindlist()
 
+res_columns <- res_total %>%
+  dplyr::group_by(
+    point_id
+  ) %>%
+  dplyr::summarise(
+    x = dplyr::first(x),
+    y = dplyr::first(y),
+    z = dplyr::first(z),
+    mean_PC1 = mean(PC1),
+    mean_PC2 = mean(PC2),
+    mean_PC3 = mean(PC3),
+    mean_PC4 = mean(PC4)
+  )
 
+library(ggplot2)
+res_columns %>% ggplot() + 
+  geom_raster(
+    aes(x, y, fill = mean_PC1)
+  ) +
+  facet_wrap(~z)
 
 
 
