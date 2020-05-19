@@ -103,8 +103,13 @@ mobility_proxy <- mobest::estimate_mobility(interpol_grid_tess_origin, mobility_
 mobility_proxy %>%
   ggplot() +
   geom_line(
-    aes(x = z, y = mean_km_per_decade, color = angle_deg)
+    aes(x = z, y = mean_km_per_decade, color = angle_deg),
+    size = 2
   ) +
-  facet_wrap(~region_id)
+  facet_wrap(~region_id) +
+  scale_color_gradientn(
+    colours = c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange"), 
+    guide = F
+  )
 
 
