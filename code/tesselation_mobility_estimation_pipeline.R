@@ -5,7 +5,7 @@ anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
 load("data/spatial/area.RData")
 load("data/spatial/mobility_regions.RData")
 
-input_list <- lapply(1:3, function(age_resampling_run) {
+input_list <- lapply(1:5, function(age_resampling_run) {
   tibble::tibble(
     id = 1:nrow(anno),
     x = anno$x / 1000, 
@@ -34,7 +34,7 @@ pred_grid <- mobest::create_prediction_grid(area, spatial_cell_size = 50000, tim
     y = y / 1000
   )
 
-res <- lapply(1:length(input_list), function(i) {
+res <- pbapply::pblapply(1:length(input_list), function(i) {
   
   input <- input_list[[i]]
   
@@ -57,7 +57,7 @@ res <- lapply(1:length(input_list), function(i) {
   
   return(spu)
   
-})
+}, cl = 5)
 
 res_total <- res %>% data.table::rbindlist()
 
