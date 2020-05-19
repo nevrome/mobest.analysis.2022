@@ -28,7 +28,7 @@ input_list <- lapply(1:5, function(age_resampling_run) {
     dplyr::ungroup()
 })
 
-pred_grid <- mobest::create_prediction_grid(area, spatial_cell_size = 50000, time_layers = seq(-7500, -500, 1000)) %>%
+pred_grid <- mobest::create_prediction_grid(area, spatial_cell_size = 50000, time_layers = seq(-7500, -500, 100)) %>%
   dplyr::mutate(
     x = x / 1000,
     y = y / 1000
@@ -69,19 +69,42 @@ res_columns <- res_total %>%
     x = dplyr::first(x),
     y = dplyr::first(y),
     z = dplyr::first(z),
-    mean_PC1 = mean(PC1),
-    mean_PC2 = mean(PC2),
-    mean_PC3 = mean(PC3),
-    mean_PC4 = mean(PC4)
+    PC1 = mean(PC1),
+    PC2 = mean(PC2),
+    PC3 = mean(PC3),
+    PC4 = mean(PC4)
   )
 
-library(ggplot2)
-res_columns %>% ggplot() + 
-  geom_raster(
-    aes(x, y, fill = mean_PC1)
+# library(ggplot2)
+# res_columns %>% ggplot() + 
+#   geom_raster(
+#     aes(x, y, fill = mean_PC1)
+#   ) +
+#   facet_wrap(~z)
+
+interpol_grid_tess <- res_columns %>%
+  tidyr::pivot_longer(cols = tidyselect::all_of(c("PC1", "PC2", "PC3", "PC4")), names_to = "dependent_var_id", values_to = "mean") %>%
+  dplyr::mutate(
+    independent_table_id = "test",
+    kernel_setting_id = "test",
+    pred_grid_id = "test",
+    independent_table_type = "test",
+    sd = 0,
+    x = x*1000,
+    y = y*1000
+  )
+
+interpol_grid_tess_origin <- mobest::search_spatial_origin(interpol_grid_tess)
+
+
+load("data/spatial/mobility_regions.RData")
+mobility_proxy <- mobest::estimate_mobility(interpol_grid_tess_origin, mobility_regions)
+
+mobility_proxy %>%
+  ggplot() +
+  geom_line(
+    aes(x = z, y = mean_km_per_decade, color = angle_deg)
   ) +
-  facet_wrap(~z)
-
-
+  facet_wrap(~region_id)
 
 
