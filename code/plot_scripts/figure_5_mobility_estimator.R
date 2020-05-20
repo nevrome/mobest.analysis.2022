@@ -62,7 +62,7 @@ p_estimator <- mobility %>%
   xlab("time calBC [y]") +
   ylab("\"Speed\" [km/decade]") +
   scale_color_gradientn(
-    colours = c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange"), 
+    colours =  c("orange", "#47A649", "#47A649", "red", "red", "#0072B2", "#0072B2", "orange"), 
     guide = F
   )
 
@@ -126,7 +126,7 @@ p_map <- ggplot() +
     guide = guide_legend(nrow = 1, label.position = "bottom")
   ) +
   scale_color_gradientn(
-    colours = c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange"), 
+    colours =  c("orange", "#47A649", "#47A649", "red", "red", "#0072B2", "#0072B2", "orange"), 
     guide = F
   ) +
   facet_grid(cols = dplyr::vars(z_cut)) +
@@ -158,7 +158,7 @@ p_legend <- tibble::tibble(
     aes(xmin = 3, xmax = 4, ymin = angle_start, ymax = angle_stop, fill = ID)
   ) +
   scale_fill_manual(
-    values = c("orange", "red", "red", "darkgreen", "darkgreen", "#0072B2", "#0072B2", "orange"), 
+    values =  c("orange", "#47A649", "#47A649", "red", "red", "#0072B2", "#0072B2", "orange"), 
     guide = FALSE
   ) +
   coord_polar(theta = "y") +
