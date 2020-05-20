@@ -75,12 +75,12 @@ res_columns <- res_total %>%
     PC4 = mean(PC4)
   )
 
-# library(ggplot2)
-# res_columns %>% ggplot() + 
-#   geom_raster(
-#     aes(x, y, fill = mean_PC1)
-#   ) +
-#   facet_wrap(~z)
+library(ggplot2)
+res_columns %>% ggplot() +
+  geom_raster(
+    aes(x, y, fill = PC1)
+  ) +
+  facet_wrap(~z)
 
 interpol_grid_tess <- res_columns %>%
   tidyr::pivot_longer(cols = tidyselect::all_of(c("PC1", "PC2", "PC3", "PC4")), names_to = "dependent_var_id", values_to = "mean") %>%
@@ -112,4 +112,26 @@ mobility_proxy %>%
     guide = F
   )
 
+# map
+
+load("data/spatial/extended_area.RData")
+
+ggplot() +
+  geom_sf(
+    data = extended_area,
+    fill = "white", colour = "black", size = 0.4
+  ) +
+  geom_raster(
+    data = interpol_grid_tess_origin %>% dplyr::filter(z %% 500 == 0),
+    mapping = aes(
+      x = x, y = y, 
+      fill = angle_deg, 
+    )
+  )  +
+  scale_fill_gradientn(
+    colours = c("orange", "#47A649", "#47A649", "red", "red", "#0072B2", "#0072B2", "orange")
+  ) +
+  facet_wrap(
+    ~z
+  )
 
