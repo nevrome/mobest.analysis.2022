@@ -28,7 +28,7 @@ input_list <- lapply(1:5, function(age_resampling_run) {
     dplyr::ungroup()
 })
 
-pred_grid <- mobest::create_prediction_grid(area, spatial_cell_size = 50000, time_layers = seq(-7500, -500, 100)) %>%
+pred_grid <- mobest::create_prediction_grid(area, spatial_cell_size = 50000, time_layers = seq(-7500, -500, 500)) %>%
   dplyr::mutate(
     x = x / 1000,
     y = y / 1000
@@ -76,7 +76,7 @@ res_columns <- res_total %>%
   )
 
 library(ggplot2)
-res_columns %>% ggplot() +
+res_columns %>% dplyr::filter(z %in% c(-6100, -6000)) %>% ggplot() +
   geom_raster(
     aes(x, y, fill = PC1)
   ) +
@@ -98,6 +98,7 @@ interpol_grid_tess_origin <- mobest::search_spatial_origin(interpol_grid_tess)
 
 
 load("data/spatial/mobility_regions.RData")
+# different angle calcluation -> should not be independent in estimate_mobility to avoid different results
 mobility_proxy <- mobest::estimate_mobility(interpol_grid_tess_origin, mobility_regions)
 
 mobility_proxy %>%
@@ -122,7 +123,7 @@ ggplot() +
     fill = "white", colour = "black", size = 0.4
   ) +
   geom_raster(
-    data = interpol_grid_tess_origin %>% dplyr::filter(z %% 500 == 0),
+    data = interpol_grid_tess_origin,# %>% dplyr::filter(z == -6000),
     mapping = aes(
       x = x, y = y, 
       fill = angle_deg, 
