@@ -50,6 +50,22 @@ dist_table %>%
   ggplot(mapping = aes(x = geo_dist, y = PC1resid_dist)) + geom_point(alpha=0.01) +
   geom_smooth()
 
+# dist_table %>%
+#   dplyr::filter(time_dist < 50 & geo_dist < 50) %>%
+#   dplyr::filter(geo_dist != 0 & time_dist != 0) %>%
+#   ggplot() +
+#   # geom_histogram(
+#   #   aes(PC1_dist), bins = 1000
+#   # )
+#   geom_boxplot(
+#     aes(PC1_dist)
+#   )
+# 
+# dist_table %>%
+#   dplyr::filter(time_dist < 50 & geo_dist < 50) %>%
+#   dplyr::filter(geo_dist != 0 & time_dist != 0) %$%
+#   mean(PC1_dist)
+
 dist_table %>%
   dplyr::filter(time_dist < 4000 & geo_dist < 50) %>%
   ggplot(mapping = aes(x = time_dist, y = PC1resid_dist)) + geom_point(alpha=0.01) +
