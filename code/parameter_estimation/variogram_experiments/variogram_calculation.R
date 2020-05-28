@@ -1,8 +1,8 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/anno_1240K_and_anno_1240K_HumanOrigins_filtered.RData")
-anno <- anno_1240K_and_anno_1240K_HumanOrigins_filtered
+load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
+anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
 
 # calculate distances
 d_geo <- dist(anno %>% dplyr::select(x,y), "euclidean") %>% as.matrix()
