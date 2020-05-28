@@ -1,8 +1,8 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/anno_1240K_and_anno_1240K_HumanOrigins_filtered.RData")
-rawdat <- anno_1240K_and_anno_1240K_HumanOrigins_filtered
+load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
+rawdat <- anno_1240K_and_anno_1240K_HumanOrigins_final
 dat <- rawdat %>%
   dplyr::rename(t = calage_center) %>%
   dplyr::select(sample_id, x, y, t, PC1)
