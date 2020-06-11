@@ -1,3 +1,5 @@
+library(ggplot2)
+
 load("data/parameter_exploration/variogram/binned_data.RData")
 
 p <- ggplot(d_binned) + 

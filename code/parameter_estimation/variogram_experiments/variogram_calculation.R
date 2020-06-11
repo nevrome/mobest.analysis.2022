@@ -24,7 +24,7 @@ rownames(d_pca) <- anno$sample_id
 colnames(d_pca) <- anno$sample_id
 d_pca_long <- d_pca %>% reshape2::melt(value.name = "pca_dist")
 
-# Merging
+# merging
 d_all <- d_geo_long %>%
   dplyr::full_join(
     d_time_long,by = c("Var1", "Var2")
@@ -33,7 +33,7 @@ d_all <- d_geo_long %>%
     d_pca_long, by = c("Var1", "Var2")
   ) %>% tibble::as_tibble()
 
-# Binning
+# binning
 d_binned <- d_all %>%
   dplyr::mutate(
     geo_dist_cut = cut(geo_dist, breaks = c(seq(0, max(geo_dist), 100), max(geo_dist)), include.lowest	= T, labels = F) * 100,
