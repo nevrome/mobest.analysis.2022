@@ -36,8 +36,8 @@ d_all <- d_geo_long %>%
 # Binning
 d_binned <- d_all %>%
   dplyr::mutate(
-    geo_dist_cut = cut(geo_dist, breaks = seq(0, max(geo_dist), 100), labels = F) * 100,
-    time_dist_cut = cut(time_dist, breaks = seq(0, max(time_dist), 100), labels = F) * 100
+    geo_dist_cut = cut(geo_dist, breaks = c(seq(0, max(geo_dist), 100), max(geo_dist)), include.lowest	= T, labels = F) * 100,
+    time_dist_cut = cut(time_dist, breaks = c(seq(0, max(time_dist), 500), max(time_dist)), include.lowest	= T, labels = F) * 500
   ) %>%
   dplyr::group_by(geo_dist_cut, time_dist_cut) %>%
   dplyr::summarise(
@@ -46,9 +46,4 @@ d_binned <- d_all %>%
   ) %>%
   dplyr::ungroup()
 
-ggplot(d_binned) + geom_line(mapping = aes(x = geo_dist_cut,
-                                           y = mean_sq_pca_dist,
-                                           group = time_dist_cut,
-                                           col = time_dist_cut))
-
-save(d_binned, file="data/binned_data.RData")
+save(d_binned, file="data/parameter_exploration/variogram/binned_data.RData")
