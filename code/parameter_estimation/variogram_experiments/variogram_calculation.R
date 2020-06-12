@@ -84,8 +84,69 @@ d_binned <- d_all %>%
   dplyr::group_by(geo_dist_cut, time_dist_cut) %>%
   dplyr::summarise(
     n = dplyr::n(),
-    mean_sq_pca_dist = mean(pca_dist^2)
+    mean_sq_pca_dist = mean(pca_dist^2),
+    mean_sq_mds_dist = mean(mds_dist^2),
+    mean_sq_PC1_dist = mean(PC1_dist^2),
+    mean_sq_PC1_dist_resid = mean(PC1_dist_resid^2),
+    mean_sq_PC2_dist = mean(PC2_dist^2),
+    mean_sq_PC2_dist_resid = mean(PC2_dist_resid^2),
+    mean_sq_C1_dist = mean(C1_dist^2),
+    mean_sq_C1_dist_resid = mean(C1_dist_resid^2),
+    mean_sq_C2_dist = mean(C2_dist^2),
+    mean_sq_C2_dist_resid = mean(C2_dist_resid^2),
   ) %>%
   dplyr::ungroup()
 
 save(d_binned, file="data/parameter_exploration/variogram/binned_data.RData")
+
+d_all_long <- d_all %>% tidyr::pivot_longer(
+  cols = c(PC1_dist_resid, PC2_dist_resid, C1_dist_resid, C2_dist_resid),
+  names_to = "dist_type", values_to = "dist_val"
+)
+
+# d_all %>%
+#   dplyr::filter(time_dist < 20 & geo_dist < 2000) %>%
+#   ggplot(mapping = aes(x = geo_dist, y = PC1_dist_resid)) + geom_point(alpha=0.01) +
+#   geom_smooth()
+
+lower_left <- d_all_long %>%
+  dplyr::filter(time_dist < 50 & geo_dist < 50) %>%
+  dplyr::filter(geo_dist != 0 & time_dist != 0)
+
+lower_left_mean <- lower_left %>%
+  dplyr::group_by(
+    dist_type
+  ) %>%
+  dplyr::summarise(
+    mean = mean(dist_val, na.rm = T)
+  )
+
+ggplot() +
+  geom_jitter(
+    data = lower_left,
+    mapping = aes(x = dist_type, y = dist_val, color = dist_type),
+    alpha = 0.5,
+    size = 0.5,
+    width = 0.4
+  ) + 
+  geom_boxplot(
+    data = lower_left,
+    mapping = aes(x = dist_type, y = dist_val),
+    alpha = 0.5,
+    width = 0.5
+  ) +
+  geom_text(
+    data = lower_left_mean,
+    mapping = aes(x = dist_type, y = 0.01, label = paste("mean:", round(mean, 3))),
+    nudge_x = -0.5
+  ) +
+  coord_flip() +
+  theme_bw() +
+  guides(
+    color = F
+  ) +
+  xlab("ancestry component distance type") +
+  ylab("pairwise distance of the residuals of a linear model")
+
+
+
