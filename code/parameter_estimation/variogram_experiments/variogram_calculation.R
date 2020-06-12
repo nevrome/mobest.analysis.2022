@@ -75,6 +75,8 @@ d_all <- d_geo_long %>%
   ) %>%
   tibble::as_tibble()
 
+save(d_all, file = "data/parameter_exploration/variogram/all_distances.RData")
+
 # binning
 d_binned <- d_all %>%
   dplyr::mutate(
@@ -97,56 +99,4 @@ d_binned <- d_all %>%
   ) %>%
   dplyr::ungroup()
 
-save(d_binned, file="data/parameter_exploration/variogram/binned_data.RData")
-
-d_all_long <- d_all %>% tidyr::pivot_longer(
-  cols = c(PC1_dist_resid, PC2_dist_resid, C1_dist_resid, C2_dist_resid),
-  names_to = "dist_type", values_to = "dist_val"
-)
-
-# d_all %>%
-#   dplyr::filter(time_dist < 20 & geo_dist < 2000) %>%
-#   ggplot(mapping = aes(x = geo_dist, y = PC1_dist_resid)) + geom_point(alpha=0.01) +
-#   geom_smooth()
-
-lower_left <- d_all_long %>%
-  dplyr::filter(time_dist < 50 & geo_dist < 50) %>%
-  dplyr::filter(geo_dist != 0 & time_dist != 0)
-
-lower_left_mean <- lower_left %>%
-  dplyr::group_by(
-    dist_type
-  ) %>%
-  dplyr::summarise(
-    mean = mean(dist_val, na.rm = T)
-  )
-
-ggplot() +
-  geom_jitter(
-    data = lower_left,
-    mapping = aes(x = dist_type, y = dist_val, color = dist_type),
-    alpha = 0.5,
-    size = 0.5,
-    width = 0.4
-  ) + 
-  geom_boxplot(
-    data = lower_left,
-    mapping = aes(x = dist_type, y = dist_val),
-    alpha = 0.5,
-    width = 0.5
-  ) +
-  geom_text(
-    data = lower_left_mean,
-    mapping = aes(x = dist_type, y = 0.01, label = paste("mean:", round(mean, 3))),
-    nudge_x = -0.5
-  ) +
-  coord_flip() +
-  theme_bw() +
-  guides(
-    color = F
-  ) +
-  xlab("ancestry component distance type") +
-  ylab("pairwise distance of the residuals of a linear model")
-
-
-
+save(d_binned, file = "data/parameter_exploration/variogram/binned_data.RData")
