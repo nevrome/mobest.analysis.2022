@@ -52,7 +52,7 @@ p <- ggplot() +
     color = F
   ) +
   xlab("ancestry component distance type") +
-  ylab("log10 pairwise distance of the residuals of a linear model") +
+  ylab("log10 pairwise residual distance") +
   scale_y_log10(labels = scales::comma)
 
 ggsave(
