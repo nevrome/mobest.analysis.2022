@@ -1,41 +1,57 @@
 library(magrittr)
 library(laGP)
-source("R/helper_functions.R")
 
 #### data ####
 
-load("data/anno_1240K_and_anno_1240K_HumanOrigins_filtered.RData")
-anno <- anno_1240K_and_anno_1240K_HumanOrigins_filtered
+load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
+anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
 
 #### prep independent variables ####
 
 independent <- anno %>%
   dplyr::transmute(
-    x_01 = range_01_x(x),
-    y_01 = range_01_y(y),
-    z_01 = range_01_z(calage_center)
+    x = x/1000000,
+    y = y/1000000,
+    z = calage_center/1000
   )
 
 dependent <- anno$PC1
-r <- 1:nrow(anno)
-index_training <- sample(r, 0.9 * length(r))
-index_test <- r[-index_training]
 
-func <- function(par) {
-  gp <- newGPsep(
-    X = independent[index_training,], 
-    Z = dependent[index_training], 
-    d = c(dist_scale_01_x_km(par[1]), dist_scale_01_y_km(par[1]), dist_scale_01_z_y(par[2])), 
-    g = 0.0001, #par[3]/1000,
-    dK = TRUE
-  )
-  pred <- predGPsep(gp, XX = independent[index_test,], lite = T)
-  deleteGPsep(gp)
-  res <- sum(abs(dependent[index_test] - pred$mean))
-  #message(paste("space =", par[1], "time =", par[2], "g =", par[3], "res =", res))
-  return(res)
-}
+#### approximation with mleGP ####
 
-#optim(par = c(100, 100, 100), func, lower = c(10, 10, 10), upper = c(1000, 1000, 1000), method = "L-BFGS-B")
-optim(par = c(100, 100), func, lower = c(10, 10), upper = c(1000, 1000), method = "L-BFGS-B")
+da <- laGP::darg(list(mle = TRUE), independent)
 
+gp <- laGP::newGPsep(
+  X = independent, 
+  Z = dependent, 
+  d = da$start,
+  g = 0.01,
+  dK = TRUE
+)
+
+laGP::mleGPsep(
+  gpsepi = gp,
+  param = "d",
+  tmin = da$min, tmax = da$max,
+  maxit = 200
+)
+
+laGP::deleteGPsep(gp)
+
+# gp
+
+gp <- laGP::newGP(
+  X = independent, 
+  Z = dependent, 
+  d = da$start,
+  g = 0.01,
+  dK = TRUE
+)
+
+res <- laGP::mleGP(
+  gpi = gp,
+  param = "d",
+  tmin = da$min, tmax = da$max
+)
+
+res$d * 1000
