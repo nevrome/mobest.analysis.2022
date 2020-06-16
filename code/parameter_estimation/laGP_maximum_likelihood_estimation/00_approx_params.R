@@ -25,7 +25,7 @@ mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component)
   dependent <- anno_filtered[[ancestry_component]]
   
   # parameter estimation
-  mleGPsep_params <- lapply(1:5, function(i) {
+  mleGPsep_params <- lapply(1:20, function(i) {
     da <- laGP::darg(list(mle = TRUE), independent)
     ga <- laGP::garg(list(mle = TRUE), dependent)
     gp <- laGP::newGPsep(
@@ -80,7 +80,7 @@ jmleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component
   dependent <- anno_filtered[[ancestry_component]]
   
   # parameter estimation
-  jmleGPsep_params <- lapply(1:5, function(i) {
+  jmleGPsep_params <- lapply(1:20, function(i) {
     da <- laGP::darg(list(mle = TRUE), independent)
     ga <- laGP::garg(list(mle = TRUE), dependent)
     gp <- laGP::newGPsep(
@@ -128,15 +128,19 @@ mle_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
 
 save(mle_out, file = "data/parameter_exploration/mle_out.RData")
 
+#scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/parameter_exploration/mle_out.RData ../parameter_exploration/mle_out.RData
 
 # library(ggplot2)
-# 
-# ggplot() +
+
+# load("data/parameter_exploration/mle_out.RData")
+
+# mle_out %>%
+#   ggplot() +
 #   facet_wrap(
 #     mle_method~parameter,
 #     nrow = 2,
 #     ncol = 4,
-#     # rows = dplyr::vars(mle_method), 
+#     # rows = dplyr::vars(mle_method),
 #     # cols = dplyr::vars(parameter),
 #     scales = "free_y"
 #   ) +
@@ -147,7 +151,7 @@ save(mle_out, file = "data/parameter_exploration/mle_out.RData")
 #   theme_bw() +
 #   xlab("ancestry_component") +
 #   ylab("estimated value")
-  
+
 
 
 
