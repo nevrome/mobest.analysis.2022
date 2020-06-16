@@ -25,7 +25,7 @@ mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component)
   dependent <- anno_filtered[[ancestry_component]]
   
   # parameter estimation
-  mleGPsep_params <- lapply(1:2, function(i) {
+  mleGPsep_params <- lapply(1:5, function(i) {
     da <- laGP::darg(list(mle = TRUE), independent)
     ga <- laGP::garg(list(mle = TRUE), dependent)
     gp <- laGP::newGPsep(
@@ -80,7 +80,7 @@ jmleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component
   dependent <- anno_filtered[[ancestry_component]]
   
   # parameter estimation
-  jmleGPsep_params <- lapply(1:2, function(i) {
+  jmleGPsep_params <- lapply(1:5, function(i) {
     da <- laGP::darg(list(mle = TRUE), independent)
     ga <- laGP::garg(list(mle = TRUE), dependent)
     gp <- laGP::newGPsep(
@@ -118,67 +118,93 @@ jmleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component
   
 }) %>% dplyr::bind_rows()
 
-
-library(ggplot2)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#### approximation with mleGP ####
-
-scaling_factor_sequence <- c(seq(0.1, 0.9, 0.1), 1, seq(2, 10, 1))
-
-# parameter estimation
-mleGP_out <- lapply(scaling_factor_sequence, function(scaling_factor) {
-  # data prep inside of parameter estimation, because different scaling factors are tested
-  independent <- anno %>%
-    dplyr::transmute(
-      x = x/1000000,
-      y = y/1000000,
-      z = calage_center/1000 * scaling_factor
-    )
-  dependent <- anno$PC1
-  da <- laGP::darg(list(mle = TRUE), independent)
-  gp <- laGP::newGP(
-    X = independent, 
-    Z = dependent, 
-    d = da$start,
-    g = 0.01,
-    dK = TRUE
+mle_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
+  tidyr::pivot_longer(cols = c("dx", "dy", "dt", "g"), names_to = "parameter", values_to = "value") %>% 
+  dplyr::mutate(
+    parameter = factor(parameter, levels = c("dx", "dy", "dt", "g")),
+    mle_method = factor(mle_method, levels = c("mleGPsep", "jmleGPsep")),
+    ancestry_component = factor(ancestry_component, levels = c("PC1", "PC2", "C1", "C2"))
   )
-  param_estimation <- laGP::mleGP(
-    gpi = gp,
-    param = "d",
-    tmin = da$min, tmax = da$max, ab = da$ab
-  )
-  laGP::deleteGP(gp)
-  return(param_estimation)
-})
 
-d <- sapply(mleGP_out, function(x) { x$d }) * 1000
-its <- sapply(mleGP_out, function(x) { x$it })
+save(mle_out, file = "data/parameter_exploration/mle_out.RData")
 
-library(ggplot2)
-tibble::tibble(
-  scaling_factor = scaling_factor_sequence,
-  scaling_factor_fractional = fractional::fractional(scaling_factor_sequence),
-  scaling_factor_label = factor(
-    as.character(as.character(scaling_factor_fractional)), 
-    levels = as.character(as.character(scaling_factor_fractional))
-  ),
-  d = d
-) %>% ggplot() +
-  geom_point(
-    aes(scaling_factor_label, d)
-  )
+
+# library(ggplot2)
+# 
+# ggplot() +
+#   facet_wrap(
+#     mle_method~parameter,
+#     nrow = 2,
+#     ncol = 4,
+#     # rows = dplyr::vars(mle_method), 
+#     # cols = dplyr::vars(parameter),
+#     scales = "free_y"
+#   ) +
+#   geom_boxplot(
+#     aes(x = ancestry_component, y = value, color = ancestry_component)
+#   ) +
+#   guides(color = F) +
+#   theme_bw() +
+#   xlab("ancestry_component") +
+#   ylab("estimated value")
+  
+
+
+
+
+
+
+
+
+
+
+
+# 
+# 
+# #### approximation with mleGP ####
+# 
+# scaling_factor_sequence <- c(seq(0.1, 0.9, 0.1), 1, seq(2, 10, 1))
+# 
+# # parameter estimation
+# mleGP_out <- lapply(scaling_factor_sequence, function(scaling_factor) {
+#   # data prep inside of parameter estimation, because different scaling factors are tested
+#   independent <- anno %>%
+#     dplyr::transmute(
+#       x = x/1000000,
+#       y = y/1000000,
+#       z = calage_center/1000 * scaling_factor
+#     )
+#   dependent <- anno$PC1
+#   da <- laGP::darg(list(mle = TRUE), independent)
+#   gp <- laGP::newGP(
+#     X = independent, 
+#     Z = dependent, 
+#     d = da$start,
+#     g = 0.01,
+#     dK = TRUE
+#   )
+#   param_estimation <- laGP::mleGP(
+#     gpi = gp,
+#     param = "d",
+#     tmin = da$min, tmax = da$max, ab = da$ab
+#   )
+#   laGP::deleteGP(gp)
+#   return(param_estimation)
+# })
+# 
+# d <- sapply(mleGP_out, function(x) { x$d }) * 1000
+# its <- sapply(mleGP_out, function(x) { x$it })
+# 
+# library(ggplot2)
+# tibble::tibble(
+#   scaling_factor = scaling_factor_sequence,
+#   scaling_factor_fractional = fractional::fractional(scaling_factor_sequence),
+#   scaling_factor_label = factor(
+#     as.character(as.character(scaling_factor_fractional)), 
+#     levels = as.character(as.character(scaling_factor_fractional))
+#   ),
+#   d = d
+# ) %>% ggplot() +
+#   geom_point(
+#     aes(scaling_factor_label, d)
+#   )
