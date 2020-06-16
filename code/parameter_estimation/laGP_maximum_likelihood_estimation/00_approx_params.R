@@ -46,7 +46,7 @@ mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component)
   })
   
   # look at result parameters
-  d <- lapply(mleGPsep_params, function(x) { 
+  lapply(mleGPsep_params, function(x) { 
     tibble::tibble(
       mle_method = "mleGPsep",
       ancestry_component = ancestry_component,
@@ -63,37 +63,77 @@ mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component)
 
 #### approximation with jmleGPsep ####
 
-# data prep
-independent <- anno %>%
-  dplyr::transmute(
-    x = x/1000000,
-    y = y/1000000,
-    z = calage_center/1000
-  )
-dependent <- anno$PC1
+jmleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component) {
+  
+  .ancestry_component <- rlang::ensym(ancestry_component)
+  
+  anno_filtered <- anno %>% dplyr::select(x, y, calage_center, !!.ancestry_component) %>% 
+    dplyr::filter(!is.na(!!.ancestry_component))
+  
+  independent <- anno_filtered %>%
+    dplyr::transmute(
+      x = x/1000000,
+      y = y/1000000,
+      z = calage_center/1000
+    )
+  
+  dependent <- anno_filtered[[ancestry_component]]
+  
+  # parameter estimation
+  jmleGPsep_params <- lapply(1:2, function(i) {
+    da <- laGP::darg(list(mle = TRUE), independent)
+    ga <- laGP::garg(list(mle = TRUE), dependent)
+    gp <- laGP::newGPsep(
+      X = independent, 
+      Z = dependent, 
+      d = da$start,
+      g = ga$start,
+      dK = TRUE
+    )
+    param_estimation <- laGP::jmleGPsep(
+      gpsepi = gp,
+      drange = c(da$min, da$max),
+      grange = c(ga$min, ga$max),
+      dab = da$ab, 
+      gab = ga$ab,
+      maxit = 200
+    )
+    laGP::deleteGPsep(gp)
+    return(param_estimation)
+  })
+  
+  # look at result parameters
+  jmleGPsep_params %>% 
+    dplyr::bind_rows() %>%
+    dplyr::transmute(
+      mle_method = "jmleGPsep",
+      ancestry_component = ancestry_component,
+      dx = d.1 * 1000, 
+      dy = d.2 * 1000, 
+      dt = d.3 * 1000, 
+      g = g, 
+      its = tot.its
+    ) %>%
+    tibble::as_tibble()
+  
+}) %>% dplyr::bind_rows()
 
-# parameter estimation
-jmleGPsep_out <- lapply(1:10, function(i) {
-  da <- laGP::darg(list(mle = TRUE), independent)
-  ga <- laGP::garg(list(mle = TRUE), dependent)
-  gp <- laGP::newGPsep(
-    X = independent, 
-    Z = dependent, 
-    d = da$start,
-    g = ga$start,
-    dK = TRUE
-  )
-  param_estimation <- laGP::jmleGPsep(
-    gpsepi = gp,
-    drange = c(da$min, da$max),
-    grange = c(ga$min, ga$max),
-    dab = da$ab, 
-    gab = ga$ab,
-    maxit = 200
-  )
-  laGP::deleteGPsep(gp)
-  return(param_estimation)
-})
+
+library(ggplot2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #### approximation with mleGP ####
 
