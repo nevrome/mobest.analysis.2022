@@ -8,6 +8,61 @@ anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
 
 #### approximation with mleGPsep ####
 
+mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component) {
+  
+  .ancestry_component <- rlang::ensym(ancestry_component)
+  
+  anno_filtered <- anno %>% dplyr::select(x, y, calage_center, !!.ancestry_component) %>% 
+    dplyr::filter(!is.na(!!.ancestry_component))
+  
+  independent <- anno_filtered %>%
+    dplyr::transmute(
+      x = x/1000000,
+      y = y/1000000,
+      z = calage_center/1000
+    )
+  
+  dependent <- anno_filtered[[ancestry_component]]
+  
+  # parameter estimation
+  mleGPsep_params <- lapply(1:2, function(i) {
+    da <- laGP::darg(list(mle = TRUE), independent)
+    ga <- laGP::garg(list(mle = TRUE), dependent)
+    gp <- laGP::newGPsep(
+      X = independent, 
+      Z = dependent, 
+      d = da$start,
+      g = ga$start,
+      dK = TRUE
+    )
+    param_estimation <- laGP::mleGPsep(
+      gpsepi = gp,
+      param = "both",
+      tmin = c(da$min, ga$min), tmax = c(da$max, ga$max), ab = c(da$ab, ga$ab),
+      maxit = 200
+    )
+    laGP::deleteGPsep(gp)
+    return(param_estimation)
+  })
+  
+  # look at result parameters
+  d <- lapply(mleGPsep_params, function(x) { 
+    tibble::tibble(
+      mle_method = "mleGPsep",
+      ancestry_component = ancestry_component,
+      dx = x$theta[1] * 1000, 
+      dy = x$theta[2] * 1000, 
+      dt = x$theta[3] * 1000, 
+      g = x$theta[4], 
+      its = x$its
+    )
+  }) %>% dplyr::bind_rows()
+  
+}) %>% dplyr::bind_rows()
+
+
+#### approximation with jmleGPsep ####
+
 # data prep
 independent <- anno %>%
   dplyr::transmute(
@@ -18,46 +73,27 @@ independent <- anno %>%
 dependent <- anno$PC1
 
 # parameter estimation
-mleGPsep_out <- lapply(1:10, function(i) {
+jmleGPsep_out <- lapply(1:10, function(i) {
   da <- laGP::darg(list(mle = TRUE), independent)
+  ga <- laGP::garg(list(mle = TRUE), dependent)
   gp <- laGP::newGPsep(
     X = independent, 
     Z = dependent, 
     d = da$start,
-    g = 0.01,
+    g = ga$start,
     dK = TRUE
   )
-  param_estimation <- laGP::mleGPsep(
+  param_estimation <- laGP::jmleGPsep(
     gpsepi = gp,
-    param = "d",
-    tmin = da$min, tmax = da$max, ab = da$ab,
+    drange = c(da$min, da$max),
+    grange = c(ga$min, ga$max),
+    dab = da$ab, 
+    gab = ga$ab,
     maxit = 200
   )
   laGP::deleteGPsep(gp)
   return(param_estimation)
 })
-
-# look at result parameters
-d <- lapply(mleGPsep_out, function(x) { x$d }) %>% do.call(rbind, .) %>% 
-  tidyr::as_tibble() %>% 
-  magrittr::set_colnames(c("dx", "dy", "dt")) %>%
-  dplyr::mutate(
-    dx = dx * 1000,
-    dy = dy * 1000,
-    dt = dt * 1000
-  ) %>%
-  dplyr::summarise(
-    mean_dx = mean(dx),
-    mean_dy = mean(dy),
-    mean_dt = mean(dt),
-    sd2_dx = 2 * sd(dx),
-    sd2_dy = 2 * sd(dy),
-    sd2_dt = 2 * sd(dt)
-  )
-
-its <- sapply(mleGPsep_out, function(x) { x$it })
-mean(its)
-2*sd(its)
 
 #### approximation with mleGP ####
 
