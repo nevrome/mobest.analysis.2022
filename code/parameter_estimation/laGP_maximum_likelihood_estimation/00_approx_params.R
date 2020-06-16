@@ -25,7 +25,7 @@ mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component)
   dependent <- anno_filtered[[ancestry_component]]
   
   # parameter estimation
-  mleGPsep_params <- lapply(1:20, function(i) {
+  mleGPsep_params <- lapply(1:100, function(i) {
     da <- laGP::darg(list(mle = TRUE), independent)
     ga <- laGP::garg(list(mle = TRUE), dependent)
     gp <- laGP::newGPsep(
@@ -80,7 +80,7 @@ jmleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component
   dependent <- anno_filtered[[ancestry_component]]
   
   # parameter estimation
-  jmleGPsep_params <- lapply(1:20, function(i) {
+  jmleGPsep_params <- lapply(1:100, function(i) {
     da <- laGP::darg(list(mle = TRUE), independent)
     ga <- laGP::garg(list(mle = TRUE), dependent)
     gp <- laGP::newGPsep(
