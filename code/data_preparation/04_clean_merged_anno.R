@@ -14,6 +14,11 @@ anno <- anno %>%
     reconstruct_age_info(anno$age_string)
   )
 
+# determine dating type
+anno$age_type <- NA
+anno$age_type[!is.na(anno$age_arch_start_BC) & !is.na(anno$age_arch_stop_BC)] <- "context"
+anno$age_type[!is.na(anno$age_c14_uncal_BP) & !is.na(anno$age_c14_uncal_BP_dev)] <- "C14"
+
 # age probability distribution list column template
 anno$age_prob_distribution_BC <- lapply(anno$sample_id, function(x) tibble::tibble(age = numeric(), dens_dist = numeric(), norm_dens = numeric(), center = numeric()))
 
