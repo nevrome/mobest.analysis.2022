@@ -5,7 +5,7 @@ library(ggplot2)
 
 load("data/parameter_exploration/mle_out.RData")
 
-mle_out %>%
+p <- mle_out %>%
   ggplot() +
   facet_wrap(
     mle_method~parameter,
@@ -22,3 +22,14 @@ mle_out %>%
   theme_bw() +
   xlab("ancestry_component") +
   ylab("estimated value")
+
+ggsave(
+  "plots/figure_sup_4_mle_GPsep.jpeg",
+  plot = p,
+  device = "jpeg",
+  scale = 0.6,
+  dpi = 300,
+  width = 300, height = 200, units = "mm",
+  limitsize = F
+)
+
