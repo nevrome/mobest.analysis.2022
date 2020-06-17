@@ -4,7 +4,7 @@ library(magrittr)
 library(ggplot2)
 
 interpol_comparison <- lapply(
-  list.files("data/crossvalidation", pattern = "interpol_comparison_[0-9]", full.names = T), function(x) {
+  list.files("data/crossvalidation_2", pattern = "interpol_comparison_[0-9]", full.names = T), function(x) {
     load(x)
     interpol_comparison
   }
@@ -43,10 +43,11 @@ ps <- lapply(dependent_vars %>% unique, function(cur_dependent_var) {
       shape = 4,
       color = "red",
       size = 3
-    )
+    ) +
+    coord_fixed()
   
   return(p)
   
 })
 
-cowplot::plot_grid(plotlist = ps, nrow = length(ps), labels = dependent_vars)
+cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 2, labels = dependent_vars)
