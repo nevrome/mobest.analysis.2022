@@ -54,7 +54,9 @@ mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component)
       dy = x$theta[2] * 1000, 
       dt = x$theta[3] * 1000, 
       g = x$theta[4], 
-      its = x$its
+      its = x$its,
+      msg = x$msg,
+      conv = x$conv
     )
   }) %>% dplyr::bind_rows()
   
@@ -112,7 +114,9 @@ jmleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component
       dy = d.2 * 1000, 
       dt = d.3 * 1000, 
       g = g, 
-      its = tot.its
+      its = tot.its,
+      msg = NA,
+      conv = dconv
     ) %>%
     tibble::as_tibble()
   
