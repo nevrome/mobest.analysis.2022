@@ -6,6 +6,8 @@ library(ggplot2)
 load("data/parameter_exploration/mle_out.RData")
 
 p <- mle_out %>%
+  # remove non-convergence runs
+  dplyr::filter(conv == 0) %>%
   ggplot() +
   facet_wrap(
     mle_method~parameter,
@@ -16,7 +18,9 @@ p <- mle_out %>%
     scales = "free_y"
   ) +
   geom_jitter(
-    aes(x = ancestry_component, y = value, color = ancestry_component)
+    aes(x = ancestry_component, y = value, color = ancestry_component),
+    size = 0.01,
+    height = 0
   ) +
   guides(color = F) +
   theme_bw() +
