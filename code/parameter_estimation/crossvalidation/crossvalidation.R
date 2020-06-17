@@ -16,12 +16,10 @@ interpol_comparison_pca <- mobest::crossvalidate(
   independent = tibble::tibble(x = anno$x, y = anno$y, z = anno$calage_center),
   dependent = list(
     PC1 = anno$PC1,
-    PC2 = anno$PC2,
-    PC3 = anno$PC3,
-    PC4 = anno$PC4
+    PC2 = anno$PC2
   ),
   kernel = mobest::create_kernel_grid(
-    ds = seq(50, 2050, 1000)*1000, 
+    ds = c(50, seq(200, 3000, 200))*1000, 
     dt = dt_for_this_run, 
     g = g_for_this_run
   )
@@ -37,12 +35,10 @@ interpol_comparison_mds <- mobest::crossvalidate(
   independent = tibble::tibble(x = anno_mds$x, y = anno_mds$y, z = anno_mds$calage_center),
   dependent = list(
     C1 = anno_mds$C1,
-    C2 = anno_mds$C2,
-    C3 = anno_mds$C3,
-    C4 = anno_mds$C4
+    C2 = anno_mds$C2
   ),
   kernel = mobest::create_kernel_grid(
-    ds = seq(50, 2050, 1000)*1000, 
+    ds = c(50, seq(200, 3000, 200))*1000, 
     dt = dt_for_this_run, 
     g = g_for_this_run
   )
