@@ -1,16 +1,16 @@
 #!/bin/bash
 
 #SBATCH -p short                                          # The queue or 'partition' you want to submit to
-#SBATCH -c 12                                             # number of CPUs
+#SBATCH -c 16                                             # number of CPUs
 #SBATCH --mem=10G                                         # memory pool for all cores
 #SBATCH -o /projects1/coest_mobility/log/%j.out           # STDOUT (the standard output stream) into file <JOB_NUMBER>.out
 #SBATCH -e /projects1/coest_mobility/log/%j.err           # STDERR (the output stream for errors) into file <JOB_NUMBER>.err
-#SBATCH --array 0-47%8
+#SBATCH --array 0-15%4
 #SBATCH -J "cross"
 
 # parameters
-g_to_explore=(0.001 0.005 0.01)
-dt_to_explore=(50 $(seq 200 200 3000))
+g_to_explore=(0.01)
+dt_to_explore=(500 $(seq 2000 2000 30000))
 
 jobs=$((${#g_to_explore[@]}*${#dt_to_explore[@]}))
 
@@ -34,7 +34,7 @@ done
 current_g=${gs[${SLURM_ARRAY_TASK_ID}]}
 current_dt=${dts[${SLURM_ARRAY_TASK_ID}]}
 
-singularity exec --bind=/projects1 ~/singularity/singularity_images/nevrome_coest/nevrome_coest.sif Rscript code/crossvalidation/crossvalidation.R ${SLURM_ARRAY_TASK_ID} ${current_dt} ${current_g}
+singularity exec --bind=/projects1 ~/singularity/singularity_images/nevrome_coest/nevrome_coest.sif Rscript code/parameter_estimation/crossvalidation/crossvalidation.R ${SLURM_ARRAY_TASK_ID} ${current_dt} ${current_g}
 
 date
  

@@ -19,7 +19,7 @@ interpol_comparison_pca <- mobest::crossvalidate(
     PC2 = anno$PC2
   ),
   kernel = mobest::create_kernel_grid(
-    ds = c(50, seq(200, 3000, 200))*1000, 
+    ds = c(500, seq(2000, 30000, 2000))*1000, 
     dt = dt_for_this_run, 
     g = g_for_this_run
   )
@@ -38,7 +38,7 @@ interpol_comparison_mds <- mobest::crossvalidate(
     C2 = anno_mds$C2
   ),
   kernel = mobest::create_kernel_grid(
-    ds = c(50, seq(200, 3000, 200))*1000, 
+    ds = c(500, seq(2000, 30000, 2000))*1000, 
     dt = dt_for_this_run, 
     g = g_for_this_run
   )
