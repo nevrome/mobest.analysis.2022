@@ -72,3 +72,37 @@ mean_interpol_comparison_group %>%
   guides(
     fill = guide_colorsteps(title = "Mean normalized difference")
   )
+
+###
+
+count_interpol_comparison <- interpol_comparison %>%
+  dplyr::mutate(
+    cut_difference = cut(difference, breaks = seq(-0.1, 0.1, 0.005), labels = c(seq(-0.1, -0.005, 0.005), seq(0.005, 0.1, 0.005)))
+  ) %>%
+  dplyr::group_by(dependent_var, cut_difference) %>%
+  dplyr::summarise(
+    count = dplyr::n()
+  ) %>%
+  dplyr::ungroup()
+  
+count_interpol_comparison %>%
+  ggplot() +
+  geom_bar(
+    mapping = aes(x = as.numeric(as.character(cut_difference)), y = count), stat = "identity"
+  ) +
+  facet_grid(rows = vars(dependent_var))
+  # geom_vline(
+  #   data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)),
+  #   mapping = aes(xintercept = sd_difference),
+  #   color = "red"
+  # ) +
+  # geom_vline(
+  #   mapping = aes(xintercept = 0),
+  #   color = "black"
+  # ) +
+  # geom_vline(
+  #   data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)),
+#   mapping = aes(xintercept = -sd_difference),
+#   color = "red"
+# ) +
+# theme_bw()
