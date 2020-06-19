@@ -74,35 +74,49 @@ mean_interpol_comparison_group %>%
   )
 
 ###
-cut_interpol_comparison <- interpol_comparison %>%
-  dplyr::mutate(
-    cut_difference = as.numeric(as.character(
-      cut(
-        difference, 
-        breaks = seq(-0.1, 0.1, 0.0005), 
-        labels = c(seq(-0.1, -0.0005, 0.0005), seq(0.0005, 0.1, 0.0005))
-      )
-    ))
-  )
+# cut_interpol_comparison <- interpol_comparison %>%
+#   dplyr::mutate(
+#     cut_difference = as.numeric(as.character(
+#       cut(
+#         difference, 
+#         breaks = seq(-0.1, 0.1, 0.0005), 
+#         labels = c(seq(-0.1, -0.0005, 0.0005), seq(0.0005, 0.1, 0.0005))
+#       )
+#     ))
+#   )
+# 
+# count_interpol_comparison <- cut_interpol_comparison %>%
+#   dplyr::group_by(dependent_var, cut_difference) %>%
+#   dplyr::summarise(
+#     count = dplyr::n()
+#   ) %>%
+#   dplyr::ungroup()
 
-count_interpol_comparison <- cut_interpol_comparison %>%
-  dplyr::group_by(dependent_var, cut_difference) %>%
-  dplyr::summarise(
-    count = dplyr::n()
-  ) %>%
-  dplyr::ungroup()
-  
-count_interpol_comparison %>%
-  ggplot(aes(x = cut_difference, y = dependent_var)) +
-  ggridges::geom_density_ridges(
-    mapping = aes(height = count, group = dependent_var),
-    scale = 2,
-    stat = "identity"
-  ) +
+# count_interpol_comparison %>%
+#   ggplot(aes(x = cut_difference, y = dependent_var)) +
+#   ggridges::geom_density_ridges(
+#     mapping = aes(height = count, group = dependent_var),
+#     scale = 2,
+#     stat = "identity"
+#   ) +
+#   geom_vline(
+#     xintercept = 0
+#   ) +
+#   theme_bw()
+
+sample_interpol_comparison <- interpol_comparison %>%
+  dplyr::sample_n(10000)
+
+sample_interpol_comparison %>%
+  ggplot(aes(y = dependent_var, x = difference, fill = 0.5 - abs(0.5 - stat(ecdf)))) +
+  ggridges::stat_density_ridges(geom = "density_ridges_gradient", calc_ecdf = TRUE) +
+  viridis::scale_fill_viridis(name = "Tail probability") +
   geom_vline(
-    xintercept = 0
+    mapping = aes(xintercept = 0),
+    color = "black"
   ) +
-  theme_bw()
+  theme_bw() +
+  scale_y_discrete(expand = c(0, 0))
   
   # geom_vline(
   #   data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)),
