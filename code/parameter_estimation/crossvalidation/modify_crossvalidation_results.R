@@ -41,4 +41,34 @@ interpol_comparison_group %>%
   ) +
   coord_fixed()
 
+###
 
+mean_interpol_comparison_group <- interpol_comparison_group %>% 
+  dplyr::group_by(dependent_var) %>%
+  dplyr::mutate(
+    mean_squared_difference = (mean_squared_difference - min(mean_squared_difference))/(max(mean_squared_difference) - min(mean_squared_difference))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::group_by(kernel_setting_id, ds, dt, g) %>%
+  dplyr::summarise(
+    mean_mean_squared_difference = mean(mean_squared_difference)
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(
+    cut_mean_mean_squared_difference = cut(mean_mean_squared_difference, breaks = c(seq(0, 0.2, 0.05), seq(0.3, 1, 0.1)))
+  )
+  
+mean_interpol_comparison_group %>%
+  ggplot() +
+  geom_raster(
+    aes(x = ds, y = dt, fill = cut_mean_mean_squared_difference)
+  ) +
+  scale_fill_viridis_d(direction = -1) +
+  coord_fixed() +
+  theme_bw() +
+  theme(
+    legend.key.height = unit(2, "cm")
+  ) +
+  guides(
+    fill = guide_colorsteps(title = "Mean normalized difference")
+  )
