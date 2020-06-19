@@ -74,11 +74,18 @@ mean_interpol_comparison_group %>%
   )
 
 ###
-
-count_interpol_comparison <- interpol_comparison %>%
+cut_interpol_comparison <- interpol_comparison %>%
   dplyr::mutate(
-    cut_difference = cut(difference, breaks = seq(-0.1, 0.1, 0.005), labels = c(seq(-0.1, -0.005, 0.005), seq(0.005, 0.1, 0.005)))
-  ) %>%
+    cut_difference = as.numeric(as.character(
+      cut(
+        difference, 
+        breaks = seq(-0.1, 0.1, 0.0005), 
+        labels = c(seq(-0.1, -0.0005, 0.0005), seq(0.0005, 0.1, 0.0005))
+      )
+    ))
+  )
+
+count_interpol_comparison <- cut_interpol_comparison %>%
   dplyr::group_by(dependent_var, cut_difference) %>%
   dplyr::summarise(
     count = dplyr::n()
@@ -86,11 +93,17 @@ count_interpol_comparison <- interpol_comparison %>%
   dplyr::ungroup()
   
 count_interpol_comparison %>%
-  ggplot() +
-  geom_bar(
-    mapping = aes(x = as.numeric(as.character(cut_difference)), y = count), stat = "identity"
+  ggplot(aes(x = cut_difference, y = dependent_var)) +
+  ggridges::geom_density_ridges(
+    mapping = aes(height = count, group = dependent_var),
+    scale = 2,
+    stat = "identity"
   ) +
-  facet_grid(rows = vars(dependent_var))
+  geom_vline(
+    xintercept = 0
+  ) +
+  theme_bw()
+  
   # geom_vline(
   #   data = interpol_comparison_sd %>% dplyr::filter(!grepl("norm", PC)),
   #   mapping = aes(xintercept = sd_difference),
