@@ -20,34 +20,25 @@ interpol_comparison_group <- interpol_comparison %>%
 
 dependent_vars <- interpol_comparison_group$dependent_var
 
-ps <- lapply(dependent_vars %>% unique, function(cur_dependent_var) {
-  
-  interpol_comparison_group_dependent_var <- interpol_comparison_group %>% dplyr::filter(dependent_var == cur_dependent_var)
-  
-  minicg <- interpol_comparison_group_dependent_var %>% dplyr::filter(
-    mean_squared_difference == min(mean_squared_difference)
-  ) %>% dplyr::select(
-    ds, dt, g
-  )
-  
-  p <- interpol_comparison_group_dependent_var %>%
-    ggplot() +
-    geom_raster(
-      aes(x = ds, y = dt, fill = mean_squared_difference)
-    ) +
-    scale_fill_viridis_c(direction = -1) +
-    facet_grid(cols = vars(g)) +
-    geom_point(
-      data = minicg,
-      aes(x = ds, y = dt),
-      shape = 4,
-      color = "red",
-      size = 3
-    ) +
-    coord_fixed()
-  
-  return(p)
-  
-})
+minicg <- interpol_comparison_group %>% 
+  dplyr::group_by(dependent_var) %>%
+    dplyr::filter(
+    mean_squared_difference %in% (mean_squared_difference %>% sort %>% unique %>% head(20))
+  ) %>% 
+  dplyr::ungroup()
 
-cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 2, labels = dependent_vars)
+interpol_comparison_group %>%
+  ggplot() +
+  geom_raster(
+    aes(x = ds, y = dt, fill = mean_squared_difference)
+  ) +
+  scale_fill_viridis_c(direction = -1) +
+  facet_wrap(~dependent_var) +
+  geom_raster(
+    data = minicg,
+    aes(x = ds, y = dt),
+    fill = "red"
+  ) +
+  coord_fixed()
+
+
