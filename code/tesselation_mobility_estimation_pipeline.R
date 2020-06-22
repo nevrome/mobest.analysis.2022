@@ -5,11 +5,14 @@ anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
 load("data/spatial/area.RData")
 load("data/spatial/mobility_regions.RData")
 
+# one year equals how many meters
+scaling_factor <- 1000
+
 input_list <- lapply(1:5, function(age_resampling_run) {
   tibble::tibble(
     id = 1:nrow(anno),
-    x = anno$x / 1000, 
-    y = anno$y / 1000, 
+    x = anno$x / scaling_factor, 
+    y = anno$y / scaling_factor, 
     z = sapply(anno$calage_sample, function(x){ x[age_resampling_run] }),
     PC1 = anno$PC1,
     PC2 = anno$PC2,
@@ -30,8 +33,8 @@ input_list <- lapply(1:5, function(age_resampling_run) {
 
 pred_grid <- mobest::create_prediction_grid(area, spatial_cell_size = 50000, time_layers = seq(-7500, -500, 500)) %>%
   dplyr::mutate(
-    x = x / 1000,
-    y = y / 1000
+    x = x / scaling_factor,
+    y = y / scaling_factor
   )
 
 res <- pbapply::pblapply(1:length(input_list), function(i) {
@@ -55,6 +58,9 @@ res <- pbapply::pblapply(1:length(input_list), function(i) {
   
   spu$run <- i
   
+  spu$x <- spu$x * scaling_factor
+  spu$y <- spu$y * scaling_factor
+  
   return(spu)
   
 }, cl = 5)
@@ -76,7 +82,8 @@ res_columns <- res_total %>%
   )
 
 library(ggplot2)
-res_columns %>% dplyr::filter(z %in% c(-6100, -6000)) %>% ggplot() +
+res_columns %>% #dplyr::filter(z %in% c(-6100, -6000)) %>% 
+  ggplot() +
   geom_raster(
     aes(x, y, fill = PC1)
   ) +
@@ -90,8 +97,8 @@ interpol_grid_tess <- res_columns %>%
     pred_grid_id = "test",
     independent_table_type = "test",
     sd = 0,
-    x = x*1000,
-    y = y*1000
+    x = x,
+    y = y
   )
 
 interpol_grid_tess_origin <- mobest::search_spatial_origin(interpol_grid_tess)

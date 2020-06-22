@@ -20,7 +20,8 @@ minicg <- interpol_comparison_group %>%
   ) %>% 
   dplyr::ungroup()
 
-interpol_comparison_group %>%
+# for each ancestry component
+p1 <- interpol_comparison_group %>%
   ggplot() +
   geom_raster(
     aes(x = ds, y = dt, fill = mean_squared_difference)
@@ -34,10 +35,17 @@ interpol_comparison_group %>%
   ) +
   coord_fixed()
 
+ggsave(
+  "plots/figure_sup_7_crossvalidation_rasters.jpeg",
+  plot = p1,
+  device = "jpeg",
+  scale = 0.6,
+  dpi = 300,
+  width = 300, height = 200, units = "mm",
+  limitsize = F
+)
 
-
-###
-
+# merge ancestry components
 mean_interpol_comparison_group <- interpol_comparison_group %>% 
   dplyr::group_by(dependent_var) %>%
   dplyr::mutate(
@@ -53,7 +61,7 @@ mean_interpol_comparison_group <- interpol_comparison_group %>%
     cut_mean_mean_squared_difference = cut(mean_mean_squared_difference, breaks = c(seq(0, 0.2, 0.05), seq(0.3, 1, 0.1)))
   )
 
-mean_interpol_comparison_group %>%
+p2 <- mean_interpol_comparison_group %>%
   ggplot() +
   geom_raster(
     aes(x = ds, y = dt, fill = cut_mean_mean_squared_difference)
@@ -67,3 +75,14 @@ mean_interpol_comparison_group %>%
   guides(
     fill = guide_colorsteps(title = "Mean normalized difference")
   )
+
+ggsave(
+  "plots/figure_sup_8_crossvalidation_raster_merged.jpeg",
+  plot = p2,
+  device = "jpeg",
+  scale = 0.6,
+  dpi = 300,
+  width = 300, height = 200, units = "mm",
+  limitsize = F
+)
+
