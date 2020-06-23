@@ -6,7 +6,7 @@ library(laGP)
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
 anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
 
-#### approximation with mleGPsep ####
+#### approximation with mleGPsep (anisotropic) ####
 
 mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component) {
   
@@ -63,7 +63,7 @@ mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component)
 }) %>% dplyr::bind_rows()
 
 
-#### approximation with jmleGPsep ####
+#### approximation with jmleGPsep (anisotropic) ####
 
 jmleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component) {
   
@@ -122,7 +122,7 @@ jmleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component
   
 }) %>% dplyr::bind_rows()
 
-mle_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
+mlesep_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
   tidyr::pivot_longer(cols = c("dx", "dy", "dt", "g"), names_to = "parameter", values_to = "value") %>% 
   dplyr::mutate(
     parameter = factor(parameter, levels = c("dx", "dy", "dt", "g")),
@@ -130,20 +130,9 @@ mle_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
     ancestry_component = factor(ancestry_component, levels = c("PC1", "PC2", "C1", "C2"))
   )
 
-save(mle_out, file = "data/parameter_exploration/mle_out.RData")
+save(mlesep_out, file = "data/parameter_exploration/mle/mlesep_out.RData")
 
-
-
-
-
-
-
-
-
-
-
-
-#### approximation with mleGP ####
+#### approximation with mleGP (isotropic) ####
 
 scaling_factor_sequence <- c(seq(0.1, 0.9, 0.1), 1, seq(2, 10, 1))
 
@@ -176,7 +165,7 @@ mleGP_out <- lapply(scaling_factor_sequence, function(scaling_factor) {
   return(param_estimation)
 })
 
-mleGP_out_df <- tibble::tibble(
+mle_out <- tibble::tibble(
   scaling_factor = scaling_factor_sequence,
   scaling_factor_fractional = fractional::fractional(scaling_factor_sequence),
   scaling_factor_label = factor(
@@ -193,24 +182,4 @@ mleGP_out_df <- tibble::tibble(
   dt_sq = sqrt(dt)
 )
 
-library(ggplot2)
-p1 <- mleGP_out_df %>%
-  tidyr::pivot_longer(cols = c(ds, dt), names_to = "d_type", values_to = "d_value") %>%
-  ggplot() +
-  geom_point(
-    aes(x = scaling_factor_label, y = d_value, color = d_type),
-  ) +
-  theme_bw() +
-  scale_y_continuous(sec.axis = sec_axis(~sqrt(.), name = latex2exp::TeX("$\\sqrt{\\theta}$"))) +
-  ylab(latex2exp::TeX("$\\theta$")) +
-  xlab("Scaling factor")
-
-p2 <- mleGP_out_df %>% ggplot() +
-  geom_point(
-    aes(x = scaling_factor_label, y = l)
-  ) +
-  theme_bw() +
-  ylab("Gaussian process log likelihood") +
-  xlab("Scaling factor")
-
-cowplot::plot_grid(p1, p2, nrow = 2, align = "v", axis = "lr")
+save(mle_out, file = "data/parameter_exploration/mle/mle_out.RData")

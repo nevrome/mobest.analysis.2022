@@ -3,9 +3,9 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/parameter_exploration/mle_out.RData")
+load("data/parameter_exploration/mle/mlesep_out.RData")
 
-p <- mle_out %>%
+p <- mlesep_out %>%
   # remove non-convergence runs
   dplyr::filter(conv == 0) %>%
   ggplot() +
