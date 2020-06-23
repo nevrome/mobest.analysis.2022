@@ -1,3 +1,5 @@
+# ~/singularity/slurm_nevrome_coest.sh medium 16 50 code/parameter_estimation/laGP_maximum_likelihood_estimation/00_approx_params.R 
+
 library(magrittr)
 library(laGP)
 
