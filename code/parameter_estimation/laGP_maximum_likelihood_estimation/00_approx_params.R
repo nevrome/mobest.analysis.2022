@@ -141,52 +141,71 @@ save(mle_out, file = "data/parameter_exploration/mle_out.RData")
 
 
 
-# 
-# 
-# #### approximation with mleGP ####
-# 
-# scaling_factor_sequence <- c(seq(0.1, 0.9, 0.1), 1, seq(2, 10, 1))
-# 
-# # parameter estimation
-# mleGP_out <- lapply(scaling_factor_sequence, function(scaling_factor) {
-#   # data prep inside of parameter estimation, because different scaling factors are tested
-#   independent <- anno %>%
-#     dplyr::transmute(
-#       x = x/1000000,
-#       y = y/1000000,
-#       z = calage_center/1000 * scaling_factor
-#     )
-#   dependent <- anno$PC1
-#   da <- laGP::darg(list(mle = TRUE), independent)
-#   gp <- laGP::newGP(
-#     X = independent, 
-#     Z = dependent, 
-#     d = da$start,
-#     g = 0.01,
-#     dK = TRUE
-#   )
-#   param_estimation <- laGP::mleGP(
-#     gpi = gp,
-#     param = "d",
-#     tmin = da$min, tmax = da$max, ab = da$ab
-#   )
-#   laGP::deleteGP(gp)
-#   return(param_estimation)
-# })
-# 
-# d <- sapply(mleGP_out, function(x) { x$d }) * 1000
-# its <- sapply(mleGP_out, function(x) { x$it })
-# 
-# library(ggplot2)
-# tibble::tibble(
-#   scaling_factor = scaling_factor_sequence,
-#   scaling_factor_fractional = fractional::fractional(scaling_factor_sequence),
-#   scaling_factor_label = factor(
-#     as.character(as.character(scaling_factor_fractional)), 
-#     levels = as.character(as.character(scaling_factor_fractional))
-#   ),
-#   d = d
-# ) %>% ggplot() +
-#   geom_point(
-#     aes(scaling_factor_label, d)
-#   )
+
+
+#### approximation with mleGP ####
+
+scaling_factor_sequence <- c(seq(0.1, 0.9, 0.1), 1, seq(2, 10, 1))
+
+# parameter estimation
+mleGP_out <- lapply(scaling_factor_sequence, function(scaling_factor) {
+  # data prep inside of parameter estimation, because different scaling factors are tested
+  independent <- anno %>%
+    dplyr::transmute(
+      x = x/1000000,
+      y = y/1000000,
+      z = calage_center/1000 * scaling_factor
+    )
+  dependent <- anno$PC1
+  da <- laGP::darg(list(mle = TRUE), independent)
+  gp <- laGP::newGP(
+    X = independent,
+    Z = dependent,
+    d = da$start,
+    g = 0.01,
+    dK = TRUE
+  )
+  param_estimation <- laGP::mleGP(
+    gpi = gp,
+    param = "d",
+    tmin = da$min, tmax = da$max, ab = da$ab,
+    verb = 1
+  )
+  param_estimation$l <- laGP::llikGP(gp, dab = da$ab)
+  laGP::deleteGP(gp)
+  return(param_estimation)
+})
+
+mleGP_out_df <- tibble::tibble(
+  scaling_factor = scaling_factor_sequence,
+  scaling_factor_fractional = fractional::fractional(scaling_factor_sequence),
+  scaling_factor_label = factor(
+    as.character(as.character(scaling_factor_fractional)),
+    levels = as.character(as.character(scaling_factor_fractional))
+  ),
+  d = sapply(mleGP_out, function(x) { x$d }) * 1000,
+  l = sapply(mleGP_out, function(x) { x$l }),
+  its = sapply(mleGP_out, function(x) { x$it })
+) %>% dplyr::mutate(
+  ds = d,
+  dt = d / scaling_factor,
+  ds_sq = sqrt(ds),
+  dt_sq = sqrt(dt)
+)
+
+library(ggplot2)
+p1 <- mleGP_out_df %>%
+  tidyr::pivot_longer(cols = c(ds, dt), names_to = "d_type", values_to = "d_value") %>%
+  ggplot() +
+  geom_point(
+    aes(x = scaling_factor_label, y = d_value, color = d_type, shape = d_type),
+  ) +
+  theme_bw()
+
+p2 <- mleGP_out_df %>% ggplot() +
+  geom_point(
+    aes(x = scaling_factor_label, y = l)
+  ) +
+  theme_bw()
+
+cowplot::plot_grid(p1, p2, nrow = 2, align = "v", axis = "lr")
