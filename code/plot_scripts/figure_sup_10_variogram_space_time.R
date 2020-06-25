@@ -110,7 +110,7 @@ p_time <- ggplot(left_time) +
   # xlab("spatial distance: 100km bins") +
   # ylab("mean squared euclidean distance in PC1 & PC2 PCA space")
 
-cowplot::plot_grid(p_space, p_time, nrow = 1)
+p <- cowplot::plot_grid(p_space, p_time, nrow = 1)
 
 ggsave(
   "plots/figure_sup_10_variogram_space_time.jpeg",
@@ -118,6 +118,6 @@ ggsave(
   device = "jpeg",
   scale = 0.6,
   dpi = 300,
-  width = 300, height = 200, units = "mm",
+  width = 400, height = 200, units = "mm",
   limitsize = F
 )
