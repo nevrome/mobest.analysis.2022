@@ -16,7 +16,19 @@ bottom_space <- d_all_long %>%
     dist_type = replace(dist_type, dist_type == "PC2_dist_resid", "PC2"),
     dist_type = replace(dist_type, dist_type == "C1_dist_resid", "C1"),
     dist_type = replace(dist_type, dist_type == "C2_dist_resid", "C2"),
-    dist_type = factor(dist_type, levels = c("PC1", "PC2", "C1", "C2") %>% rev)
+    dist_type = factor(dist_type, levels = c("PC1", "PC2", "C1", "C2")),
+    geo_dist_cut = (cut(
+      geo_dist, 
+      breaks = seq(0, max(geo_dist), 100), 
+      include.lowest	= T, 
+      labels = F
+    ) * 100) - 50
+  )
+
+bottom_space_grouped <- bottom_space %>%
+  dplyr::group_by(geo_dist_cut, dist_type) %>%
+  dplyr::summarise(
+    mean_dist_val = mean(dist_val, na.rm = T)
   )
 
 left_time <- d_all_long %>%
@@ -27,30 +39,51 @@ left_time <- d_all_long %>%
     dist_type = replace(dist_type, dist_type == "PC2_dist_resid", "PC2"),
     dist_type = replace(dist_type, dist_type == "C1_dist_resid", "C1"),
     dist_type = replace(dist_type, dist_type == "C2_dist_resid", "C2"),
-    dist_type = factor(dist_type, levels = c("PC1", "PC2", "C1", "C2") %>% rev)
+    dist_type = factor(dist_type, levels = c("PC1", "PC2", "C1", "C2")),
+    time_dist_cut = (cut(
+      time_dist, 
+      breaks = seq(0, max(time_dist), 100), 
+      include.lowest = T, 
+      labels = F
+    ) * 100) - 50
   )
  
-ggplot(bottom_space) + 
-  geom_point(
-    aes(
-      x = geo_dist,
-      y = dist_val,
-      col = dist_type
-    ),
-    size = 0.1
-  ) +
-  theme_bw() +
-  geom_smooth(
-    aes(
-      x = geo_dist,
-      y = dist_val
-    )
-  ) +
-  facet_wrap(~dist_type)
+left_time_grouped <- left_time %>%
+  dplyr::group_by(time_dist_cut, dist_type) %>%
+  dplyr::summarise(
+    mean_dist_val = mean(dist_val, na.rm = T)
+  )
 
-ggplot(left_time) + 
+p_space <- ggplot() + 
   geom_point(
-    aes(
+    data = bottom_space,
+    mapping = aes(
+      x = geo_dist,
+      y = dist_val,
+      col = dist_type
+    ),
+    size = 0.1
+  ) +
+  theme_bw() +
+  geom_line(
+    data = bottom_space_grouped,
+    mapping = aes(
+      x = geo_dist_cut,
+      y = mean_dist_val
+    )
+  ) +
+  facet_wrap(~dist_type) +
+  theme(
+    legend.position = "bottom"
+  ) +
+  guides(
+    color = FALSE
+  )
+
+p_time <- ggplot(left_time) + 
+  geom_point(
+    data = left_time,
+    mapping = aes(
       x = time_dist,
       y = dist_val,
       col = dist_type
@@ -58,13 +91,17 @@ ggplot(left_time) +
     size = 0.1
   ) +
   theme_bw() +
-  geom_smooth(
-    aes(
-      x = time_dist,
-      y = dist_val
+  geom_line(
+    data = left_time_grouped,
+    mapping = aes(
+      x = time_dist_cut,
+      y = mean_dist_val
     )
   ) +
-  facet_wrap(~dist_type)
+  facet_wrap(~dist_type) +
+  guides(
+    color = FALSE
+  )
 
 
   # guides(
@@ -72,6 +109,8 @@ ggplot(left_time) +
   # ) +
   # xlab("spatial distance: 100km bins") +
   # ylab("mean squared euclidean distance in PC1 & PC2 PCA space")
+
+cowplot::plot_grid(p_space, p_time, nrow = 1)
 
 ggsave(
   "plots/figure_sup_10_variogram_space_time.jpeg",
