@@ -16,7 +16,7 @@ lower_left <- d_all_long %>%
     dist_type = replace(dist_type, dist_type == "PC2_dist_resid", "PC2"),
     dist_type = replace(dist_type, dist_type == "C1_dist_resid", "C1"),
     dist_type = replace(dist_type, dist_type == "C2_dist_resid", "C2"),
-    dist_type = factor(dist_type, levels = c("PC1", "PC2", "C1", "C2") %>% rev)
+    dist_type = factor(dist_type, levels = c("PC1", "PC2", "C1", "C2"))
   )
 
 lower_left_median <- lower_left %>%
@@ -53,7 +53,8 @@ p <- ggplot() +
   ) +
   xlab("ancestry component distance type") +
   ylab("log10 pairwise residual distance") +
-  scale_y_log10(labels = scales::comma)
+  scale_y_log10(labels = scales::comma) +
+  scale_x_discrete(limits = rev(levels(lower_left$dist_type)))
 
 ggsave(
   "plots/figure_sup_3_variogram_nugget.jpeg",
