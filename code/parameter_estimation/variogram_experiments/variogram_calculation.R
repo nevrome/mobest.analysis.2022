@@ -76,27 +76,3 @@ d_all <- d_geo_long %>%
   tibble::as_tibble()
 
 save(d_all, file = "data/parameter_exploration/variogram/all_distances.RData")
-
-# binning
-d_binned <- d_all %>%
-  dplyr::mutate(
-    geo_dist_cut = cut(geo_dist, breaks = c(seq(0, max(geo_dist), 100), max(geo_dist)), include.lowest	= T, labels = F) * 100,
-    time_dist_cut = cut(time_dist, breaks = c(seq(0, max(time_dist), 500), max(time_dist)), include.lowest	= T, labels = F) * 500
-  ) %>%
-  dplyr::group_by(geo_dist_cut, time_dist_cut) %>%
-  dplyr::summarise(
-    n = dplyr::n(),
-    mean_sq_pca_dist = mean(pca_dist^2),
-    mean_sq_mds_dist = mean(mds_dist^2),
-    mean_sq_PC1_dist = mean(PC1_dist^2),
-    mean_sq_PC1_dist_resid = mean(PC1_dist_resid^2),
-    mean_sq_PC2_dist = mean(PC2_dist^2),
-    mean_sq_PC2_dist_resid = mean(PC2_dist_resid^2),
-    mean_sq_C1_dist = mean(C1_dist^2),
-    mean_sq_C1_dist_resid = mean(C1_dist_resid^2),
-    mean_sq_C2_dist = mean(C2_dist^2),
-    mean_sq_C2_dist_resid = mean(C2_dist_resid^2),
-  ) %>%
-  dplyr::ungroup()
-
-save(d_binned, file = "data/parameter_exploration/variogram/binned_data.RData")
