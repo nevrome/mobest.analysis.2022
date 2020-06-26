@@ -4,18 +4,18 @@ library(ggplot2)
 load("data/parameter_exploration/mle/mle_out.RData")
 
 p1 <- mle_out %>%
-  tidyr::pivot_longer(cols = c(ds, dt), names_to = "d_type", values_to = "d_value") %>%
+  #tidyr::pivot_longer(cols = c(ds, dt), names_to = "d_type", values_to = "d_value") %>%
   ggplot() +
   geom_point(
-    aes(x = scaling_factor_label, y = d_value, color = d_type),
+    aes(x = scaling_factor_label, y = d),
   ) +
   theme_bw() +
   scale_y_continuous(sec.axis = sec_axis(~sqrt(.), name = latex2exp::TeX("$\\sqrt{\\theta}$"))) +
   ylab(latex2exp::TeX("$\\theta$")) +
-  xlab("") +
-  scale_color_discrete(
-    name = latex2exp::TeX("$\\theta$ scaling"), labels = list(latex2exp::TeX("$\\theta_s$"), latex2exp::TeX("$\\theta_t$"))
-  )
+  xlab("")# +
+  #scale_color_discrete(
+  #  name = latex2exp::TeX("$\\theta$ scaling"), labels = list(latex2exp::TeX("$\\theta_s$"), latex2exp::TeX("$\\theta_t$"))
+  #)
 
 p2 <- mle_out %>% ggplot() +
   geom_point(
