@@ -8,6 +8,8 @@ library(laGP)
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
 anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
 
+iterations <- 2
+
 #### approximation with mleGPsep (anisotropic) ####
 
 mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component) {
@@ -27,7 +29,7 @@ mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component)
   dependent <- anno_filtered[[ancestry_component]]
   
   # parameter estimation
-  mleGPsep_params <- lapply(1:100, function(i) {
+  mleGPsep_params <- lapply(1:iterations, function(i) {
     da <- laGP::darg(list(mle = TRUE), independent)
     ga <- laGP::garg(list(mle = TRUE), dependent)
     gp <- laGP::newGPsep(
@@ -84,7 +86,7 @@ jmleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component
   dependent <- anno_filtered[[ancestry_component]]
   
   # parameter estimation
-  jmleGPsep_params <- lapply(1:100, function(i) {
+  jmleGPsep_params <- lapply(1:iterations, function(i) {
     da <- laGP::darg(list(mle = TRUE), independent)
     ga <- laGP::garg(list(mle = TRUE), dependent)
     gp <- laGP::newGPsep(
