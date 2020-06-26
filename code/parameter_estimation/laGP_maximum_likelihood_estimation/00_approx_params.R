@@ -8,7 +8,7 @@ library(laGP)
 load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
 anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
 
-iterations <- 2
+iterations <- 50
 
 #### approximation with mleGPsep (anisotropic) ####
 
