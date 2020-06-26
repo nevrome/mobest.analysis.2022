@@ -11,16 +11,7 @@ d_binned <- d_all %>%
   dplyr::group_by(geo_dist_cut, time_dist_cut) %>%
   dplyr::summarise(
     n = dplyr::n(),
-    mean_sq_pca_dist = mean(pca_dist^2),
-    mean_sq_mds_dist = mean(mds_dist^2),
-    mean_sq_PC1_dist = mean(PC1_dist^2),
-    mean_sq_PC1_dist_resid = mean(PC1_dist_resid^2),
-    mean_sq_PC2_dist = mean(PC2_dist^2),
-    mean_sq_PC2_dist_resid = mean(PC2_dist_resid^2),
-    mean_sq_C1_dist = mean(C1_dist^2),
-    mean_sq_C1_dist_resid = mean(C1_dist_resid^2),
-    mean_sq_C2_dist = mean(C2_dist^2),
-    mean_sq_C2_dist_resid = mean(C2_dist_resid^2),
+    mean_sq_pca_dist = mean(pca_dist^2)
   ) %>%
   dplyr::ungroup()
 
