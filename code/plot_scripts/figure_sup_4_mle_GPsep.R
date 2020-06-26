@@ -1,9 +1,12 @@
-#scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/parameter_exploration/mle_out.RData ../parameter_exploration/mle_out.RData
+#scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/parameter_exploration/mle/mlesep_out.RData data/parameter_exploration/mle/mlesep_out.RData
 
 library(magrittr)
 library(ggplot2)
 
 load("data/parameter_exploration/mle/mlesep_out.RData")
+
+# number of non-converging runs
+mlesep_out$conv %>% table() %>% `/`(4)
 
 mlesep_out_theta <- mlesep_out %>% 
   dplyr::filter(parameter != "g")
