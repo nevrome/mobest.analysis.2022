@@ -1,9 +1,6 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
-anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
-
 kernel_theta <- function(distance, d) { exp(-(distance^2) / d) }
 
 kernel_theta_data <- expand.grid(
@@ -18,14 +15,29 @@ kernel_theta_data$k <- sapply(
   kernel_theta_data
 )
 
+kernel_theta_data$d_label <- as.factor(kernel_theta_data$d)
+levels(kernel_theta_data$d_label) <- c(
+  latex2exp::TeX("$\\theta = 100,\\; \\sqrt{\\theta} = 10$"),
+  latex2exp::TeX("$\\theta = 2000,\\; \\sqrt{\\theta} \\approx 44.7$"),
+  latex2exp::TeX("$\\theta = 5000,\\; \\sqrt{\\theta} \\approx 70.7$"),
+  latex2exp::TeX("$\\theta = 20000,\\; \\sqrt{\\theta} \\approx 141.4$")
+)
+
 p <- kernel_theta_data %>% 
   ggplot() +
   geom_line(
-    aes(dist_p1_p2, k, group = d),
+    aes(dist_p1_p2, k),
     size = 1
   ) +
+  geom_vline(
+    aes(xintercept = sqrt(d))
+  ) +
   scale_color_viridis_c() +
-  facet_wrap(~d, ncol = 1) +
+  facet_wrap(
+    ~d_label, 
+    ncol = 2,  
+    labeller = label_parsed
+  ) +
   theme_bw() +
   xlab("pairwise distance") +
   ylab("Covariance K")
@@ -36,7 +48,7 @@ ggsave(
   device = "jpeg",
   scale = 0.6,
   dpi = 300,
-  width = 300, height = 200, units = "mm",
+  width = 300, height = 150, units = "mm",
   limitsize = F
 )
 
