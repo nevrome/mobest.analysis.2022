@@ -20,20 +20,33 @@ minicg <- interpol_comparison_group %>%
   ) %>% 
   dplyr::ungroup()
 
+icg <- interpol_comparison_group %>% dplyr::group_split(dependent_var)
+mg <- minicg %>% dplyr::group_split(dependent_var)
+
 # for each ancestry component
-p1 <- interpol_comparison_group %>%
-  ggplot() +
-  geom_raster(
-    aes(x = ds, y = dt, fill = mean_squared_difference)
-  ) +
-  scale_fill_viridis_c(direction = -1) +
-  facet_wrap(~dependent_var) +
-  geom_raster(
-    data = minicg,
-    aes(x = ds, y = dt),
-    fill = "red"
-  ) +
-  coord_fixed()
+ps1 <- lapply(1:4, function(i) {
+  icg[[i]] %>%
+    ggplot() +
+    geom_raster(
+      aes(x = ds, y = dt, fill = mean_squared_difference)
+    ) +
+    scale_fill_viridis_c(direction = -1) +
+    facet_wrap(~dependent_var) +
+    geom_raster(
+      data = mg[[i]],
+      aes(x = ds, y = dt),
+      fill = "red"
+    ) +
+    coord_fixed() +
+    theme(
+      legend.position = "right"
+    ) +
+    guides(
+      fill = guide_colorbar(title = "", barheight = 9)
+    )
+})
+
+p1 <- cowplot::plot_grid(plotlist = ps1, nrow = 2, ncol = 2)
 
 ggsave(
   "plots/figure_sup_7_crossvalidation_rasters.jpeg",
@@ -41,7 +54,7 @@ ggsave(
   device = "jpeg",
   scale = 0.6,
   dpi = 300,
-  width = 300, height = 200, units = "mm",
+  width = 300, height = 230, units = "mm",
   limitsize = F
 )
 
