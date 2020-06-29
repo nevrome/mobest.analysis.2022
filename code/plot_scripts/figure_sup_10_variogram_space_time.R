@@ -62,7 +62,8 @@ p_space <- ggplot() +
       y = dist_val,
       col = dist_type
     ),
-    size = 0.1
+    size = 0.1,
+    alpha = 0.3
   ) +
   theme_bw() +
   geom_line(
@@ -78,7 +79,10 @@ p_space <- ggplot() +
   ) +
   guides(
     color = FALSE
-  )
+  ) + 
+  xlab("spatial distance in kilometres") +
+  ylab("mean squared distance along a certain ancestry component")
+  
 
 p_time <- ggplot(left_time) + 
   geom_point(
@@ -88,7 +92,8 @@ p_time <- ggplot(left_time) +
       y = dist_val,
       col = dist_type
     ),
-    size = 0.1
+    size = 0.1,
+    alpha = 0.3
   ) +
   theme_bw() +
   geom_line(
@@ -101,14 +106,10 @@ p_time <- ggplot(left_time) +
   facet_wrap(~dist_type) +
   guides(
     color = FALSE
-  )
+  ) +
+  xlab("temporal distance in years") +
+  ylab("mean squared distance along a certain ancestry component")
 
-
-  # guides(
-  #   color = guide_legend(title = "temporal distance: 500y bins")
-  # ) +
-  # xlab("spatial distance: 100km bins") +
-  # ylab("mean squared euclidean distance in PC1 & PC2 PCA space")
 
 p <- cowplot::plot_grid(p_space, p_time, nrow = 1)
 
