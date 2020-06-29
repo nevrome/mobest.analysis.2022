@@ -43,7 +43,9 @@ ps1 <- lapply(1:4, function(i) {
     ) +
     guides(
       fill = guide_colorbar(title = "", barheight = 9)
-    )
+    ) +
+    xlab(latex2exp::TeX("$\\theta_s$: 100km steps")) +
+    ylab(latex2exp::TeX("$\\theta_t$: 100y steps"))
 })
 
 p1 <- cowplot::plot_grid(plotlist = ps1, nrow = 2, ncol = 2)
@@ -87,7 +89,9 @@ p2 <- mean_interpol_comparison_group %>%
   ) +
   guides(
     fill = guide_colorsteps(title = "Mean normalized difference")
-  )
+  ) +
+  xlab(latex2exp::TeX("$\\theta_s$: 100km steps")) +
+  ylab(latex2exp::TeX("$\\theta_t$: 100y steps"))
 
 ggsave(
   "plots/figure_sup_8_crossvalidation_raster_merged.jpeg",
