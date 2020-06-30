@@ -111,7 +111,7 @@ p_time <- ggplot(left_time) +
   ylab("mean squared distance along a certain ancestry component")
 
 
-p <- cowplot::plot_grid(p_space, p_time, nrow = 1)
+p <- cowplot::plot_grid(p_space, p_time, nrow = 1, labels = c("A", "B"))
 
 ggsave(
   "plots/figure_sup_10_variogram_space_time.jpeg",
