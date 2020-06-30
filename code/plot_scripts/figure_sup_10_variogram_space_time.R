@@ -6,7 +6,10 @@ load("data/parameter_exploration/variogram/all_distances.RData")
 d_all_long <- d_all %>% tidyr::pivot_longer(
   cols = c(PC1_dist_resid, PC2_dist_resid, C1_dist_resid, C2_dist_resid),
   names_to = "dist_type", values_to = "dist_val"
-)
+) #%>%
+  # dplyr::mutate(
+  #   dist_val = dist_val^2
+  # )
 
 bottom_space <- d_all_long %>%
   dplyr::filter(time_dist < 50) %>%
@@ -81,7 +84,7 @@ p_space <- ggplot() +
     color = FALSE
   ) + 
   xlab("spatial distance in kilometres") +
-  ylab("mean squared distance along a certain ancestry component")
+  ylab("distance along a certain ancestry component")
   
 
 p_time <- ggplot(left_time) + 
@@ -108,7 +111,7 @@ p_time <- ggplot(left_time) +
     color = FALSE
   ) +
   xlab("temporal distance in years") +
-  ylab("mean squared distance along a certain ancestry component")
+  ylab("distance along a certain ancestry component")
 
 
 p <- cowplot::plot_grid(p_space, p_time, nrow = 1, labels = c("A", "B"))
