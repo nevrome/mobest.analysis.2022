@@ -44,8 +44,8 @@ ps1 <- lapply(1:4, function(i) {
     guides(
       fill = guide_colorbar(title = "", barheight = 9)
     ) +
-    xlab(latex2exp::TeX("$\\theta_s$: 100km steps")) +
-    ylab(latex2exp::TeX("$\\theta_t$: 100y steps"))
+    xlab(latex2exp::TeX("$\\theta_s$")) +
+    ylab(latex2exp::TeX("$\\theta_t$"))
 })
 
 p1 <- cowplot::plot_grid(plotlist = ps1, nrow = 2, ncol = 2)
@@ -76,6 +76,13 @@ mean_interpol_comparison_group <- interpol_comparison_group %>%
     cut_mean_mean_squared_difference = cut(mean_mean_squared_difference, breaks = c(seq(0, 0.2, 0.05), seq(0.3, 1, 0.1)))
   )
 
+# get values
+bests <- mean_interpol_comparison_group %>% dplyr::arrange(mean_mean_squared_difference) %>% head(20)
+min(bests$ds) %>% sqrt()
+max(bests$ds) %>% sqrt()
+min(bests$dt) %>% sqrt()
+max(bests$dt) %>% sqrt()
+
 p2 <- mean_interpol_comparison_group %>%
   ggplot() +
   geom_raster(
@@ -90,8 +97,10 @@ p2 <- mean_interpol_comparison_group %>%
   guides(
     fill = guide_colorsteps(title = "Mean normalized difference")
   ) +
-  xlab(latex2exp::TeX("$\\theta_s$: 100km steps")) +
-  ylab(latex2exp::TeX("$\\theta_t$: 100y steps"))
+  xlab(latex2exp::TeX("$\\theta_s$")) +
+  ylab(latex2exp::TeX("$\\theta_t$")) +
+  scale_y_continuous(sec.axis = sec_axis(~sqrt(.), name = latex2exp::TeX("$\\sqrt{\\theta_t}$"))) +
+  scale_x_continuous(sec.axis = sec_axis(~sqrt(.), name = latex2exp::TeX("$\\sqrt{\\theta_x}$")))
 
 ggsave(
   "plots/figure_sup_8_crossvalidation_raster_merged.jpeg",
