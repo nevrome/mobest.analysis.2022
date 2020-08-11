@@ -14,6 +14,18 @@ anno <- anno %>%
     reconstruct_age_info(anno$age_string)
   )
 
+# anno <- tibble::tibble(
+#   age_c14_uncal_BP = c(1000, 3000, NA, 5000),
+#   age_c14_uncal_BP_dev = c(20, 40, NA, 50),
+#   age_arch_start_BC = c(NA, NA, -3000, NA),
+#   age_arch_stop_BC = c(NA, NA, -2500, NA),
+#   age_prob_distribution_BC = lapply(
+#     age_c14_uncal_BP, function(x) {
+#       tibble::tibble(age = numeric(), dens_dist = numeric(), norm_dens = numeric(), center = numeric())
+#     }
+#   )
+# )
+
 # determine dating type
 anno$age_type <- NA
 anno$age_type[!is.na(anno$age_arch_start_BC) & !is.na(anno$age_arch_stop_BC)] <- "context"
