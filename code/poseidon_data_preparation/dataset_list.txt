@@ -1,0 +1,30 @@
+/projects1/poseidon/ancient/2017_Schuenemann_EgyptianMummies
+/projects1/poseidon/ancient/2018_Jeong_EurasianSteppe
+/projects1/poseidon/ancient/2018_Mittnik_Baltic
+/projects1/poseidon/ancient/2018_Zalloua_Phoenician
+/projects1/poseidon/ancient/2019_Antonio_AncientRome
+/projects1/poseidon/ancient/2019_Brace_Britain
+/projects1/poseidon/ancient/2019_Feldman_Anatolia
+/projects1/poseidon/ancient/2019_Feldman_Philistines
+/projects1/poseidon/ancient/2019_GonzalesFortes_Iberia
+/projects1/poseidon/ancient/2019_Haber_Crusaders
+# not ready: /projects1/poseidon/ancient/2019_Jarve_Scythian
+/projects1/poseidon/ancient/2019_Lamnidis_Fennoscandia
+/projects1/poseidon/ancient/2019_Malmstrom_Scandinavia
+/projects1/poseidon/ancient/2019_Mittnik_BAEurope
+/projects1/poseidon/ancient/2019_Nikitin_LBK
+/projects1/poseidon/ancient/2019_Olalde_Iberia
+# not ready: /projects1/poseidon/ancient/2019_Rivollat_FrenchGermany
+/projects1/poseidon/ancient/2019_Saag_EasternBaltic
+/projects1/poseidon/ancient/2019_SanchezQuinto_Megalithic
+/projects1/poseidon/ancient/2019_Schroeder_Poland
+/projects1/poseidon/ancient/2019_Villalba_Iberia
+# not ready: /projects1/poseidon/ancient/2019_Wang_Caucasus
+# not ready: /projects1/poseidon/ancient/2020_AgranatTamir_LevantBA
+# not ready: /projects1/poseidon/ancient/2020_Brunel_France
+# not ready: /projects1/poseidon/ancient/2020_Cassidy_IrishDynastic
+# not ready: /projects1/poseidon/ancient/2020_Furtwängler_Switzerland
+# not ready: /projects1/poseidon/ancient/2020_Immel_Moldova
+# not ready: /projects1/poseidon/ancient/2020_Linderholm_Poland
+# not ready: /projects1/poseidon/ancient/2020_Skourtanioti_NearEast
+/projects1/poseidon/ancient/prior2018_Boston_Datashare_published
