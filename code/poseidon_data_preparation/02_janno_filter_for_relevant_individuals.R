@@ -44,11 +44,20 @@ janno_spatial_filtered_non_sf <- janno_spatial_filtered %>%
 
 # QC filter
 # Nr_autosomal_SNPs? Coverage_1240K? Endogenous?, Damage?, Xcontam?, mtContam?
-janno_spatial_filtered_non_sf$Nr_autosomal_SNPs %>% hist(breaks = 100)
-janno_spatial_filtered_non_sf$Coverage_1240K %>% hist(breaks = 100)
-janno_spatial_filtered_non_sf$Damage %>% hist(breaks = 100)
-janno_spatial_filtered_non_sf$Xcontam %>% hist(breaks = 100)
+# janno_spatial_filtered_non_sf$Nr_autosomal_SNPs %>% hist(breaks = 100)
+# janno_spatial_filtered_non_sf$Coverage_1240K %>% hist(breaks = 100)
+# janno_spatial_filtered_non_sf$Damage %>% hist(breaks = 100)
+# janno_spatial_filtered_non_sf$Xcontam %>% hist(breaks = 100)
 
+# prepare extract list for poseidon2 extract
+janno_filtered_final <- janno_spatial_filtered_non_sf
 
-
-
+tibble::tibble(
+  pop = sapply(janno_filtered_final$Group_Name, function(x) { x[[1]] }),
+  ind = janno_filtered_final$Individual_ID
+) %>% 
+  readr::write_delim(
+    path = "code/poseidon_data_preparation/ind_list.txt",
+    delim = " ",
+    col_names = FALSE
+  )
