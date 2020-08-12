@@ -1,8 +1,38 @@
 library(magrittr)
 
-janno <- poseidon2::read_janno("data/poseidon_data/poseidon_merged_dataset/poseidon2_merged.janno")
+load("data/spatial/epsg102013.RData")
+load("data/spatial/area.RData")
 
-janno %>% poseidon2::process_age()
+janno_raw <- poseidon2::read_janno("data/poseidon_data/poseidon_merged_dataset/poseidon2_merged.janno")
+
+janno_age <- janno_raw %>% poseidon2::process_age()
+
+# lacking info filter
+janno_with_sufficient_info <- janno_age %>%
+  dplyr::filter(
+    !is.na(Latitude) & !is.na(Longitude),
+    !is.na(Date_BC_AD_Median_Derived)
+  )
+
+# temoral filter
+janno_age_filtered <- janno_with_sufficient_info %>% dplyr::filter(
+  Date_BC_AD_Median_Derived > -8000
+)
+
+# spatial filter -> check every now and then if the new data justifies a bigger/different research area
+janno_spatial <- janno_age_filtered %>% 
+  sf::st_as_sf(
+    coords = c("Longitude", "Latitude"), 
+    crs = sf::st_crs(4326)
+  ) %>%
+  sf::st_transform(epsg102013)
+
+sf::write_sf(janno_spatial, dsn = "data/janno_spatial.gpkg", driver = "GPKG")
+
+janno_spatial_filtered <- janno_spatial %>%
+  sf::st_intersection(
+    area
+  )
 
 # QC filter
 # Nr_autosomal_SNPs? Coverage_1240K? Endogenous?, Damage?, Xcontam?, mtContam?
