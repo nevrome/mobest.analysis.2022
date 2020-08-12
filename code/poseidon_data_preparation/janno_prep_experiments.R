@@ -34,5 +34,21 @@ janno_spatial_filtered <- janno_spatial %>%
     area
   )
 
+janno_spatial_filtered_non_sf <- janno_spatial_filtered %>% 
+  # transform back to tibble
+  dplyr::mutate(
+    x = sf::st_coordinates(.)[,1],
+    y = sf::st_coordinates(.)[,2]
+  ) %>%  
+  sf::st_drop_geometry()
+
 # QC filter
 # Nr_autosomal_SNPs? Coverage_1240K? Endogenous?, Damage?, Xcontam?, mtContam?
+janno_spatial_filtered_non_sf$Nr_autosomal_SNPs %>% hist(breaks = 100)
+janno_spatial_filtered_non_sf$Coverage_1240K %>% hist(breaks = 100)
+janno_spatial_filtered_non_sf$Damage %>% hist(breaks = 100)
+janno_spatial_filtered_non_sf$Xcontam %>% hist(breaks = 100)
+
+
+
+
