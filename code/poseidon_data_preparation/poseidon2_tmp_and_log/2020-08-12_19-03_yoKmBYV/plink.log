@@ -1,0 +1,36 @@
+PLINK v1.90b3.29 64-bit (24 Dec 2015)
+Options in effect:
+  --bfile /projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/poseidon_merged_dataset/poseidon2_merged
+  --keep /projects1/coest_mobility/coest.interpol.2020/code/poseidon_data_preparation/ind_list.txt
+  --make-bed
+  --out /projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/poseidon_filtered_dataset/poseidon2_extracted
+
+Hostname: mpi-cruncher1
+Working directory: /projects1/coest_mobility/coest.interpol.2020/code/poseidon_data_preparation
+Start time: Wed Aug 12 21:04:23 2020
+
+Random number seed: 1597259063
+773993 MB RAM detected; reserving 386996 MB for main workspace.
+1233013 variants loaded from .bim file.
+2821 people (1590 males, 1177 females, 54 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to
+/projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/poseidon_filtered_dataset/poseidon2_extracted.nosex
+.
+--keep: 1751 people remaining.
+Using 1 thread (no multithreaded calculations invoked.
+Before main variant filters, 1751 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Warning: Nonmissing nonmale Y chromosome genotype(s) present; many commands
+treat these as missing.
+Total genotyping rate in remaining samples is 0.366573.
+1233013 variants and 1751 people pass filters and QC.
+Note: No phenotypes present.
+--make-bed to
+/projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/poseidon_filtered_dataset/poseidon2_extracted.bed
++
+/projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/poseidon_filtered_dataset/poseidon2_extracted.bim
++
+/projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/poseidon_filtered_dataset/poseidon2_extracted.fam
+... done.
+
+End time: Wed Aug 12 21:04:34 2020
