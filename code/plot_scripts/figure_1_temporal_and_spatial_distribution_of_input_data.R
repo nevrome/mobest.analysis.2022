@@ -80,15 +80,19 @@ p_space_time <- ggplot(
 p_tempdist <- janno_final %>%
   ggplot() +
   geom_histogram(
-    aes(x = Date_BC_AD_Median_Derived), binwidth = 100
+    aes(x = Date_BC_AD_Median_Derived, fill = region_id), binwidth = 100
   ) +
   theme_bw() +
   xlab("time in years calBC/AD") +
   ylab("number of samples per century") +
   theme(
-    axis.title = element_text(size = 9)
+    axis.title = element_text(size = 9),
+    legend.position = "none"
   ) +
-  coord_flip()
+  coord_flip() +
+  scale_fill_manual(
+    values = region_id_colors
+  )
 
 # merge plots
 
