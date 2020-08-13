@@ -12,13 +12,13 @@ date
 cd /projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/mds
 
 # pruning
-plink --bfile ../poseidon_extracted/poseidon_extracted --exclude ../../../code/poseidon_data_preparation/myrange.txt --range --maf --make-bed --out poseidon_extracted.pruned
+plink --bfile ../poseidon_extracted/poseidon2_extracted --exclude ../../../code/poseidon_data_preparation/myrange.txt --range --maf --make-bed --out poseidon2_extracted.pruned
 
 # generate general pairwise stats
-plink --bfile poseidon_extracted.pruned --genome --out poseidon_extracted.pruned
+plink --bfile poseidon2_extracted.pruned --genome --out poseidon2_extracted.pruned
 
 # create mds table
-plink --bfile poseidon_extracted.pruned --cluster --mds-plot 2 --read-genome poseidon_extracted.pruned.genome --out poseidon_extracted.pruned
+plink --bfile poseidon2_extracted.pruned --cluster --mds-plot 2 --read-genome poseidon2_extracted.pruned.genome --out poseidon2_extracted.pruned
 
 date
 
