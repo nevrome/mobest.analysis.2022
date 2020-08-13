@@ -5,6 +5,8 @@ load("data/poseidon_data/janno_final.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg102013.RData")
+load("data/plot_reference_data/region_id_colors.RData")
+load("data/plot_reference_data/age_group_id_shapes.RData")
 
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
@@ -42,110 +44,54 @@ p_map <- ggplot() +
     panel.background = element_rect(fill = "#BFD5E3")
   ) +
   scale_color_manual(
-    values = c(
-      "Central Europe" = "#999999", 
-      "Iberia" = "#E69F00", 
-      "Eastern Europe" = "#56B4E9", 
-      "Britain and Ireland" = "#009E73", 
-      "Turkey" = "#871200",
-      "France" = "#F0E442", 
-      "Near East" = "#0072B2", 
-      "Caucasus" = "#D55E00", 
-      "Italy" = "#CC79A7", 
-      "Southeastern Europe" = "#2fff00"
-    )
+    values = region_id_colors
   ) +
   scale_shape_manual(
-    values = c(
-      #">-8000" = 0,
-      "-8000 - -7000" = 20,
-      "-7000 - -6000" = 19,
-      "-6000 - -5000" = 18,
-      "-5000 - -4000" = 15,
-      "-4000 - -3000" = 17,
-      "-3000 - -2000" = 1,
-      "-2000 - -1000" = 2,
-      "-1000 - 0" = 13,
-      "0 - 1000" = 3,
-      "1000 - 2000" = 4
-    )
+    values = age_group_id_shapes
   ) +
   guides(
     color = guide_legend(title = "Region", nrow = 3, ncol = 4),
-    shape = guide_legend(title = "Time", nrow = 3, ncol = 2)
+    shape = guide_legend(title = "Time", nrow = 3, ncol = 4)
   )
 
-# 3D plot
-theta = -10 
-phi = 20
-
-p_3D <- ggplot(
-  data = anno,
-  aes(x = x/1000, y = y/1000, z = calage_center, color = region_id, shape = age_group_id)
+# space time plot
+p_space_time <- ggplot(
+  data = janno_final,
+  aes(x = Longitude, y = Date_BC_AD_Median_Derived, color = region_id, shape = age_group_id)
 ) +
-  gg3D::axes_3D(theta = theta, phi = phi) +
-  gg3D::stat_3D(theta = theta, phi = phi) +
+  geom_point() +
   scale_shape_manual(
-    values = c(
-      ">-8000" = 15,
-      "-8000 - -6000" = 15,
-      "-6000 - -4000" = 17,
-      "-4000 - -2000" = 6,
-      "-2000 - 0" = 4
-    ),
+    values = age_group_id_shapes,
     guide = FALSE
   ) +
   scale_color_manual(
-    values = c(
-      "Central Europe" = "#999999", 
-      "Iberia" = "#E69F00", 
-      "Eastern Europe" = "#56B4E9", 
-      "Britain and Ireland" = "#009E73", 
-      "Turkey" = "#871200",
-      "France" = "#F0E442", 
-      "Near East" = "#0072B2", 
-      "Caucasus" = "#D55E00", 
-      "Italy" = "#CC79A7", 
-      "Southeastern Europe" = "#2fff00"
-    ),
+    values = region_id_colors,
     guide = FALSE
   ) +
-  # gg3D::axis_labs_3D(
-  #   theta = theta, phi = phi, size = 3,
-  #   hjust = c(1,1,1.2,1.2,1.2,1.2),
-  #   vjust = c(-.5,-.5,-.2,-.2,1.2,1.2)
-  # ) +
-  gg3D::labs_3D(
-    theta = theta, phi = phi, 
-    hjust = c(1,-0.2,-0.2), vjust = c(1.5,1,-.2),
-    labs = c("x", "y", "time")
-  ) +
-  theme_void()
+  theme_bw() +
+  xlab("Longitude") +
+  ylab("time in years calBC/AD") +
+  theme(
+    axis.title = element_text(size = 9)
+  )
   
 # temporal distribution
 
-summed_normalized_probability_distribution <- anno$age_prob_distribution_BC %>%
-  dplyr::bind_rows() %>%
-  dplyr::group_by(age) %>%
-  dplyr::summarise(
-    som = sum(norm_dens)
-  )
-
-p_tempdist <- summed_normalized_probability_distribution %>%
+p_tempdist <- janno_final %>%
   ggplot() +
-  geom_line(
-    aes(x = age, y = som)
+  geom_histogram(
+    aes(x = Date_BC_AD_Median_Derived), binwidth = 100
   ) +
   theme_bw() +
   xlab("time in years calBC/AD") +
-  ylab("sum of normalized post-cal distribution") +
+  ylab("number of samples per century") +
   theme(
     axis.title = element_text(size = 9)
   )
 
 # merge plots
 
-right <- cowplot::plot_grid(p_3D, p_tempdist, ncol = 1, labels = c("B", "C"), hjust = 0.6, vjust = 0.8)
+right <- cowplot::plot_grid(p_space_time, p_tempdist, ncol = 1, labels = c("B", "C"), hjust = 0.6, vjust = 0.8)
 
 top <- cowplot::plot_grid(p_map, right, nrow = 1, ncol = 2, rel_widths = c(1, 0.4), labels = c("A", NA), scale = 0.97)
 
