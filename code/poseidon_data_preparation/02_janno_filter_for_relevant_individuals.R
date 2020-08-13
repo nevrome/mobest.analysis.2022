@@ -62,6 +62,7 @@ janno_QC <- janno_QC %>% dplyr::filter(!grepl("cont", x = Individual_ID, ignore.
 # prepare extract list for poseidon2 extract
 janno_filtered_final <- janno_QC
 
+# store ind list for poseidon extraction
 tibble::tibble(
   pop = sapply(janno_filtered_final$Group_Name, function(x) { x[[1]] }),
   ind = janno_filtered_final$Individual_ID
