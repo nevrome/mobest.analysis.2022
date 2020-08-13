@@ -1,10 +1,10 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
-anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
+load("data/poseidon_data/janno_final.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
+load("data/spatial/epsg102013.RData")
 
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
@@ -21,14 +21,14 @@ p_map <- ggplot() +
     fill = NA, colour = "black", size = 0.8, linetype = "dashed"
   ) +
   geom_point(
-    data = anno,
+    data = janno_final,
     aes(x = x, y = y, color = region_id, shape = age_group_id),
     size = 2
   ) +
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
-    crs = sf::st_crs("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
+    crs = sf::st_crs(epsg102013)
   ) + 
   theme(
     axis.title = element_blank(),
@@ -57,11 +57,17 @@ p_map <- ggplot() +
   ) +
   scale_shape_manual(
     values = c(
-      ">-8000" = 15,
-      "-8000 - -6000" = 15,
-      "-6000 - -4000" = 17,
-      "-4000 - -2000" = 6,
-      "-2000 - 0" = 4
+      #">-8000" = 0,
+      "-8000 - -7000" = 20,
+      "-7000 - -6000" = 19,
+      "-6000 - -5000" = 18,
+      "-5000 - -4000" = 15,
+      "-4000 - -3000" = 17,
+      "-3000 - -2000" = 1,
+      "-2000 - -1000" = 2,
+      "-1000 - 0" = 13,
+      "0 - 1000" = 3,
+      "1000 - 2000" = 4
     )
   ) +
   guides(
