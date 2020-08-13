@@ -3,7 +3,7 @@ library(magrittr)
 load("data/spatial/epsg102013.RData")
 load("data/spatial/area.RData")
 
-janno_raw <- poseidon2::read_janno("data/poseidon_data/poseidon_merged_dataset/poseidon2_merged.janno")
+janno_raw <- poseidon2::read_janno("data/poseidon_data/poseidon_merged/poseidon2_merged.janno")
 
 janno_age <- janno_raw %>% poseidon2::process_age()
 
@@ -44,13 +44,23 @@ janno_spatial_filtered_non_sf <- janno_spatial_filtered %>%
 
 # QC filter
 # Nr_autosomal_SNPs? Coverage_1240K? Endogenous?, Damage?, Xcontam?, mtContam?
-# janno_spatial_filtered_non_sf$Nr_autosomal_SNPs %>% hist(breaks = 100)
-# janno_spatial_filtered_non_sf$Coverage_1240K %>% hist(breaks = 100)
-# janno_spatial_filtered_non_sf$Damage %>% hist(breaks = 100)
-# janno_spatial_filtered_non_sf$Xcontam %>% hist(breaks = 100)
+
+# Nr_autosomal_SNPs: should be >= 20000 SNPs
+janno_QC <- janno_spatial_filtered_non_sf %>% dplyr::filter(Nr_autosomal_SNPs >= 20000)
+# Xcontam: if male, then should not be higher then 10%
+janno_QC <- janno_QC %>% dplyr::filter(is.na(Xcontam) | Xcontam < 0.1)
+# Genetic_Sex: Individuals with unknown genetic sex should be removed
+janno_QC <- janno_QC %>% dplyr::filter(Genetic_Sex != "U")
+# Indicated as contaminated: Individuals which are indicated as potentially contaminated
+# in their ID should be removed
+janno_QC <- janno_QC %>% dplyr::filter(!grepl("cont", x = Individual_ID, ignore.case = T))
+
+# Mehrfachmessungen an einem Individuum und Verwandte Individuen bleiben drin - schwer systematisch zu entfernen und theoretisch kein Problem
+# Coverage ist hier unwichtig
+# Nach damage sollte nicht gefiltert werden
 
 # prepare extract list for poseidon2 extract
-janno_filtered_final <- janno_spatial_filtered_non_sf
+janno_filtered_final <- janno_QC
 
 tibble::tibble(
   pop = sapply(janno_filtered_final$Group_Name, function(x) { x[[1]] }),
