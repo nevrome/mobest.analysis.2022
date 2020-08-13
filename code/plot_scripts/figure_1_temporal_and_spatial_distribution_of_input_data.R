@@ -87,7 +87,8 @@ p_tempdist <- janno_final %>%
   ylab("number of samples per century") +
   theme(
     axis.title = element_text(size = 9)
-  )
+  ) +
+  coord_flip()
 
 # merge plots
 
