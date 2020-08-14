@@ -86,7 +86,7 @@ p_tempdist <- janno_final %>%
   ) +
   theme_bw() +
   xlab("time in years calBC/AD") +
-  ylab("number of samples per 500 years") +
+  ylab("number of samples per millennium") +
   theme(
     axis.title = element_text(size = 9),
     legend.position = "none"
