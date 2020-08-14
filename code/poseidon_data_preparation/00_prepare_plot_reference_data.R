@@ -1,14 +1,14 @@
 region_id_colors <- c(
-  "Central Europe" = "#999999", 
-  "Iberia" = "#E69F00", 
-  "Eastern Europe" = "#56B4E9", 
-  "Britain and Ireland" = "#009E73", 
-  "Turkey" = "#871200",
-  "France" = "#F0E442", 
-  "Near East" = "#0072B2", 
-  "Caucasus" = "#D55E00", 
-  "Italy" = "#CC79A7", 
-  "Southeastern Europe" = "#2fff00"
+  "Britain and Ireland" = "#b8434e", 
+  "Central Europe" = "#b86738", 
+  "Eastern Europe" = "#bfa33a", 
+  "Caucasus" = "#729d46", 
+  "France" = "#4bc490", 
+  "Italy" = "#31cdc6", 
+  "Southeastern Europe" = "#6678dc",
+  "Turkey" = "#5b388a",
+  "Iberia" = "#7c7120", 
+  "Near East" = "#b1467b" 
 )
 save(region_id_colors, file = "data/plot_reference_data/region_id_colors.RData")
 
@@ -21,7 +21,7 @@ age_group_id_shapes <- c(
   "-4000 - -3000" = 17,
   "-3000 - -2000" = 1,
   "-2000 - -1000" = 2,
-  "-1000 - 0" = 13,
+  "-1000 - 0" = 5,
   "0 - 1000" = 3,
   "1000 - 2000" = 4
 )
