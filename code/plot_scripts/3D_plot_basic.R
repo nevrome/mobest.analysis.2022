@@ -34,7 +34,7 @@ s <- scatterplot3d::scatterplot3d(
   threed$x, threed$y, threed$z, color = threed$color,
   pch = 18, cex.symbols = 1.5,
   angle = 70,
-  xlab = "x", ylab = "y", zlab = "time calBC",
+  xlab = "x", ylab = "y", zlab = "time calBC/AD",
   col.axis = "grey",
   zlim = c(-8000, 2000),
   mar = c(2.7, 2.7, 0, 2)
