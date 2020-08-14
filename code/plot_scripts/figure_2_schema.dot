@@ -5,31 +5,31 @@ digraph {
   # define the global styles of the nodes. We can override these in box if we wish
   node [shape = rectangle, style = filled, fontname = Helvetica]
   
-  maindata [label = '1240K+HO', shape = ellipse, fillcolor = Beige]
-  limits [label = 'Context data', shape = ellipse, fillcolor = Beige]
-  filtering [label = 'Filtering data', fillcolor = darkolivegreen3]
-  pca [label = 'Principal component analysis (smartpca)', fillcolor = darkolivegreen3]
+  subgraph clusterdata {
+    maindata [label = 'Genetic data', shape = ellipse, fillcolor = Beige]
+    context [label = 'Spatiotemporal context', shape = ellipse, fillcolor = Beige]
+    
+    label = 'poseidon2'
+    fontname = Helvetica
+  }
+  filtering [label = 'Filtering data (research area, quality control)', fillcolor = darkolivegreen3]
+  #pca [label = 'Principal component analysis (smartpca)', fillcolor = darkolivegreen3]
   mds [label = 'Multidimensional scaling (plink)', fillcolor = darkolivegreen3]
-  pcaoutlier [label = 'Outlier removal', fillcolor = darkorange]
-  mdsoutlier [label = 'Outlier removal', fillcolor = darkorange]
+  #pcaoutlier [label = 'Outlier removal', fillcolor = darkorange]
+  #mdsoutlier [label = 'Outlier removal', fillcolor = darkorange]
   gpr [label = 'Gaussian process regression (laGP)', fillcolor = darkolivegreen3]
   gprparams [label = 'Parameter exploration', fillcolor = darkorange]
   ancestryorigin [label = 'Ancestry origin algorithm', fillcolor = darkolivegreen3]
   mobilityest [label = 'Regional mobility estimation summary statistic', fillcolor = darkolivegreen3]
   
   # edge definitions with the node IDs
-  {maindata limits} -> filtering
-  pca -> pcaoutlier -> pca
-  mds -> mdsoutlier -> mds 
-  filtering -> {pca mds}
-  {pca mds} -> gpr
+  { maindata context } -> filtering
+  filtering -> mds
+  mds -> gpr
   gpr -> gprparams -> gpr
   gpr -> ancestryorigin
   ancestryorigin -> mobilityest
   
   # manual reordering
-  {rank=same;pcaoutlier;filtering;mdsoutlier}
-  pcaoutlier -> filtering -> mdsoutlier [style=invis]
-  {rank=same;pca;mds}
   {rank=same;gprparams;gpr}
 }
