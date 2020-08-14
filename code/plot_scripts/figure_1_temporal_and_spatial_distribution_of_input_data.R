@@ -73,18 +73,20 @@ p_space_time <- ggplot(
   ylab("time in years calBC/AD") +
   theme(
     axis.title = element_text(size = 9)
-  )
+  ) +
+  scale_y_continuous(breaks = seq(-8000, 2000, 1000))
   
 # temporal distribution
 
 p_tempdist <- janno_final %>%
   ggplot() +
   geom_histogram(
-    aes(x = Date_BC_AD_Median_Derived, fill = region_id), binwidth = 100
+    aes(x = Date_BC_AD_Median_Derived, fill = region_id), 
+    breaks = seq(-8000, 2000, 1000)
   ) +
   theme_bw() +
   xlab("time in years calBC/AD") +
-  ylab("number of samples per century") +
+  ylab("number of samples per 500 years") +
   theme(
     axis.title = element_text(size = 9),
     legend.position = "none"
@@ -92,7 +94,8 @@ p_tempdist <- janno_final %>%
   coord_flip() +
   scale_fill_manual(
     values = region_id_colors
-  )
+  ) +
+  scale_x_continuous(breaks = seq(-8000, 2000, 1000))
 
 # merge plots
 
