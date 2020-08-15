@@ -15,6 +15,13 @@ Budapest <- sf::st_as_sf(
   remove = FALSE
 ) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
 
+London <- sf::st_as_sf(
+  tibble::tibble(lon = -0.11, lat = 51.50),
+  coords = c("lon", "lat"),
+  crs = 4326,
+  remove = FALSE
+) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
+
 #### prepare pca model grid ####
 model_grid <- mobest::create_model_grid(
   independent = c(
@@ -37,7 +44,13 @@ model_grid <- mobest::create_model_grid(
     Budapest = tibble::tibble(
       x = Budapest[1], 
       y = Budapest[2], 
-      z = seq(-8000, 1000, 500), 
+      z = seq(-8000, 1000, 1000), 
+      point_id = 1:length(z)
+    ),
+    London = tibble::tibble(
+      x = London[1], 
+      y = London[2], 
+      z = seq(-8000, 1000, 1000), 
       point_id = 1:length(z)
     )
   )
@@ -49,9 +62,9 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 
 #### unnest prediction to get a point-wise prediction table ####
 
-interpol_grid_Budapest <- mobest::unnest_model_grid(model_grid_result)
+interpol_grid_examples <- mobest::unnest_model_grid(model_grid_result)
 
-save(interpol_grid_Budapest, file = "data/gpr/interpol_grid_Budapest.RData")
+save(interpol_grid_examples, file = "data/gpr/interpol_grid_examples.RData")
 
 # interpol_grid_spatial <- sf::st_as_sf(
 #   interpol_grid,
