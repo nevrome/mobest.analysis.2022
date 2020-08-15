@@ -22,6 +22,20 @@ London <- sf::st_as_sf(
   remove = FALSE
 ) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
 
+Jerusalem <- sf::st_as_sf(
+  tibble::tibble(lon = 35.22, lat = 31.77),
+  coords = c("lon", "lat"),
+  crs = 4326,
+  remove = FALSE
+) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
+
+Rome <- sf::st_as_sf(
+  tibble::tibble(lon = 12.50, lat = 41.90),
+  coords = c("lon", "lat"),
+  crs = 4326,
+  remove = FALSE
+) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
+
 #### prepare pca model grid ####
 model_grid <- mobest::create_model_grid(
   independent = c(
@@ -52,7 +66,19 @@ model_grid <- mobest::create_model_grid(
       y = London[2], 
       z = seq(-8000, 1000, 1000), 
       point_id = 1:length(z)
-    )
+    ),
+    Jerusalem = tibble::tibble(
+      x = Jerusalem[1], 
+      y = Jerusalem[2], 
+      z = seq(-8000, 1000, 1000), 
+      point_id = 1:length(z)
+    ),
+    Rome = tibble::tibble(
+      x = Rome[1], 
+      y = Rome[2], 
+      z = seq(-8000, 1000, 1000), 
+      point_id = 1:length(z)
+    ) 
   )
 )
 
