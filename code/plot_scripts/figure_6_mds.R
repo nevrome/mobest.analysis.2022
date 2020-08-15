@@ -49,7 +49,7 @@ p_Budapest <- ggplot() +
   geom_point(
     data = janno_final,
     aes(x = C1, y = C2),
-    alpha = 0.3, size = 1, shape = 3
+    alpha = 0.1, size = 1, shape = 3
   ) +  
   geom_path(
     data = poi_timeseries_Budapest,
@@ -102,7 +102,7 @@ p_London <- ggplot() +
   geom_point(
     data = janno_final,
     aes(x = C1, y = C2),
-    alpha = 0.3, size = 1, shape = 3
+    alpha = 0.1, size = 1, shape = 3
   ) +  
   geom_path(
     data = poi_timeseries_London,
@@ -138,23 +138,32 @@ p_London <- ggplot() +
   ) +
   scale_color_gradient2(
     limits = c(-8000, 1000), low = "black", mid = "red", high = "green", midpoint = -5000,
-    breaks = seq(-8000, 1000, 3000)
+    breaks = seq(-8000, 1000, 1000)
   ) +
   theme_bw() +
   theme(
-    legend.text = element_text(size = 12),
-    legend.position = "none"
+    legend.position = "bottom",
+    legend.background = element_blank(),
+    legend.title = element_text(size = 13),
+    legend.spacing.x = unit(0.2, 'cm'),
+    legend.key.height = unit(0.4, 'cm'),
+    legend.text = element_text(size = 9)
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
   coord_fixed(xlim = c(-0.05, 0.09), ylim = c(-0.07, 0.065)) +
   scale_y_continuous(breaks = seq(-0.08, 0.08, 0.02)) +
-  scale_x_continuous(breaks = seq(-0.06, 0.08, 0.04))
+  scale_x_continuous(breaks = seq(-0.06, 0.08, 0.04)) +
+  guides(
+    color = guide_legend(title = "Prediction time", nrow = 1)
+  )
 
 # merge plots
 
-right <- cowplot::plot_grid(p_Budapest, p_London, ncol = 1)
+right <- cowplot::plot_grid(p_Budapest, p_London + theme(legend.position = "none"), ncol = 1, labels = c("B", "C"))
 
-p <- cowplot::plot_grid(p_mds, right, nrow = 1, rel_widths = c(1, 0.5))
+top <- cowplot::plot_grid(p_mds, right, nrow = 1, rel_widths = c(1, 0.5), labels = "A")
+
+p <- cowplot::plot_grid(top, cowplot::get_legend(p_London), rel_heights = c(1, 0.1), ncol = 1)
 
 ggsave(
   paste0("plots/figure_6_mds.jpeg"),
@@ -162,7 +171,7 @@ ggsave(
   device = "jpeg",
   scale = 0.5,
   dpi = 300,
-  width = 500, height = 300, units = "mm",
+  width = 440, height = 300, units = "mm",
   limitsize = F
 )
 
