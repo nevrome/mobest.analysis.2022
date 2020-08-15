@@ -166,7 +166,7 @@ top <- cowplot::plot_grid(p_mds, right, nrow = 1, rel_widths = c(1, 0.5), labels
 p <- cowplot::plot_grid(top, cowplot::get_legend(p_London), rel_heights = c(1, 0.1), ncol = 1)
 
 ggsave(
-  paste0("plots/figure_6_mds.jpeg"),
+  paste0("plots/figure_4_mds.jpeg"),
   plot = p,
   device = "jpeg",
   scale = 0.5,
