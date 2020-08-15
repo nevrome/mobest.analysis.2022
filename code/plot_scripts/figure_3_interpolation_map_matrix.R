@@ -6,6 +6,17 @@ load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/plot_reference_data/age_group_id_shapes.RData")
 load("data/spatial/epsg102013.RData")
+load("data/poseidon_data/janno_final.RData")
+
+janno_final <- janno_final %>% 
+  dplyr::mutate(
+    z = as.numeric(as.character(cut(
+      Date_BC_AD_Median_Derived, 
+      breaks = seq(-8000, 2000, 2000), 
+      labels = seq(-7000, 2000, 2000),
+      include.lowest = T
+    )))
+  )
 
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
@@ -26,14 +37,14 @@ p_C1 <- interpol_grid %>%
   geom_sf(data = extended_area, fill = NA) +
   geom_point(
     data = . %>% dplyr::filter(sd > (0.8 * diff(range(sd)))),
-    aes(x, y), color = "white", shape = 4
+    aes(x, y), alpha = 0.8, color = "grey", shape = 4
   ) +
-  # geom_sf(
-  #   data = anno_slices_geo %>% dplyr::mutate(z = age) %>% dplyr::filter(z %in% c(-7000, -5000, -3000, -1000)),
-  #   aes(shape = age_group_id),
-  #   size = 2,
-  #   color = "white"
-  # ) +
+  geom_point(
+    data = janno_final,
+    aes(x, y, shape = age_group_id),
+    size = 1.5,
+    color = "white"
+  ) +
   scale_shape_manual(
     values = age_group_id_shapes,
     guide = FALSE
@@ -45,7 +56,7 @@ p_C1 <- interpol_grid %>%
     crs = epsg102013
   ) +
   guides(
-    fill = guide_colorbar(title = "PC prediction", barwidth = 10)
+    fill = guide_colorbar(title = "Prediction", barwidth = 10)
   ) +
   theme(
     legend.position = "bottom",
@@ -53,7 +64,7 @@ p_C1 <- interpol_grid %>%
     legend.title = element_text(size = 17),
     axis.title = element_blank(),
     axis.text = element_blank(),
-    legend.text = element_text(size = 17),
+    legend.text = element_text(size = 12),
     strip.text = element_text(size = 17),
     strip.background = element_rect(fill = NA),
     axis.ticks = element_blank(),
@@ -75,14 +86,14 @@ p_C2 <- interpol_grid %>%
   geom_sf(data = extended_area, fill = NA) +
   geom_point(
     data = . %>% dplyr::filter(sd > (0.8 * diff(range(sd)))),
-    aes(x, y), color = "white", shape = 4
+    aes(x, y), alpha = 0.8, color = "grey", shape = 4
   ) +
-  # geom_sf(
-  #   data = anno_slices_geo %>% dplyr::mutate(z = age) %>% dplyr::filter(z %in% c(-7000, -5000, -3000, -1000)),
-  #   aes(shape = age_group_id),
-  #   size = 2,
-  #   color = "white"
-  # ) +
+  geom_point(
+    data = janno_final,
+    aes(x, y, shape = age_group_id),
+    size = 1.5,
+    color = "white"
+  ) +
   scale_shape_manual(
     values = age_group_id_shapes,
     guide = FALSE
@@ -94,7 +105,7 @@ p_C2 <- interpol_grid %>%
     crs = epsg102013
   ) +
   guides(
-    fill = guide_colorbar(title = "PC prediction", barwidth = 10)
+    fill = guide_colorbar(title = "Prediction", barwidth = 10)
   ) +
   theme(
     legend.position = "bottom",
@@ -102,7 +113,7 @@ p_C2 <- interpol_grid %>%
     legend.title = element_text(size = 17),
     axis.title = element_blank(),
     axis.text = element_blank(),
-    legend.text = element_text(size = 17),
+    legend.text = element_text(size = 12),
     strip.text = element_text(size = 17),
     strip.background = element_rect(fill = NA),
     axis.ticks = element_blank(),
