@@ -23,8 +23,6 @@ p_mds <- ggplot() +
   ) +
   theme_bw() +
   theme(
-    axis.title = element_text(size = 12),
-    axis.text = element_text(size = 12),
     legend.text = element_text(size = 12),
     legend.position = "none"
   ) +
@@ -48,7 +46,7 @@ p_Budapest <- ggplot() +
   geom_point(
     data = janno_final,
     aes(x = C1, y = C2),
-    alpha = 0.3, size = 2, shape = 3
+    alpha = 0.3, size = 1, shape = 3
   ) +  
   geom_path(
     data = poi_timeseries,
@@ -62,7 +60,7 @@ p_Budapest <- ggplot() +
       ymin = mean_C2 - sd_C2, ymax = mean_C2 + sd_C2,
       color = z
     ),
-    size = 1, alpha = 0.5
+    size = 0.7, alpha = 0.5
   ) +
   geom_errorbarh(
     data = poi_timeseries,
@@ -71,7 +69,7 @@ p_Budapest <- ggplot() +
       xmin = mean_C1 - sd_C1, xmax = mean_C1 + sd_C1,
       color = z
     ),
-    size = 1, alpha = 0.5
+    size = 0.7, alpha = 0.5
   ) +
   geom_point(
     data = poi_timeseries,
@@ -88,8 +86,6 @@ p_Budapest <- ggplot() +
   ) +
   theme_bw() +
   theme(
-    axis.title = element_text(size = 12),
-    axis.text = element_text(size = 12),
     legend.text = element_text(size = 12),
     legend.position = "none"
   ) +
@@ -108,7 +104,7 @@ ggsave(
   paste0("plots/figure_6_mds.jpeg"),
   plot = p,
   device = "jpeg",
-  scale = 0.7,
+  scale = 0.5,
   dpi = 300,
   width = 500, height = 300, units = "mm",
   limitsize = F
