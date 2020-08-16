@@ -11,7 +11,7 @@ d_binned <- d_all %>%
   dplyr::group_by(geo_dist_cut, time_dist_cut) %>%
   dplyr::summarise(
     n = dplyr::n(),
-    PC1_resid = mean(PC1_dist_resid^2, na.rm = T),
+    C1_resid = mean(C1_dist_resid^2, na.rm = T),
   ) %>%
   dplyr::ungroup()
 
@@ -19,18 +19,18 @@ var_model <- function(cov0, rho, g, r) {
   2 * (cov0 - cov0*exp(-(r / rho)^2)) + g
 }
 
-p <- ggplot(dplyr::filter(d_binned, geo_dist_cut == 100)) +
+p <- ggplot(dplyr::filter(d_binned, geo_dist_cut == 500)) +
   geom_line(
-    mapping = aes(x = time_dist_cut, y = PC1_resid)
+    mapping = aes(x = time_dist_cut, y = C1_resid)
   ) +
   stat_function(
-    fun = function(r) {var_model(0.25, 70000, 0.0001, r)}, 
+    fun = function(r) {var_model(0.25, 70000, 0.001, r)}, 
     mapping = aes(color = "A"),
     linetype = "dashed", 
     size = 0.9
   ) + 
   stat_function(
-    fun = function(r) {var_model(25, 700000, 0.0001, r)}, 
+    fun = function(r) {var_model(25, 700000, 0.001, r)}, 
     mapping = aes(color = "B"),
     linetype = "dashed", 
     size = 1.2
@@ -41,7 +41,7 @@ p <- ggplot(dplyr::filter(d_binned, geo_dist_cut == 100)) +
   )) +
   theme_bw() +
   xlab("temporal distance: 100y bins") +
-  ylab("mean squared euclidean distance along PC1")
+  ylab("mean squared euclidean distance along C1")
 
 ggsave(
   "plots/figure_sup_2_variogram_fitting.jpeg",
