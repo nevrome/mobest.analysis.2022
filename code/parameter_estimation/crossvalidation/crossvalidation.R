@@ -7,46 +7,27 @@ g_for_this_run <- as.numeric(args[3])
 
 #### data ####
 
-load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
-anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
+load("data/poseidon_data/janno_final.RData")
 
-#### pca ####
-
-interpol_comparison_pca <- mobest::crossvalidate(
-  independent = tibble::tibble(x = anno$x, y = anno$y, z = anno$calage_center),
+interpol_comparison <- mobest::crossvalidate(
+  independent = tibble::tibble(
+    x = janno_final$x, 
+    y = janno_final$y, 
+    z = janno_final$Date_BC_AD_Median_Derived
+  ),
   dependent = list(
-    PC1 = anno$PC1,
-    PC2 = anno$PC2
+    C1 = janno_final$C1,
+    C2 = janno_final$C2
   ),
   kernel = mobest::create_kernel_grid(
-    ds = seq(100, 10000, 100)*1000, 
-    dt = dt_for_this_run, 
-    g = g_for_this_run
+    ds = seq(100, 10000, 1000),#seq(100, 10000, 100)*1000, 
+    dt = seq(100, 10000, 1000),#dt_for_this_run, 
+    g = 0.01#g_for_this_run
   )
 )
 
-#### mds ####
-
-anno_mds <- anno %>% dplyr::filter(
-  !is.na(C1)
-)
-
-interpol_comparison_mds <- mobest::crossvalidate(
-  independent = tibble::tibble(x = anno_mds$x, y = anno_mds$y, z = anno_mds$calage_center),
-  dependent = list(
-    C1 = anno_mds$C1,
-    C2 = anno_mds$C2
-  ),
-  kernel = mobest::create_kernel_grid(
-    ds = seq(100, 10000, 100)*1000, 
-    dt = dt_for_this_run, 
-    g = g_for_this_run
-  )
-)
-
-#### merge pca and mds ####
-
-interpol_comparison <- rbind(interpol_comparison_pca, interpol_comparison_mds)
-
-
-save(interpol_comparison, file = paste0("data/crossvalidation/interpol_comparison_", run, ".RData"))
+save(interpol_comparison, file = paste0(
+  "data/parameter_exploration/crossvalidation/interpol_comparison_", 
+  run, 
+  ".RData"
+))

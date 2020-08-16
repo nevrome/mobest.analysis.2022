@@ -3,6 +3,8 @@ library(ggplot2)
 
 load("data/parameter_exploration/crossvalidation/interpol_comparison.RData")
 
+interpol_comparison$ds <- interpol_comparison$ds*1000
+
 # group difference by kernel and dependent_dist
 interpol_comparison_group <- interpol_comparison %>%
   dplyr::group_by(kernel_setting_id, ds, dt, g, dependent_var) %>%
@@ -24,7 +26,7 @@ icg <- interpol_comparison_group %>% dplyr::group_split(dependent_var)
 mg <- minicg %>% dplyr::group_split(dependent_var)
 
 # for each ancestry component
-ps1 <- lapply(1:4, function(i) {
+ps1 <- lapply(1:2, function(i) {
   icg[[i]] %>%
     ggplot() +
     geom_raster(
@@ -48,7 +50,7 @@ ps1 <- lapply(1:4, function(i) {
     ylab(latex2exp::TeX("$\\theta_t$"))
 })
 
-p1 <- cowplot::plot_grid(plotlist = ps1, nrow = 2, ncol = 2)
+p1 <- cowplot::plot_grid(plotlist = ps1, nrow = 1, ncol = 2)
 
 ggsave(
   "plots/figure_sup_7_crossvalidation_rasters.jpeg",

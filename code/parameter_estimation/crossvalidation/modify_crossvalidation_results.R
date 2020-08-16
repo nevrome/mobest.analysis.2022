@@ -3,7 +3,11 @@
 library(magrittr)
 
 interpol_comparison <- lapply(
-  list.files("data/crossvalidation_2", pattern = "interpol_comparison_[0-9]", full.names = T), function(x) {
+  list.files(
+    "data/parameter_exploration/crossvalidation", 
+    pattern = "interpol_comparison_[0-9]", 
+    full.names = T
+  ), function(x) {
     load(x)
     interpol_comparison
   }
