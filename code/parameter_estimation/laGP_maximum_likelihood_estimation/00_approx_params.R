@@ -5,28 +5,27 @@ library(laGP)
 
 #### data ####
 
-load("data/anno_1240K_and_anno_1240K_HumanOrigins_final.RData")
-anno <- anno_1240K_and_anno_1240K_HumanOrigins_final
+load("data/poseidon_data/janno_final.RData")
 
 iterations <- 50
 
 #### approximation with mleGPsep (anisotropic) ####
 
-mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component) {
+mleGPsep_out <- lapply(c("C1", "C2"), function(ancestry_component) {
   
   .ancestry_component <- rlang::ensym(ancestry_component)
   
-  anno_filtered <- anno %>% dplyr::select(x, y, calage_center, !!.ancestry_component) %>% 
+  janno_final_filtered <- janno_final %>% dplyr::select(x, y, Date_BC_AD_Median_Derived, !!.ancestry_component) %>% 
     dplyr::filter(!is.na(!!.ancestry_component))
   
-  independent <- anno_filtered %>%
+  independent <- janno_final_filtered %>%
     dplyr::transmute(
       x = x/1000000,
       y = y/1000000,
-      z = calage_center/1000
+      z = Date_BC_AD_Median_Derived/1000
     )
   
-  dependent <- anno_filtered[[ancestry_component]]
+  dependent <- janno_final_filtered[[ancestry_component]]
   
   # parameter estimation
   mleGPsep_params <- lapply(1:iterations, function(i) {
@@ -69,21 +68,21 @@ mleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component)
 
 #### approximation with jmleGPsep (anisotropic) ####
 
-jmleGPsep_out <- lapply(c("PC1", "PC2", "C1", "C2"), function(ancestry_component) {
+jmleGPsep_out <- lapply(c("C1", "C2"), function(ancestry_component) {
   
   .ancestry_component <- rlang::ensym(ancestry_component)
   
-  anno_filtered <- anno %>% dplyr::select(x, y, calage_center, !!.ancestry_component) %>% 
+  janno_final_filtered <- janno_final %>% dplyr::select(x, y, Date_BC_AD_Median_Derived, !!.ancestry_component) %>% 
     dplyr::filter(!is.na(!!.ancestry_component))
   
-  independent <- anno_filtered %>%
+  independent <- janno_final_filtered %>%
     dplyr::transmute(
       x = x/1000000,
       y = y/1000000,
-      z = calage_center/1000
+      z = Date_BC_AD_Median_Derived/1000
     )
   
-  dependent <- anno_filtered[[ancestry_component]]
+  dependent <- janno_final_filtered[[ancestry_component]]
   
   # parameter estimation
   jmleGPsep_params <- lapply(1:iterations, function(i) {
@@ -131,7 +130,7 @@ mlesep_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
   dplyr::mutate(
     parameter = factor(parameter, levels = c("dx", "dy", "dt", "g")),
     mle_method = factor(mle_method, levels = c("mleGPsep", "jmleGPsep")),
-    ancestry_component = factor(ancestry_component, levels = c("PC1", "PC2", "C1", "C2"))
+    ancestry_component = factor(ancestry_component, levels = c("C1", "C2"))
   )
 
 save(mlesep_out, file = "data/parameter_exploration/mle/mlesep_out.RData")
@@ -143,13 +142,13 @@ scaling_factor_sequence <- c(seq(0.1, 0.9, 0.1), 1, seq(2, 10, 1))
 # parameter estimation
 mleGP_out <- lapply(scaling_factor_sequence, function(scaling_factor) {
   # data prep inside of parameter estimation, because different scaling factors are tested
-  independent <- anno %>%
+  independent <- janno_final %>%
     dplyr::transmute(
       x = x/1000000,
       y = y/1000000,
-      z = calage_center/1000 * scaling_factor
+      z = Date_BC_AD_Median_Derived/1000 * scaling_factor
     )
-  dependent <- anno$PC1
+  dependent <- janno_final$C1
   da <- laGP::darg(list(mle = TRUE), independent)
   gp <- laGP::newGP(
     X = independent,
