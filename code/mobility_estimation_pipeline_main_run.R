@@ -58,6 +58,6 @@ interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid)
 
 mobility_proxy <- mobest::estimate_mobility(interpol_grid_origin, mobility_regions)
 
-save(mobility_proxy, file = paste0("data/mobility_estimation_main_run/mobility_proxy_", age_resampling_run, ".RData"))
+save(mobility_proxy, file = paste0("data/mobility_estimation/mobility_proxy_", age_resampling_run, ".RData"))
 
 # scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/mobility_estimation_main_run/* .
