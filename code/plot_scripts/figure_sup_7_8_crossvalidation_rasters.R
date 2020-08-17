@@ -41,6 +41,7 @@ ps1 <- lapply(1:2, function(i) {
     theme(
       legend.position = "right"
     ) +
+    theme_bw() +
     guides(
       fill = guide_colorbar(title = "", barheight = 9)
     ) +
@@ -92,10 +93,51 @@ f <- Vectorize(function(x) {
   sqrt(x)
 })
 
+min_point <- mean_interpol_comparison_group %>% 
+  dplyr::filter(mean_mean_squared_difference == min(mean_mean_squared_difference)) %>%
+  magrittr::extract(1,)
+
 p2 <- mean_interpol_comparison_group %>%
   ggplot() +
   geom_raster(
     aes(x = ds, y = dt, fill = cut_mean_mean_squared_difference)
+  ) +
+  geom_point(
+    aes(x = 600, y = 2600), 
+    color = "blue", pch = 4, size = 5
+  ) +
+  geom_point(
+    data = min_point,
+    aes(x = ds, y = dt), 
+    color = "red", pch = 4, size = 5
+  ) +
+  geom_point(
+    aes(x = 1300, y = 1000), 
+    color = "black", pch = 4, size = 5
+  ) +
+  annotate(
+    "text",
+    x = 600 + 3000, y = 2600, 
+    label = latex2exp::TeX(paste0("$\\theta_s$ = ", 600, " | $\\theta_t$ = ", 2600)), 
+    parse = TRUE, 
+    color = "blue",
+    size = 4
+  ) +
+  annotate(
+    "text",
+    x = min_point$ds + 3000, y = min_point$dt, 
+    label = latex2exp::TeX(paste0("$\\theta_s$ = ", min_point$ds, " | $\\theta_t$ = ", min_point$dt)), 
+    parse = TRUE, 
+    color = "red",
+    size = 4
+  ) +
+  annotate(
+    "text",
+    x = 1300 + 3000, y = 1000, 
+    label = latex2exp::TeX(paste0("$\\theta_s$ = ", 1300, " | $\\theta_t$ = ", 1000)), 
+    parse = TRUE, 
+    color = "black",
+    size = 4
   ) +
   scale_fill_viridis_d(direction = -1) +
   coord_fixed() +
@@ -107,7 +149,10 @@ p2 <- mean_interpol_comparison_group %>%
     fill = guide_colorsteps(title = "Mean normalized difference")
   ) +
   xlab(latex2exp::TeX("$\\sqrt{\\theta_s}$")) +
-  ylab(latex2exp::TeX("$\\sqrt{\\theta_t}$"))# +
+  ylab(latex2exp::TeX("$\\sqrt{\\theta_t}$")) +
+  scale_x_continuous(breaks = seq(0, 10000, 1000)) +
+  scale_y_continuous(breaks = seq(0, 10000, 1000))
+  # +
   # scale_y_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_t}$"))) +
   # scale_x_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_x}$")))
 
