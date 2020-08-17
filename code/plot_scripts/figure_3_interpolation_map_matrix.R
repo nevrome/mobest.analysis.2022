@@ -26,7 +26,7 @@ p_C1 <- interpol_grid %>%
   dplyr::filter(
     independent_table_id == "age_sample_1",
     dependent_var_id %in% "C1",
-    kernel_setting_id == "ds500_dt500_g001",
+    kernel_setting_id == "ds800_dt1400_g001",
     pred_grid_id == "scs100_tl100",
     z %in% seq(-7000, 1000, 2000)
   ) %>%
@@ -36,7 +36,7 @@ p_C1 <- interpol_grid %>%
   facet_grid(rows = dplyr::vars(z), cols = dplyr::vars(dependent_var_id)) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
   geom_point(
-    data = . %>% dplyr::filter(sd > (0.8 * diff(range(sd)))),
+    data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
     aes(x, y), alpha = 0.8, color = "grey", shape = 4
   ) +
   geom_point(
@@ -75,7 +75,7 @@ p_C2 <- interpol_grid %>%
   dplyr::filter(
     independent_table_id == "age_sample_1",
     dependent_var_id %in% "C2",
-    kernel_setting_id == "ds500_dt500_g001",
+    kernel_setting_id == "ds800_dt1400_g001",
     pred_grid_id == "scs100_tl100",
     z %in% seq(-7000, 1000, 2000)
   ) %>%
@@ -85,7 +85,7 @@ p_C2 <- interpol_grid %>%
   facet_grid(rows = dplyr::vars(z), cols = dplyr::vars(dependent_var_id)) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
   geom_point(
-    data = . %>% dplyr::filter(sd > (0.8 * diff(range(sd)))),
+    data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
     aes(x, y), alpha = 0.8, color = "grey", shape = 4
   ) +
   geom_point(

@@ -50,9 +50,7 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    #ds200_dt200_g001 = list(d = c(200000, 200000, 200), g = 0.01, on_residuals = T, auto = F),
-    ds500_dt500_g001 = list(d = c(500000, 500000, 500), g = 0.01, on_residuals = T, auto = F)
-    #ds1000_dt1000_g001 = list(d = c(1000000, 1000000, 1000), g = 0.01, on_residuals = T, auto = F)
+    ds800_dt1400_g001 = list(d = c(800000, 800000, 1400), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     Budapest = tibble::tibble(

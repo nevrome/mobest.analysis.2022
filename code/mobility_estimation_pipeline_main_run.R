@@ -3,6 +3,7 @@ library(magrittr)
 #### read parameters ####
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
+age_resampling_run <- 1
 age_resampling_run <- as.numeric(args[1]) + 1
 
 #### data ####
@@ -28,14 +29,16 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    #ds100_dt100_g001 = list(d = c(100000, 100000, 200), g = 0.01, on_residuals = T, auto = F),
-    #ds200_dt200_g001 = list(d = c(200000, 200000, 200), g = 0.01, on_residuals = T, auto = F),
-    ds500_dt500_g001 = list(d = c(500000, 500000, 500), g = 0.01, on_residuals = T, auto = F)
-    #ds1000_dt1000_g001 = list(d = c(1000000, 1000000, 1000), g = 0.01, on_residuals = T, auto = F),
-    #ds2000_dt2000_g001 = list(d = c(2000000, 2000000, 1000), g = 0.01, on_residuals = T, auto = F)
+    ds600_dt2600_g001 = list(d = c(600000, 600000, 2600), g = 0.01, on_residuals = T, auto = F),
+    ds800_dt1400_g001 = list(d = c(800000, 800000, 1400), g = 0.01, on_residuals = T, auto = F),
+    ds1300_dt1000_g001 = list(d = c(1300000, 1300000, 1000), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
-    scs100_tl100 = mobest::create_prediction_grid(area, spatial_cell_size = 100000, time_layers = seq(-7500, 1500, 100))
+    scs100_tl100 = mobest::create_prediction_grid(
+      area, 
+      spatial_cell_size = 100000, 
+      time_layers = seq(-7500, 1500, 100)
+    )
     #scs200_tl200 = mobest::create_prediction_grid(area, spatial_cell_size = 500000, time_layers = seq(-7500, 1500, 500))
   )
 )
