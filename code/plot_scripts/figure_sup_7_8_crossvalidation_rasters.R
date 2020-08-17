@@ -3,7 +3,7 @@ library(ggplot2)
 
 load("data/parameter_exploration/crossvalidation/interpol_comparison.RData")
 
-interpol_comparison$ds <- interpol_comparison$ds*1000
+interpol_comparison$ds <- interpol_comparison$ds/1000
 
 # group difference by kernel and dependent_dist
 interpol_comparison_group <- interpol_comparison %>%
@@ -58,7 +58,7 @@ ggsave(
   device = "jpeg",
   scale = 0.6,
   dpi = 300,
-  width = 300, height = 230, units = "mm",
+  width = 350, height = 130, units = "mm",
   limitsize = F
 )
 
@@ -75,7 +75,11 @@ mean_interpol_comparison_group <- interpol_comparison_group %>%
   ) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(
-    cut_mean_mean_squared_difference = cut(mean_mean_squared_difference, breaks = c(seq(0, 0.2, 0.05), seq(0.3, 1, 0.1)))
+    cut_mean_mean_squared_difference = cut(
+      mean_mean_squared_difference, 
+      breaks = c(seq(0, 0.2, 0.05), seq(0.3, 1, 0.1)),
+      include.lowest = T
+    )
   )
 
 # get values
@@ -84,6 +88,11 @@ min(bests$ds) %>% sqrt()
 max(bests$ds) %>% sqrt()
 min(bests$dt) %>% sqrt()
 max(bests$dt) %>% sqrt()
+
+f <- Vectorize(function(x) {
+  if (x < 1) return(x/1e10)
+  sqrt(x)
+})
 
 p2 <- mean_interpol_comparison_group %>%
   ggplot() +
@@ -101,8 +110,8 @@ p2 <- mean_interpol_comparison_group %>%
   ) +
   xlab(latex2exp::TeX("$\\theta_s$")) +
   ylab(latex2exp::TeX("$\\theta_t$")) +
-  scale_y_continuous(sec.axis = sec_axis(~sqrt(.), name = latex2exp::TeX("$\\sqrt{\\theta_t}$"))) +
-  scale_x_continuous(sec.axis = sec_axis(~sqrt(.), name = latex2exp::TeX("$\\sqrt{\\theta_x}$")))
+  scale_y_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_t}$"))) +
+  scale_x_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_x}$")))
 
 ggsave(
   "plots/figure_sup_8_crossvalidation_raster_merged.jpeg",
