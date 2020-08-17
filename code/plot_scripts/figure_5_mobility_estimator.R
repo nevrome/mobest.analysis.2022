@@ -2,7 +2,7 @@ library(magrittr)
 library(ggplot2)
 
 mobility <- lapply(
-  list.files("data/mobility_estimation_main_run", full.names = T),
+  list.files("data/mobility_estimation", full.names = T),
   function(x) {
     load(x)
     mobility_proxy
