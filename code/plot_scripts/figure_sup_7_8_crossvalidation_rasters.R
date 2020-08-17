@@ -3,8 +3,6 @@ library(ggplot2)
 
 load("data/parameter_exploration/crossvalidation/interpol_comparison.RData")
 
-interpol_comparison$ds <- interpol_comparison$ds/1000
-
 # group difference by kernel and dependent_dist
 interpol_comparison_group <- interpol_comparison %>%
   dplyr::group_by(kernel_setting_id, ds, dt, g, dependent_var) %>%
@@ -46,8 +44,8 @@ ps1 <- lapply(1:2, function(i) {
     guides(
       fill = guide_colorbar(title = "", barheight = 9)
     ) +
-    xlab(latex2exp::TeX("$\\theta_s$")) +
-    ylab(latex2exp::TeX("$\\theta_t$"))
+    xlab(latex2exp::TeX("$\\sqrt{\\theta_s}$")) +
+    ylab(latex2exp::TeX("$\\sqrt{\\theta_t}$"))
 })
 
 p1 <- cowplot::plot_grid(plotlist = ps1, nrow = 1, ncol = 2)
@@ -108,10 +106,10 @@ p2 <- mean_interpol_comparison_group %>%
   guides(
     fill = guide_colorsteps(title = "Mean normalized difference")
   ) +
-  xlab(latex2exp::TeX("$\\theta_s$")) +
-  ylab(latex2exp::TeX("$\\theta_t$")) +
-  scale_y_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_t}$"))) +
-  scale_x_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_x}$")))
+  xlab(latex2exp::TeX("$\\sqrt{\\theta_s}$")) +
+  ylab(latex2exp::TeX("$\\sqrt{\\theta_t}$"))# +
+  # scale_y_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_t}$"))) +
+  # scale_x_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_x}$")))
 
 ggsave(
   "plots/figure_sup_8_crossvalidation_raster_merged.jpeg",

@@ -41,9 +41,9 @@ p_theta <- mlesep_out_theta %>%
   ) +
   guides(color = F) +
   theme_bw() +
-  xlab("ancestry_component") +
-  ylab(latex2exp::TeX("estimated $\\theta_\\cdots$")) +
-  scale_y_continuous(sec.axis = sec_axis(~sqrt(.), name = latex2exp::TeX("estimated $\\sqrt{\\theta_\\cdots}$")))
+  xlab("ancestry component") +
+  ylab(latex2exp::TeX("estimated $\\sqrt{\\theta_\\cdots}$"))# +
+  # scale_y_continuous(sec.axis = sec_axis(~.^2, name = latex2exp::TeX("estimated $\\theta_\\cdots$")))
 
 p_nugget <- mlesep_out_nugget %>%
   # remove non-convergence runs
@@ -62,7 +62,7 @@ p_nugget <- mlesep_out_nugget %>%
   ) +
   guides(color = F) +
   theme_bw() +
-  xlab("ancestry_component") +
+  xlab(" ") +
   ylab(latex2exp::TeX("estimated $\\eta$"))
 
 p <- cowplot::plot_grid(p_theta, p_nugget, nrow = 1, rel_widths = c(0.75, 0.25))
@@ -73,7 +73,7 @@ ggsave(
   device = "jpeg",
   scale = 0.6,
   dpi = 300,
-  width = 300, height = 200, units = "mm",
+  width = 320, height = 200, units = "mm",
   limitsize = F
 )
 

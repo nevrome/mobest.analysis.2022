@@ -10,8 +10,8 @@ p1 <- mle_out %>%
     aes(x = scaling_factor_label, y = d),
   ) +
   theme_bw() +
-  scale_y_continuous(sec.axis = sec_axis(~sqrt(.), name = latex2exp::TeX("$\\sqrt{\\theta}$"))) +
-  ylab(latex2exp::TeX("$\\theta$")) +
+  #scale_y_continuous(sec.axis = sec_axis(~sqrt(.), name = latex2exp::TeX("$\\sqrt{\\theta}$"))) +
+  ylab(latex2exp::TeX("$\\sqrt{\\theta}$")) +
   xlab("")# +
   #scale_color_discrete(
   #  name = latex2exp::TeX("$\\theta$ scaling"), labels = list(latex2exp::TeX("$\\theta_s$"), latex2exp::TeX("$\\theta_t$"))
