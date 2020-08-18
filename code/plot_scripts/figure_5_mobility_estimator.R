@@ -9,22 +9,19 @@ mobility <- lapply(
   }
 ) %>% dplyr::bind_rows() %>%
   # kernel selection
-  dplyr::filter(
-    !(kernel_setting_id %in% c("ds1000_dt1000_g001", "ds2000_dt2000_g001"))
-  ) %>%
   dplyr::mutate(
     kernel_setting_id = dplyr::recode(
       kernel_setting_id, 
-      "ds100_dt100_g001" = "100km / 100y", 
-      "ds200_dt200_g001" = "200km / 200y",
-      "ds500_dt500_g001" = "500km / 500y"
+      "ds600_dt2600_g001" = "600km / 2600y", 
+      "ds800_dt1400_g001" = "800km / 1400y",
+      "ds1300_dt1000_g001" = "1300km / 1000y"
     )
   )
 
 mobility$kernel_setting_id = factor(mobility$kernel_setting_id, levels = c(
-  "100km / 100y",
-  "200km / 200y",
-  "500km / 500y"
+  "600km / 2600y",
+  "800km / 1400y",
+  "1300km / 1000y"
 ))
 
 mobility$region_id = factor(mobility$region_id, levels = c(
@@ -56,15 +53,16 @@ p_estimator <- mobility %>%
   theme_bw() +
   theme(
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 20, hjust = 1),
+    axis.text.x = element_text(angle = 40, hjust = 1),
     strip.background = element_rect(fill = NA)
   ) +
-  xlab("time calBC [y]") +
+  xlab("time calBC/calAD [y]") +
   ylab("\"Speed\" [km/decade]") +
   scale_color_gradientn(
     colours =  c("orange", "#47A649", "#47A649", "red", "red", "#0072B2", "#0072B2", "orange"), 
     guide = F
-  )
+  ) +
+  scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000))
 
 #### map series ####
 
@@ -77,8 +75,9 @@ xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
 
 mobility_maps <- mobility %>% 
+  dplyr::filter(z <= 1000) %>%
   dplyr::mutate(
-    z_cut = cut(z, breaks = c(-7500, -5000, -3000, 0), labels = c("-7500 - -5000 calBC", "-5000 - -3000 calBC", "-3000 - 0 calBC"))
+    z_cut = cut(z, breaks = c(-7500, -3000, -1000, 1500), labels = c("-7500 - -3000 calBC", "-3000 - -1000 calBC", "-1000 calBC - 1500 calAD"))
   ) %>% 
   dplyr::group_by(region_id, z_cut) %>%
   dplyr::summarise(
