@@ -75,11 +75,15 @@ xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
 
 mobility_maps <- mobility %>% 
-  dplyr::filter(z <= 1000) %>%
+  dplyr::filter(z %in% c(-5400, -2900, 100)) %>%
   dplyr::mutate(
-    z_cut = cut(z, breaks = c(-7500, -3000, -1000, 1500), labels = c("-7500 - -3000 calBC", "-3000 - -1000 calBC", "-1000 calBC - 1500 calAD"))
-  ) %>% 
-  dplyr::group_by(region_id, z_cut) %>%
+    z = dplyr::recode_factor(as.character(z), !!!list(
+      "-5400" = "-5500 - -5400 calBC", 
+      "-2900" = "-3000 - -2900 calBC", 
+      "100" = "0 - 100 calAD"
+    ))
+  ) %>%
+  dplyr::group_by(region_id, z) %>%
   dplyr::summarise(
     mean_mean_km_per_decade = mean(mean_km_per_decade),
     mean_angle_deg = mobest::mean_deg(angle_deg %>% na.omit()),
@@ -128,7 +132,7 @@ p_map <- ggplot() +
     colours =  c("orange", "#47A649", "#47A649", "red", "red", "#0072B2", "#0072B2", "orange"), 
     guide = F
   ) +
-  facet_grid(cols = dplyr::vars(z_cut)) +
+  facet_grid(cols = dplyr::vars(z)) +
   theme_bw() +
   theme(
     axis.text = element_blank(),
