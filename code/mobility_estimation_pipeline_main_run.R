@@ -13,9 +13,6 @@ load("data/spatial/area.RData")
 load("data/spatial/mobility_regions.RData")
 
 #### prepare pca model grid ####
-
-number_of_age_resampling_runs <- 3
-
 model_grid <- mobest::create_model_grid(
   independent = list(
       tibble::tibble(
@@ -39,7 +36,6 @@ model_grid <- mobest::create_model_grid(
       spatial_cell_size = 100000, 
       time_layers = seq(-7500, 1500, 100)
     )
-    #scs200_tl200 = mobest::create_prediction_grid(area, spatial_cell_size = 500000, time_layers = seq(-7500, 1500, 500))
   )
 )
 
