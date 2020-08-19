@@ -51,7 +51,7 @@ save(interpol_grid, file = "data/gpr/interpol_grid.RData")
 
 #### spatial origin ####
 
-interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid)
+interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 4)
 
 #### mobility proxy ####
 
