@@ -47,7 +47,8 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 
 interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
-save(interpol_grid, file = "data/gpr/interpol_grid.RData")
+#save(interpol_grid, file = "data/gpr/interpol_grid.RData")
+save(interpol_grid, file = paste0("data/gpr/interpol_grid_", age_resampling_run, ".RData"))
 
 #### spatial origin ####
 
