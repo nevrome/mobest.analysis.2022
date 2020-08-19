@@ -59,7 +59,7 @@ p_estimator <- mobility %>%
   xlab("time calBC/calAD [y]") +
   ylab("\"Speed\" [km/decade]") +
   scale_color_gradientn(
-    colours =  c("orange", "#47A649", "#47A649", "red", "red", "#0072B2", "#0072B2", "orange"), 
+    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
     guide = F
   ) +
   scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000))
@@ -69,6 +69,7 @@ p_estimator <- mobility %>%
 load("data/spatial/mobility_regions.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
+load("data/spatial/epsg102013.RData")
 
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
@@ -129,7 +130,7 @@ p_map <- ggplot() +
     guide = guide_legend(nrow = 1, label.position = "bottom")
   ) +
   scale_color_gradientn(
-    colours =  c("orange", "#47A649", "#47A649", "red", "red", "#0072B2", "#0072B2", "orange"), 
+    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
     guide = F
   ) +
   facet_grid(cols = dplyr::vars(z)) +
@@ -143,7 +144,7 @@ p_map <- ggplot() +
   ) +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
-    crs = sf::st_crs("+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
+    crs = epsg102013
   )
 
 p_arrows_legend <- cowplot::get_legend(p_map)
@@ -161,7 +162,7 @@ p_legend <- tibble::tibble(
     aes(xmin = 3, xmax = 4, ymin = angle_start, ymax = angle_stop, fill = ID)
   ) +
   scale_fill_manual(
-    values =  c("orange", "#47A649", "#47A649", "red", "red", "#0072B2", "#0072B2", "orange"), 
+    values = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
     guide = FALSE
   ) +
   coord_polar(theta = "y") +
