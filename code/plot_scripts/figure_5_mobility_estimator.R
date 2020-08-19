@@ -75,12 +75,12 @@ xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
 
 mobility_maps <- mobility %>% 
-  dplyr::filter(z %in% c(-5400, -2900, 100)) %>%
+  dplyr::filter(z %in% c(-5400, -2700, 100)) %>%
   dplyr::mutate(
     z = dplyr::recode_factor(as.character(z), !!!list(
-      "-5400" = "-5500 - -5400 calBC", 
-      "-2900" = "-3000 - -2900 calBC", 
-      "100" = "0 - 100 calAD"
+      "-5400" = "-5900 ⬳ -5400 calBC", 
+      "-2700" = "-3200 ⬳ -2700 calBC", 
+      "100" = "-400 calBC ⬳ 100 calAD"
     ))
   ) %>%
   dplyr::group_by(region_id, z) %>%
