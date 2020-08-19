@@ -47,7 +47,7 @@ p_estimator <- mobility %>%
       group = interaction(independent_table_id, kernel_setting_id), 
       color = angle_deg
     ),
-    alpha = 0.6
+    alpha = 0.5
   ) +
   facet_grid(cols = dplyr::vars(region_id), rows = dplyr::vars(kernel_setting_id)) +
   theme_bw() +
