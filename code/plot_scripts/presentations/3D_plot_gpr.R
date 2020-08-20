@@ -5,8 +5,8 @@ load("data/gpr/interpol_grid.RData")
 inter <- interpol_grid %>%
   dplyr::filter(
     dependent_var_id == "C1",
-    independent_table_id == "age_sample_1", 
-    kernel_setting_id == "ds500_dt500_g001",
+    independent_table_id == "age_sample_2", 
+    kernel_setting_id == "ds800_dt1400_g001",
     pred_grid_id == "scs100_tl100"
   )
 
@@ -28,7 +28,7 @@ threedinter <- inter %>%
     y = y/1000,
     z = z,
     color = viridis::viridis(50)[as.numeric(cut(mean, breaks = 50))],
-    alpha = (1 - (sd - min(sd)) / (max(sd) - min(sd))) / 2
+    alpha = (1 - (sd - min(sd)) / (max(sd) - min(sd))) / 4
   )
 
 # plot

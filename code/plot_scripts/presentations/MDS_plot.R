@@ -14,7 +14,7 @@ p_mds <- ggplot() +
   ) +
   theme_bw() +
   theme(
-    legend.position = "bottom",
+    legend.position = "none",
     legend.background = element_blank(),
     legend.title = element_text(size = 13),
     legend.spacing.x = unit(0.2, 'cm'),
@@ -40,8 +40,8 @@ ggsave(
   paste0("plots/MDS_plot.jpeg"),
   plot = p_mds,
   device = "jpeg",
-  scale = 0.5,
+  scale = 0.3,
   dpi = 300,
-  width = 570, height = 600, units = "mm",
+  width = 630, height = 600, units = "mm",
   limitsize = F
 )
