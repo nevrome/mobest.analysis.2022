@@ -25,16 +25,16 @@ model_grid <- mobest::create_model_grid(
     #ds1300_dt1000_g001 = list(d = c(1300000, 1300000, 1000), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
-    # scs100_tl100 = mobest::create_prediction_grid(
-    #   area, 
-    #   spatial_cell_size = 100000, 
-    #   time_layers = seq(-7500, 1500, 100)
-    # ),
-    scs200_tl200 = mobest::create_prediction_grid(
-      area, 
-      spatial_cell_size = 150000, 
-      time_layers = seq(-7500, 1500, 281.25)
+    scs100_tl100 = mobest::create_prediction_grid(
+      area,
+      spatial_cell_size = 100000,
+      time_layers = seq(-7500, 1500, 100)
     )
+    # scs200_tl200 = mobest::create_prediction_grid(
+    #   area, 
+    #   spatial_cell_size = 150000, 
+    #   time_layers = seq(-7500, 1500, 281.25)
+    # )
   )
 )
 
@@ -47,7 +47,7 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
 #save(interpol_grid, file = "data/gpr/interpol_grid.RData")
-save(interpol_grid, file = "data/gpr/interpol_grid_scs200_tl200.RData")
+save(interpol_grid, file = "data/gpr/interpol_grid_scs100_tl100.RData")
 
 #### spatial origin ####
 
