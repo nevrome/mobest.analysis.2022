@@ -21,7 +21,7 @@ model_grid <- mobest::create_model_grid(
   ),
   kernel = list(
     #ds400_dt700_g001 = list(d = c(400000, 400000, 700), g = 0.01, on_residuals = T, auto = F),
-    ds800_dt1400_g001 = list(d = c(800000, 800000, 1400), g = 0.01, on_residuals = T, auto = F)
+    ds800_dt1400_g001 = list(d = c(500000, 500000, 200), g = 0.01, on_residuals = T, auto = F)
     #ds1300_dt1000_g001 = list(d = c(1300000, 1300000, 1000), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
