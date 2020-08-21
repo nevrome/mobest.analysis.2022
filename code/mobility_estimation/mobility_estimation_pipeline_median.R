@@ -20,7 +20,7 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds400_dt700_g001 = list(d = c(400000, 400000, 700), g = 0.01, on_residuals = T, auto = F),
+    #ds400_dt700_g001 = list(d = c(400000, 400000, 700), g = 0.01, on_residuals = T, auto = F),
     ds800_dt1400_g001 = list(d = c(800000, 800000, 1400), g = 0.01, on_residuals = T, auto = F)
     #ds1300_dt1000_g001 = list(d = c(1300000, 1300000, 1000), g = 0.01, on_residuals = T, auto = F)
   ),
@@ -28,7 +28,7 @@ model_grid <- mobest::create_model_grid(
     scs100_tl100 = mobest::create_prediction_grid(
       area,
       spatial_cell_size = 100000,
-      time_layers = seq(-7500, 1500, 100)
+      time_layers = seq(-7500, 1500, 50)
     )
     # scs200_tl200 = mobest::create_prediction_grid(
     #   area, 
@@ -46,9 +46,10 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 
 interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
+library(ggplot2)
 interpol_grid %>%
   dplyr::filter(
-    kernel_setting_id == "ds400_dt700_g001",
+    #kernel_setting_id == "ds400_dt700_g001",
     dependent_var_id == "C1",
     z %% 500 == 0
   ) %>%
@@ -59,9 +60,9 @@ interpol_grid %>%
 
 interpol_grid %>%
   dplyr::filter(
-    kernel_setting_id == "ds400_dt700_g001",
+    #kernel_setting_id == "ds400_dt700_g001",
     dependent_var_id == "C2",
-    z %% 500 == 0
+    z %% 200 == 0
   ) %>%
   ggplot() +
   geom_raster(aes(x, y, fill = mean)) +
@@ -70,7 +71,34 @@ interpol_grid %>%
 
 
 #save(interpol_grid, file = "data/gpr/interpol_grid.RData")
-save(interpol_grid, file = "data/gpr/interpol_grid_scs100_tl100.RData")
+save(interpol_grid, file = "data/gpr/interpol_grid_median.RData")
+
+interpol_grid_with_change <- interpol_grid %>%
+  dplyr::group_by(
+    dependent_var_id, x, y
+  ) %>%
+  dplyr::arrange(z, .by_group = TRUE) %>%
+  dplyr::mutate(
+    change = mean - dplyr::lag(mean)
+  ) %>%
+  dplyr::ungroup() %>%
+  tidyr::pivot_wider(
+    id_cols = c("x", "y", "z"),
+    names_from = dependent_var_id,
+    values_from = change
+  ) %>% 
+  dplyr::mutate(
+    change_combined = sqrt(C1^2 + C2^2)
+  )
+  
+interpol_grid_with_change %>%
+  dplyr::filter(
+    z %% 200 == 0
+  ) %>%
+  ggplot() +
+  geom_raster(aes(x, y, fill = change_combined)) +
+  facet_wrap(~z) +
+  scale_fill_viridis_c()
 
 #### spatial origin ####
 
