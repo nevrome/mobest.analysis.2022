@@ -15,7 +15,8 @@ mleGPsep_out <- lapply(c("C1", "C2"), function(ancestry_component) {
   
   .ancestry_component <- rlang::ensym(ancestry_component)
   
-  janno_final_filtered <- janno_final %>% dplyr::select(x, y, Date_BC_AD_Median_Derived, !!.ancestry_component) %>% 
+  janno_final_filtered <- janno_final %>% 
+    dplyr::select(x, y, Date_BC_AD_Median_Derived, !!.ancestry_component) %>% 
     dplyr::filter(!is.na(!!.ancestry_component))
   
   independent <- janno_final_filtered %>%
