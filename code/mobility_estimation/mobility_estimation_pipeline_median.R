@@ -100,6 +100,46 @@ interpol_grid_with_change %>%
   facet_wrap(~z) +
   scale_fill_viridis_c()
 
+load("data/spatial/epsg102013.RData")
+load("data/spatial/mobility_regions.RData")
+
+iwr <- interpol_grid_with_change %>% 
+  sf::st_as_sf(coords = c("x", "y"), crs = epsg102013) %>%
+  sf::st_intersection(mobility_regions) %>%
+  sf::st_drop_geometry()
+
+iwrs <- iwr %>%
+  dplyr::group_by(
+    region_id, z
+  ) %>%
+  dplyr::summarise(
+    mean_change_combined = mean(change_combined)
+  ) %>%
+  dplyr::ungroup()
+
+iwrs$region_id = factor(iwrs$region_id, levels = c(
+  "Britain and Ireland",
+  "France", 
+  "Iberia",
+  "Italy",
+  "Central Europe",
+  "Eastern Europe",
+  "Southeastern Europe",
+  "Turkey",
+  "Caucasus",
+  "Near East"
+))
+  
+iwrs %>%
+  ggplot() +
+  geom_line(
+    aes(
+      x = z, y = mean_change_combined
+    )
+  ) +
+  facet_grid(cols = dplyr::vars(region_id))
+
+
 #### spatial origin ####
 
 interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 4)
@@ -109,7 +149,6 @@ interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 4)
 mobility_proxy <- mobest::estimate_mobility(interpol_grid_origin, mobility_regions)
  
 save(mobility_proxy, file = paste0("data/mobility_estimation/mobility_proxy_median.RData"))
-
 
 mobility_proxy$region_id = factor(mobility_proxy$region_id, levels = c(
   "Britain and Ireland",
