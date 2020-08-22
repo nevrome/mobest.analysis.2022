@@ -60,7 +60,10 @@ iwrs <- iwr %>%
     mean_change_combined = median(change_combined),
     mean_sd_norm = mean(mean_sd_norm)
   ) %>%
-  dplyr::ungroup()
+  dplyr::ungroup() %>%
+  dplyr::mutate(
+    movavg = slider::slide_dbl(mean_change_combined, mean, .before = 4, .after = 4)
+  )
 
 iwrs$region_id = factor(iwrs$region_id, levels = c(
   "Britain and Ireland",
@@ -82,5 +85,12 @@ iwrs %>%
       x = z, y = mean_change_combined, color = mean_sd_norm
     )
   ) +
+  geom_line(
+    aes(
+      x = z, y = movavg
+    ),
+    color = "blue"
+  ) +
   facet_grid(cols = dplyr::vars(region_id)) +
   scale_color_gradient(low = "green", high = "red")
+
