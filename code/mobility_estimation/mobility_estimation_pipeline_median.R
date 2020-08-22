@@ -20,9 +20,9 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    #ds400_dt700_g001 = list(d = c(400000, 400000, 700), g = 0.01, on_residuals = T, auto = F),
-    ds800_dt1400_g001 = list(d = c(500000, 500000, 200), g = 0.01, on_residuals = T, auto = F)
-    #ds1300_dt1000_g001 = list(d = c(1300000, 1300000, 1000), g = 0.01, on_residuals = T, auto = F)
+    ds250_dt125_g001 = list(d = c(250000, 250000, 125), g = 0.01, on_residuals = T, auto = F),
+    ds500_dt250_g001 = list(d = c(500000, 500000, 250), g = 0.01, on_residuals = T, auto = F),
+    ds1000_dt500_g001 = list(d = c(1000000, 1000000, 500), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     scs100_tl100 = mobest::create_prediction_grid(
@@ -46,28 +46,28 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 
 interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
-library(ggplot2)
-interpol_grid %>%
-  dplyr::filter(
-    #kernel_setting_id == "ds400_dt700_g001",
-    dependent_var_id == "C1",
-    z %% 500 == 0
-  ) %>%
-  ggplot() +
-  geom_raster(aes(x, y, fill = mean)) +
-  facet_wrap(~z) +
-  scale_fill_viridis_c()
-
-interpol_grid %>%
-  dplyr::filter(
-    #kernel_setting_id == "ds400_dt700_g001",
-    dependent_var_id == "C2",
-    z %% 200 == 0
-  ) %>%
-  ggplot() +
-  geom_raster(aes(x, y, fill = mean)) +
-  facet_wrap(~z) +
-  scale_fill_viridis_c()
+# library(ggplot2)
+# interpol_grid %>%
+#   dplyr::filter(
+#     #kernel_setting_id == "ds400_dt700_g001",
+#     dependent_var_id == "C1",
+#     z %% 500 == 0
+#   ) %>%
+#   ggplot() +
+#   geom_raster(aes(x, y, fill = mean)) +
+#   facet_wrap(~z) +
+#   scale_fill_viridis_c()
+# 
+# interpol_grid %>%
+#   dplyr::filter(
+#     #kernel_setting_id == "ds400_dt700_g001",
+#     dependent_var_id == "C2",
+#     z %% 200 == 0
+#   ) %>%
+#   ggplot() +
+#   geom_raster(aes(x, y, fill = mean)) +
+#   facet_wrap(~z) +
+#   scale_fill_viridis_c()
 
 
 #save(interpol_grid, file = "data/gpr/interpol_grid.RData")
