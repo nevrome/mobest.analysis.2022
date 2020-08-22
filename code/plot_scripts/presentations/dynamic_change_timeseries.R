@@ -14,20 +14,20 @@ interpol_grid_with_change <- interpol_grid %>%
     dependent_var_id
   ) %>%
   dplyr::mutate(
-    sd_to_high = sd > (0.20 * diff(range(mean)))
+    sd_norm = sd/diff(range(mean))
   ) %>% 
   dplyr::ungroup() %>%
   tidyr::pivot_wider(
     id_cols = c("x", "y", "z"),
     names_from = dependent_var_id,
-    values_from = c("change", "sd_to_high")
+    values_from = c("change", "sd_norm")
   ) %>% 
   # dplyr::filter(
   #   dplyr::across(tidyselect::starts_with("change_"), ~!is.na(.x))
   # ) %>%
   dplyr::mutate(
     change_combined = sqrt(change_C1^2 + change_C2^2),
-    sd_to_high = sd_to_high_C1 | sd_to_high_C2
+    mean_sd_norm = (sd_norm_C1 + sd_norm_C2)/2
   )
 
 interpol_grid_with_change %>%
@@ -36,11 +36,11 @@ interpol_grid_with_change %>%
   ) %>%
   ggplot() +
   geom_raster(aes(x, y, fill = change_combined)) +
-  geom_point(
-    data = . %>% dplyr::filter(sd_to_high),
-    mapping = aes(x, y),
-    shape = 4, size = 0.5, color = "red"
-  ) +
+  # geom_point(
+  #   data = . %>% dplyr::filter(sd_to_high),
+  #   mapping = aes(x, y),
+  #   shape = 4, size = 0.5, color = "red"
+  # ) +
   facet_wrap(~z) +
   scale_fill_viridis_c()
 
@@ -58,7 +58,7 @@ iwrs <- iwr %>%
   ) %>%
   dplyr::summarise(
     mean_change_combined = median(change_combined),
-    proportion_sd_to_high = sum(sd_to_high)/dplyr::n()
+    mean_sd_norm = mean(mean_sd_norm)
   ) %>%
   dplyr::ungroup()
 
@@ -79,7 +79,8 @@ iwrs %>%
   ggplot() +
   geom_line(
     aes(
-      x = z, y = mean_change_combined, alpha = 1/proportion_sd_to_high
+      x = z, y = mean_change_combined, color = mean_sd_norm
     )
   ) +
-  facet_grid(cols = dplyr::vars(region_id))
+  facet_grid(cols = dplyr::vars(region_id)) +
+  scale_color_gradient(low = "green", high = "red")
