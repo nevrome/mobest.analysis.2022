@@ -10,7 +10,7 @@
 
 date 
 
-singularity exec --bind=/projects1 ~/singularity/singularity_images/nevrome_coest/nevrome_coest.sif Rscript code/mobility_estimation/mobility_estimation_pipeline_age_resampling.R ${SLURM_ARRAY_TASK_ID}
+singularity exec --bind=/projects1 ~/singularity/singularity_images/nevrome_coest/nevrome_coest.sif Rscript code/mobility_estimation/05_mobility_estimation_pipeline_age_resampling.R ${SLURM_ARRAY_TASK_ID}
 
 date
  
