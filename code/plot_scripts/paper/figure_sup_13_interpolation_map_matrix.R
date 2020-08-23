@@ -90,7 +90,10 @@ p_C1 <- interpol_grid %>%
   #   values = age_group_id_shapes,
   #   guide = FALSE
   # ) +
-  scale_fill_viridis_c() +
+  scale_fill_viridis_c(
+    limits = c(min(janno_final$C1), max(janno_final$C1)), 
+    oob = scales::squish
+  ) +
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
@@ -139,7 +142,11 @@ p_C2 <- interpol_grid %>%
   #   values = age_group_id_shapes,
   #   guide = FALSE
   # ) +
-  scale_fill_viridis_c(option = "magma") +
+  scale_fill_viridis_c(
+    option = "magma", 
+    limits = c(min(janno_final$C2), max(janno_final$C2)), 
+    oob = scales::squish
+  ) +
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
