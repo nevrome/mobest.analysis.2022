@@ -41,7 +41,7 @@ ggsave(
   device = "png",
   scale = 0.5,
   dpi = 300,
-  width = 1000, height = 600, units = "mm",
+  width = 1000, height = 1000, units = "mm",
   limitsize = F
 )
 
