@@ -20,9 +20,9 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds250_dt125_g001 = list(d = c(250000, 250000, 125), g = 0.01, on_residuals = T, auto = F),
-    ds500_dt250_g001 = list(d = c(500000, 500000, 250), g = 0.01, on_residuals = T, auto = F),
-    ds1000_dt500_g001 = list(d = c(1000000, 1000000, 500), g = 0.01, on_residuals = T, auto = F)
+    ds400_dt200_g001 = list(d = c(400000, 400000, 200), g = 0.01, on_residuals = T, auto = F),
+    ds600_dt300_g001 = list(d = c(600000, 600000, 300), g = 0.01, on_residuals = T, auto = F),
+    ds800_dt400_g001 = list(d = c(800000, 800000, 400), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     scs100_tl100 = mobest::create_prediction_grid(
@@ -71,11 +71,11 @@ interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
 
 #save(interpol_grid, file = "data/gpr/interpol_grid.RData")
-save(interpol_grid, file = "data/gpr/interpol_grid_median.RData")
+#save(interpol_grid, file = "data/gpr/interpol_grid_median.RData")
 
 #### spatial origin ####
 
-interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 4)
+interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 1)
 
 #### mobility proxy ####
 
@@ -97,6 +97,11 @@ mobility_proxy$region_id = factor(mobility_proxy$region_id, levels = c(
 ))
 
 mobility_proxy %>%
+  dplyr::group_by(kernel_setting_id, region_id) %>%
+  dplyr::arrange(z, .by_group = T) %>%
+  dplyr::mutate(
+    movavg = slider::slide_dbl(mean_km_per_decade, mean, .before = 4, .after = 4)
+  ) %>%
   ggplot() +
   geom_line(
     aes(
@@ -105,6 +110,13 @@ mobility_proxy %>%
       color = angle_deg
     ),
     alpha = 0.5
+  ) +
+  geom_line(
+    aes(
+      x = z, y = movavg, 
+      group = interaction(independent_table_id, kernel_setting_id), 
+    ),
+    color = "blue"
   ) +
   facet_grid(cols = dplyr::vars(region_id), rows = dplyr::vars(kernel_setting_id)) +
   theme_bw() +
@@ -119,4 +131,5 @@ mobility_proxy %>%
     colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
     guide = F
   ) +
-  scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000))
+  scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000)) +
+  coord_cartesian(ylim = c(0, 250))
