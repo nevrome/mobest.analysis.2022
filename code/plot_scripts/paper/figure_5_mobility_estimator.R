@@ -2,7 +2,7 @@ library(magrittr)
 library(ggplot2)
 
 mobility <- lapply(
-  list.files("data/mobility_estimation", full.names = T),
+  list.files("data/mobility_estimation/age_resampling", full.names = T),
   function(x) {
     load(x)
     mobility_proxy
@@ -12,17 +12,11 @@ mobility <- lapply(
   dplyr::mutate(
     kernel_setting_id = dplyr::recode(
       kernel_setting_id, 
-      "ds600_dt2600_g001" = "600km / 2600y", 
-      "ds800_dt1400_g001" = "800km / 1400y",
-      "ds1300_dt1000_g001" = "1300km / 1000y"
+      "ds400_dt200_g001" = "400km / 200y", 
+      "ds600_dt300_g001" = "600km / 300y",
+      "ds800_dt400_g001" = "800km / 400y"
     )
   )
-
-mobility$kernel_setting_id = factor(mobility$kernel_setting_id, levels = c(
-  "600km / 2600y",
-  "800km / 1400y",
-  "1300km / 1000y"
-))
 
 mobility$region_id = factor(mobility$region_id, levels = c(
   "Britain and Ireland",
@@ -37,6 +31,19 @@ mobility$region_id = factor(mobility$region_id, levels = c(
   "Near East"
 ))
 
+# moving average
+mean_mobility <- mobility %>%
+  dplyr::group_by(kernel_setting_id, region_id, z) %>%
+  dplyr::summarise(
+    mean_mean_km_per_decade = mean(mean_km_per_decade)
+  ) %>%
+  dplyr::group_by(kernel_setting_id, region_id) %>%
+  dplyr::arrange(z, .by_group = T) %>%
+  dplyr::mutate(
+    movavg = slider::slide_dbl(mean_mean_km_per_decade, mean, .before = 4, .after = 4)
+  ) %>% 
+  dplyr::ungroup()
+
 #### mobility estimator curves ####
 
 p_estimator <- mobility %>%
@@ -48,6 +55,14 @@ p_estimator <- mobility %>%
       color = angle_deg
     ),
     alpha = 0.5
+  ) +
+  geom_line(
+    data = mean_mobility, 
+    aes(
+      x = z, y = movavg, 
+      group = kernel_setting_id, 
+    ),
+    color = "blue"
   ) +
   facet_grid(cols = dplyr::vars(region_id), rows = dplyr::vars(kernel_setting_id)) +
   theme_bw() +
@@ -62,7 +77,8 @@ p_estimator <- mobility %>%
     colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
     guide = F
   ) +
-  scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000))
+  scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000)) +
+  coord_cartesian(ylim = c(0, 200))
 
 #### map series ####
 
