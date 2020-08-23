@@ -5,7 +5,7 @@ library(magrittr)
 #### read parameters ####
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
-age_resampling_run <- 1
+age_resampling_run <- 2
 age_resampling_run <- as.numeric(args[1]) + 1
 
 #### data ####
@@ -28,9 +28,9 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds600_dt2600_g001 = list(d = c(600000, 600000, 2600), g = 0.01, on_residuals = T, auto = F),
-    ds800_dt1400_g001 = list(d = c(800000, 800000, 1400), g = 0.01, on_residuals = T, auto = F),
-    ds1300_dt1000_g001 = list(d = c(1300000, 1300000, 1000), g = 0.01, on_residuals = T, auto = F)
+    ds400_dt200_g001 = list(d = c(400000, 400000, 200), g = 0.01, on_residuals = T, auto = F),
+    ds600_dt300_g001 = list(d = c(600000, 600000, 300), g = 0.01, on_residuals = T, auto = F),
+    ds800_dt400_g001 = list(d = c(800000, 800000, 400), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     scs100_tl100 = mobest::create_prediction_grid(
@@ -49,17 +49,14 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 
 interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
-#save(interpol_grid, file = "data/gpr/interpol_grid.RData")
-save(interpol_grid, file = paste0("data/gpr/interpol_grid_", age_resampling_run, ".RData"))
-
 #### spatial origin ####
 
-interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 4)
+interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 1)
 
 #### mobility proxy ####
 
 mobility_proxy <- mobest::estimate_mobility(interpol_grid_origin, mobility_regions)
 
-save(mobility_proxy, file = paste0("data/mobility_estimation/mobility_proxy_", age_resampling_run, ".RData"))
+save(mobility_proxy, file = paste0("data/mobility_estimation/age_resampling/mobility_proxy_", age_resampling_run, ".RData"))
 
 # scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/mobility_estimation/* .
