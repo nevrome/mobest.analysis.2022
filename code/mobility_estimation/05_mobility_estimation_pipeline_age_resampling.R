@@ -5,7 +5,7 @@ library(magrittr)
 #### read parameters ####
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
-age_resampling_run <- 2
+age_resampling_run <- 4
 age_resampling_run <- as.numeric(args[1]) + 1
 
 #### data ####
@@ -36,7 +36,7 @@ model_grid <- mobest::create_model_grid(
     scs100_tl100 = mobest::create_prediction_grid(
       area, 
       spatial_cell_size = 100000, 
-      time_layers = seq(-7500, 1500, 100)
+      time_layers = seq(-7500, 1500, 50)
     )
   )
 )
@@ -51,7 +51,7 @@ interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
 #### spatial origin ####
 
-interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 1)
+interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 4)
 
 #### mobility proxy ####
 

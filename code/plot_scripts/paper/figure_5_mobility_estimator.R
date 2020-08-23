@@ -40,7 +40,7 @@ mean_mobility <- mobility %>%
   dplyr::group_by(kernel_setting_id, region_id) %>%
   dplyr::arrange(z, .by_group = T) %>%
   dplyr::mutate(
-    movavg = slider::slide_dbl(mean_mean_km_per_decade, mean, .before = 4, .after = 4)
+    movavg = slider::slide_dbl(mean_mean_km_per_decade, mean, .before = 8, .after = 8)
   ) %>% 
   dplyr::ungroup()
 
@@ -78,7 +78,7 @@ p_estimator <- mobility %>%
     guide = F
   ) +
   scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000)) +
-  coord_cartesian(ylim = c(0, 200))
+  coord_cartesian(ylim = c(0, 100))
 
 #### map series ####
 

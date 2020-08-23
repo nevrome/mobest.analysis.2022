@@ -67,7 +67,7 @@ p_C1 <- interpol_grid %>%
   dplyr::filter(
     independent_table_id == "age_median",
     dependent_var_id %in% "C1",
-    kernel_setting_id == "ds400_dt200_g001",
+    kernel_setting_id == "ds800_dt400_g001",
     pred_grid_id == "scs100_tl100",
     z %in% seq(-7500, 1500, 500)
   ) %>%
@@ -119,7 +119,7 @@ p_C2 <- interpol_grid %>%
   dplyr::filter(
     independent_table_id == "age_median",
     dependent_var_id %in% "C2",
-    kernel_setting_id == "ds400_dt200_g001",
+    kernel_setting_id == "ds800_dt400_g001",
     pred_grid_id == "scs100_tl100",
     z %in% seq(-7500, 1500, 500)
   ) %>%
@@ -171,7 +171,7 @@ p_C2 <- interpol_grid %>%
 
 p_Change <- interpol_grid_with_change %>%
   dplyr::filter(
-    kernel_setting_id == "ds400_dt200_g001",
+    kernel_setting_id == "ds800_dt400_g001",
     z %in% seq(-7500, 1500, 500)
   ) %>%
   ggplot() +
@@ -219,7 +219,7 @@ p_Change <- interpol_grid_with_change %>%
 p <- cowplot::plot_grid(p_Meas, p_C1, p_C2, p_Change, ncol = 4)
 
 ggsave(
-  "plots/figure_sup_13_interpolation_map_matrix.jpeg",
+  "plots/figure_sup_13_interpolation_map_matrix3.jpeg",
   plot = p,
   device = "jpeg",
   scale = 0.9,
