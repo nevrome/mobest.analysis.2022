@@ -33,6 +33,8 @@ interpol_grid_with_change <- interpol_grid %>%
     mean_sd_norm = (sd_norm_C1 + sd_norm_C2)/2
   )
 
+save(interpol_grid_with_change, file = "data/gpr/interpol_grid_median_with_change.RData")
+
 load("data/spatial/epsg102013.RData")
 load("data/spatial/mobility_regions.RData")
 
