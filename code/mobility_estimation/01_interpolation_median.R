@@ -19,12 +19,14 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds200_dt400_g001 = list(d = c(200000, 200000, 400), g = 0.01, on_residuals = T, auto = F),
-    ds400_dt800_g001 = list(d = c(400000, 400000, 800), g = 0.01, on_residuals = T, auto = F),
     ds800_dt1600_g001 = list(d = c(800000, 800000, 1600), g = 0.01, on_residuals = T, auto = F),
+    ds400_dt800_g001 = list(d = c(400000, 400000, 800), g = 0.01, on_residuals = T, auto = F),
+    ds200_dt400_g001 = list(d = c(200000, 200000, 400), g = 0.01, on_residuals = T, auto = F),
     ds200_dt100_g001 = list(d = c(200000, 200000, 100), g = 0.01, on_residuals = T, auto = F),
     ds400_dt200_g001 = list(d = c(400000, 400000, 200), g = 0.01, on_residuals = T, auto = F),
-    ds800_dt400_g001 = list(d = c(800000, 800000, 400), g = 0.01, on_residuals = T, auto = F)
+    ds600_dt300_g001 = list(d = c(600000, 600000, 300), g = 0.01, on_residuals = T, auto = F),
+    ds800_dt400_g001 = list(d = c(800000, 800000, 400), g = 0.01, on_residuals = T, auto = F),
+    ds1000_dt500_g001 = list(d = c(1000000, 1000000, 500), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     scs100_tl100 = mobest::create_prediction_grid(
@@ -42,29 +44,5 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 #### unnest prediction to get a point-wise prediction table ####
 
 interpol_grid <- mobest::unnest_model_grid(model_grid_result)
-
-# library(ggplot2)
-# interpol_grid %>%
-#   dplyr::filter(
-#     #kernel_setting_id == "ds400_dt700_g001",
-#     dependent_var_id == "C1",
-#     z %% 500 == 0
-#   ) %>%
-#   ggplot() +
-#   geom_raster(aes(x, y, fill = mean)) +
-#   facet_wrap(~z) +
-#   scale_fill_viridis_c()
-# 
-# interpol_grid %>%
-#   dplyr::filter(
-#     #kernel_setting_id == "ds400_dt700_g001",
-#     dependent_var_id == "C2",
-#     z %% 200 == 0
-#   ) %>%
-#   ggplot() +
-#   geom_raster(aes(x, y, fill = mean)) +
-#   facet_wrap(~z) +
-#   scale_fill_viridis_c()
-
 
 save(interpol_grid, file = "data/gpr/interpol_grid_median.RData")
