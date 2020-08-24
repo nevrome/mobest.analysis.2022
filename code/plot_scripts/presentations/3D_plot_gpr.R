@@ -1,11 +1,11 @@
 library(magrittr)
 
 load("data/poseidon_data/janno_final.RData")
-load("data/gpr/interpol_grid_scs200_tl200.RData")
+load("data/gpr/interpol_grid_median_scs200_tl200.RData")
 inter <- interpol_grid %>%
   dplyr::filter(
     dependent_var_id == "C1",
-    kernel_setting_id == "ds800_dt1400_g001",
+    kernel_setting_id == "ds600_dt300_g001",
   )
 
 threed <- janno_final %>%
