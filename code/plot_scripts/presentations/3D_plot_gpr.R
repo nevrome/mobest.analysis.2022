@@ -25,7 +25,7 @@ threedinter <- inter %>%
     y = y/1000,
     z = z,
     color = viridis::viridis(50)[as.numeric(cut(mean, breaks = 50))],
-    alpha = (1 - (sd - min(sd)) / (max(sd) - min(sd))) / 1
+    alpha = (1 - (sd - min(sd)) / (max(sd) - min(sd))) * 3
   )
 
 # plot
