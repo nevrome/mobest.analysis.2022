@@ -78,7 +78,7 @@ p_estimator <- mobility %>%
     guide = F
   ) +
   scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000)) +
-  coord_cartesian(ylim = c(0, 100))
+  coord_cartesian(ylim = c(0, max(mean_mobility$movavg, na.rm = T) + 20))
 
 #### map series ####
 
