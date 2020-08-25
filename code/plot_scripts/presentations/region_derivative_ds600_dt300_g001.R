@@ -10,12 +10,8 @@ ggplot() +
     data = iwrs_age_resampling_run,
     aes(
       x = z, y = mean_change_combined, 
-<<<<<<< HEAD
       color = gpr_mean_sd_norm,
       group = independent_table_id
-=======
-      color = gpr_mean_sd_norm
->>>>>>> c608289e65e9cc5d9a6b67d31c6ae48235828a45
     )
   ) +
   geom_line(
@@ -30,11 +26,7 @@ ggplot() +
     aes(
       x = z, ymin = movavg_mean - movavg_sd, ymax = movavg_mean + movavg_sd
     ),
-<<<<<<< HEAD
     fill = "blue", alpha = 0.4
-=======
-    fill = "blue", alpha = 0.1
->>>>>>> c608289e65e9cc5d9a6b67d31c6ae48235828a45
   ) +
   facet_wrap(dplyr::vars(region_id)) +
   theme_bw() +
