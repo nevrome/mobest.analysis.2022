@@ -5,7 +5,7 @@ library(magrittr)
 #### read parameters ####
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
-age_resampling_run <- 4
+#age_resampling_run <- 4
 age_resampling_run <- as.numeric(args[1]) + 1
 
 #### data ####
