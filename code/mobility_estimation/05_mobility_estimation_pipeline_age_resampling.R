@@ -1,4 +1,4 @@
-# sbatch code/mobility_estimation/slurm_mobility_estimation_pipeline_main_run.sh
+# sbatch code/mobility_estimation/slurm_05_mobility_estimation_pipeline_age_resampling.sh
 
 library(magrittr)
 
@@ -49,9 +49,21 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 
 interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
+#### remove points with too high SD ####
+
+interpol_grid <- interpol_grid %>% dplyr::filter(
+  ifelse(
+    dependent_var_id == "C1",
+    sd/diff(c(min(janno_final$C1), max(janno_final$C1))) < 0.5,
+    sd/diff(c(min(janno_final$C2), max(janno_final$C2))) < 0.5
+  )
+)
+
 #### spatial origin ####
 
 interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 4)
+
+
 
 #### mobility proxy ####
 
@@ -59,4 +71,4 @@ mobility_proxy <- mobest::estimate_mobility(interpol_grid_origin, mobility_regio
 
 save(mobility_proxy, file = paste0("data/mobility_estimation/age_resampling/mobility_proxy_", age_resampling_run, ".RData"))
 
-# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/mobility_estimation/* .
+# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/mobility_estimation/age_resampling/* .
