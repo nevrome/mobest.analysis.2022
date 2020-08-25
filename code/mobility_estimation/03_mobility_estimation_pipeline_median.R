@@ -77,6 +77,16 @@ interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
 interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 4)
 
+# library(ggplot2)
+# interpol_grid_origin %>%
+#   dplyr::filter(
+#     kernel_setting_id == "ds600_dt300_g001",
+#     z == -5500
+#   ) %>% ggplot() +
+#   geom_segment(
+#     aes(x, y, xend = x_origin, yend = y_origin)
+#   )
+
 #### mobility proxy ####
 
 mobility_proxy <- mobest::estimate_mobility(interpol_grid_origin, mobility_regions)
@@ -87,7 +97,7 @@ save(mobility_proxy, file = paste0("data/mobility_estimation/mobility_proxy_medi
 
 # mobility_proxy$region_id = factor(mobility_proxy$region_id, levels = c(
 #   "Britain and Ireland",
-#   "France", 
+#   "France",
 #   "Iberia",
 #   "Italy",
 #   "Central Europe",
@@ -107,16 +117,16 @@ save(mobility_proxy, file = paste0("data/mobility_estimation/mobility_proxy_medi
 #   ggplot() +
 #   geom_line(
 #     aes(
-#       x = z, y = mean_km_per_decade, 
-#       group = interaction(independent_table_id, kernel_setting_id), 
+#       x = z, y = mean_km_per_decade,
+#       group = interaction(independent_table_id, kernel_setting_id),
 #       color = angle_deg
 #     ),
 #     alpha = 0.5
 #   ) +
 #   geom_line(
 #     aes(
-#       x = z, y = movavg, 
-#       group = interaction(independent_table_id, kernel_setting_id), 
+#       x = z, y = movavg,
+#       group = interaction(independent_table_id, kernel_setting_id),
 #     ),
 #     color = "blue"
 #   ) +
@@ -130,8 +140,7 @@ save(mobility_proxy, file = paste0("data/mobility_estimation/mobility_proxy_medi
 #   xlab("time calBC/calAD [y]") +
 #   ylab("\"Speed\" [km/decade]") +
 #   scale_color_gradientn(
-#     colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
+#     colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
 #     guide = F
 #   ) +
-#   scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000)) +
-#   coord_cartesian(ylim = c(0, 250))
+#   scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000))
