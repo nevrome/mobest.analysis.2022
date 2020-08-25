@@ -51,13 +51,13 @@ interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
 #### remove points with too high SD ####
 
-interpol_grid <- interpol_grid %>% dplyr::filter(
-  ifelse(
-    dependent_var_id == "C1",
-    sd/diff(c(min(janno_final$C1), max(janno_final$C1))) < 0.5,
-    sd/diff(c(min(janno_final$C2), max(janno_final$C2))) < 0.5
-  )
-)
+# interpol_grid <- interpol_grid %>% dplyr::filter(
+#   ifelse(
+#     dependent_var_id == "C1",
+#     sd/diff(c(min(janno_final$C1), max(janno_final$C1))) < 0.5,
+#     sd/diff(c(min(janno_final$C2), max(janno_final$C2))) < 0.5
+#   )
+# )
 
 #### spatial origin ####
 
