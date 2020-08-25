@@ -17,7 +17,11 @@ interpol_grid_with_change <- interpol_grid %>%
     dependent_var_id
   ) %>%
   dplyr::mutate(
-    sd_norm = sd/diff(range(mean))
+    sd_norm = ifelse(
+      dependent_var_id == "C1",
+      sd/diff(c(min(janno_final$C1), max(janno_final$C1))),
+      sd/diff(c(min(janno_final$C2), max(janno_final$C2)))
+    )
   ) %>% 
   dplyr::ungroup() %>%
   tidyr::pivot_wider(
