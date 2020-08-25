@@ -35,12 +35,14 @@ mobility$region_id = factor(mobility$region_id, levels = c(
 mean_mobility <- mobility %>%
   dplyr::group_by(kernel_setting_id, region_id, z) %>%
   dplyr::summarise(
-    mean_mean_km_per_decade = mean(mean_km_per_decade)
+    mean_mean_km_per_decade = mean(mean_km_per_decade),
+    sd_mean_km_per_decade = sd(mean_km_per_decade)
   ) %>%
   dplyr::group_by(kernel_setting_id, region_id) %>%
   dplyr::arrange(z, .by_group = T) %>%
   dplyr::mutate(
-    movavg = slider::slide_dbl(mean_mean_km_per_decade, mean, .before = 8, .after = 8)
+    movavg_mean = slider::slide_dbl(mean_mean_km_per_decade, mean, .before = 8, .after = 8),
+    movavg_sd = slider::slide_dbl(sd_mean_km_per_decade, mean, .before = 8, .after = 8)
   ) %>% 
   dplyr::ungroup()
 
@@ -51,18 +53,25 @@ p_estimator <- mobility %>%
   geom_line(
     aes(
       x = z, y = mean_km_per_decade, 
-      group = interaction(independent_table_id, kernel_setting_id), 
+      group = independent_table_id, 
       color = angle_deg
     ),
-    alpha = 0.5
+    alpha = 0.3
   ) +
   geom_line(
-    data = mean_mobility, 
+    data = mean_mobility,
     aes(
-      x = z, y = movavg, 
-      group = kernel_setting_id, 
+      x = z, y = movavg_mean
     ),
-    color = "blue"
+    color = "black", size = 0.8
+  ) +
+  geom_ribbon(
+    data = mean_mobility,
+    aes(
+      x = z, ymin = movavg_mean - movavg_sd, ymax = movavg_mean + movavg_sd
+    ),
+    fill = "white", alpha = 0.3,
+    color = "black", size = 0.1
   ) +
   facet_grid(cols = dplyr::vars(region_id), rows = dplyr::vars(kernel_setting_id)) +
   theme_bw() +
@@ -78,7 +87,7 @@ p_estimator <- mobility %>%
     guide = F
   ) +
   scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000)) +
-  coord_cartesian(ylim = c(0, max(mean_mobility$movavg, na.rm = T) + 20))
+  coord_cartesian(ylim = c(0, max(mean_mobility$movavg_mean, na.rm = T) + 20))
 
 #### map series ####
 
@@ -95,9 +104,9 @@ mobility_maps <- mobility %>%
   dplyr::filter(z %in% c(-5500, -2800, 100)) %>%
   dplyr::mutate(
     z = dplyr::recode_factor(as.character(z), !!!list(
-      "-5500" = "-5500 ⬳ -5500 calBC", 
-      "-2800" = "-2900 ⬳ -2800 calBC", 
-      "100" = "0 ⬳ 100 calAD"
+      "-5500" = "-5700 ⬳ -5500 calBC", 
+      "-2800" = "-3000 ⬳ -2800 calBC", 
+      "100" = "-100 calBC ⬳ 100 calAD"
     ))
   ) %>%
   dplyr::group_by(region_id, z) %>%
