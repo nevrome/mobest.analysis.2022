@@ -20,19 +20,21 @@ threed <- janno_final %>%
 
 threedinter <- inter %>%
   dplyr::mutate(
-    order = findInterval(mean, sort(mean))
+    order = findInterval(mean, sort(mean)),
+    mean_limited = ifelse(
+      mean < min(janno_final$C1), min(janno_final$C1), 
+      ifelse(
+        mean > max(janno_final$C1), max(janno_final$C1),
+        mean     
+      )
+    )
   ) %>%
   dplyr::transmute(
     x = x/1000, 
     y = y/1000,
     z = z,
     color = viridis::viridis(50)[
-      as.numeric(
-        cut(
-          inter$mean, 
-          breaks = c(-Inf, (diff(range(janno_final$C1))/50)*(2:49), Inf)
-        )
-      )
+      as.numeric(cut(mean_limited, breaks = 50))
     ],
     alpha = (1 - (sd - min(sd)) / (max(sd) - min(sd))) * 3
   )
