@@ -13,7 +13,9 @@ threed <- janno_final %>%
     x = x/1000, 
     y = y/1000,
     z = Date_BC_AD_Median_Derived,
-    color = viridis::viridis(50)[as.numeric(cut(C1, breaks = 50))]
+    color = viridis::viridis(50)[
+      as.numeric(cut(janno_final$C1, breaks = 50))
+    ]
   )
 
 threedinter <- inter %>%
@@ -24,7 +26,14 @@ threedinter <- inter %>%
     x = x/1000, 
     y = y/1000,
     z = z,
-    color = viridis::viridis(50)[as.numeric(cut(mean, breaks = 50))],
+    color = viridis::viridis(50)[
+      as.numeric(
+        cut(
+          inter$mean, 
+          breaks = c(-Inf, (diff(range(janno_final$C1))/50)*(2:49), Inf)
+        )
+      )
+    ],
     alpha = (1 - (sd - min(sd)) / (max(sd) - min(sd))) * 3
   )
 
