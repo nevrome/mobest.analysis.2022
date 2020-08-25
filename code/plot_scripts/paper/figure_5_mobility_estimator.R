@@ -46,6 +46,19 @@ mean_mobility <- mobility %>%
   ) %>% 
   dplyr::ungroup()
 
+# load("data/gpr/temporal_change_age_resampling.RData")
+# get sd value back into the game
+# mobility <- mobility %>% 
+#   dplyr::left_join(
+#     iwrs_age_total %>% dplyr::select(region_id, z, mean_gpr_mean_sd_norm), 
+#     by = c("region_id", "z")
+#   ) 
+# mean_mobility <- mean_mobility %>% 
+#   dplyr::left_join(
+#     iwrs_age_total %>% dplyr::select(region_id, z, mean_gpr_mean_sd_norm), 
+#     by = c("region_id", "z")
+#   )
+
 #### mobility estimator curves ####
 
 p_estimator <- mobility %>%
@@ -54,40 +67,45 @@ p_estimator <- mobility %>%
     aes(
       x = z, y = mean_km_per_decade, 
       group = independent_table_id, 
-      color = angle_deg
+      color = angle_deg#, 
+      #alpha = 1/mean_gpr_mean_sd_norm
     ),
-    alpha = 0.3
+    size = 0.1
   ) +
   geom_line(
-    data = mean_mobility,
+    data = mean_mobility, #%>% dplyr::mutate(
+    #  movavg_mean = ifelse(mean_gpr_mean_sd_norm < 0.4, movavg_mean, NA)
+    #),
     aes(
       x = z, y = movavg_mean
     ),
-    color = "black", size = 0.8
+    color = "black", size = 0.7
   ) +
   geom_ribbon(
-    data = mean_mobility,
+    data = mean_mobility,# %>% dplyr::mutate(
+    #  movavg_mean = ifelse(mean_gpr_mean_sd_norm < 0.4, movavg_mean, NA)
+    #),
     aes(
       x = z, ymin = movavg_mean - movavg_sd, ymax = movavg_mean + movavg_sd
     ),
-    fill = "white", alpha = 0.3,
+    fill = "grey", alpha = 0.4,
     color = "black", size = 0.1
   ) +
   facet_grid(cols = dplyr::vars(region_id), rows = dplyr::vars(kernel_setting_id)) +
   theme_bw() +
   theme(
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 40, hjust = 1),
-    strip.background = element_rect(fill = NA)
+    axis.text.x = element_text(angle = 40, hjust = 1)#,
+    #strip.background = element_rect(fill = NA)
   ) +
-  xlab("time calBC/calAD [y]") +
+  xlab("time in years calBC/calAD") +
   ylab("\"Speed\" [km/decade]") +
   scale_color_gradientn(
     colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
     guide = F
   ) +
   scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000)) +
-  coord_cartesian(ylim = c(0, max(mean_mobility$movavg_mean, na.rm = T) + 20))
+  coord_cartesian(ylim = c(min(mean_mobility$movavg_mean, na.rm = T), max(mean_mobility$movavg_mean, na.rm = T)))
 
 #### map series ####
 
@@ -152,6 +170,7 @@ p_map <- ggplot() +
   ) +
   scale_size_continuous(
     range = c(3, 12), name = "mean \"Speed\" [km/decade]",
+    breaks = round(diff(range(mobility_maps_center$mean_mean_km_per_decade))/5)*(1:5),
     guide = guide_legend(nrow = 1, label.position = "bottom")
   ) +
   scale_color_gradientn(
@@ -164,8 +183,8 @@ p_map <- ggplot() +
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     axis.title = element_blank(),
-    panel.background = element_rect(fill = "#BFD5E3"),
-    strip.background = element_rect(fill = NA)
+    panel.background = element_rect(fill = "#BFD5E3")#,
+    #strip.background = element_rect(fill = NA)
   ) +
   coord_sf(
     xlim = xlimit, ylim = ylimit,

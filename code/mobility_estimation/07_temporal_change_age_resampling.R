@@ -90,6 +90,7 @@ iwrs_age_total <- iwrs_age_resampling_run %>%
   ) %>%
   dplyr::summarise(
     mean_mean_change_combined = mean(mean_change_combined),
+    mean_gpr_mean_sd_norm = mean(gpr_mean_sd_norm),
     sd_mean_change_combined = sd(mean_change_combined) 
   ) %>%
   dplyr::ungroup() %>%
