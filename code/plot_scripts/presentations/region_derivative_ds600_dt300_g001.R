@@ -32,8 +32,10 @@ p_estimator <- ggplot() +
   theme_bw() +
   theme(
     legend.position = "bottom",
+    axis.text = element_text(size = 10),
     axis.text.x = element_text(angle = 40, hjust = 1),
-    strip.background = element_rect(fill = NA)
+    strip.text = element_text(size = 12), 
+    legend.text = element_text(size = 10)
   ) +
   xlab("time in years calBC/calAD") +
   ylab("Change in MDS space [Euclidean MDS distance/50 years]") +
@@ -41,19 +43,30 @@ p_estimator <- ggplot() +
     colours = c("red", "grey", "grey")
   ) +
   guides(
-    color = guide_colorbar(title = "Mean GPR SD", barwidth = 10)
+    color = guide_colorbar(title = "Mean GPR SD", barwidth = 20)
   ) +
   scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000)) +
   scale_alpha_continuous(guide = FALSE) +
   coord_cartesian(ylim = c(0, 0.02))
 
+shift_legend3 <- function(p) {
+  pnls <- cowplot::plot_to_gtable(p) %>% gtable::gtable_filter("panel") %>%
+    with(setNames(grobs, layout$name)) %>% purrr::keep(~identical(.x,zeroGrob()))
+  
+  if( length(pnls) == 0 ) stop( "No empty facets in the plot" )
+  
+  lemon::reposition_legend( p, "center", panel=names(pnls) )
+}
+
+p_estimator_fixed_legend_position <- shift_legend3(p_estimator)
+
 ggsave(
   paste0("plots/region_derivative_ds600_dt300_g001.png"),
-  plot = p_estimator,
+  plot = p_estimator_fixed_legend_position,
   device = "png",
   scale = 0.3,
   dpi = 300,
-  width = 1000, height = 500, units = "mm",
+  width = 1000, height = 450, units = "mm",
   limitsize = F
 )
 
