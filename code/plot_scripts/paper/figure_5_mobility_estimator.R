@@ -25,14 +25,14 @@ mobility <- lapply(
 
 mobility$region_id = factor(mobility$region_id, levels = c(
   "Britain and Ireland",
-  "France", 
-  "Iberia",
-  "Italy",
   "Central Europe",
   "Eastern Europe",
+  "Caucasus",
+  "France", 
+  "Italy",
   "Southeastern Europe",
   "Turkey",
-  "Caucasus",
+  "Iberia",
   "Near East"
 ))
 
@@ -129,9 +129,10 @@ xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
 
 mobility_maps <- mobility %>% 
-  dplyr::filter(z %in% c(-5500, -2800, 100)) %>%
+  dplyr::filter(z %in% c(-6800, -5500, -2800, 100)) %>%
   dplyr::mutate(
     z = dplyr::recode_factor(as.character(z), !!!list(
+      "-6800" = "-7000 ⬳ -6800 calBC", 
       "-5500" = "-5700 ⬳ -5500 calBC", 
       "-2800" = "-3000 ⬳ -2800 calBC", 
       "100" = "-100 calBC ⬳ 100 calAD"
@@ -236,9 +237,14 @@ p_legend <- tibble::tibble(
 
 #### compile plots ####
 
-p_bottom_right <- cowplot::plot_grid(p_legend, p_arrows_legend, nrow = 2, rel_heights = c(1, 0.7))
-p_bottom <- cowplot::plot_grid(p_map, p_bottom_right, nrow = 1, rel_widths = c(1, 0.3))
-p <- cowplot::plot_grid(p_estimator, p_bottom, nrow = 2, rel_heights = c(1, 0.5), labels = c("A", "B"))
+p_double_legend <- cowplot::plot_grid(p_legend, p_arrows_legend, ncol = 2, rel_widths = c(0.6, 1))
+
+plot_top <- cowplot::ggdraw(p_estimator) + cowplot::draw_plot(p_double_legend, 0.6, 0, .35, .35)
+
+p <- cowplot::plot_grid(
+  plot_top, p_map, nrow = 2, rel_heights = c(1, 0.44), labels = c("A", "B"),
+  label_y = c(1, 1.1)
+)
 
 ggsave(
   paste0("plots/figure_5_mobility_estimator.png"),
@@ -246,7 +252,7 @@ ggsave(
   device = "png",
   scale = 0.5,
   dpi = 300,
-  width = 700, height = 350, units = "mm",
+  width = 700, height = 400, units = "mm",
   limitsize = F
 )
 
