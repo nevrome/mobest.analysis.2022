@@ -1,6 +1,8 @@
 library(magrittr)
 library(ggplot2)
 
+load("data/poseidon_data/janno_final.RData")
+
 mobility <- lapply(
   list.files("data/mobility_estimation/age_resampling", full.names = T),
   function(x) {
@@ -16,6 +18,9 @@ mobility <- lapply(
       "ds600_dt300_g001" = "600km / 300y",
       "ds800_dt400_g001" = "800km / 400y"
     )
+  ) %>%
+  dplyr::filter(
+    kernel_setting_id == "600km / 300y"
   )
 
 mobility$region_id = factor(mobility$region_id, levels = c(
@@ -91,7 +96,12 @@ p_estimator <- mobility %>%
     fill = "grey", alpha = 0.4,
     color = "black", size = 0.1
   ) +
-  facet_grid(cols = dplyr::vars(region_id), rows = dplyr::vars(kernel_setting_id)) +
+  geom_point(
+    data = janno_final,
+    aes(x = Date_BC_AD_Median_Derived, y = 0),
+    shape = "|"
+  ) +
+  facet_wrap(dplyr::vars(region_id)) +
   theme_bw() +
   theme(
     legend.position = "bottom",
@@ -105,7 +115,7 @@ p_estimator <- mobility %>%
     guide = F
   ) +
   scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000)) +
-  coord_cartesian(ylim = c(min(mean_mobility$movavg_mean, na.rm = T), max(mean_mobility$movavg_mean, na.rm = T)))
+  coord_cartesian(ylim = c(0, max(mean_mobility$movavg_mean, na.rm = T)))
 
 #### map series ####
 
