@@ -115,7 +115,20 @@ p_estimator <- mobility %>%
     guide = F
   ) +
   scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000)) +
-  coord_cartesian(ylim = c(0, max(mean_mobility$movavg_mean, na.rm = T)))
+  coord_cartesian(ylim = c(0, max(mean_mobility$movavg_mean, na.rm = T))) +
+  xlab("")
+
+# move facets around
+g <- ggplotGrob(p_estimator)
+g$grobs[[13]] <- g$grobs[[7]]
+g$grobs[[7]] <- zeroGrob()
+g$grobs[[29]] <- g$grobs[[27]]
+g$grobs[[27]] <- zeroGrob()
+g$grobs[[65]] <- g$grobs[[63]]
+g$grobs[[63]] <- zeroGrob()
+g$grobs[[31]] <- g$grobs[[32]]
+g$grobs[[33]] <- zeroGrob()
+p_estimator2 <- ggplotify::as.ggplot(g) # grid::grid.draw(g)
 
 #### map series ####
 
@@ -239,7 +252,7 @@ p_legend <- tibble::tibble(
 
 p_double_legend <- cowplot::plot_grid(p_legend, p_arrows_legend, ncol = 2, rel_widths = c(0.6, 1))
 
-plot_top <- cowplot::ggdraw(p_estimator) + cowplot::draw_plot(p_double_legend, 0.6, 0, .35, .35)
+plot_top <- cowplot::ggdraw(p_estimator2) + cowplot::draw_plot(p_double_legend, 0.35, 0, .35, .35)
 
 p <- cowplot::plot_grid(
   plot_top, p_map, nrow = 2, rel_heights = c(1, 0.44), labels = c("A", "B"),
