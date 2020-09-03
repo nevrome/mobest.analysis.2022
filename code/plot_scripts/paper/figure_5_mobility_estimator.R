@@ -138,6 +138,16 @@ p_estimator <- mobility %>%
     ),
     alpha = 0.3, fill = "red"
   ) +
+  geom_vline(
+    data = data.frame(x = c(-6800, -5500, -2800, 100)),
+    aes(xintercept = x),
+    linetype = "dotted"
+  ) +
+  # geom_point(
+  #   data = data.frame(x = c(-6800, -5500, -2800, 100)),
+  #   aes(x = x, y = 0),
+  #   shape = "↑", size = 3
+  # ) +
   facet_wrap(dplyr::vars(region_id)) +
   theme_bw() +
   theme(
