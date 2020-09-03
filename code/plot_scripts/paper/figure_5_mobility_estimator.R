@@ -151,7 +151,7 @@ p_estimator <- mobility %>%
     colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
     guide = F
   ) +
-  scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000)) +
+  scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(ylim = c(0, max(mean_mobility$movavg_mean, na.rm = T))) +
   xlab("")
 
