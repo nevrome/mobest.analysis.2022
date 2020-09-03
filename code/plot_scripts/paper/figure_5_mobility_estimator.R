@@ -64,6 +64,23 @@ mean_mobility <- mobility %>%
 #     by = c("region_id", "z")
 #   )
 
+# no-data windows
+janno_final %>%
+  dplyr::group_by(region_id) %>%
+  dplyr::summarise(
+    I = setdiff(
+      -7500:1500,
+      lapply(Date_BC_AD_Median_Derived, function(x) {
+        seq(x-200, x+200, 1)
+      }) %>% Reduce(union, .)
+    )
+  ) %>%
+  dplyr::ungroup()
+  
+
+
+Date_BC_AD_Median_Derived
+
 #### mobility estimator curves ####
 
 p_estimator <- mobility %>%
