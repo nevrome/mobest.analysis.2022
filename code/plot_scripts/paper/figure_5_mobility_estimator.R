@@ -65,22 +65,34 @@ mean_mobility <- mobility %>%
 #   )
 
 # no-data windows
-janno_final %>%
+split_vector_at_na <- function( x ){
+  idx <- 1 + cumsum( is.na( x ) )
+  not.na <- ! is.na( x )
+  split( x[not.na], idx[not.na] )
+}
+
+no_data_windows <- janno_final %>%
   dplyr::group_by(region_id) %>%
   dplyr::summarise(
-    I = setdiff(
-      -7500:1500,
-      lapply(Date_BC_AD_Median_Derived, function(x) {
-        seq(x-200, x+200, 1)
-      }) %>% Reduce(union, .)
-    )
+    date_not_covered = 
+      {
+        not_covered <- setdiff(
+          -7500:1500,
+          lapply(Date_BC_AD_Median_Derived, function(x) {
+            seq(x-300, x+300, 1)
+          }) %>% Reduce(union, .)
+        )
+        schu <- rep(NA, length(-7500:1500))
+        schu[-7500:1500 %in% not_covered] <- not_covered
+        schu
+      }
+  ) %>%
+  dplyr::summarise(
+    min_date_not_covered = sapply(split_vector_at_na(date_not_covered), min),
+    max_date_not_covered = sapply(split_vector_at_na(date_not_covered), max)
   ) %>%
   dplyr::ungroup()
   
-
-
-Date_BC_AD_Median_Derived
-
 #### mobility estimator curves ####
 
 p_estimator <- mobility %>%
@@ -117,6 +129,14 @@ p_estimator <- mobility %>%
     data = janno_final,
     aes(x = Date_BC_AD_Median_Derived, y = 0),
     shape = "|"
+  ) +
+  geom_rect(
+    data = no_data_windows,
+    aes(
+      xmin = min_date_not_covered, xmax = max_date_not_covered, 
+      ymin = -100, ymax = 200
+    ),
+    alpha = 0.3, fill = "red"
   ) +
   facet_wrap(dplyr::vars(region_id)) +
   theme_bw() +
