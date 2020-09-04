@@ -1,7 +1,7 @@
 library(magrittr)
 
 load("data/spatial/epsg102013.RData")
-load("data/spatial/area.RData")
+load("data/spatial/research_area.RData")
 
 janno_raw <- poseidon2::read_janno("data/poseidon_data/poseidon_merged/poseidon2_merged.janno")
 
@@ -31,7 +31,7 @@ sf::write_sf(janno_spatial, dsn = "data/janno_spatial.gpkg", driver = "GPKG")
 
 janno_spatial_filtered <- janno_spatial %>%
   sf::st_intersection(
-    area
+    research_area
   )
 
 janno_spatial_filtered_non_sf <- janno_spatial_filtered %>% 
