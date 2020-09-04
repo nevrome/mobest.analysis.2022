@@ -1,6 +1,8 @@
 region_id_colors <- c(
   "Britain and Ireland" = "#b8434e", 
-  "Central Europe" = "#b86738", 
+  "Southern Scandinavia" = "#404040",
+  "Baltics" = "#f1B6da",
+  "Central Europe" = "#b86738",
   "Eastern Europe" = "#bfa33a", 
   "Caucasus" = "#729d46", 
   "France" = "#4bc490", 

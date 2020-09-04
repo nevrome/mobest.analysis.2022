@@ -79,6 +79,8 @@ mobility_regions <- sf::st_read(
 mobility_regions$region_id <- factor(
   mobility_regions$region_id, levels = c(
     "Britain and Ireland",
+    "Southern Scandinavia",
+    "Baltics",
     "Central Europe",
     "Eastern Europe",
     "Caucasus",
