@@ -71,7 +71,7 @@ split_vector_at_na <- function( x ){
   split( x[not.na], idx[not.na] )
 }
 
-no_data_windows <- janno_final %>%
+no_data_windows_yearwise <- janno_final %>%
   dplyr::group_by(region_id) %>%
   dplyr::summarise(
     date_not_covered = 
@@ -86,7 +86,11 @@ no_data_windows <- janno_final %>%
         schu[-7500:1500 %in% not_covered] <- not_covered
         schu
       }
-  ) %>%
+  )  %>%
+  dplyr::ungroup()
+
+no_data_windows <- no_data_windows_yearwise %>%
+  dplyr::group_by(region_id) %>%
   dplyr::summarise(
     min_date_not_covered = sapply(split_vector_at_na(date_not_covered), min),
     max_date_not_covered = sapply(split_vector_at_na(date_not_covered), max)
@@ -190,14 +194,6 @@ ylimit <- c(ex[3], ex[4])
 
 mobility_maps <- mobility %>% 
   dplyr::filter(z %in% c(-6800, -5500, -2800, 100)) %>%
-  dplyr::mutate(
-    z = dplyr::recode_factor(as.character(z), !!!list(
-      "-6800" = "-7000 ⬳ -6800 calBC", 
-      "-5500" = "-5700 ⬳ -5500 calBC", 
-      "-2800" = "-3000 ⬳ -2800 calBC", 
-      "100" = "-100 calBC ⬳ 100 calAD"
-    ))
-  ) %>%
   dplyr::group_by(region_id, z) %>%
   dplyr::summarise(
     mean_mean_km_per_decade = mean(mean_km_per_decade),
@@ -205,6 +201,24 @@ mobility_maps <- mobility %>%
     mean_angle_deg_text = 360 - mean_angle_deg
   ) %>%
   dplyr::ungroup() %>%
+  dplyr::mutate(
+    z_named = dplyr::recode_factor(as.character(z), !!!list(
+      "-6800" = "-7000 ⬳ -6800 calBC", 
+      "-5500" = "-5700 ⬳ -5500 calBC", 
+      "-2800" = "-3000 ⬳ -2800 calBC", 
+      "100" = "-100 calBC ⬳ 100 calAD"
+    ))
+  ) %>%
+  dplyr::left_join(
+    no_data_windows_yearwise %>% 
+      dplyr::filter(date_not_covered %in% c(-6800, -5500, -2800, 100)) %>% 
+      unique %>%
+      dplyr::mutate(not_covered = TRUE), 
+    by = c("region_id", "z" = "date_not_covered")
+  ) %>% 
+  dplyr::mutate(
+    not_covered = tidyr::replace_na(not_covered, FALSE)
+  ) %>%
   dplyr::left_join(
     mobility_regions,
     by = "region_id"
@@ -224,8 +238,7 @@ p_map <- ggplot() +
   ) +
   geom_sf(
     data = mobility_maps,
-    fill = "white",
-    alpha = 0.8,
+    aes(fill = not_covered, alpha = not_covered),
     color = "black",
     size = 0.4
   ) +
@@ -247,6 +260,14 @@ p_map <- ggplot() +
   scale_color_gradientn(
     colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
     guide = F
+  ) +
+  scale_fill_manual(
+    values = c("TRUE" = "red", "FALSE" = "white"), 
+    guide = FALSE
+  ) +
+  scale_alpha_manual(
+    values = c("TRUE" = 0.3, "FALSE" = 0.8), 
+    guide = FALSE
   ) +
   facet_grid(cols = dplyr::vars(z)) +
   theme_bw() +
