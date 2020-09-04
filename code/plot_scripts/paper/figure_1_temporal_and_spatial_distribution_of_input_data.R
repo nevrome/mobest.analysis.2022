@@ -7,6 +7,7 @@ load("data/spatial/extended_area.RData")
 load("data/spatial/epsg102013.RData")
 load("data/plot_reference_data/region_id_colors.RData")
 load("data/plot_reference_data/age_group_id_shapes.RData")
+load("data/spatial/mobility_regions.RData")
 
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
@@ -16,7 +17,11 @@ ylimit <- c(ex[3], ex[4])
 p_map <- ggplot() +
   geom_sf(
     data = extended_area,
-    fill = "white", colour = "black", size = 0.4
+    fill = "white", colour = "darkgrey", size = 0.4
+  ) +
+  geom_sf(
+    data = mobility_regions,
+    fill = NA, colour = "black", size = 0.1
   ) +
   geom_sf(
     data = research_area,
