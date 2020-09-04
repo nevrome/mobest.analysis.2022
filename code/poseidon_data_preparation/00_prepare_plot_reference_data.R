@@ -1,15 +1,15 @@
 region_id_colors <- c(
   "Britain and Ireland" = "#b8434e", 
-  "Southern Scandinavia" = "#404040",
-  "Baltics" = "#f1B6da",
-  "Central Europe" = "#b86738",
-  "Eastern Europe" = "#bfa33a", 
-  "Caucasus" = "#729d46", 
   "France" = "#4bc490", 
-  "Italy" = "#31cdc6", 
-  "Southeastern Europe" = "#6678dc",
-  "Turkey" = "#5b388a",
   "Iberia" = "#7c7120", 
+  "Southern Scandinavia" = "#404040",
+  "Central Europe" = "#b86738",
+  "Italy" = "#31cdc6", 
+  "Baltics" = "#f1B6da",
+  "Eastern Europe" = "#bfa33a", 
+  "Southeastern Europe" = "#6678dc",
+  "Caucasus" = "#729d46", 
+  "Turkey" = "#5b388a",
   "Near East" = "#b1467b" 
 )
 save(region_id_colors, file = "data/plot_reference_data/region_id_colors.RData")
