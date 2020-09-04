@@ -79,7 +79,7 @@ no_data_windows_yearwise <- janno_final %>%
         not_covered <- setdiff(
           -7500:1500,
           lapply(Date_BC_AD_Median_Derived, function(x) {
-            seq(x-300, x+300, 1)
+            seq(x, x+300, 1)
           }) %>% Reduce(union, .)
         )
         schu <- rep(NA, length(-7500:1500))
