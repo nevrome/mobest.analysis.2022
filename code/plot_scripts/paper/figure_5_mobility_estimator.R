@@ -20,19 +20,22 @@ mobility <- lapply(
     )
   ) %>%
   dplyr::filter(
-    kernel_setting_id == "600km / 300y"
+    kernel_setting_id == "600km / 300y",
+    !is.na(region_id)
   )
 
 mobility$region_id = factor(mobility$region_id, levels = c(
   "Britain and Ireland",
-  "Central Europe",
+  "Southern Scandinavia",
+  "Baltics",
   "Eastern Europe",
-  "Caucasus",
   "France", 
-  "Italy",
+  "Central Europe",
   "Southeastern Europe",
-  "Turkey",
+  "Caucasus",
   "Iberia",
+  "Italy",
+  "Turkey",
   "Near East"
 ))
 
@@ -170,16 +173,16 @@ p_estimator <- mobility %>%
   xlab("")
 
 # move facets around
-g <- ggplotGrob(p_estimator)
-g$grobs[[13]] <- g$grobs[[7]]
-g$grobs[[7]] <- zeroGrob()
-g$grobs[[29]] <- g$grobs[[27]]
-g$grobs[[27]] <- zeroGrob()
-g$grobs[[65]] <- g$grobs[[63]]
-g$grobs[[63]] <- zeroGrob()
-g$grobs[[31]] <- g$grobs[[32]]
-g$grobs[[33]] <- zeroGrob()
-p_estimator2 <- ggplotify::as.ggplot(g) # grid::grid.draw(g)
+# g <- ggplotGrob(p_estimator)
+# g$grobs[[13]] <- g$grobs[[7]]
+# g$grobs[[7]] <- zeroGrob()
+# g$grobs[[29]] <- g$grobs[[27]]
+# g$grobs[[27]] <- zeroGrob()
+# g$grobs[[65]] <- g$grobs[[63]]
+# g$grobs[[63]] <- zeroGrob()
+# g$grobs[[31]] <- g$grobs[[32]]
+# g$grobs[[33]] <- zeroGrob()
+# p_estimator2 <- ggplotify::as.ggplot(g) # grid::grid.draw(g)
 
 #### map series ####
 
