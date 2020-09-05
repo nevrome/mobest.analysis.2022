@@ -100,6 +100,17 @@ mob %>%
   facet_wrap(~z) +
   scale_fill_viridis_c()
 
+mob %>%
+  dplyr::mutate(
+    angle = unlist(Map(function(x,y) {mobest::vec2deg(c(x,y))}, J_x, J_y))
+  ) %>% dplyr::filter(
+    z %% 500 == 0
+  ) %>%
+  ggplot() +
+  geom_raster(aes(x, y, fill = angle)) +
+  facet_wrap(~z) +
+  scale_fill_gradientn(colours = c("blue", "green", "green", "red", "red", "yellow", "yellow", "blue"))
+
 load("data/spatial/epsg102013.RData")
 load("data/spatial/mobility_regions.RData")
 
