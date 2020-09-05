@@ -8,7 +8,7 @@ load("data/spatial/area.RData")
 main_pred_grid <- mobest::create_prediction_grid(
   area,
   spatial_cell_size = 100000,
-  time_layers = seq(-7500, 1500, 100)
+  time_layers = seq(-7500, 1500, 50)
 )
 
 delta_x <- 10
@@ -29,7 +29,7 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds600_dt300_g001 = list(d = c(600000, 600000, 300), g = 0.01, on_residuals = T, auto = F)
+    ds600_dt300_g001 = list(d = c(1000000, 1000000, 1000), g = 0.1, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     main = main_pred_grid,
@@ -85,29 +85,29 @@ mob <- interpol_grid %>% tidyr::pivot_wider(
     J_final = sqrt(J_x^2 + J_y^2)
   ) %>%
   dplyr::select(
-    point_id, x, y, z, J_x, J_y, J_final
+    point_id, x, y, z, sd_C1_main, J_x, J_y, J_final
+  ) %>%
+  dplyr::mutate(
+    angle = unlist(Map(function(x,y) {mobest::vec2deg(c(x,y))}, J_x, J_y)),
+    J_final_outlier_removed = ifelse(
+      J_final > quantile(J_final, probs = 0.90), quantile(J_final, probs = 0.90), J_final
+    )
   )
 
 library(ggplot2)
-mob %>%
-  dplyr::mutate(
-    J_final = ifelse(J_final > quantile(J_final)[4], quantile(J_final)[4], J_final)
-  ) %>% dplyr::filter(
+mob %>% dplyr::filter(
     z %% 500 == 0
   ) %>%
   ggplot() +
-  geom_raster(aes(x, y, fill = J_final)) +
+  geom_raster(aes(x, y, fill = J_final_outlier_removed)) +
   facet_wrap(~z) +
   scale_fill_viridis_c()
 
-mob %>%
-  dplyr::mutate(
-    angle = unlist(Map(function(x,y) {mobest::vec2deg(c(x,y))}, J_x, J_y))
-  ) %>% dplyr::filter(
+mob %>% dplyr::filter(
     z %% 500 == 0
   ) %>%
   ggplot() +
-  geom_raster(aes(x, y, fill = angle)) +
+  geom_raster(aes(x, y, fill = angle, alpha = J_final_outlier_removed)) +
   facet_wrap(~z) +
   scale_fill_gradientn(colours = c("blue", "green", "green", "red", "red", "yellow", "yellow", "blue"))
 
@@ -124,9 +124,12 @@ mob_with_regions %>%
     region_id, z
   ) %>%
   dplyr::summarise(
-    median_J_final = median(J_final)
+    median_J_final = median(J_final),
+    mean_angle = mobest::mean_deg(angle)
   ) %>%
   ggplot() +
-  geom_line(aes(z, median_J_final)) +
-  facet_wrap(~region_id)
+  geom_line(aes(z, median_J_final, color = mean_angle), size = 1) +
+  facet_wrap(~region_id) +
+  scale_color_gradientn(colours = c("blue", "green", "green", "red", "red", "yellow", "yellow", "blue")) +
+  coord_cartesian(ylim = c(0,10))
 
