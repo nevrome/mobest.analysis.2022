@@ -99,3 +99,23 @@ mob %>%
   geom_raster(aes(x, y, fill = J_final)) +
   facet_wrap(~z) +
   scale_fill_viridis_c()
+
+load("data/spatial/epsg102013.RData")
+load("data/spatial/mobility_regions.RData")
+
+mob_with_regions <- mob %>% 
+  sf::st_as_sf(coords = c("x", "y"), crs = epsg102013) %>%
+  sf::st_intersection(mobility_regions) %>%
+  sf::st_drop_geometry()
+
+mob_with_regions %>%
+  dplyr::group_by(
+    region_id, z
+  ) %>%
+  dplyr::summarise(
+    median_J_final = median(J_final)
+  ) %>%
+  ggplot() +
+  geom_line(aes(z, median_J_final)) +
+  facet_wrap(~region_id)
+
