@@ -196,7 +196,7 @@ xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
 
 mobility_maps <- mobility %>% 
-  dplyr::filter(z %in% c(-6800, -5500, -2800, 100)) %>%
+  dplyr::filter(z %in% c(-5500, -2800, 100)) %>%
   dplyr::group_by(region_id, z) %>%
   dplyr::summarise(
     mean_mean_km_per_decade = mean(mean_km_per_decade),
@@ -206,7 +206,6 @@ mobility_maps <- mobility %>%
   dplyr::ungroup() %>%
   dplyr::mutate(
     z_named = dplyr::recode_factor(as.character(z), !!!list(
-      "-6800" = "-7000 ⬳ -6800 calBC", 
       "-5500" = "-5700 ⬳ -5500 calBC", 
       "-2800" = "-3000 ⬳ -2800 calBC", 
       "100" = "-100 calBC ⬳ 100 calAD"
@@ -214,7 +213,7 @@ mobility_maps <- mobility %>%
   ) %>%
   dplyr::left_join(
     no_data_windows_yearwise %>% 
-      dplyr::filter(date_not_covered %in% c(-6800, -5500, -2800, 100)) %>% 
+      dplyr::filter(date_not_covered %in% c(-5500, -2800, 100)) %>% 
       unique %>%
       dplyr::mutate(not_covered = TRUE), 
     by = c("region_id", "z" = "date_not_covered")
@@ -323,10 +322,10 @@ p_legend <- tibble::tibble(
 
 p_double_legend <- cowplot::plot_grid(p_legend, p_arrows_legend, ncol = 2, rel_widths = c(0.6, 1))
 
-plot_top <- cowplot::ggdraw(p_estimator2) + cowplot::draw_plot(p_double_legend, 0.35, 0, .35, .35)
+plot_bottom <- cowplot::plot_grid(p_map, p_double_legend, ncol = 2, rel_widths = c(0.7, 0.3))
 
 p <- cowplot::plot_grid(
-  plot_top, p_map, nrow = 2, rel_heights = c(1, 0.44), labels = c("A", "B"),
+  p_estimator, plot_bottom, nrow = 2, rel_heights = c(1, 0.44), labels = c("A", "B"),
   label_y = c(1, 1.1)
 )
 
