@@ -17,40 +17,13 @@ delta_z <- 10
 
 #### prepare pca model grid ####
 model_grid <- mobest::create_model_grid(
-  # independent = list(
-  #   tibble::tibble(
-  #     x = janno_final$x, 
-  #     y = janno_final$y, 
-  #     z = janno_final$Date_BC_AD_Median_Derived
-  #   )
-  # ) %>% stats::setNames("age_median"),
   independent = list(
-    age_sample_1 = tibble::tibble(
+    tibble::tibble(
       x = janno_final$x, 
       y = janno_final$y, 
-      z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[1] })
-    ),
-    age_sample_2 = tibble::tibble(
-      x = janno_final$x, 
-      y = janno_final$y, 
-      z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[10] })
-    ),
-    age_sample_3 = tibble::tibble(
-      x = janno_final$x, 
-      y = janno_final$y, 
-      z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[20] })
-    ),
-    age_sample_4 = tibble::tibble(
-      x = janno_final$x, 
-      y = janno_final$y, 
-      z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[30] })
-    ),
-    age_sample_5 = tibble::tibble(
-      x = janno_final$x, 
-      y = janno_final$y, 
-      z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[40] })
+      z = janno_final$Date_BC_AD_Median_Derived
     )
-  ),
+  ) %>% stats::setNames("age_median"),
   dependent = list(
     C1 = janno_final$C1,
     C2 = janno_final$C2
@@ -76,55 +49,50 @@ interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
 #### mobility ####
 
-igs <- interpol_grid %>% dplyr::group_split(independent_table_id)
-
-mob <- lapply(igs, function(interpol_grid) {
-  interpol_grid %>% tidyr::pivot_wider(
-    id_cols = c("pred_grid_id", "point_id", "x", "y", "z"),
-    names_from = "dependent_var_id", values_from = c("mean", "sd")
-  ) %>% tidyr::pivot_wider(
-    id_cols = c("point_id"),
-    names_from = c("pred_grid_id"), values_from = c("mean_C1", "mean_C2", "sd_C1", "sd_C2")
+mob <- interpol_grid %>% tidyr::pivot_wider(
+  id_cols = c("pred_grid_id", "point_id", "x", "y", "z"),
+  names_from = "dependent_var_id", values_from = c("mean", "sd")
+) %>% tidyr::pivot_wider(
+  id_cols = c("point_id"),
+  names_from = c("pred_grid_id"), values_from = c("mean_C1", "mean_C2", "sd_C1", "sd_C2")
+) %>%
+  dplyr::left_join(
+    main_pred_grid
   ) %>%
-    dplyr::left_join(
-      main_pred_grid
-    ) %>%
-    dplyr::mutate(
-      # delta
-      delta_x = delta_x,
-      delta_y = delta_y,
-      delta_z = delta_z,
-      # partial derivatives deriv_x_C*
-      deriv_x_C1 = (mean_C1_offset_x - mean_C1_main) / delta_x,
-      deriv_x_C2 = (mean_C2_offset_x - mean_C2_main) / delta_x,
-      # partial derivatives deriv_y_C*
-      deriv_y_C1 = (mean_C1_offset_y - mean_C1_main) / delta_y,
-      deriv_y_C2 = (mean_C2_offset_y - mean_C2_main) / delta_y,
-      # partial derivatives deriv_z_C*
-      deriv_z_C1 = (mean_C1_offset_z - mean_C1_main) / delta_z,
-      deriv_z_C2 = (mean_C2_offset_z - mean_C2_main) / delta_z,
-      # two directional speeds for each spatial direction x and y
-      J_x_C1 = -deriv_z_C1/deriv_x_C1,
-      J_y_C1 = -deriv_z_C1/deriv_y_C1,
-      J_x_C2 = -deriv_z_C2/deriv_x_C2,
-      J_y_C2 = -deriv_z_C2/deriv_y_C2,
-      # one combined speed for C1 and C2
-      J_x = (J_x_C1 + J_x_C2)/2,
-      J_y = (J_y_C1 + J_y_C2)/2,
-      # final strength of the speed
-      J_final = sqrt(J_x^2 + J_y^2)
-    ) %>%
-    dplyr::select(
-      point_id, x, y, z, sd_C1_main, J_x, J_y, J_final
-    ) %>%
-    dplyr::mutate(
-      angle = unlist(Map(function(x,y) {mobest::vec2deg(c(x,y))}, J_x, J_y)),
-      J_final_outlier_removed = ifelse(
-        J_final > quantile(J_final, probs = 0.90), quantile(J_final, probs = 0.90), J_final
-      ),
-      independent_table_id = unique(interpol_grid$independent_table_id)
+  dplyr::mutate(
+    # delta
+    delta_x = delta_x,
+    delta_y = delta_y,
+    delta_z = delta_z,
+    # partial derivatives deriv_x_C*
+    deriv_x_C1 = (mean_C1_offset_x - mean_C1_main) / delta_x,
+    deriv_x_C2 = (mean_C2_offset_x - mean_C2_main) / delta_x,
+    # partial derivatives deriv_y_C*
+    deriv_y_C1 = (mean_C1_offset_y - mean_C1_main) / delta_y,
+    deriv_y_C2 = (mean_C2_offset_y - mean_C2_main) / delta_y,
+    # partial derivatives deriv_z_C*
+    deriv_z_C1 = (mean_C1_offset_z - mean_C1_main) / delta_z,
+    deriv_z_C2 = (mean_C2_offset_z - mean_C2_main) / delta_z,
+    # two directional speeds for each spatial direction x and y
+    J_x_C1 = -deriv_z_C1/deriv_x_C1,
+    J_y_C1 = -deriv_z_C1/deriv_y_C1,
+    J_x_C2 = -deriv_z_C2/deriv_x_C2,
+    J_y_C2 = -deriv_z_C2/deriv_y_C2,
+    # one combined speed for C1 and C2
+    J_x = (J_x_C1 + J_x_C2)/2,
+    J_y = (J_y_C1 + J_y_C2)/2,
+    # final strength of the speed
+    J_final = sqrt(J_x^2 + J_y^2)
+  ) %>%
+  dplyr::select(
+    point_id, x, y, z, sd_C1_main, J_x, J_y, J_final
+  ) %>%
+  dplyr::mutate(
+    angle = unlist(Map(function(x,y) {mobest::vec2deg(c(x,y))}, J_x, J_y)),
+    J_final_outlier_removed = ifelse(
+      J_final > quantile(J_final, probs = 0.90), quantile(J_final, probs = 0.90), J_final
     )
-}) %>% dplyr::bind_rows()
+  )
 
 library(ggplot2)
 mob %>% dplyr::filter(
@@ -153,14 +121,14 @@ mob_with_regions <- mob %>%
 
 mob_with_regions %>%
   dplyr::group_by(
-    independent_table_id, region_id, z
+    region_id, z
   ) %>%
   dplyr::summarise(
     median_J_final = median(J_final),
     mean_angle = mobest::mean_deg(angle)
   ) %>%
   ggplot() +
-  geom_line(aes(z, median_J_final, color = mean_angle, group = independent_table_id), size = 1) +
+  geom_line(aes(z, median_J_final, color = mean_angle), size = 1) +
   facet_wrap(~region_id) +
   scale_color_gradientn(colours = c("blue", "green", "green", "red", "red", "yellow", "yellow", "blue")) +
   coord_cartesian(ylim = c(0,10))
