@@ -8,7 +8,7 @@ load("data/spatial/area.RData")
 main_pred_grid <- mobest::create_prediction_grid(
   area,
   spatial_cell_size = 100000,
-  time_layers = seq(-7500, 1500, 50)
+  time_layers = seq(-7500, 1500, 100)
 )
 
 delta_x <- 10
@@ -29,7 +29,7 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds600_dt300_g001 = list(d = c(1000000, 1000000, 1000), g = 0.1, on_residuals = T, auto = F)
+    ds600_dt300_g001 = list(d = c(1000000, 1000000, 1000), g = 0.5, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     main = main_pred_grid,
@@ -46,6 +46,24 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 #### unnest prediction to get a point-wise prediction table ####
 
 interpol_grid <- mobest::unnest_model_grid(model_grid_result)
+
+interpol_grid %>%
+  dplyr::filter(
+    pred_grid_id == "main",
+    z %% 500 == 0
+  ) %>%
+  tidyr::pivot_wider(
+    id_cols = c("point_id", "x", "y", "z"),
+    names_from = "dependent_var_id",
+    values_from = "mean"
+  ) %>%
+  dplyr::mutate(
+    C1_C2 = C1-C2
+  ) %>%
+  ggplot() +
+  geom_raster(aes(x, y, fill = C2)) +
+  facet_wrap(~z) +
+  scale_fill_viridis_c()
 
 #### mobility ####
 
@@ -90,7 +108,10 @@ mob <- interpol_grid %>% tidyr::pivot_wider(
   dplyr::mutate(
     angle = unlist(Map(function(x,y) {mobest::vec2deg(c(x,y))}, J_x, J_y)),
     J_final_outlier_removed = ifelse(
-      J_final > quantile(J_final, probs = 0.90), quantile(J_final, probs = 0.90), J_final
+      J_final > quantile(J_final, probs = 0.90), NA, J_final
+    ),
+    J_x_outlier_removed = ifelse(
+      abs(J_x) > quantile(abs(J_x), probs = 0.90), NA, J_x
     )
   )
 
@@ -99,9 +120,9 @@ mob %>% dplyr::filter(
   z %% 500 == 0
 ) %>%
   ggplot() +
-  geom_raster(aes(x, y, fill = J_final_outlier_removed)) +
+  geom_raster(aes(x, y, fill = J_x_outlier_removed)) +
   facet_wrap(~z) +
-  scale_fill_viridis_c()
+  scale_fill_gradientn(colours = c("blue", "yellow", "red"))
 
 mob %>% dplyr::filter(
   z %% 500 == 0
