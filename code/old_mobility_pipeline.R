@@ -29,9 +29,9 @@ independent_tables <- tibble::tibble(
     list(
       dplyr::transmute(
         .data = janno_final,
-        x_01 = range_01_x(x),
-        y_01 = range_01_y(y),
-        z_01 = range_01_z(Date_BC_AD_Median_Derived)
+        x = range_01_x(x),
+        y = range_01_y(y),
+        z = range_01_z(Date_BC_AD_Median_Derived)
       )
     ), 
     lapply(
@@ -40,9 +40,9 @@ independent_tables <- tibble::tibble(
         age_sample <- sapply(janno_final$Date_BC_AD_Sample, function(x){ x[i] })
         dplyr::transmute(
           .data = janno_final,
-          x_01 = range_01_x(x),
-          y_01 = range_01_y(y),
-          z_01 = range_01_z(age_sample)
+          x = range_01_x(x),
+          y = range_01_y(y),
+          z = range_01_z(age_sample)
         )
       },
       anno
@@ -68,9 +68,9 @@ pred_grid <- pred_points_space %>%
   tidyr::crossing(time_layers) %>%
   dplyr::mutate(
     point_id = 1:nrow(.),
-    x_01 = range_01_x(x_real),
-    y_01 = range_01_y(y_real),
-    z_01 = range_01_z(age_sample)
+    x = range_01_x(x_real),
+    y = range_01_y(y_real),
+    z = range_01_z(age_sample)
   )
 
 #### create kernel parameters ####
@@ -79,7 +79,7 @@ kernel_settings <- tibble::tibble(
   kernel_setting = list(
     #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
     #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
-    ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(400)), g = 0.1)
+    ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(400)), g = 0.1, on_residuals = T, auto = F)
   ),
   kernel_setting_id = names(kernel_setting)
 )
@@ -101,6 +101,18 @@ model_grid <- expand.grid(
     dependent_var = lapply(dependent_var_id, function(x) { janno_final[[x]] })
   ) %>% tibble::as_tibble()
 
+names(model_grid$independent_table) <- model_grid$independent_table_id
+names(model_grid$dependent_var) <- model_grid$dependent_var_id
+model_grid$pred_grid_id <- "a"
+model_grid$pred_grid <- list(pred_grid)
+names(model_grid$pred_grid) <- model_grid$pred_grid_id
+
+# model_grid_result <- mobest::run_model_grid(model_grid)
+# 
+# #### unnest prediction to get a point-wise prediction table ####
+# 
+# pred_grid_filled <- mobest::unnest_model_grid(model_grid_result)
+
 library(laGP)
 
 #### kriging function ####
@@ -118,17 +130,17 @@ predictgp <- function(independent, dependent, pred_grid, auto = T, d, g) {
   # optimise fit automatically
   if (auto) {
     mleGPsep(
-      gpsepi = gp, 
-      param = "both", 
-      tmin = c(da$min, ga$min), tmax = c(da$max, ga$max), ab = c(da$ab, ga$ab), 
+      gpsepi = gp,
+      param = "both",
+      tmin = c(da$min, ga$min), tmax = c(da$max, ga$max), ab = c(da$ab, ga$ab),
       maxit = 200
     )
   }
   # predictions from the global GP on the prediction
-  pred <- predGPsep(gp, XX = pred_grid[, c("x_01", "y_01", "z_01")], lite = T)
+  pred <- predGPsep(gp, XX = pred_grid[, c("x", "y", "z")], lite = T)
   # delete GP object
   deleteGPsep(gp)
-  # return result 
+  # return result
   return(pred)
 }
 
@@ -136,11 +148,11 @@ predictgp <- function(independent, dependent, pred_grid, auto = T, d, g) {
 
 prediction <- lapply(1:nrow(model_grid), function(i) {
   predictgp(
-    model_grid[["independent_table"]][[i]], 
-    model_grid[["dependent_var"]][[i]], 
+    model_grid[["independent_table"]][[i]],
+    model_grid[["dependent_var"]][[i]],
     pred_grid,
-    model_grid[["kernel_setting"]][[i]][["auto"]], 
-    model_grid[["kernel_setting"]][[i]][["d"]], 
+    model_grid[["kernel_setting"]][[i]][["auto"]],
+    model_grid[["kernel_setting"]][[i]][["d"]],
     model_grid[["kernel_setting"]][[i]][["g"]]
   )
 })
@@ -148,7 +160,7 @@ prediction <- lapply(1:nrow(model_grid), function(i) {
 
 #### simplified model_grid ####
 
-model_grid_simplified <- model_grid %>% 
+model_grid_simplified <- model_grid %>%
   dplyr::mutate(independent_table_type = ifelse(independent_table_id == "age_center", "age_center", "age_sampled")) %>%
   dplyr::select(-kernel_setting, -independent_table, -dependent_var)
 
@@ -171,7 +183,7 @@ pred_grid_filled_without_pos <- model_grid_simplified %>%
 #### merge with pred_grid to add other relevant, spatial information ####
 
 pred_grid_filled <- pred_grid %>%
-  dplyr::select(-c("x_01", "y_01", "z_01")) %>%
+  dplyr::select(-c("x", "y", "z")) %>%
   dplyr::left_join(
     pred_grid_filled_without_pos, by = "point_id"
   )
@@ -183,7 +195,8 @@ schu <- pred_grid_filled %>%
     x = x_real,
     y = y_real, 
     z = age_sample,
-    pred_grid_id = "a"
+  ) %>% dplyr::select(
+    -x_real, -y_real, -age_sample, -pred_grid
   )
 
 pri_ready <- mobest::search_spatial_origin(schu)
