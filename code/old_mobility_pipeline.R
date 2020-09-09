@@ -79,7 +79,7 @@ kernel_settings <- tibble::tibble(
   kernel_setting = list(
     #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
     #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
-    ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(400)), g = 0.1, on_residuals = T, auto = F)
+    ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(400)), g = 0.1, on_residuals = F)
   ),
   kernel_setting_id = names(kernel_setting)
 )
@@ -128,24 +128,10 @@ pred_grid_filled <- pred_grid_filled %>%
 # #### kriging function ####
 # 
 # predictgp <- function(independent, dependent, pred_grid, auto = T, d, g) {
-#   # priors for the global GP
-#   if (auto) {
-#     da <- darg(list(mle = TRUE, max=10), independent)
-#     ga <- garg(list(mle = TRUE, max=10), dependent)
-#     d <- da$start
-#     g <- ga$start
-#   }
+
 #   # fit the global GP
 #   gp <- newGPsep(X = independent, Z = dependent, d = d, g = g, dK = auto)
-#   # optimise fit automatically
-#   if (auto) {
-#     mleGPsep(
-#       gpsepi = gp,
-#       param = "both",
-#       tmin = c(da$min, ga$min), tmax = c(da$max, ga$max), ab = c(da$ab, ga$ab),
-#       maxit = 200
-#     )
-#   }
+
 #   # predictions from the global GP on the prediction
 #   pred <- predGPsep(gp, XX = pred_grid[, c("x", "y", "z")], lite = T)
 #   # delete GP object
