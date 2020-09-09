@@ -107,12 +107,22 @@ model_grid$pred_grid_id <- "a"
 model_grid$pred_grid <- list(pred_grid)
 names(model_grid$pred_grid) <- model_grid$pred_grid_id
 
+
+
+
+
 model_grid_result <- mobest::run_model_grid(model_grid)
-
-#### unnest prediction to get a point-wise prediction table ####
-
 pred_grid_filled <- mobest::unnest_model_grid(model_grid_result)
-# 
+
+pred_grid_filled <- pred_grid_filled %>%
+  dplyr::mutate(
+    x = x_real,
+    y = y_real,
+    z = age_sample,
+  ) %>% dplyr::select(
+    -x_real, -y_real, -age_sample
+  )
+
 # library(laGP)
 # 
 # #### kriging function ####
@@ -187,19 +197,19 @@ pred_grid_filled <- mobest::unnest_model_grid(model_grid_result)
 #   dplyr::left_join(
 #     pred_grid_filled_without_pos, by = "point_id"
 #   )
+# 
+# pred_grid_filled <- pred_grid_filled %>%
+#   dplyr::mutate(
+#     x = x_real,
+#     y = y_real,
+#     z = age_sample,
+#   ) %>% dplyr::select(
+#     -x_real, -y_real, -age_sample, -pred_grid
+#   )
 
 ###
 
-schu <- pred_grid_filled %>% 
-  dplyr::mutate(
-    x = x_real,
-    y = y_real, 
-    z = age_sample,
-  ) %>% dplyr::select(
-    -x_real, -y_real, -age_sample, -pred_grid
-  )
-
-pri_ready <- mobest::search_spatial_origin(schu)
+pri_ready <- mobest::search_spatial_origin(pred_grid_filled)
 
 # pri <- pred_grid_filled %>%
 #   tidyr::pivot_wider(names_from = "dependent_var_id", values_from = c("mean", "sd"))
