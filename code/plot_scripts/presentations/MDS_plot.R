@@ -32,7 +32,7 @@ p_mds <- ggplot() +
     color = guide_legend(title = "Region", nrow = 3, ncol = 4),
     shape = guide_legend(title = "Time", nrow = 3, ncol = 4)
   ) +
-  coord_fixed(xlim = c(-0.05, 0.09), ylim = c(-0.07, 0.065)) +
+  coord_fixed() +
   scale_y_continuous(breaks = seq(-0.08, 0.08, 0.02)) +
   scale_x_continuous(breaks = seq(-0.06, 0.08, 0.02))
 
