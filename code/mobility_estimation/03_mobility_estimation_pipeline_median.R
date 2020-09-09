@@ -21,14 +21,14 @@ model_grid <- mobest::create_model_grid(
   ),
   kernel = list(
     #ds400_dt200_g001 = list(d = c(400000, 400000, 200), g = 0.01, on_residuals = T, auto = F),
-    ds600_dt300_g001 = list(d = c(600000, 600000, 300), g = 0.01, on_residuals = T, auto = F)#,
+    ds600_dt300_g001 = list(d = c(800000, 800000, 1400), g = 0.1, on_residuals = F, auto = F)#,
     #ds800_dt400_g001 = list(d = c(800000, 800000, 400), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     scs100_tl100 = mobest::create_prediction_grid(
       area,
       spatial_cell_size = 100000,
-      time_layers = seq(-7500, 1500, 50)
+      time_layers = seq(-7500, -500, 100)
     )
     # scs200_tl200 = mobest::create_prediction_grid(
     #   area, 
@@ -46,17 +46,18 @@ model_grid_result <- mobest::run_model_grid(model_grid)
 
 interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
-# library(ggplot2)
-# interpol_grid %>%
-#   dplyr::filter(
-#     #kernel_setting_id == "ds400_dt700_g001",
-#     dependent_var_id == "C1",
-#     z %% 500 == 0
-#   ) %>%
-#   ggplot() +
-#   geom_raster(aes(x, y, fill = mean)) +
-#   facet_wrap(~z) +
-#   scale_fill_viridis_c()
+library(ggplot2)
+interpol_grid %>%
+  dplyr::filter(
+    #kernel_setting_id == "ds400_dt700_g001",
+    dependent_var_id == "C1",
+    z %% 500 == 0
+  ) %>%
+  ggplot() +
+  geom_raster(aes(x, y, fill = mean, alpha = sd)) +
+  facet_wrap(~z) +
+  scale_fill_viridis_c() +
+  scale_alpha_continuous(range = c(1, 0), na.value = 0)
 # 
 # interpol_grid %>%
 #   dplyr::filter(
@@ -75,7 +76,7 @@ interpol_grid <- mobest::unnest_model_grid(model_grid_result)
 
 #### spatial origin ####
 
-interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 4)
+interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 1)
 
 gb <- interpol_grid_origin %>%
   sf::st_as_sf(
@@ -91,8 +92,9 @@ gb <- interpol_grid_origin %>%
 
 load("data/spatial/extended_area.RData")
 
+library(ggplot2)
 gb %>% dplyr::filter(
-  z > -4000 & z < -3500
+  z > -4000 & z < -3000
 ) %>%
   ggplot() +
   geom_sf(data = extended_area) +
@@ -116,7 +118,7 @@ mobility_proxy <- mobest::estimate_mobility(interpol_grid_origin, mobility_regio
 
 mobility <- mobility_proxy
  
-save(mobility_proxy, file = paste0("data/mobility_estimation/mobility_proxy_median.RData"))
+#save(mobility_proxy, file = paste0("data/mobility_estimation/mobility_proxy_median.RData"))
 
 mobility_proxy %>%
   dplyr::group_by(kernel_setting_id, region_id) %>%
@@ -155,3 +157,4 @@ mobility_proxy %>%
     guide = F
   ) +
   scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000))
+
