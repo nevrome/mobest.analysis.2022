@@ -79,7 +79,11 @@ kernel_settings <- tibble::tibble(
   kernel_setting = list(
     #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
     #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
+<<<<<<< HEAD
     ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(400)), g = 0.1, on_residuals = T)
+=======
+    ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(400)), g = 0.1, on_residuals = T, auto = F)
+>>>>>>> 390e5650299850d77f4b73013affc641cb877633
   ),
   kernel_setting_id = names(kernel_setting)
 )
@@ -106,13 +110,86 @@ names(model_grid$dependent_var) <- model_grid$dependent_var_id
 model_grid$pred_grid_id <- "a"
 model_grid$pred_grid <- list(pred_grid)
 names(model_grid$pred_grid) <- model_grid$pred_grid_id
+<<<<<<< HEAD
+=======
+
+# model_grid_result <- mobest::run_model_grid(model_grid)
+# 
+# #### unnest prediction to get a point-wise prediction table ####
+# 
+# pred_grid_filled <- mobest::unnest_model_grid(model_grid_result)
+
+library(laGP)
+
+#### kriging function ####
+
+predictgp <- function(independent, dependent, pred_grid, auto = T, d, g) {
+  # priors for the global GP
+  if (auto) {
+    da <- darg(list(mle = TRUE, max=10), independent)
+    ga <- garg(list(mle = TRUE, max=10), dependent)
+    d <- da$start
+    g <- ga$start
+  }
+  # fit the global GP
+  gp <- newGPsep(X = independent, Z = dependent, d = d, g = g, dK = auto)
+  # optimise fit automatically
+  if (auto) {
+    mleGPsep(
+      gpsepi = gp,
+      param = "both",
+      tmin = c(da$min, ga$min), tmax = c(da$max, ga$max), ab = c(da$ab, ga$ab),
+      maxit = 200
+    )
+  }
+  # predictions from the global GP on the prediction
+  pred <- predGPsep(gp, XX = pred_grid[, c("x", "y", "z")], lite = T)
+  # delete GP object
+  deleteGPsep(gp)
+  # return result
+  return(pred)
+}
+
+#### run kriging ####
+
+prediction <- lapply(1:nrow(model_grid), function(i) {
+  predictgp(
+    model_grid[["independent_table"]][[i]],
+    model_grid[["dependent_var"]][[i]],
+    pred_grid,
+    model_grid[["kernel_setting"]][[i]][["auto"]],
+    model_grid[["kernel_setting"]][[i]][["d"]],
+    model_grid[["kernel_setting"]][[i]][["g"]]
+  )
+})
+
+>>>>>>> 390e5650299850d77f4b73013affc641cb877633
+
+
+<<<<<<< HEAD
+=======
+model_grid_simplified <- model_grid %>%
+  dplyr::mutate(independent_table_type = ifelse(independent_table_id == "age_center", "age_center", "age_sampled")) %>%
+  dplyr::select(-kernel_setting, -independent_table, -dependent_var)
+>>>>>>> 390e5650299850d77f4b73013affc641cb877633
 
 
 
-
-
+<<<<<<< HEAD
 model_grid_result <- mobest::run_model_grid(model_grid)
 pred_grid_filled <- mobest::unnest_model_grid(model_grid_result)
+=======
+pred_grid_filled_without_pos <- model_grid_simplified %>%
+  tidyr::unnest(cols = "prediction_sample")
+
+#### merge with pred_grid to add other relevant, spatial information ####
+
+pred_grid_filled <- pred_grid %>%
+  dplyr::select(-c("x", "y", "z")) %>%
+  dplyr::left_join(
+    pred_grid_filled_without_pos, by = "point_id"
+  )
+>>>>>>> 390e5650299850d77f4b73013affc641cb877633
 
 pred_grid_filled <- pred_grid_filled %>%
   dplyr::mutate(
@@ -120,7 +197,11 @@ pred_grid_filled <- pred_grid_filled %>%
     y = y_real,
     z = age_sample,
   ) %>% dplyr::select(
+<<<<<<< HEAD
     -x_real, -y_real, -age_sample
+=======
+    -x_real, -y_real, -age_sample, -pred_grid
+>>>>>>> 390e5650299850d77f4b73013affc641cb877633
   )
 
 # library(laGP)
