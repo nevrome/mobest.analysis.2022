@@ -1,3 +1,6 @@
+library(magrittr)
+library(ggplot2)
+
 range_01 <- function(x, min, max) { (x - min) / (max - min) }
 dist_scale_01 <- function(x, min, max) { x / abs(min - max) }
 range_real <- function(x, min, max) { min + x * abs(min - max) }
@@ -16,6 +19,7 @@ load("data/poseidon_data/janno_final.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/area.RData")
+load("data/spatial/mobility_regions.RData")
 
 #### prep independent variables with temporal sampling ####
 
@@ -74,7 +78,7 @@ pred_grid <- pred_points_space %>%
 kernel_settings <- tibble::tibble(
   kernel_setting = list(
     #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
-    ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
+    #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
     ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(400)), g = 0.1)
   ),
   kernel_setting_id = names(kernel_setting)
