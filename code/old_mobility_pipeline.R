@@ -23,7 +23,7 @@ load("data/spatial/mobility_regions.RData")
 
 #### prep independent variables with temporal sampling ####
 
-number_of_age_samples <- 3 #max: length(anno$calage_sample[[1]])
+number_of_age_samples <- 1 #max: length(anno$calage_sample[[1]])
 independent_tables <- tibble::tibble(
   independent_table = c(
     list(
@@ -33,9 +33,9 @@ independent_tables <- tibble::tibble(
         y = range_01_y(y),
         z = range_01_z(Date_BC_AD_Median_Derived)
       )
-    ), 
+    ),
     lapply(
-      1:number_of_age_samples, 
+      1:number_of_age_samples,
       function(i, anno) {
         age_sample <- sapply(janno_final$Date_BC_AD_Sample, function(x){ x[i] })
         dplyr::transmute(
@@ -53,7 +53,7 @@ independent_tables <- tibble::tibble(
 
 #### create spatial prediction grid ####
 
-pred_points_space <- area %>% 
+pred_points_space <- area %>%
   sf::st_make_grid(cellsize = 100000, what = "centers") %>%
   sf::st_intersection(area) %>%
   sf::st_coordinates() %>%
@@ -64,7 +64,7 @@ time_layers <- tibble::tibble(
   age_sample = seq(-7500, -500, 100)
 )
 
-pred_grid <- pred_points_space %>% 
+pred_grid <- pred_points_space %>%
   tidyr::crossing(time_layers) %>%
   dplyr::mutate(
     point_id = 1:nrow(.),
@@ -84,7 +84,7 @@ kernel_settings <- tibble::tibble(
   kernel_setting_id = names(kernel_setting)
 )
 
-#### prepare model grid ####
+### prepare model grid ####
 
 model_grid <- expand.grid(
   kernel_setting_id = kernel_settings$kernel_setting_id,
@@ -108,11 +108,39 @@ model_grid$pred_grid <- list(pred_grid)
 names(model_grid$pred_grid) <- model_grid$pred_grid_id
 
 
-
+# model_grid <- mobest::create_model_grid(
+#   independent = list(
+#     tibble::tibble(
+#       x = janno_final$x,
+#       y = janno_final$y,
+#       z = janno_final$Date_BC_AD_Median_Derived
+#     )
+#   ) %>% stats::setNames("age_median"),
+#   dependent = list(
+#     C1 = janno_final$C1,
+#     C2 = janno_final$C2
+#   ),
+#   kernel = list(
+#     #ds400_dt200_g001 = list(d = c(400000, 400000, 200), g = 0.01, on_residuals = T, auto = F),
+#     ds600_dt300_g001 = list(d = c(200000, 200000, 400), g = 0.1, on_residuals = T, auto = F)#,
+#     #ds800_dt400_g001 = list(d = c(800000, 800000, 400), g = 0.01, on_residuals = T, auto = F)
+#   ),
+#   prediction_grid = list(
+#     scs100_tl100 = mobest::create_prediction_grid(
+#       area,
+#       spatial_cell_size = 100000,
+#       time_layers = seq(-7500, -500, 100)
+#     )
+#     # scs200_tl200 = mobest::create_prediction_grid(
+#     #   area,
+#     #   spatial_cell_size = 150000,
+#     #   time_layers = seq(-7500, 1500, 281.25)
+#     # )
+#   )
+# )
 
 model_grid_result <- mobest::run_model_grid(model_grid)
 pred_grid_filled <- mobest::unnest_model_grid(model_grid_result)
-
 
 pred_grid_filled <- pred_grid_filled %>%
   dplyr::mutate(
@@ -122,6 +150,18 @@ pred_grid_filled <- pred_grid_filled %>%
   ) %>% dplyr::select(
     -x_real, -y_real, -age_sample
   )
+
+pred_grid_filled %>%
+  dplyr::filter(
+    #kernel_setting_id == "ds400_dt700_g001",
+    dependent_var_id == "C1",
+    z %% 500 == 0
+  ) %>%
+  ggplot() +
+  geom_raster(aes(x, y, fill = mean, alpha = sd)) +
+  facet_wrap(~z) +
+  scale_fill_viridis_c() +
+  scale_alpha_continuous(range = c(1, 0), na.value = 0)
 
 # library(laGP)
 # 
