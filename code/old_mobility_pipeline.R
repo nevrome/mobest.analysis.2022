@@ -61,7 +61,7 @@ load("data/spatial/mobility_regions.RData")
 #   dplyr::rename(x_real = X, y_real = Y)
 # 
 # time_layers <- tibble::tibble(
-#   age_sample = seq(-7500, -500, 100)
+#   z_real = seq(-7500, -500, 100)
 # )
 # 
 # pred_grid <- pred_points_space %>%
@@ -70,7 +70,7 @@ load("data/spatial/mobility_regions.RData")
 #     point_id = 1:nrow(.),
 #     x = range_01_x(x_real),
 #     y = range_01_y(y_real),
-#     z = range_01_z(age_sample)
+#     z = range_01_z(z_real)
 #   )
 # 
 # #### create kernel parameters ####
@@ -146,7 +146,7 @@ model_grid <- mobest::create_model_grid(
       time_layers = seq(-7500, -500, 100)
     ) %>%
       dplyr::transmute(
-        point_id, 
+        point_id,
         x_real = x,
         y_real = y,
         z_real = z,
