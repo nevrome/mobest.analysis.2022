@@ -21,11 +21,95 @@ load("data/spatial/extended_area.RData")
 load("data/spatial/area.RData")
 load("data/spatial/mobility_regions.RData")
 
-#### prep independent variables with temporal sampling ####
+# #### prep independent variables with temporal sampling ####
+# 
+# number_of_age_samples <- 1 #max: length(anno$calage_sample[[1]])
+# independent_tables <- tibble::tibble(
+  # independent_table = c(
+  #   list(
+  #     dplyr::transmute(
+  #       .data = janno_final,
+  #       x = range_01_x(x),
+  #       y = range_01_y(y),
+  #       z = range_01_z(Date_BC_AD_Median_Derived)
+  #     )
+  #   ),
+  #   lapply(
+  #     1:number_of_age_samples,
+  #     function(i, anno) {
+  #       age_sample <- sapply(janno_final$Date_BC_AD_Sample, function(x){ x[i] })
+  #       dplyr::transmute(
+  #         .data = janno_final,
+  #         x = range_01_x(x),
+  #         y = range_01_y(y),
+  #         z = range_01_z(age_sample)
+  #       )
+  #     },
+  #     anno
+  #   )
+  # ),
+  # independent_table_id = c("age_center", paste0("age_sample_", 1:(length(independent_table) - 1)))
+# )
+# 
+# #### create spatial prediction grid ####
+# 
+# pred_points_space <- area %>%
+#   sf::st_make_grid(cellsize = 100000, what = "centers") %>%
+#   sf::st_intersection(area) %>%
+#   sf::st_coordinates() %>%
+#   tibble::as_tibble() %>%
+#   dplyr::rename(x_real = X, y_real = Y)
+# 
+# time_layers <- tibble::tibble(
+#   age_sample = seq(-7500, -500, 100)
+# )
+# 
+# pred_grid <- pred_points_space %>%
+#   tidyr::crossing(time_layers) %>%
+#   dplyr::mutate(
+#     point_id = 1:nrow(.),
+#     x = range_01_x(x_real),
+#     y = range_01_y(y_real),
+#     z = range_01_z(age_sample)
+#   )
+# 
+# #### create kernel parameters ####
+# 
+# kernel_settings <- tibble::tibble(
+#   kernel_setting = list(
+#     #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
+#     #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
+#     ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(400)), g = 0.1, on_residuals = T)
+#   ),
+#   kernel_setting_id = names(kernel_setting)
+# )
+# 
+# ### prepare model grid ####
+# 
+# model_grid <- expand.grid(
+#   kernel_setting_id = kernel_settings$kernel_setting_id,
+#   dependent_var_id = c("C1", "C2"),
+#   independent_table_id = independent_tables$independent_table_id,
+#   stringsAsFactors = F
+# ) %>%
+#   dplyr::left_join(
+#     kernel_settings, by = "kernel_setting_id"
+#   ) %>%
+#   dplyr::left_join(
+#     independent_tables, by = "independent_table_id"
+#   ) %>% dplyr::mutate(
+#     dependent_var = lapply(dependent_var_id, function(x) { janno_final[[x]] })
+#   ) %>% tibble::as_tibble()
+# 
+# names(model_grid$independent_table) <- model_grid$independent_table_id
+# names(model_grid$dependent_var) <- model_grid$dependent_var_id
+# model_grid$pred_grid_id <- "a"
+# model_grid$pred_grid <- list(pred_grid)
+# names(model_grid$pred_grid) <- model_grid$pred_grid_id
 
-number_of_age_samples <- 1 #max: length(anno$calage_sample[[1]])
-independent_tables <- tibble::tibble(
-  independent_table = c(
+
+model_grid <- mobest::create_model_grid(
+  independent = c(
     list(
       dplyr::transmute(
         .data = janno_final,
@@ -35,7 +119,7 @@ independent_tables <- tibble::tibble(
       )
     ),
     lapply(
-      1:number_of_age_samples,
+      1:1,
       function(i, anno) {
         age_sample <- sapply(janno_final$Date_BC_AD_Sample, function(x){ x[i] })
         dplyr::transmute(
@@ -47,97 +131,31 @@ independent_tables <- tibble::tibble(
       },
       anno
     )
+  ) %>% magrittr::set_names(c("age_center", paste0("age_sample_", 1:(length(.) - 1)))),
+  dependent = list(
+    C1 = janno_final$C1,
+    C2 = janno_final$C2
   ),
-  independent_table_id = c("age_center", paste0("age_sample_", 1:(length(independent_table) - 1)))
-)
-
-#### create spatial prediction grid ####
-
-pred_points_space <- area %>%
-  sf::st_make_grid(cellsize = 100000, what = "centers") %>%
-  sf::st_intersection(area) %>%
-  sf::st_coordinates() %>%
-  tibble::as_tibble() %>%
-  dplyr::rename(x_real = X, y_real = Y)
-
-time_layers <- tibble::tibble(
-  age_sample = seq(-7500, -500, 100)
-)
-
-pred_grid <- pred_points_space %>%
-  tidyr::crossing(time_layers) %>%
-  dplyr::mutate(
-    point_id = 1:nrow(.),
-    x = range_01_x(x_real),
-    y = range_01_y(y_real),
-    z = range_01_z(age_sample)
-  )
-
-#### create kernel parameters ####
-
-kernel_settings <- tibble::tibble(
-  kernel_setting = list(
-    #ds50_dt100_g01 = list(auto = F, d = c(dist_scale_01_x_km(50), dist_scale_01_x_km(50), dist_scale_01_z_years(100)), g = 0.1),
-    #ds100_dt200_g01 = list(auto = F, d = c(dist_scale_01_x_km(100), dist_scale_01_x_km(100), dist_scale_01_z_years(200)), g = 0.1),
+  kernel = list(
     ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(400)), g = 0.1, on_residuals = T)
   ),
-  kernel_setting_id = names(kernel_setting)
+  prediction_grid = list(
+    scs100_tl100 = mobest::create_prediction_grid(
+      area,
+      spatial_cell_size = 100000,
+      time_layers = seq(-7500, -500, 100)
+    ) %>%
+      dplyr::transmute(
+        point_id, 
+        x_real = x,
+        y_real = y,
+        z_real = z,
+        x = range_01_x(x),
+        y = range_01_y(y),
+        z = range_01_z(z)
+      )
+  )
 )
-
-### prepare model grid ####
-
-model_grid <- expand.grid(
-  kernel_setting_id = kernel_settings$kernel_setting_id,
-  dependent_var_id = c("C1", "C2"),
-  independent_table_id = independent_tables$independent_table_id,
-  stringsAsFactors = F
-) %>%
-  dplyr::left_join(
-    kernel_settings, by = "kernel_setting_id"
-  ) %>%
-  dplyr::left_join(
-    independent_tables, by = "independent_table_id"
-  ) %>% dplyr::mutate(
-    dependent_var = lapply(dependent_var_id, function(x) { janno_final[[x]] })
-  ) %>% tibble::as_tibble()
-
-names(model_grid$independent_table) <- model_grid$independent_table_id
-names(model_grid$dependent_var) <- model_grid$dependent_var_id
-model_grid$pred_grid_id <- "a"
-model_grid$pred_grid <- list(pred_grid)
-names(model_grid$pred_grid) <- model_grid$pred_grid_id
-
-
-# model_grid <- mobest::create_model_grid(
-#   independent = list(
-#     tibble::tibble(
-#       x = janno_final$x,
-#       y = janno_final$y,
-#       z = janno_final$Date_BC_AD_Median_Derived
-#     )
-#   ) %>% stats::setNames("age_median"),
-#   dependent = list(
-#     C1 = janno_final$C1,
-#     C2 = janno_final$C2
-#   ),
-#   kernel = list(
-#     #ds400_dt200_g001 = list(d = c(400000, 400000, 200), g = 0.01, on_residuals = T, auto = F),
-#     ds600_dt300_g001 = list(d = c(200000, 200000, 400), g = 0.1, on_residuals = T, auto = F)#,
-#     #ds800_dt400_g001 = list(d = c(800000, 800000, 400), g = 0.01, on_residuals = T, auto = F)
-#   ),
-#   prediction_grid = list(
-#     scs100_tl100 = mobest::create_prediction_grid(
-#       area,
-#       spatial_cell_size = 100000,
-#       time_layers = seq(-7500, -500, 100)
-#     )
-#     # scs200_tl200 = mobest::create_prediction_grid(
-#     #   area,
-#     #   spatial_cell_size = 150000,
-#     #   time_layers = seq(-7500, 1500, 281.25)
-#     # )
-#   )
-# )
 
 model_grid_result <- mobest::run_model_grid(model_grid)
 pred_grid_filled <- mobest::unnest_model_grid(model_grid_result)
@@ -146,9 +164,9 @@ pred_grid_filled <- pred_grid_filled %>%
   dplyr::mutate(
     x = x_real,
     y = y_real,
-    z = age_sample,
+    z = z_real
   ) %>% dplyr::select(
-    -x_real, -y_real, -age_sample
+    -x_real, -y_real, -z_real
   )
 
 pred_grid_filled %>%
@@ -158,7 +176,7 @@ pred_grid_filled %>%
     z %% 500 == 0
   ) %>%
   ggplot() +
-  geom_raster(aes(x, y, fill = mean, alpha = sd)) +
+  geom_raster(aes(x, y, fill = mean)) +#, alpha = sd)) +
   facet_wrap(~z) +
   scale_fill_viridis_c() +
   scale_alpha_continuous(range = c(1, 0), na.value = 0)
