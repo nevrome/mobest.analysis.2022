@@ -20,7 +20,7 @@ interpol_comparison <- mobest::crossvalidate(
     C2 = janno_final$C2
   ),
   kernel = mobest::create_kernel_grid(
-    ds = seq(100, 1000, 100)*1000,#seq(100, 10000, 100)*1000, 
+    ds = seq(50, 2000, 50)*1000,#seq(100, 10000, 100)*1000, 
     dt = dt_for_this_run, 
     g = g_for_this_run
   )

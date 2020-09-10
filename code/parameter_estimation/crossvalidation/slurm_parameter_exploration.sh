@@ -1,16 +1,16 @@
 #!/bin/bash
 
-#SBATCH -p short                                          # The queue or 'partition' you want to submit to
+#SBATCH -p long                                          # The queue or 'partition' you want to submit to
 #SBATCH -c 32                                             # number of CPUs
 #SBATCH --mem=10G                                         # memory pool for all cores
 #SBATCH -o /projects1/coest_mobility/log/%j.out           # STDOUT (the standard output stream) into file <JOB_NUMBER>.out
 #SBATCH -e /projects1/coest_mobility/log/%j.err           # STDERR (the output stream for errors) into file <JOB_NUMBER>.err
-#SBATCH --array 0-9%5
+#SBATCH --array 0-39%10
 #SBATCH -J "cross"
 
 # parameters
 g_to_explore=(0.1)
-dt_to_explore=($(seq 100 100 1000))
+dt_to_explore=($(seq 50 50 2000))
 
 jobs=$((${#g_to_explore[@]}*${#dt_to_explore[@]}))
 
