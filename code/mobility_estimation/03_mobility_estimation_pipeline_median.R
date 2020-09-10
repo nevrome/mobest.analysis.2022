@@ -21,14 +21,14 @@ model_grid <- mobest::create_model_grid(
   ),
   kernel = list(
     #ds400_dt200_g001 = list(d = c(400000, 400000, 200), g = 0.01, on_residuals = T, auto = F),
-    ds600_dt300_g001 = list(d = c(600000, 600000, 300), g = 0.1, on_residuals = T, auto = F)#,
+    ds600_dt300_g01 = list(d = c(550000, 550000, 1050), g = 0.04, on_residuals = T, auto = F)#,
     #ds800_dt400_g001 = list(d = c(800000, 800000, 400), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     scs100_tl100 = mobest::create_prediction_grid(
       area,
       spatial_cell_size = 100000,
-      time_layers = seq(-7500, -500, 100)
+      time_layers = seq(-7500, 1500, 100)
     )
     # scs200_tl200 = mobest::create_prediction_grid(
     #   area, 
@@ -54,7 +54,7 @@ interpol_grid %>%
     z %% 500 == 0
   ) %>%
   ggplot() +
-  geom_raster(aes(x, y, fill = mean, alpha = sd)) +
+  geom_raster(aes(x, y, fill = mean))+#, alpha = sd)) +
   facet_wrap(~z) +
   scale_fill_viridis_c() +
   scale_alpha_continuous(range = c(1, 0), na.value = 0)
@@ -78,29 +78,30 @@ interpol_grid %>%
 
 interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 1)
 
-# gb <- interpol_grid_origin %>%
-#   sf::st_as_sf(
-#     coords = c("x", "y"),
-#     crs = sf::st_crs(mobility_regions),
-#     remove = FALSE
-#   ) %>%
-#   sf::st_intersection(mobility_regions) %>%
-#   sf::st_drop_geometry() %>%
-#   dplyr::filter(
-#     region_id == "Britain and Ireland"
-#   )
-# 
-# load("data/spatial/extended_area.RData")
-# 
-# library(ggplot2)
-# gb %>% dplyr::filter(
-#   z > -4000 & z < -3000
-# ) %>%
-#   ggplot() +
-#   geom_sf(data = extended_area) +
-#   geom_raster(aes(x, y, fill = mean_C1)) +
-#   geom_segment(aes(x, y, xend = x_origin, yend = y_origin)) +
-#   facet_wrap(~z)
+gb <- interpol_grid_origin %>%
+  sf::st_as_sf(
+    coords = c("x", "y"),
+    crs = sf::st_crs(mobility_regions),
+    remove = FALSE
+  ) %>%
+  sf::st_intersection(mobility_regions) %>%
+  sf::st_drop_geometry() %>%
+  dplyr::filter(
+    region_id == "Iberia"
+  )
+
+load("data/spatial/extended_area.RData")
+
+library(ggplot2)
+gb %>% dplyr::filter(
+  #z > -4000 & z < -3000
+  z %% 500 == 0
+) %>%
+  ggplot() +
+  geom_sf(data = extended_area) +
+  geom_raster(aes(x, y, fill = mean_C1)) +
+  geom_segment(aes(x, y, xend = x_origin, yend = y_origin)) +
+  facet_wrap(~z)
 
 # library(ggplot2)
 # interpol_grid_origin %>%
@@ -116,7 +117,7 @@ interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 1)
 
 mobility_proxy <- mobest::estimate_mobility(interpol_grid_origin, mobility_regions)
 
-mobility <- mobility_proxy
+#mobility <- mobility_proxy
  
 #save(mobility_proxy, file = paste0("data/mobility_estimation/mobility_proxy_median.RData"))
 
@@ -124,12 +125,15 @@ mobility_proxy %>%   ggplot() +
   geom_line(
     aes(
       x = z, y = mean_km_per_decade,
-      group = interaction(independent_table_id, kernel_setting_id)#,
-      #color = angle_deg
+      group = interaction(independent_table_id, kernel_setting_id),
+      color = angle_deg
     ),
     alpha = 0.5
   ) +
-  facet_grid(cols = dplyr::vars(region_id), rows = dplyr::vars(kernel_setting_id))
+  facet_grid(cols = dplyr::vars(region_id), rows = dplyr::vars(kernel_setting_id)) +
+   scale_color_gradientn(
+    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A")
+  )
 
 # mobility_proxy %>%
 #   dplyr::group_by(kernel_setting_id, region_id) %>%
