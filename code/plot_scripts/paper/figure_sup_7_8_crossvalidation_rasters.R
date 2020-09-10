@@ -32,11 +32,11 @@ ps1 <- lapply(1:2, function(i) {
     ) +
     scale_fill_viridis_c(direction = -1) +
     facet_wrap(~dependent_var) +
-    geom_raster(
-      data = mg[[i]],
-      aes(x = ds, y = dt),
-      fill = "red"
-    ) +
+    # geom_raster(
+    #   data = mg[[i]],
+    #   aes(x = ds, y = dt),
+    #   fill = "red"
+    # ) +
     coord_fixed() +
     theme(
       legend.position = "right"
@@ -52,7 +52,7 @@ ps1 <- lapply(1:2, function(i) {
 p1 <- cowplot::plot_grid(plotlist = ps1, nrow = 1, ncol = 2)
 
 ggsave(
-  "plots/figure_sup_7_crossvalidation_rasters.jpeg",
+  "plots/figure_sup_7_crossvalidation_rasters2.jpeg",
   plot = p1,
   device = "jpeg",
   scale = 0.6,
@@ -102,43 +102,43 @@ p2 <- mean_interpol_comparison_group %>%
   geom_raster(
     aes(x = ds, y = dt, fill = cut_mean_mean_squared_difference)
   ) +
-  geom_point(
-    aes(x = 600, y = 2600), 
-    color = "blue", pch = 4, size = 5
-  ) +
+  # geom_point(
+  #   aes(x = 600, y = 2600), 
+  #   color = "blue", pch = 4, size = 5
+  # ) +
   geom_point(
     data = min_point,
     aes(x = ds, y = dt), 
     color = "red", pch = 4, size = 5
   ) +
-  geom_point(
-    aes(x = 1300, y = 1000), 
-    color = "black", pch = 4, size = 5
-  ) +
-  annotate(
-    "text",
-    x = 600 + 3000, y = 2600, 
-    label = latex2exp::TeX(paste0("$\\theta_s$ = ", 600, " | $\\theta_t$ = ", 2600)), 
-    parse = TRUE, 
-    color = "blue",
-    size = 4
-  ) +
-  annotate(
-    "text",
-    x = min_point$ds + 3000, y = min_point$dt, 
-    label = latex2exp::TeX(paste0("$\\theta_s$ = ", min_point$ds, " | $\\theta_t$ = ", min_point$dt)), 
-    parse = TRUE, 
-    color = "red",
-    size = 4
-  ) +
-  annotate(
-    "text",
-    x = 1300 + 3000, y = 1000, 
-    label = latex2exp::TeX(paste0("$\\theta_s$ = ", 1300, " | $\\theta_t$ = ", 1000)), 
-    parse = TRUE, 
-    color = "black",
-    size = 4
-  ) +
+  # geom_point(
+  #   aes(x = 1300, y = 1000), 
+  #   color = "black", pch = 4, size = 5
+  # ) +
+  # annotate(
+  #   "text",
+  #   x = 600 + 3000, y = 2600, 
+  #   label = latex2exp::TeX(paste0("$\\theta_s$ = ", 600, " | $\\theta_t$ = ", 2600)), 
+  #   parse = TRUE, 
+  #   color = "blue",
+  #   size = 4
+  # ) +
+  # annotate(
+  #   "text",
+  #   x = min_point$ds + 3000, y = min_point$dt, 
+  #   label = latex2exp::TeX(paste0("$\\theta_s$ = ", min_point$ds, " | $\\theta_t$ = ", min_point$dt)), 
+  #   parse = TRUE, 
+  #   color = "red",
+  #   size = 4
+  # ) +
+  # annotate(
+  #   "text",
+  #   x = 1300 + 3000, y = 1000, 
+  #   label = latex2exp::TeX(paste0("$\\theta_s$ = ", 1300, " | $\\theta_t$ = ", 1000)), 
+  #   parse = TRUE, 
+  #   color = "black",
+  #   size = 4
+  # ) +
   scale_fill_viridis_d(direction = -1) +
   coord_fixed() +
   theme_bw() +
@@ -157,7 +157,7 @@ p2 <- mean_interpol_comparison_group %>%
   # scale_x_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_x}$")))
 
 ggsave(
-  "plots/figure_sup_8_crossvalidation_raster_merged.jpeg",
+  "plots/figure_sup_8_crossvalidation_raster_merged2.jpeg",
   plot = p2,
   device = "jpeg",
   scale = 0.6,
