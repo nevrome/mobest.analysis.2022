@@ -137,7 +137,7 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_x_km(200), dist_scale_01_z_years(400)), g = 0.1, on_residuals = T)
+    ds200_dt400_g01 = list(auto = F, d = c(dist_scale_01_x_km(200), dist_scale_01_y_km(200), dist_scale_01_z_years(400)), g = 0.1, on_residuals = T)
   ),
   prediction_grid = list(
     scs100_tl100 = mobest::create_prediction_grid(
@@ -393,5 +393,31 @@ pri_mean %>%   ggplot() +
   ) +
   facet_grid(cols = dplyr::vars(region_id), rows = dplyr::vars(kernel_setting_id))
 
+#### boxplot ####
+
+points_regions <- pri_ready %>%
+  dplyr::select(.data[["x"]], .data[["y"]], .data[["point_id"]]) %>%
+  unique() %>%
+  sf::st_as_sf(
+    coords = c("x", "y"),
+    crs = sf::st_crs(mobility_regions)
+  ) %>%
+  sf::st_intersection(mobility_regions) %>%
+  sf::st_drop_geometry()
+
+ori <- pri_ready %>%
+  dplyr::left_join(points_regions, by = "point_id")
+
+ori %>% dplyr::mutate(
+  z_cut = cut(z, breaks = seq(-7500, 1500, 500), labels = seq(-7250, 1250, 500))
+) %>% ggplot() +
+  geom_boxplot(
+    aes(
+      x = z_cut, y = spatial_distance, group = z_cut#,
+      #group = interaction(independent_table_id, kernel_setting_id),
+      #color = angle_deg
+    )
+  ) +
+  facet_wrap(dplyr::vars(region_id))
 
 
