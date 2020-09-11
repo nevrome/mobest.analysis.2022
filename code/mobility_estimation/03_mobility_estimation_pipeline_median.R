@@ -21,7 +21,7 @@ model_grid <- mobest::create_model_grid(
   ),
   kernel = list(
     #ds400_dt200_g001 = list(d = c(400000, 400000, 200), g = 0.01, on_residuals = T, auto = F),
-    ds600_dt300_g01 = list(d = c(550000, 550000, 1050), g = 0.04, on_residuals = T, auto = F)#,
+    ds600_dt300_g01 = list(d = c(550000, 550000, 1050), g = 0.1, on_residuals = T, auto = F)#,
     #ds800_dt400_g001 = list(d = c(800000, 800000, 400), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
@@ -51,7 +51,8 @@ interpol_grid %>%
   dplyr::filter(
     #kernel_setting_id == "ds400_dt700_g001",
     dependent_var_id == "C1",
-    z %% 500 == 0
+    z %in% seq(-6000, -5000, 100)
+    #z %% 500 == 0
   ) %>%
   ggplot() +
   geom_raster(aes(x, y, fill = mean))+#, alpha = sd)) +
@@ -134,6 +135,32 @@ mobility_proxy %>%   ggplot() +
    scale_color_gradientn(
     colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A")
   )
+
+
+#### boxplot ####
+
+points_regions <- interpol_grid_origin %>%
+  dplyr::select(.data[["x"]], .data[["y"]], .data[["point_id"]]) %>%
+  unique() %>%
+  sf::st_as_sf(
+    coords = c("x", "y"),
+    crs = sf::st_crs(mobility_regions)
+  ) %>%
+  sf::st_intersection(mobility_regions) %>%
+  sf::st_drop_geometry()
+
+ori <- interpol_grid_origin %>%
+  dplyr::left_join(points_regions, by = "point_id")
+
+ori %>% ggplot() +
+  geom_boxplot(
+    aes(
+      x = z, y = spatial_distance, group = z#,
+      #group = interaction(independent_table_id, kernel_setting_id),
+      #color = angle_deg
+    )
+  ) +
+  facet_wrap(dplyr::vars(region_id))
 
 # mobility_proxy %>%
 #   dplyr::group_by(kernel_setting_id, region_id) %>%
