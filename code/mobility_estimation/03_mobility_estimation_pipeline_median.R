@@ -21,7 +21,7 @@ model_grid <- mobest::create_model_grid(
   ),
   kernel = list(
     #ds400_dt200_g001 = list(d = c(400000, 400000, 200), g = 0.01, on_residuals = T, auto = F),
-    ds600_dt300_g01 = list(d = c(550000, 550000, 1050), g = 0.1, on_residuals = T, auto = F)#,
+    ds600_dt300_g01 = list(d = c(500000, 500000, 1000), g = 0.1, on_residuals = T, auto = F)#,
     #ds800_dt400_g001 = list(d = c(800000, 800000, 400), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
@@ -51,7 +51,7 @@ interpol_grid %>%
   dplyr::filter(
     #kernel_setting_id == "ds400_dt700_g001",
     dependent_var_id == "C1",
-    z %in% seq(-6000, -5000, 100)
+    z %in% seq(-7000, -2000, 500)
     #z %% 500 == 0
   ) %>%
   ggplot() +
@@ -152,10 +152,12 @@ points_regions <- interpol_grid_origin %>%
 ori <- interpol_grid_origin %>%
   dplyr::left_join(points_regions, by = "point_id")
 
-ori %>% ggplot() +
+ori %>% dplyr::mutate(
+  z_cut = cut(z, breaks = seq(-7500, 1500, 500), labels = seq(-7250, 1250, 500))
+) %>% ggplot() +
   geom_boxplot(
     aes(
-      x = z, y = spatial_distance, group = z#,
+      x = z_cut, y = spatial_distance, group = z_cut#,
       #group = interaction(independent_table_id, kernel_setting_id),
       #color = angle_deg
     )
