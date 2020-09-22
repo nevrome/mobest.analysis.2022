@@ -27,6 +27,7 @@ model_grid <- mobest::create_model_grid(
   prediction_grid = list(
     scs100_tl100 = mobest::create_prediction_grid(
       area,
+      mobility_regions,
       spatial_cell_size = 100000,
       time_layers = seq(-7500, 1500, 100)
     )
