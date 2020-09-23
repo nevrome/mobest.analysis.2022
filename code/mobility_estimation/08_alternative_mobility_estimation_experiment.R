@@ -4,11 +4,12 @@ library(magrittr)
 
 load("data/poseidon_data/janno_final.RData")
 load("data/spatial/area.RData")
+load("data/spatial/mobility_regions.RData")
 
 main_pred_grid <- mobest::create_prediction_grid(
-  area,
-  spatial_cell_size = 100000,
-  time_layers = seq(-7500, 1500, 100)
+  area, mobility_regions,
+  spatial_cell_size = 200000,
+  time_layers = seq(-7500, 1500, 200)
 )
 
 delta_x <- 10
@@ -41,11 +42,7 @@ model_grid <- mobest::create_model_grid(
 
 #### run interpolation on model grid ####
 
-model_grid_result <- mobest::run_model_grid(model_grid)
-
-#### unnest prediction to get a point-wise prediction table ####
-
-interpol_grid <- mobest::unnest_model_grid(model_grid_result)
+interpol_grid <- mobest::run_model_grid(model_grid)
 
 interpol_grid %>%
   dplyr::filter(
@@ -67,60 +64,14 @@ interpol_grid %>%
 
 #### mobility ####
 
-mob <- interpol_grid %>% tidyr::pivot_wider(
-  id_cols = c("pred_grid_id", "point_id", "x", "y", "z"),
-  names_from = "dependent_var_id", values_from = c("mean", "sd")
-) %>% tidyr::pivot_wider(
-  id_cols = c("point_id"),
-  names_from = c("pred_grid_id"), values_from = c("mean_C1", "mean_C2", "sd_C1", "sd_C2")
-) %>%
-  dplyr::left_join(
-    main_pred_grid
-  ) %>%
-  dplyr::mutate(
-    # delta
-    delta_x = delta_x,
-    delta_y = delta_y,
-    delta_z = delta_z,
-    # partial derivatives deriv_x_C*
-    deriv_x_C1 = (mean_C1_offset_x - mean_C1_main) / delta_x,
-    deriv_x_C2 = (mean_C2_offset_x - mean_C2_main) / delta_x,
-    # partial derivatives deriv_y_C*
-    deriv_y_C1 = (mean_C1_offset_y - mean_C1_main) / delta_y,
-    deriv_y_C2 = (mean_C2_offset_y - mean_C2_main) / delta_y,
-    # partial derivatives deriv_z_C*
-    deriv_z_C1 = (mean_C1_offset_z - mean_C1_main) / delta_z,
-    deriv_z_C2 = (mean_C2_offset_z - mean_C2_main) / delta_z,
-    # two directional speeds for each spatial direction x and y
-    J_x_C1 = -deriv_z_C1/deriv_x_C1,
-    J_y_C1 = -deriv_z_C1/deriv_y_C1,
-    J_x_C2 = -deriv_z_C2/deriv_x_C2,
-    J_y_C2 = -deriv_z_C2/deriv_y_C2,
-    # one combined speed for C1 and C2
-    J_x = (J_x_C1 + J_x_C2)/2,
-    J_y = (J_y_C1 + J_y_C2)/2,
-    # final strength of the speed
-    J_final = sqrt(J_x^2 + J_y^2)
-  ) %>%
-  dplyr::select(
-    point_id, x, y, z, sd_C1_main, J_x, J_y, J_final
-  ) %>%
-  dplyr::mutate(
-    angle = unlist(Map(function(x,y) {mobest::vec2deg(c(x,y))}, J_x, J_y)),
-    J_final_outlier_removed = ifelse(
-      J_final > quantile(J_final, probs = 0.90), NA, J_final
-    ),
-    J_x_outlier_removed = ifelse(
-      abs(J_x) > quantile(abs(J_x), probs = 0.90), NA, J_x
-    )
-  )
+mob <- mobest::estimate_mobility(interpol_grid, delta_x, delta_y, delta_z)
 
 library(ggplot2)
 mob %>% dplyr::filter(
-  z %% 500 == 0
+  z %% 300 == 0
 ) %>%
   ggplot() +
-  geom_raster(aes(x, y, fill = J_x_outlier_removed)) +
+  geom_raster(aes(x, y, fill = J_final_outlier_removed)) +
   facet_wrap(~z) +
   scale_fill_gradientn(colours = c("blue", "yellow", "red"))
 
@@ -132,15 +83,7 @@ mob %>% dplyr::filter(
   facet_wrap(~z) +
   scale_fill_gradientn(colours = c("blue", "green", "green", "red", "red", "yellow", "yellow", "blue"))
 
-load("data/spatial/epsg102013.RData")
-load("data/spatial/mobility_regions.RData")
-
-mob_with_regions <- mob %>% 
-  sf::st_as_sf(coords = c("x", "y"), crs = epsg102013) %>%
-  sf::st_intersection(mobility_regions) %>%
-  sf::st_drop_geometry()
-
-mob_with_regions %>%
+mob %>%
   dplyr::group_by(
     region_id, z
   ) %>%

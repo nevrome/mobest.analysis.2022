@@ -77,13 +77,6 @@ interpol_grid %>%
 interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 1)
 
 gb <- interpol_grid_origin %>%
-  sf::st_as_sf(
-    coords = c("x", "y"),
-    crs = sf::st_crs(mobility_regions),
-    remove = FALSE
-  ) %>%
-  sf::st_intersection(mobility_regions) %>%
-  sf::st_drop_geometry() %>%
   dplyr::filter(
     region_id == "Iberia"
   )
@@ -113,18 +106,25 @@ gb %>% dplyr::filter(
 
 #### mobility proxy ####
 
-mobility_proxy <- mobest::estimate_mobility(interpol_grid_origin, mobility_regions)
+mobility_proxy <- mobest::estimate_mobility(interpol_grid_origin)
 
 #mobility <- mobility_proxy
  
 #save(mobility_proxy, file = paste0("data/mobility_estimation/mobility_proxy_median.RData"))
 
-mobility_proxy %>%   ggplot() +
+mobility_proxy %>%
+  # main
+  dplyr::group_by(region_id, z, independent_table_id, kernel_setting_id) %>%
+  dplyr::summarise(
+    mean_speed_km_per_decade = mean(speed_km_per_decade)#,
+    #mean_angle_deg = mobest::mean_deg(angle_deg)
+  ) %>%
+  ggplot() +
   geom_line(
     aes(
-      x = z, y = mean_km_per_decade,
-      group = interaction(independent_table_id, kernel_setting_id),
-      color = angle_deg
+      x = z, y = mean_speed_km_per_decade,
+      group = interaction(independent_table_id, kernel_setting_id)#,
+      #color = mean_angle_deg
     ),
     alpha = 0.5
   ) +
