@@ -32,10 +32,6 @@ model <- lm(C1 ~ x + y + Date_BC_AD_Median_Derived, data = dat)
 dat <- dat %>% modelr::add_residuals(model, var = "C1_resid")
 model <- lm(C2 ~ x + y + Date_BC_AD_Median_Derived, data = dat)
 dat <- dat %>% modelr::add_residuals(model, var = "C2_resid")
-model <- lm(C1 ~ x + y + Date_BC_AD_Median_Derived, data = dat)
-dat <- dat %>% modelr::add_residuals(model, var = "C1_resid")
-model <- lm(C2 ~ x + y + Date_BC_AD_Median_Derived, data = dat)
-dat <- dat %>% modelr::add_residuals(model, var = "C2_resid")
 
 d_gsd_long <- tidyr::expand_grid(d1 = dat, d2 = dat) %>%
   tidyr::unpack(cols = c(d1, d2), names_sep = "_") %>%
