@@ -5,8 +5,14 @@ load("data/parameter_exploration/variogram/all_distances.RData")
 # binning
 d_binned <- d_all %>%
   dplyr::mutate(
-    geo_dist_cut = cut(geo_dist, breaks = c(seq(0, max(geo_dist), 100), max(geo_dist)), include.lowest	= T, labels = F) * 100,
-    time_dist_cut = cut(time_dist, breaks = c(seq(0, max(time_dist), 100), max(time_dist)), include.lowest	= T, labels = F) * 100
+    geo_dist_cut = cut(
+      geo_dist, breaks = c(seq(0, max(geo_dist), 100), max(geo_dist)), 
+      include.lowest	= T, labels = F
+    ) * 100,
+    time_dist_cut = cut(
+      time_dist, breaks = c(seq(0, max(time_dist), 100), max(time_dist)), 
+      include.lowest	= T, labels = F
+    ) * 100
   ) %>%
   dplyr::group_by(geo_dist_cut, time_dist_cut) %>%
   dplyr::summarise(
