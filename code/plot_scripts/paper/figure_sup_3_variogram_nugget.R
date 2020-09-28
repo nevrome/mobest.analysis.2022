@@ -14,7 +14,13 @@ lower_left <- d_all_long %>%
   dplyr::mutate(
     dist_type = replace(dist_type, dist_type == "C1_dist_resid", "C1"),
     dist_type = replace(dist_type, dist_type == "C2_dist_resid", "C2"),
-    dist_type = factor(dist_type, levels = c("C1", "C2"))
+    dist_type = factor(dist_type, levels = c("C1", "C2")),
+    # rescaling of the dist val to a relative proportion
+    dist_val_adjusted = ifelse(
+      dist_type == "C1",
+      dist_val/max(d_all_long$C1_dist),
+      dist_val/max(d_all_long$C2_dist)
+    )
   )
 
 lower_left_median <- lower_left %>%
@@ -22,20 +28,20 @@ lower_left_median <- lower_left %>%
     dist_type
   ) %>%
   dplyr::summarise(
-    median = median(dist_val, na.rm = T)
+    median = median(dist_val_adjusted, na.rm = T)
   )
 
 p <- ggplot() +
   geom_jitter(
     data = lower_left,
-    mapping = aes(x = dist_type, y = dist_val, color = dist_type),
+    mapping = aes(x = dist_type, y = dist_val_adjusted, color = dist_type),
     alpha = 0.5,
     size = 0.5,
     width = 0.4
   ) + 
   geom_boxplot(
     data = lower_left,
-    mapping = aes(x = dist_type, y = dist_val),
+    mapping = aes(x = dist_type, y = dist_val_adjusted),
     alpha = 0.5,
     width = 0.5
   ) +
