@@ -56,7 +56,7 @@ p <- ggplot() +
     color = F
   ) +
   xlab("ancestry component distance type") +
-  ylab("log10 pairwise residual distance") +
+  ylab("log10 pairwise normalized residual distance") +
   scale_y_log10(labels = scales::comma) +
   scale_x_discrete(limits = rev(levels(lower_left$dist_type)))
 
