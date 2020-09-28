@@ -6,8 +6,14 @@ load("data/parameter_exploration/variogram/all_distances.RData")
 # binning
 d_binned <- d_all %>%
   dplyr::mutate(
-    geo_dist_cut = (cut(geo_dist, breaks = c(seq(0, max(geo_dist), 100), max(geo_dist)), include.lowest	= T, labels = F) * 100) - 50,
-    time_dist_cut = (cut(time_dist, breaks = c(seq(0, max(time_dist), 100), max(time_dist)), include.lowest	= T, labels = F) * 100) - 50
+    geo_dist_cut = (cut(
+      geo_dist, breaks = c(seq(0, max(geo_dist), 100), max(geo_dist)), 
+      include.lowest	= T, labels = F
+    ) * 100) - 50,
+    time_dist_cut = (cut(
+      time_dist, breaks = c(seq(0, max(time_dist), 100), max(time_dist)), 
+      include.lowest	= T, labels = F
+    ) * 100) - 50
   ) %>%
   dplyr::group_by(geo_dist_cut, time_dist_cut) %>%
   dplyr::summarise(
@@ -15,9 +21,9 @@ d_binned <- d_all %>%
     C1 = mean(C1_dist^2, na.rm = T),
     C1_resid = mean(C1_dist_resid^2, na.rm = T),
     C2 = mean(C2_dist^2, na.rm = T),
-    C2_resid = mean(C2_dist_resid^2, na.rm = T)
-  ) %>%
-  dplyr::ungroup()
+    C2_resid = mean(C2_dist_resid^2, na.rm = T),
+    .groups	= "drop"
+  )
 
 d_binned_long <- d_binned %>%
   tidyr::pivot_longer(
@@ -28,10 +34,12 @@ d_binned_long <- d_binned %>%
     detrended = ifelse(grepl("resid", distance_type), "detrended (residuals)", "not detrended"),
     distance_type = sub("_resid", "", distance_type),
     distance_type = factor(distance_type, levels = c("C1", "C2"))
-  ) 
+  ) %>%
+  dplyr::mutate(
+    detrended = factor(detrended, levels = c("not detrended", "detrended (residuals)"))
+  )
 
-
-
+# plot loop
 ps <- lapply(d_binned_long %>% dplyr::group_split(detrended, distance_type), function(x) {
   
   ggplot(x) + 
