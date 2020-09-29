@@ -1,4 +1,4 @@
-# ~/singularity/slurm_nevrome_coest.sh medium 16 50 code/parameter_estimation/laGP_maximum_likelihood_estimation/00_approx_params.R 
+# ~/singularity/slurm_nevrome_coest.sh medium 16 50 code/parameter_estimation/laGP_maximum_likelihood_estimation/anisotropic_mle.R 
 
 library(magrittr)
 library(laGP)
@@ -13,20 +13,20 @@ iterations <- 50
 
 mleGPsep_out <- lapply(c("C1", "C2"), function(ancestry_component) {
   
-  .ancestry_component <- rlang::ensym(ancestry_component)
+  # code fragment if not every every ancestry component is known for each observation
+  # .ancestry_component <- rlang::ensym(ancestry_component)
+  # janno_final_filtered <- janno_final %>% 
+  #   dplyr::select(x, y, Date_BC_AD_Median_Derived, !!.ancestry_component) %>% 
+  #   dplyr::filter(!is.na(!!.ancestry_component))
   
-  janno_final_filtered <- janno_final %>% 
-    dplyr::select(x, y, Date_BC_AD_Median_Derived, !!.ancestry_component) %>% 
-    dplyr::filter(!is.na(!!.ancestry_component))
-  
-  independent <- janno_final_filtered %>%
+  independent <- janno_final %>%
     dplyr::transmute(
       x = x/1000000,
       y = y/1000000,
       z = Date_BC_AD_Median_Derived/1000
     )
   
-  dependent <- janno_final_filtered[[ancestry_component]]
+  dependent <- janno_final[[ancestry_component]]
   
   # parameter estimation
   mleGPsep_params <- lapply(1:iterations, function(i) {
@@ -54,9 +54,9 @@ mleGPsep_out <- lapply(c("C1", "C2"), function(ancestry_component) {
     tibble::tibble(
       mle_method = "mleGPsep",
       ancestry_component = ancestry_component,
-      dx = x$theta[1] * 1000, 
-      dy = x$theta[2] * 1000, 
-      dt = x$theta[3] * 1000, 
+      dx = sqrt(x$theta[1]) * 1000, 
+      dy = sqrt(x$theta[2]) * 1000, 
+      dt = sqrt(x$theta[3]) * 1000, 
       g = x$theta[4], 
       its = x$its,
       msg = x$msg,
@@ -71,19 +71,14 @@ mleGPsep_out <- lapply(c("C1", "C2"), function(ancestry_component) {
 
 jmleGPsep_out <- lapply(c("C1", "C2"), function(ancestry_component) {
   
-  .ancestry_component <- rlang::ensym(ancestry_component)
-  
-  janno_final_filtered <- janno_final %>% dplyr::select(x, y, Date_BC_AD_Median_Derived, !!.ancestry_component) %>% 
-    dplyr::filter(!is.na(!!.ancestry_component))
-  
-  independent <- janno_final_filtered %>%
+  independent <- janno_final %>%
     dplyr::transmute(
       x = x/1000000,
       y = y/1000000,
       z = Date_BC_AD_Median_Derived/1000
     )
   
-  dependent <- janno_final_filtered[[ancestry_component]]
+  dependent <- janno_final[[ancestry_component]]
   
   # parameter estimation
   jmleGPsep_params <- lapply(1:iterations, function(i) {
@@ -114,9 +109,9 @@ jmleGPsep_out <- lapply(c("C1", "C2"), function(ancestry_component) {
     dplyr::transmute(
       mle_method = "jmleGPsep",
       ancestry_component = ancestry_component,
-      dx = d.1 * 1000, 
-      dy = d.2 * 1000, 
-      dt = d.3 * 1000, 
+      dx = sqrt(d.1) * 1000, 
+      dy = sqrt(d.2) * 1000, 
+      dt = sqrt(d.3) * 1000, 
       g = g, 
       its = tot.its,
       msg = NA,
@@ -135,3 +130,5 @@ mlesep_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
   )
 
 save(mlesep_out, file = "data/parameter_exploration/mle/mlesep_out.RData")
+
+# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/parameter_exploration/mle/mlesep_out.RData data/parameter_exploration/mle/mlesep_out.RData
