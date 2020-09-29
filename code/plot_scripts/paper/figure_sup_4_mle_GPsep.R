@@ -13,9 +13,9 @@ mlesep_out_nugget <- mlesep_out %>%
   dplyr::filter(parameter == "g")
 
 levels(mlesep_out_theta$parameter) <- levels(mlesep_out_nugget$parameter) <- c(
-  latex2exp::TeX("$\\theta_x$"), 
-  latex2exp::TeX("$\\theta_y$"),
-  latex2exp::TeX("$\\theta_t$"),
+  latex2exp::TeX("$\\sqrt{\\theta_x}$"), 
+  latex2exp::TeX("$\\sqrt{\\theta_y}$"),
+  latex2exp::TeX("$\\sqrt{\\theta_t}$"),
   latex2exp::TeX("$\\eta$")
 )
 
