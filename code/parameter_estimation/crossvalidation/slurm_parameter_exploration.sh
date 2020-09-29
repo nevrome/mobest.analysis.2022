@@ -9,7 +9,7 @@
 #SBATCH -J "cross"
 
 # parameters
-g_to_explore=(0.1)
+g_to_explore=(0.04)
 dt_to_explore=($(seq 50 50 2000))
 
 jobs=$((${#g_to_explore[@]}*${#dt_to_explore[@]}))
