@@ -5,7 +5,7 @@ load("data/poseidon_data/janno_final.RData")
 load("data/parameter_exploration/crossvalidation/interpol_comparison.RData")
 
 sample_interpol_comparison <- interpol_comparison %>%
-  dplyr::sample_n(10000)
+  dplyr::sample_n(100000)
 
 sample_interpol_comparison$difference[sample_interpol_comparison$dependent_var == "C1_dist"] %<>% 
   `/`(dist(range(janno_final$C1, na.rm = T)))
@@ -26,7 +26,7 @@ p <- sample_interpol_comparison %>%
   theme_bw() +
   scale_y_discrete(expand = expansion(mult = c(0.1, 0.5), add = c(0.1, 1.5))) +
   scale_x_continuous(limits = c(-0.5, 0.5), breaks = seq(-0.5, 0.5, 0.1)) +
-  xlab("Normalized difference between prediction and measured ancestry") +
+  xlab("Normalized difference between predicted and measured ancestry") +
   ylab("Density curves")
 
 ggsave(
