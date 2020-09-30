@@ -1,3 +1,5 @@
+# sbatch slurm_parameter_exploration.sh
+
 library(magrittr)
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
@@ -31,3 +33,5 @@ save(interpol_comparison, file = paste0(
   run, 
   ".RData"
 ))
+
+# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/parameter_exploration/crossvalidation/interpol_comparison_* .
