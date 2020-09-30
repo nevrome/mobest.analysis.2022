@@ -110,14 +110,14 @@ p_time <- ggplot(left_time) +
   ylab("ancestry component distance      ")
 
 
-p <- cowplot::plot_grid(p_space, p_time, nrow = 1, labels = c("A", "B"))
+p <- cowplot::plot_grid(p_space, p_time, nrow = 2, labels = c("A", "B"))
 
 ggsave(
   "plots/figure_sup_10_variogram_space_time.jpeg",
   plot = p,
   device = "jpeg",
-  scale = 0.6,
+  scale = 0.4,
   dpi = 300,
-  width = 400, height = 100, units = "mm",
+  width = 500, height = 400, units = "mm",
   limitsize = F
 )
