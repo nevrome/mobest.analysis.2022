@@ -25,7 +25,7 @@ interpol_grid_with_change <- interpol_grid %>%
   ) %>% 
   dplyr::ungroup() %>%
   tidyr::pivot_wider(
-    id_cols = c("kernel_setting_id", "x", "y", "z"),
+    id_cols = c("kernel_setting_id", "region_id", "x", "y", "z"),
     names_from = dependent_var_id,
     values_from = c("change", "sd_norm")
   ) %>% 
@@ -39,15 +39,7 @@ interpol_grid_with_change <- interpol_grid %>%
 
 save(interpol_grid_with_change, file = "data/gpr/interpol_grid_median_with_change.RData")
 
-load("data/spatial/epsg102013.RData")
-load("data/spatial/mobility_regions.RData")
-
-iwr <- interpol_grid_with_change %>% 
-  sf::st_as_sf(coords = c("x", "y"), crs = epsg102013) %>%
-  sf::st_intersection(mobility_regions) %>%
-  sf::st_drop_geometry()
-
-iwrs <- iwr %>%
+iwrs <- interpol_grid_with_change %>%
   dplyr::group_by(
     kernel_setting_id, region_id, z
   ) %>%
@@ -59,19 +51,6 @@ iwrs <- iwr %>%
   dplyr::mutate(
     movavg = slider::slide_dbl(mean_change_combined, mean, .before = 4, .after = 4)
   )
-
-iwrs$region_id = factor(iwrs$region_id, levels = c(
-  "Britain and Ireland",
-  "France", 
-  "Iberia",
-  "Italy",
-  "Central Europe",
-  "Eastern Europe",
-  "Southeastern Europe",
-  "Turkey",
-  "Caucasus",
-  "Near East"
-))
 
 temporal_change <- iwrs
 

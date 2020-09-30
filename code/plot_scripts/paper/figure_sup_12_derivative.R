@@ -33,7 +33,7 @@ p_estimator <- temporal_change %>%
   ) +
   scale_x_continuous(breaks = c(-7000, -5000, -3000, -1000, 1000)) +
   scale_alpha_continuous(guide = FALSE) +
-  coord_cartesian(ylim = c(0, 0.02))
+  coord_cartesian(ylim = c(0, 0.01))
 
 ggsave(
   paste0("plots/figure_sup_12_derivative.png"),

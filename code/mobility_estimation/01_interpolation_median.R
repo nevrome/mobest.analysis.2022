@@ -4,6 +4,7 @@ library(magrittr)
 
 load("data/poseidon_data/janno_final.RData")
 load("data/spatial/area.RData")
+load("data/spatial/mobility_regions.RData")
 
 #### prepare pca model grid ####
 model_grid <- mobest::create_model_grid(
@@ -19,18 +20,16 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds800_dt1600_g001 = list(d = c(800000, 800000, 1600), g = 0.01, on_residuals = T, auto = F),
-    ds400_dt800_g001 = list(d = c(400000, 400000, 800), g = 0.01, on_residuals = T, auto = F),
-    ds200_dt400_g001 = list(d = c(200000, 200000, 400), g = 0.01, on_residuals = T, auto = F),
-    ds200_dt100_g001 = list(d = c(200000, 200000, 100), g = 0.01, on_residuals = T, auto = F),
-    ds400_dt200_g001 = list(d = c(400000, 400000, 200), g = 0.01, on_residuals = T, auto = F),
-    ds600_dt300_g001 = list(d = c(600000, 600000, 300), g = 0.01, on_residuals = T, auto = F),
-    ds800_dt400_g001 = list(d = c(800000, 800000, 400), g = 0.01, on_residuals = T, auto = F),
-    ds1000_dt500_g001 = list(d = c(1000000, 1000000, 500), g = 0.01, on_residuals = T, auto = F)
+    ds600_dt1200_g004 = list(d = c(600000, 600000, 1200), g = 0.04, on_residuals = T, auto = F),
+    ds500_dt850_g004 = list(d = c(500000, 500000, 850), g = 0.04, on_residuals = T, auto = F),
+    ds600_dt600_g004 = list(d = c(600000, 600000, 600), g = 0.04, on_residuals = T, auto = F),
+    ds400_dt400_g004 = list(d = c(400000, 400000, 400), g = 0.04, on_residuals = T, auto = F),
+    ds800_dt400_g004 = list(d = c(800000, 800000, 400), g = 0.04, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     scs100_tl100 = mobest::create_prediction_grid(
       area,
+      mobility_regions,
       spatial_cell_size = 100000,
       time_layers = seq(-7500, 1500, 50)
     )
@@ -39,10 +38,6 @@ model_grid <- mobest::create_model_grid(
 
 #### run interpolation on model grid ####
 
-model_grid_result <- mobest::run_model_grid(model_grid)
-
-#### unnest prediction to get a point-wise prediction table ####
-
-interpol_grid <- mobest::unnest_model_grid(model_grid_result)
+interpol_grid <- mobest::run_model_grid(model_grid)
 
 save(interpol_grid, file = "data/gpr/interpol_grid_median.RData")
