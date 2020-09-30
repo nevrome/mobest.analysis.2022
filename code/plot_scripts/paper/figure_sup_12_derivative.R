@@ -2,22 +2,18 @@ library(magrittr)
 library(ggplot2)
 
 load("data/gpr/temporal_change_median.RData")
+load("data/poseidon_data/janno_final.RData")
 
 #### derivative estimator curves ####
 
 p_estimator <- temporal_change %>%
+  dplyr::filter(!is.na(region_id)) %>%
   ggplot() +
-  geom_line(
-    aes(
-      x = z, y = mean_change_combined, 
-      color = mean_sd_norm
-    )
-  ) +
-  geom_line(
-    aes(
-      x = z, y = movavg, alpha = 1 - mean_sd_norm
-    ),
-    color = "blue", size = 1
+  geom_line(aes(x = z, y = mean_change_combined), color = "red") +
+  geom_point(
+    data = janno_final,
+    aes(x = Date_BC_AD_Median_Derived, y = 0),
+    shape = "|"
   ) +
   facet_grid(cols = dplyr::vars(region_id), rows = dplyr::vars(kernel_setting_id)) +
   theme_bw() +
@@ -36,12 +32,12 @@ p_estimator <- temporal_change %>%
   coord_cartesian(ylim = c(0, 0.01))
 
 ggsave(
-  paste0("plots/figure_sup_12_derivative.png"),
+  paste0("plots/figure_sup_12_derivative.jpeg"),
   plot = p_estimator,
-  device = "png",
-  scale = 0.5,
+  device = "jpeg",
+  scale = 0.3,
   dpi = 300,
-  width = 1000, height = 1000, units = "mm",
+  width = 1300, height = 600, units = "mm",
   limitsize = F
 )
 
