@@ -65,14 +65,14 @@ ps <- lapply(d_binned_long %>% dplyr::group_split(detrended, distance_type), fun
 
 })
   
-p <- cowplot::plot_grid(plotlist = ps, nrow = 1, ncol = 4)
+p <- cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 2)
 
 ggsave(
   "plots/figure_sup_1_variogram.jpeg",
   plot = p,
   device = "jpeg",
-  scale = 0.8,
+  scale = 0.4,
   dpi = 300,
-  width = 430, height = 140, units = "mm",
+  width = 500, height = 600, units = "mm",
   limitsize = F
 )
