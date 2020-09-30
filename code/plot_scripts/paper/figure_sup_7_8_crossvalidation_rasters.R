@@ -27,35 +27,34 @@ mg <- minicg %>% dplyr::group_split(dependent_var)
 ps1 <- lapply(1:2, function(i) {
   icg[[i]] %>%
     ggplot() +
-    geom_raster(
-      aes(x = ds, y = dt, fill = mean_squared_difference)
+    geom_tile(
+      aes(x = ds, y = dt, fill = mean_squared_difference),
+      colour = "grey20"
     ) +
     scale_fill_viridis_c(direction = -1) +
     facet_wrap(~dependent_var) +
-    # geom_raster(
-    #   data = mg[[i]],
-    #   aes(x = ds, y = dt),
-    #   fill = "red"
-    # ) +
     coord_fixed() +
-    theme(
-      legend.position = "right"
-    ) +
     theme_bw() +
+    theme(
+      legend.position = "right",
+      axis.text = element_text(angle = 45, hjust = 1, size = 8)
+    ) +
     guides(
       fill = guide_colorbar(title = "", barheight = 9)
     ) +
     xlab(latex2exp::TeX("$\\sqrt{\\theta_s}$")) +
-    ylab(latex2exp::TeX("$\\sqrt{\\theta_t}$"))
+    ylab(latex2exp::TeX("$\\sqrt{\\theta_t}$")) +
+    scale_x_continuous(breaks = seq(0, 2000, 100)) +
+    scale_y_continuous(breaks = seq(0, 2000, 100))
 })
 
 p1 <- cowplot::plot_grid(plotlist = ps1, nrow = 1, ncol = 2)
 
 ggsave(
-  "plots/figure_sup_7_crossvalidation_rasters2.jpeg",
+  "plots/figure_sup_7_crossvalidation_rasters.jpeg",
   plot = p1,
   device = "jpeg",
-  scale = 0.6,
+  scale = 0.8,
   dpi = 300,
   width = 350, height = 130, units = "mm",
   limitsize = F
@@ -99,65 +98,43 @@ min_point <- mean_interpol_comparison_group %>%
 
 p2 <- mean_interpol_comparison_group %>%
   ggplot() +
-  geom_raster(
-    aes(x = ds, y = dt, fill = cut_mean_mean_squared_difference)
+  geom_tile(
+    aes(x = ds, y = dt, fill = cut_mean_mean_squared_difference),
+    colour = "grey20"
   ) +
-  # geom_point(
-  #   aes(x = 600, y = 2600), 
-  #   color = "blue", pch = 4, size = 5
-  # ) +
   geom_point(
     data = min_point,
     aes(x = ds, y = dt), 
     color = "red", pch = 4, size = 5
   ) +
-  # geom_point(
-  #   aes(x = 1300, y = 1000), 
-  #   color = "black", pch = 4, size = 5
-  # ) +
-  # annotate(
-  #   "text",
-  #   x = 600 + 3000, y = 2600, 
-  #   label = latex2exp::TeX(paste0("$\\theta_s$ = ", 600, " | $\\theta_t$ = ", 2600)), 
-  #   parse = TRUE, 
-  #   color = "blue",
-  #   size = 4
-  # ) +
-  # annotate(
-  #   "text",
-  #   x = min_point$ds + 3000, y = min_point$dt, 
-  #   label = latex2exp::TeX(paste0("$\\theta_s$ = ", min_point$ds, " | $\\theta_t$ = ", min_point$dt)), 
-  #   parse = TRUE, 
-  #   color = "red",
-  #   size = 4
-  # ) +
-  # annotate(
-  #   "text",
-  #   x = 1300 + 3000, y = 1000, 
-  #   label = latex2exp::TeX(paste0("$\\theta_s$ = ", 1300, " | $\\theta_t$ = ", 1000)), 
-  #   parse = TRUE, 
-  #   color = "black",
-  #   size = 4
-  # ) +
+  annotate(
+    "text",
+    x = min_point$ds + 500, y = min_point$dt,
+    label = latex2exp::TeX(paste0("$\\sqrt{\\theta_s}$ = ", min_point$ds, " | \\sqrt{$\\theta_t}$ = ", min_point$dt)),
+    parse = TRUE,
+    color = "red",
+    size = 4
+  ) +
   scale_fill_viridis_d(direction = -1) +
   coord_fixed() +
   theme_bw() +
   theme(
-    legend.key.height = unit(2, "cm")
+    legend.key.height = unit(1.5, "cm"),
+    axis.text = element_text(angle = 45, hjust = 1)
   ) +
   guides(
     fill = guide_colorsteps(title = "Mean normalized difference")
   ) +
   xlab(latex2exp::TeX("$\\sqrt{\\theta_s}$")) +
   ylab(latex2exp::TeX("$\\sqrt{\\theta_t}$")) +
-  scale_x_continuous(breaks = seq(0, 10000, 1000)) +
-  scale_y_continuous(breaks = seq(0, 10000, 1000))
+  scale_x_continuous(breaks = seq(0, 2000, 100)) +
+  scale_y_continuous(breaks = seq(0, 2000, 100))
   # +
   # scale_y_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_t}$"))) +
   # scale_x_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_x}$")))
 
 ggsave(
-  "plots/figure_sup_8_crossvalidation_raster_merged2.jpeg",
+  "plots/figure_sup_8_crossvalidation_raster_merged.jpeg",
   plot = p2,
   device = "jpeg",
   scale = 0.6,
