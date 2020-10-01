@@ -2,6 +2,7 @@ library(magrittr)
 library(ggplot2)
 
 load("data/parameter_exploration/variogram/all_distances.RData")
+load("data/poseidon_data/janno_final.RData")
 
 d_all_long <- d_all %>% tidyr::pivot_longer(
   cols = c(C1_dist_resid, C2_dist_resid),
@@ -10,7 +11,7 @@ d_all_long <- d_all %>% tidyr::pivot_longer(
 
 lower_left <- d_all_long %>%
   dplyr::filter(time_dist < 50 & geo_dist < 50) %>%
-  dplyr::filter(geo_dist != 0 & time_dist != 0) %>%
+  dplyr::filter(Var1 != Var2) %>%
   dplyr::mutate(
     dist_type = replace(dist_type, dist_type == "C1_dist_resid", "C1"),
     dist_type = replace(dist_type, dist_type == "C2_dist_resid", "C2"),
@@ -18,8 +19,8 @@ lower_left <- d_all_long %>%
     # rescaling of the dist val to a relative proportion
     dist_val_adjusted = ifelse(
       dist_type == "C1",
-      dist_val/max(d_all_long$C1_dist),
-      dist_val/max(d_all_long$C2_dist)
+      dist_val^2/var(janno_final$C1),
+      dist_val^2/var(janno_final$C2)
     )
   )
 
@@ -28,7 +29,7 @@ lower_left_median <- lower_left %>%
     dist_type
   ) %>%
   dplyr::summarise(
-    median = median(dist_val_adjusted, na.rm = T)
+    median = mean(dist_val_adjusted, na.rm = T)
   )
 
 p <- ggplot() +
