@@ -35,7 +35,7 @@ p2 <- mle_out %>% ggplot() +
 p <- cowplot::plot_grid(p1, p2, nrow = 2, align = "v", axis = "lr")
 
 ggsave(
-  "plots/figure_sup_9_mle_GP.jpeg",
+  "plots/figure_sup_7_mle_isotropic.jpeg",
   plot = p,
   device = "jpeg",
   scale = 0.8,
