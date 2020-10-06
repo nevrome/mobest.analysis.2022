@@ -18,10 +18,10 @@ d_binned <- d_all %>%
   dplyr::group_by(geo_dist_cut, time_dist_cut) %>%
   dplyr::summarise(
     n = dplyr::n(),
-    C1 = mean(C1_dist^2, na.rm = T),
-    C1_resid = mean(C1_dist_resid^2, na.rm = T),
-    C2 = mean(C2_dist^2, na.rm = T),
-    C2_resid = mean(C2_dist_resid^2, na.rm = T),
+    C1 = 0.5*mean(C1_dist^2, na.rm = T),
+    C1_resid = 0.5*mean(C1_dist_resid^2, na.rm = T),
+    C2 = 0.5*mean(C2_dist^2, na.rm = T),
+    C2_resid = 0.5*mean(C2_dist_resid^2, na.rm = T),
     .groups	= "drop"
   )
 
@@ -73,6 +73,6 @@ ggsave(
   device = "jpeg",
   scale = 0.4,
   dpi = 300,
-  width = 500, height = 600, units = "mm",
+  width = 500, height = 550, units = "mm",
   limitsize = F
 )
