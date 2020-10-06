@@ -51,7 +51,7 @@ ps1 <- lapply(1:2, function(i) {
 p1 <- cowplot::plot_grid(plotlist = ps1, nrow = 1, ncol = 2)
 
 ggsave(
-  "plots/figure_sup_7_crossvalidation_rasters.jpeg",
+  "plots/figure_sup_9_crossvalidation_rasters.jpeg",
   plot = p1,
   device = "jpeg",
   scale = 0.8,
@@ -139,7 +139,7 @@ p2 <- mean_interpol_comparison_group %>%
   # scale_x_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_x}$")))
 
 ggsave(
-  "plots/figure_sup_8_crossvalidation_raster_merged.jpeg",
+  "plots/figure_sup_10_crossvalidation_raster_merged.jpeg",
   plot = p2,
   device = "jpeg",
   scale = 0.6,

@@ -32,7 +32,7 @@ p_estimator <- temporal_change %>%
   coord_cartesian(ylim = c(0, 0.01))
 
 ggsave(
-  paste0("plots/figure_sup_12_derivative.jpeg"),
+  paste0("plots/figure_sup_11_derivative.jpeg"),
   plot = p_estimator,
   device = "jpeg",
   scale = 0.3,

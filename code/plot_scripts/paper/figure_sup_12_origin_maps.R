@@ -83,7 +83,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  paste0("plots/figure_sup_11_origin_maps.png"),
+  paste0("plots/figure_sup_12_origin_maps.png"),
   plot = p,
   device = "png",
   scale = 0.5,
