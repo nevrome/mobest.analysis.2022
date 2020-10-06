@@ -40,11 +40,15 @@ p <- ggplot() +
     size = 0.5,
     width = 0.4
   ) + 
-  geom_boxplot(
-    data = lower_left,
-    mapping = aes(x = dist_type, y = dist_val_adjusted),
-    alpha = 0.5,
-    width = 0.5
+  geom_point(
+    data = lower_left_mean,
+    mapping = aes(x = dist_type, y = mean),
+    size = 2
+  ) +
+  geom_point(
+    data = lower_left_mean,
+    mapping = aes(x = dist_type, y = mean),
+    size = 5, shape = "|"
   ) +
   geom_text(
     data = lower_left_mean,
