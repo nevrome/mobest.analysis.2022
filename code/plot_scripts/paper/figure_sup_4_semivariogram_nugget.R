@@ -19,17 +19,17 @@ lower_left <- d_all_long %>%
     # rescaling of the dist val to a relative proportion
     dist_val_adjusted = ifelse(
       dist_type == "C1",
-      dist_val^2/var(janno_final$C1),
-      dist_val^2/var(janno_final$C2)
+      0.5*(dist_val^2/var(janno_final$C1)),
+      0.5*(dist_val^2/var(janno_final$C2))
     )
   )
 
-lower_left_median <- lower_left %>%
+lower_left_mean <- lower_left %>%
   dplyr::group_by(
     dist_type
   ) %>%
   dplyr::summarise(
-    median = mean(dist_val_adjusted, na.rm = T)
+    mean = mean(dist_val_adjusted, na.rm = T)
   )
 
 p <- ggplot() +
@@ -47,8 +47,8 @@ p <- ggplot() +
     width = 0.5
   ) +
   geom_text(
-    data = lower_left_median,
-    mapping = aes(x = dist_type, y = median, label = paste0("median: ~", round(median, 3))),
+    data = lower_left_mean,
+    mapping = aes(x = dist_type, y = mean, label = paste0("mean: ~", round(mean, 3))),
     nudge_x = -0.5
   ) +
   coord_flip() +
@@ -62,7 +62,7 @@ p <- ggplot() +
   scale_x_discrete(limits = rev(levels(lower_left$dist_type)))
 
 ggsave(
-  "plots/figure_sup_3_variogram_nugget.jpeg",
+  "plots/figure_sup_4_semivariogram_nugget.jpeg",
   plot = p,
   device = "jpeg",
   scale = 0.6,
