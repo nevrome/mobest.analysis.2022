@@ -27,7 +27,7 @@ mle_out <- lapply(ancestry_components, function(ancestry_component) {
       X = independent,
       Z = dependent,
       d = da$start,
-      g = 0.04,
+      g = 0.06,
       dK = TRUE
     )
     param_estimation <- laGP::mleGP(
