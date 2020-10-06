@@ -68,7 +68,7 @@ ps <- lapply(d_binned_long %>% dplyr::group_split(detrended, distance_type), fun
 p <- cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 2)
 
 ggsave(
-  "plots/figure_sup_1_variogram.jpeg",
+  "plots/figure_sup_1_semivariogram.jpeg",
   plot = p,
   device = "jpeg",
   scale = 0.4,

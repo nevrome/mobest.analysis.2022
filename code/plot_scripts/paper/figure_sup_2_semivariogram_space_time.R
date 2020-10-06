@@ -6,10 +6,10 @@ load("data/parameter_exploration/variogram/all_distances.RData")
 d_all_long <- d_all %>% tidyr::pivot_longer(
   cols = c(C1_dist_resid, C2_dist_resid),
   names_to = "dist_type", values_to = "dist_val"
-) #%>%
-  # dplyr::mutate(
-  #   dist_val = dist_val^2
-  # )
+) %>%
+  dplyr::mutate(
+   dist_val = dist_val
+  )
 
 bottom_space <- d_all_long %>%
   dplyr::filter(time_dist < 50) %>%
@@ -29,7 +29,7 @@ bottom_space <- d_all_long %>%
 bottom_space_grouped <- bottom_space %>%
   dplyr::group_by(geo_dist_cut, dist_type) %>%
   dplyr::summarise(
-    mean_dist_val = mean(dist_val, na.rm = T)
+    mean_dist_val = 0.5*mean(dist_val, na.rm = T)
   )
 
 left_time <- d_all_long %>%
@@ -50,7 +50,7 @@ left_time <- d_all_long %>%
 left_time_grouped <- left_time %>%
   dplyr::group_by(time_dist_cut, dist_type) %>%
   dplyr::summarise(
-    mean_dist_val = mean(dist_val, na.rm = T)
+    mean_dist_val = 0.5*mean(dist_val, na.rm = T)
   )
 
 p_space <- ggplot() + 
@@ -113,11 +113,11 @@ p_time <- ggplot(left_time) +
 p <- cowplot::plot_grid(p_space, p_time, nrow = 2, labels = c("A", "B"))
 
 ggsave(
-  "plots/figure_sup_10_variogram_space_time.jpeg",
+  "plots/figure_sup_2_semivariogram_space_time.jpeg",
   plot = p,
   device = "jpeg",
   scale = 0.4,
   dpi = 300,
-  width = 500, height = 400, units = "mm",
+  width = 500, height = 300, units = "mm",
   limitsize = F
 )
