@@ -66,7 +66,7 @@ p_nugget <- mlesep_out_nugget %>%
 p <- cowplot::plot_grid(p_theta, p_nugget, nrow = 1, rel_widths = c(0.75, 0.25))
 
 ggsave(
-  "plots/figure_sup_4_mle_GPsep.jpeg",
+  "plots/figure_sup_5_mle_GPsep.jpeg",
   plot = p,
   device = "jpeg",
   scale = 0.6,
