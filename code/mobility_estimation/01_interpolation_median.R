@@ -20,11 +20,9 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds600_dt1200_g004 = list(d = c(600000, 600000, 1200), g = 0.04, on_residuals = T, auto = F),
-    ds500_dt850_g004 = list(d = c(500000, 500000, 850), g = 0.04, on_residuals = T, auto = F),
-    ds600_dt600_g004 = list(d = c(600000, 600000, 600), g = 0.04, on_residuals = T, auto = F),
-    ds400_dt400_g004 = list(d = c(400000, 400000, 400), g = 0.04, on_residuals = T, auto = F),
-    ds800_dt400_g004 = list(d = c(800000, 800000, 400), g = 0.04, on_residuals = T, auto = F)
+    ds550_dt1050_g006 = list(d = c(550000, 550000, 1050), g = 0.06, on_residuals = T, auto = F),
+    ds550_dt550_g006 = list(d = c(550000, 550000, 550), g = 0.06, on_residuals = T, auto = F),
+    ds1050_dt550_g006 = list(d = c(1050000, 1050000, 550), g = 0.06, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     scs100_tl100 = mobest::create_prediction_grid(
