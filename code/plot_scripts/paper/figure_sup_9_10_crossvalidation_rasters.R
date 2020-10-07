@@ -103,7 +103,7 @@ p2 <- mean_interpol_comparison_group %>%
     colour = "grey20"
   ) +
   geom_point(
-    data = data.frame(ds = c(600, 500, 600, 400, 800), dt = c(1200, 850, 600, 400, 400)),
+    data = data.frame(ds = c(550, 1050), dt = c(550, 550)),
     aes(x = ds, y = dt), 
     color = "black", pch = 4, size = 3
   ) +
