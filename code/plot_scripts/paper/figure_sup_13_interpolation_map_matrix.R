@@ -25,174 +25,180 @@ ylimit <- c(ex[3], ex[4])
 
 #### 
 
-p_Meas <- ggplot() +
-  geom_sf(data = extended_area, fill = "white") +
-  facet_wrap(dplyr::vars(z), ncol = 2) +
-  geom_sf(data = extended_area, fill = NA, colour = "black") +
-  # geom_point(
-  #   data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
-  #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
-  # ) +
-  geom_point(
-    data = janno_final,
-    aes(x, y, shape = age_group_id, color = "z"),
-    size = 1
-  ) +
-  scale_shape_manual(
-    values = age_group_id_shapes,
-    guide = FALSE
-  ) +
-  theme_bw() +
-  coord_sf(
-    xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
-  ) +
-  guides(
-    fill = guide_colorbar(title = "Age", barwidth = 10)
-  ) +
-  theme(
-    legend.position = "bottom",
-    legend.box = "horizontal",
-    legend.title = element_text(size = 17),
-    axis.title = element_blank(),
-    axis.text = element_blank(),
-    legend.text = element_text(size = 12),
-    strip.text = element_text(size = 12),
-    strip.background = element_rect(fill = NA),
-    axis.ticks = element_blank(),
-    panel.background = element_rect(fill = "#BFD5E3")
+lapply(
+  c("ds550_dt1050_g006", "ds550_dt550_g006", "ds1050_dt550_g006"), 
+  function(kernel_setting) {
+  
+  p_Meas <- ggplot() +
+    geom_sf(data = extended_area, fill = "white") +
+    facet_wrap(dplyr::vars(z), ncol = 2) +
+    geom_sf(data = extended_area, fill = NA, colour = "black") +
+    # geom_point(
+    #   data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
+    #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
+    # ) +
+    geom_point(
+      data = janno_final,
+      aes(x, y, shape = age_group_id, color = "z"),
+      size = 1
+    ) +
+    scale_shape_manual(
+      values = age_group_id_shapes,
+      guide = FALSE
+    ) +
+    theme_bw() +
+    coord_sf(
+      xlim = xlimit, ylim = ylimit,
+      crs = epsg102013
+    ) +
+    guides(
+      fill = guide_colorbar(title = "Age", barwidth = 10)
+    ) +
+    theme(
+      legend.position = "bottom",
+      legend.box = "horizontal",
+      legend.title = element_text(size = 17),
+      axis.title = element_blank(),
+      axis.text = element_blank(),
+      legend.text = element_text(size = 12),
+      strip.text = element_text(size = 12),
+      strip.background = element_rect(fill = NA),
+      axis.ticks = element_blank(),
+      panel.background = element_rect(fill = "#BFD5E3")
+    )
+  
+  p_C1 <- interpol_grid %>%
+    dplyr::filter(
+      independent_table_id == "age_median",
+      dependent_var_id %in% "C1",
+      kernel_setting_id == kernel_setting,
+      z %in% seq(-7500, 1500, 500)
+    ) %>%
+    ggplot() +
+    geom_sf(data = extended_area, fill = "white") +
+    geom_raster(aes(x, y, fill = mean)) +
+    facet_wrap(dplyr::vars(z), ncol = 2) +
+    geom_sf(data = extended_area, fill = NA, colour = "black") +
+    # geom_point(
+    #   data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
+    #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
+    # ) +
+    scale_fill_viridis_c(
+      limits = c(min(janno_final$C1), max(janno_final$C1)), 
+      oob = scales::squish
+    ) +
+    theme_bw() +
+    coord_sf(
+      xlim = xlimit, ylim = ylimit,
+      crs = epsg102013
+    ) +
+    guides(
+      fill = guide_colorbar(title = "Prediction C1", barwidth = 10)
+    ) +
+    theme(
+      legend.position = "bottom",
+      legend.box = "horizontal",
+      legend.title = element_text(size = 17),
+      axis.title = element_blank(),
+      axis.text = element_blank(),
+      legend.text = element_text(size = 12),
+      strip.text = element_text(size = 12),
+      strip.background = element_rect(fill = NA),
+      axis.ticks = element_blank(),
+      panel.background = element_rect(fill = "#BFD5E3")
+    )
+  
+  p_C2 <- interpol_grid %>%
+    dplyr::filter(
+      independent_table_id == "age_median",
+      dependent_var_id %in% "C2",
+      kernel_setting_id == kernel_setting,
+      z %in% seq(-7500, 1500, 500)
+    ) %>%
+    ggplot() +
+    geom_sf(data = extended_area, fill = "white") +
+    geom_raster(aes(x, y, fill = mean)) +
+    facet_wrap(dplyr::vars(z), ncol = 2) +
+    geom_sf(data = extended_area, fill = NA, colour = "black") +
+    # geom_point(
+    #   data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
+    #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
+    # ) +
+    scale_fill_viridis_c(
+      option = "magma", 
+      limits = c(min(janno_final$C2), max(janno_final$C2)), 
+      oob = scales::squish
+    ) +
+    theme_bw() +
+    coord_sf(
+      xlim = xlimit, ylim = ylimit,
+      crs = epsg102013
+    ) +
+    guides(
+      fill = guide_colorbar(title = "Prediction C2", barwidth = 10)
+    ) +
+    theme(
+      legend.position = "bottom",
+      legend.box = "horizontal",
+      legend.title = element_text(size = 17),
+      axis.title = element_blank(),
+      axis.text = element_blank(),
+      legend.text = element_text(size = 12),
+      strip.text = element_text(size = 12),
+      strip.background = element_rect(fill = NA),
+      axis.ticks = element_blank(),
+      panel.background = element_rect(fill = "#BFD5E3")
+    )
+  
+  
+  p_Change <- interpol_grid_with_change %>%
+    dplyr::filter(
+      kernel_setting_id == kernel_setting,
+      z %in% seq(-7500, 1500, 500)
+    ) %>%
+    ggplot() +
+    geom_sf(data = extended_area, fill = "white") +
+    geom_raster(aes(x, y, fill = change_combined)) +
+    facet_wrap(dplyr::vars(z), ncol = 2) +
+    geom_sf(data = extended_area, fill = NA, colour = "black") +
+    # geom_point(
+    #   data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
+    #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
+    # ) +
+    scale_fill_viridis_c(option = "cividis", direction = 1) +
+    theme_bw() +
+    coord_sf(
+      xlim = xlimit, ylim = ylimit,
+      crs = epsg102013
+    ) +
+    guides(
+      fill = guide_colorbar(title = "Change", barwidth = 10)
+    ) +
+    theme(
+      legend.position = "bottom",
+      legend.box = "horizontal",
+      legend.title = element_text(size = 17),
+      axis.title = element_blank(),
+      axis.text = element_blank(),
+      legend.text = element_text(size = 12),
+      strip.text = element_text(size = 12),
+      strip.background = element_rect(fill = NA),
+      axis.ticks = element_blank(),
+      panel.background = element_rect(fill = "#BFD5E3")
+    )
+  
+  # merge plots
+  p <- cowplot::plot_grid(p_Meas, p_C1, p_C2, p_Change, ncol = 4)
+  
+  ggsave(
+    paste0("plots/figure_sup_13_interpolation_map_matrix_", kernel_setting, ".jpeg"),
+    plot = p,
+    device = "jpeg",
+    scale = 0.9,
+    dpi = 300,
+    width = 450, height = 420, units = "mm",
+    limitsize = F
   )
-
-p_C1 <- interpol_grid %>%
-  dplyr::filter(
-    independent_table_id == "age_median",
-    dependent_var_id %in% "C1",
-    kernel_setting_id == "ds550_dt550_g006",
-    z %in% seq(-7500, 1500, 500)
-  ) %>%
-  ggplot() +
-  geom_sf(data = extended_area, fill = "white") +
-  geom_raster(aes(x, y, fill = mean)) +
-  facet_wrap(dplyr::vars(z), ncol = 2) +
-  geom_sf(data = extended_area, fill = NA, colour = "black") +
-  # geom_point(
-  #   data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
-  #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
-  # ) +
-  scale_fill_viridis_c(
-    limits = c(min(janno_final$C1), max(janno_final$C1)), 
-    oob = scales::squish
-  ) +
-  theme_bw() +
-  coord_sf(
-    xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
-  ) +
-  guides(
-    fill = guide_colorbar(title = "Prediction C1", barwidth = 10)
-  ) +
-  theme(
-    legend.position = "bottom",
-    legend.box = "horizontal",
-    legend.title = element_text(size = 17),
-    axis.title = element_blank(),
-    axis.text = element_blank(),
-    legend.text = element_text(size = 12),
-    strip.text = element_text(size = 12),
-    strip.background = element_rect(fill = NA),
-    axis.ticks = element_blank(),
-    panel.background = element_rect(fill = "#BFD5E3")
-  )
-
-p_C2 <- interpol_grid %>%
-  dplyr::filter(
-    independent_table_id == "age_median",
-    dependent_var_id %in% "C2",
-    kernel_setting_id == "ds550_dt550_g006",
-    z %in% seq(-7500, 1500, 500)
-  ) %>%
-  ggplot() +
-  geom_sf(data = extended_area, fill = "white") +
-  geom_raster(aes(x, y, fill = mean)) +
-  facet_wrap(dplyr::vars(z), ncol = 2) +
-  geom_sf(data = extended_area, fill = NA, colour = "black") +
-  # geom_point(
-  #   data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
-  #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
-  # ) +
-  scale_fill_viridis_c(
-    option = "magma", 
-    limits = c(min(janno_final$C2), max(janno_final$C2)), 
-    oob = scales::squish
-  ) +
-  theme_bw() +
-  coord_sf(
-    xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
-  ) +
-  guides(
-    fill = guide_colorbar(title = "Prediction C2", barwidth = 10)
-  ) +
-  theme(
-    legend.position = "bottom",
-    legend.box = "horizontal",
-    legend.title = element_text(size = 17),
-    axis.title = element_blank(),
-    axis.text = element_blank(),
-    legend.text = element_text(size = 12),
-    strip.text = element_text(size = 12),
-    strip.background = element_rect(fill = NA),
-    axis.ticks = element_blank(),
-    panel.background = element_rect(fill = "#BFD5E3")
-  )
-
-
-p_Change <- interpol_grid_with_change %>%
-  dplyr::filter(
-    kernel_setting_id == "ds550_dt550_g006",
-    z %in% seq(-7500, 1500, 500)
-  ) %>%
-  ggplot() +
-  geom_sf(data = extended_area, fill = "white") +
-  geom_raster(aes(x, y, fill = change_combined)) +
-  facet_wrap(dplyr::vars(z), ncol = 2) +
-  geom_sf(data = extended_area, fill = NA, colour = "black") +
-  # geom_point(
-  #   data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
-  #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
-  # ) +
-  scale_fill_viridis_c(option = "cividis", direction = 1) +
-  theme_bw() +
-  coord_sf(
-    xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
-  ) +
-  guides(
-    fill = guide_colorbar(title = "Change", barwidth = 10)
-  ) +
-  theme(
-    legend.position = "bottom",
-    legend.box = "horizontal",
-    legend.title = element_text(size = 17),
-    axis.title = element_blank(),
-    axis.text = element_blank(),
-    legend.text = element_text(size = 12),
-    strip.text = element_text(size = 12),
-    strip.background = element_rect(fill = NA),
-    axis.ticks = element_blank(),
-    panel.background = element_rect(fill = "#BFD5E3")
-  )
-
-# merge plots
-p <- cowplot::plot_grid(p_Meas, p_C1, p_C2, p_Change, ncol = 4)
-
-ggsave(
-  "plots/figure_sup_13_interpolation_map_matrix.jpeg",
-  plot = p,
-  device = "jpeg",
-  scale = 0.9,
-  dpi = 300,
-  width = 450, height = 420, units = "mm",
-  limitsize = F
-)
+  
+})
 
