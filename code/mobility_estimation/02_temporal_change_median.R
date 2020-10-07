@@ -1,6 +1,7 @@
 library(magrittr)
 
 #### data ####
+load("data/poseidon_data/janno_final.RData")
 load("data/gpr/interpol_grid_median.RData")
 
 #### calculate change ####
@@ -39,7 +40,7 @@ interpol_grid_with_change <- interpol_grid %>%
 
 save(interpol_grid_with_change, file = "data/gpr/interpol_grid_median_with_change.RData")
 
-iwrs <- interpol_grid_with_change %>%
+temporal_change <- interpol_grid_with_change %>%
   dplyr::group_by(
     kernel_setting_id, region_id, z
   ) %>%
@@ -51,8 +52,6 @@ iwrs <- interpol_grid_with_change %>%
   dplyr::mutate(
     movavg = slider::slide_dbl(mean_change_combined, mean, .before = 4, .after = 4)
   )
-
-temporal_change <- iwrs
 
 save(temporal_change, file = "data/gpr/temporal_change_median.RData")
 

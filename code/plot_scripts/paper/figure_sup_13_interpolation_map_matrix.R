@@ -67,8 +67,7 @@ p_C1 <- interpol_grid %>%
   dplyr::filter(
     independent_table_id == "age_median",
     dependent_var_id %in% "C1",
-    kernel_setting_id == "ds800_dt400_g001",
-    pred_grid_id == "scs100_tl100",
+    kernel_setting_id == "ds550_dt550_g006",
     z %in% seq(-7500, 1500, 500)
   ) %>%
   ggplot() +
@@ -79,16 +78,6 @@ p_C1 <- interpol_grid %>%
   # geom_point(
   #   data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
   #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
-  # ) +
-  # geom_point(
-  #   data = janno_final,
-  #   aes(x, y, shape = age_group_id),
-  #   size = 1,
-  #   color = "white"
-  # ) +
-  # scale_shape_manual(
-  #   values = age_group_id_shapes,
-  #   guide = FALSE
   # ) +
   scale_fill_viridis_c(
     limits = c(min(janno_final$C1), max(janno_final$C1)), 
@@ -119,8 +108,7 @@ p_C2 <- interpol_grid %>%
   dplyr::filter(
     independent_table_id == "age_median",
     dependent_var_id %in% "C2",
-    kernel_setting_id == "ds800_dt400_g001",
-    pred_grid_id == "scs100_tl100",
+    kernel_setting_id == "ds550_dt550_g006",
     z %in% seq(-7500, 1500, 500)
   ) %>%
   ggplot() +
@@ -131,16 +119,6 @@ p_C2 <- interpol_grid %>%
   # geom_point(
   #   data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
   #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
-  # ) +
-  # geom_point(
-  #   data = janno_final,
-  #   aes(x, y, shape = age_group_id),
-  #   size = 1,
-  #   color = "white"
-  # ) +
-  # scale_shape_manual(
-  #   values = age_group_id_shapes,
-  #   guide = FALSE
   # ) +
   scale_fill_viridis_c(
     option = "magma", 
@@ -171,7 +149,7 @@ p_C2 <- interpol_grid %>%
 
 p_Change <- interpol_grid_with_change %>%
   dplyr::filter(
-    kernel_setting_id == "ds800_dt400_g001",
+    kernel_setting_id == "ds550_dt550_g006",
     z %in% seq(-7500, 1500, 500)
   ) %>%
   ggplot() +
@@ -183,17 +161,7 @@ p_Change <- interpol_grid_with_change %>%
   #   data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
   #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
   # ) +
-  # geom_point(
-  #   data = janno_final,
-  #   aes(x, y, shape = age_group_id),
-  #   size = 1,
-  #   color = "white"
-  # ) +
-  # scale_shape_manual(
-  #   values = age_group_id_shapes,
-  #   guide = FALSE
-  # ) +
-  scale_fill_viridis_c(option = "cividis", direction = -1) +
+  scale_fill_viridis_c(option = "cividis", direction = 1) +
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
@@ -219,7 +187,7 @@ p_Change <- interpol_grid_with_change %>%
 p <- cowplot::plot_grid(p_Meas, p_C1, p_C2, p_Change, ncol = 4)
 
 ggsave(
-  "plots/figure_sup_13_interpolation_map_matrix3.jpeg",
+  "plots/figure_sup_13_interpolation_map_matrix.jpeg",
   plot = p,
   device = "jpeg",
   scale = 0.9,
