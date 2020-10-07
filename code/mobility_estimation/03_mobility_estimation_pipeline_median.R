@@ -4,7 +4,6 @@ library(magrittr)
 
 load("data/poseidon_data/janno_final.RData")
 load("data/spatial/area.RData")
-load("data/spatial/mobility_regions.RData")
 
 #### prepare pca model grid ####
 model_grid <- mobest::create_model_grid(
@@ -20,8 +19,8 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    #ds400_dt200_g001 = list(d = c(400000, 400000, 200), g = 0.01, on_residuals = T, auto = F),
-    ds600_dt300_g01 = list(d = c(500000, 500000, 1000), g = 0.1, on_residuals = T, auto = F)#,
+    #ds350_dt350_g006 = list(d = c(350000, 350000, 350), g = 0.06, on_residuals = T, auto = F)
+    ds550_dt1050_g006 = list(d = c(550000, 550000, 1050), g = 0.06, on_residuals = T, auto = F)#,
     #ds800_dt400_g001 = list(d = c(800000, 800000, 400), g = 0.01, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
@@ -47,12 +46,12 @@ library(ggplot2)
 interpol_grid %>%
   dplyr::filter(
     #kernel_setting_id == "ds400_dt700_g001",
-    dependent_var_id == "C1",
+    dependent_var_id == "C2",
     z %in% seq(-7000, -2000, 500)
     #z %% 500 == 0
   ) %>%
   ggplot() +
-  geom_raster(aes(x, y, fill = mean))+#, alpha = sd)) +
+  geom_raster(aes(x, y, fill = mean, alpha = sd)) +
   facet_wrap(~z) +
   scale_fill_viridis_c() +
   scale_alpha_continuous(range = c(1, 0), na.value = 0)
@@ -136,20 +135,7 @@ mobility_proxy %>%
 
 #### boxplot ####
 
-points_regions <- interpol_grid_origin %>%
-  dplyr::select(.data[["x"]], .data[["y"]], .data[["point_id"]]) %>%
-  unique() %>%
-  sf::st_as_sf(
-    coords = c("x", "y"),
-    crs = sf::st_crs(mobility_regions)
-  ) %>%
-  sf::st_intersection(mobility_regions) %>%
-  sf::st_drop_geometry()
-
-ori <- interpol_grid_origin %>%
-  dplyr::left_join(points_regions, by = "point_id")
-
-ori %>% dplyr::mutate(
+interpol_grid_origin %>% dplyr::mutate(
   z_cut = cut(z, breaks = seq(-7500, 1500, 500), labels = seq(-7250, 1250, 500))
 ) %>% ggplot() +
   geom_boxplot(
