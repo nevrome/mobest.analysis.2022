@@ -38,4 +38,17 @@ model_grid <- mobest::create_model_grid(
 
 interpol_grid <- mobest::run_model_grid(model_grid)
 
+# library(ggplot2)
+# interpol_grid %>%
+#   dplyr::filter(
+#     kernel_setting_id == "ds400_dt700_g001",
+#     dependent_var_id == "C2",
+#     z %in% seq(-7000, -2000, 500)
+#   ) %>%
+#   ggplot() +
+#   geom_raster(aes(x, y, fill = mean, alpha = sd)) +
+#   facet_wrap(~z) +
+#   scale_fill_viridis_c() +
+#   scale_alpha_continuous(range = c(1, 0), na.value = 0)
+
 save(interpol_grid, file = "data/gpr/interpol_grid_median.RData")
