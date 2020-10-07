@@ -8,7 +8,7 @@ load("data/gpr/interpol_grid_median.RData")
 
 #### spatial origin ####
 
-interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 2)
+interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 1)
 
 # gb <- interpol_grid_origin %>%
 #   dplyr::filter(
@@ -44,7 +44,7 @@ mobility_proxy <- mobest::estimate_mobility(interpol_grid_origin)
 
 #mobility <- mobility_proxy
  
-#save(mobility_proxy, file = paste0("data/mobility_estimation/mobility_proxy_median.RData"))
+save(mobility_proxy, file = "data/mobility_estimation/mobility_proxy_median.RData")
 
 mobility_proxy %>%
   # main
