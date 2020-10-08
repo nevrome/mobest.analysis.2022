@@ -50,31 +50,31 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds800_dt1400_g001 = list(d = c(800000, 800000, 1400), g = 0.01, on_residuals = T, auto = F)
+    ds800_dt1400_g001 = list(d = c(550000, 550000, 1050), g = 0.06, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     Budapest = tibble::tibble(
       x = Budapest[1], 
       y = Budapest[2], 
-      z = seq(-8000, 1000, 1000), 
+      z = seq(-7500, 1500, 1000), 
       point_id = 1:length(z)
     ),
     London = tibble::tibble(
       x = London[1], 
       y = London[2], 
-      z = seq(-8000, 1000, 1000), 
+      z = seq(-7500, 1500, 1000), 
       point_id = 1:length(z)
     ),
     Jerusalem = tibble::tibble(
       x = Jerusalem[1], 
       y = Jerusalem[2], 
-      z = seq(-8000, 1000, 1000), 
+      z = seq(-7500, 1500, 1000), 
       point_id = 1:length(z)
     ),
     Rome = tibble::tibble(
       x = Rome[1], 
       y = Rome[2], 
-      z = seq(-8000, 1000, 1000), 
+      z = seq(-7500, 1500, 1000), 
       point_id = 1:length(z)
     ) 
   )
@@ -82,18 +82,6 @@ model_grid <- mobest::create_model_grid(
 
 #### run interpolation on model grid ####
 
-model_grid_result <- mobest::run_model_grid(model_grid)
-
-#### unnest prediction to get a point-wise prediction table ####
-
-interpol_grid_examples <- mobest::unnest_model_grid(model_grid_result)
+interpol_grid_examples <- mobest::run_model_grid(model_grid)
 
 save(interpol_grid_examples, file = "data/gpr/interpol_grid_examples.RData")
-
-# interpol_grid_spatial <- sf::st_as_sf(
-#   interpol_grid,
-#   coords = c("x", "y"),
-#   crs = "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs",
-#   remove = FALSE
-# )
-# save(interpol_grid_spatial, file = "data/gpr/interpol_grid_spatial_Budapest.RData")
