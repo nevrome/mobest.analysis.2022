@@ -42,9 +42,9 @@ p_mds <- ggplot() +
     color = guide_legend(title = ""),
     shape = guide_legend(title = "median age calBC")
   ) +
-  coord_fixed(xlim = c(-0.05, 0.09), ylim = c(-0.07, 0.065)) +
-  scale_y_continuous(breaks = seq(-0.08, 0.08, 0.02)) +
-  scale_x_continuous(breaks = seq(-0.06, 0.08, 0.02))
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.07, 0.065)) +
+  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
+  scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02))
 
 # London
 p_London <- ggplot() +
@@ -86,8 +86,8 @@ p_London <- ggplot() +
     size = 2
   ) +
   scale_color_gradient2(
-    limits = c(-8000, 1000), low = "black", mid = "#fc8d62", high = "#66c2a5", midpoint = -5000,
-    breaks = seq(-8000, 1000, 1000)
+    limits = c(-7500, 1500), low = "black", mid = "#fc8d62", high = "#66c2a5", midpoint = -5000,
+    breaks = seq(-7500, 1500, 1000)
   ) +
   theme_bw() +
   theme(
@@ -100,9 +100,9 @@ p_London <- ggplot() +
     axis.title = element_blank()
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
-  coord_fixed(xlim = c(-0.05, 0.09), ylim = c(-0.07, 0.065)) +
-  scale_y_continuous(breaks = seq(-0.08, 0.08, 0.02)) +
-  scale_x_continuous(breaks = seq(-0.06, 0.08, 0.04)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.07, 0.065)) +
+  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
+  scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   guides(
     color = guide_legend(title = "Prediction time", nrow = 1)
   ) +
@@ -148,8 +148,8 @@ p_Budapest <- ggplot() +
     size = 2
   ) +
   scale_color_gradient2(
-    limits = c(-8000, 1000), low = "black", mid = "#fc8d62", high = "#66c2a5", midpoint = -5000,
-    breaks = seq(-8000, 1000, 3000)
+    limits = c(-7500, 1500), low = "black", mid = "#fc8d62", high = "#66c2a5", midpoint = -5000,
+    breaks = seq(-7500, 1500, 1000)
   ) +
   theme_bw() +
   theme(
@@ -158,9 +158,9 @@ p_Budapest <- ggplot() +
     axis.title = element_blank()
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
-  coord_fixed(xlim = c(-0.05, 0.09), ylim = c(-0.07, 0.065)) +
-  scale_y_continuous(breaks = seq(-0.08, 0.08, 0.02)) +
-  scale_x_continuous(breaks = seq(-0.06, 0.08, 0.04)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.07, 0.065)) +
+  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
+  scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   ggtitle("Budapest")
 
 # Rome
@@ -203,8 +203,8 @@ p_Rome <- ggplot() +
     size = 2
   ) +
   scale_color_gradient2(
-    limits = c(-8000, 1000), low = "black", mid = "#fc8d62", high = "#66c2a5", midpoint = -5000,
-    breaks = seq(-8000, 1000, 3000)
+    limits = c(-7500, 1500), low = "black", mid = "#fc8d62", high = "#66c2a5", midpoint = -5000,
+    breaks = seq(-7500, 1500, 1000)
   ) +
   theme_bw() +
   theme(
@@ -213,9 +213,9 @@ p_Rome <- ggplot() +
     axis.title = element_blank()
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
-  coord_fixed(xlim = c(-0.05, 0.09), ylim = c(-0.07, 0.065)) +
-  scale_y_continuous(breaks = seq(-0.08, 0.08, 0.02)) +
-  scale_x_continuous(breaks = seq(-0.06, 0.08, 0.04)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.07, 0.065)) +
+  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
+  scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   ggtitle("Rome")
 
 # Jerusalem
@@ -258,8 +258,8 @@ p_Jerusalem <- ggplot() +
     size = 2
   ) +
   scale_color_gradient2(
-    limits = c(-8000, 1000), low = "black", mid = "#fc8d62", high = "#66c2a5", midpoint = -5000,
-    breaks = seq(-8000, 1000, 3000)
+    limits = c(-7500, 1500), low = "black", mid = "#fc8d62", high = "#66c2a5", midpoint = -5000,
+    breaks = seq(-7500, 1500, 1000)
   ) +
   theme_bw() +
   theme(
@@ -268,9 +268,9 @@ p_Jerusalem <- ggplot() +
     axis.title = element_blank()
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
-  coord_fixed(xlim = c(-0.05, 0.09), ylim = c(-0.07, 0.065)) +
-  scale_y_continuous(breaks = seq(-0.08, 0.08, 0.02)) +
-  scale_x_continuous(breaks = seq(-0.06, 0.08, 0.04)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.07, 0.065)) +
+  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
+  scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   ggtitle("Jerusalem")
 
 # merge plots
