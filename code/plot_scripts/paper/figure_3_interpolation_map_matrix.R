@@ -115,7 +115,6 @@ p_C2 <- interpol_grid %>%
     axis.text = element_blank(),
     legend.text = element_text(size = 12),
     strip.text = element_text(size = 17),
-    strip.background = element_rect(fill = NA),
     axis.ticks = element_blank(),
     panel.background = element_rect(fill = "#BFD5E3")
   )

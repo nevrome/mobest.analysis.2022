@@ -20,20 +20,20 @@ mobility <- lapply(
     )
   )
 
-# mobility$region_id = factor(mobility$region_id, levels = c(
-#   "Britain and Ireland",
-#   "Southern Scandinavia",
-#   "Baltics",
-#   "Eastern Europe",
-#   "France", 
-#   "Central Europe",
-#   "Southeastern Europe",
-#   "Caucasus",
-#   "Iberia",
-#   "Italy",
-#   "Turkey",
-#   "Near East"
-# ))
+mobility$region_id = factor(mobility$region_id, levels = c(
+  "Britain and Ireland",
+  "Southern Scandinavia",
+  "Baltics",
+  "Eastern Europe",
+  "France",
+  "Central Europe",
+  "Southeastern Europe",
+  "Caucasus",
+  "Iberia",
+  "Italy",
+  "Turkey",
+  "Near East"
+))
 
 # moving average
 mean_mobility <- mobility %>%
@@ -41,7 +41,7 @@ mean_mobility <- mobility %>%
   dplyr::summarise(
     mean_speed_km_per_decade = mean(speed_km_per_decade),
     sd_speed_km_per_decade = sd(speed_km_per_decade),
-    mean_angle = mobest::vec2deg(c(mean(x_to_origin_norm), mean(y_to_origin_norm)))
+    mean_angle_deg = mobest::vec2deg(c(mean(x_to_origin_norm), mean(y_to_origin_norm)))
   ) %>%
   dplyr::filter(
     !is.na(region_id)
@@ -82,13 +82,13 @@ no_data_windows <- no_data_windows_yearwise %>%
   
 #### mobility estimator curves ####
 
-mean_mobility %>%
+p_estimator <- mean_mobility %>%
   ggplot() +
   geom_line(
     aes(
       x = z, y = mean_speed_km_per_decade,
       group = interaction(independent_table_id, kernel_setting_id),
-      color = mean_angle,
+      color = mean_angle_deg#,
       #linetype = kernel_setting_id
     ),
     size = 0.2
@@ -117,7 +117,7 @@ mean_mobility %>%
     alpha = 0.3, fill = "red"
   ) +
   geom_vline(
-    data = data.frame(x = c(-6800, -5500, -2800, 100)),
+    data = data.frame(x = c(-5500, -2800, 100)),
     aes(xintercept = x),
     linetype = "dotted"
   ) +
@@ -125,30 +125,17 @@ mean_mobility %>%
   theme_bw() +
   theme(
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 40, hjust = 1)#,
-    #strip.background = element_rect(fill = NA)
+    axis.text.x = element_text(angle = 40, hjust = 1)
   ) +
   xlab("time in years calBC/calAD") +
   ylab("\"Speed\" [km/decade]") +
   scale_color_gradientn(
-    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A")#,
-    #guide = F
+    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
+    guide = F
   ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(ylim = c(-0, max(mean_mobility$mean_speed_km_per_decade, na.rm = T))) +
   xlab("")
-
-# move facets around
-# g <- ggplotGrob(p_estimator)
-# g$grobs[[13]] <- g$grobs[[7]]
-# g$grobs[[7]] <- zeroGrob()
-# g$grobs[[29]] <- g$grobs[[27]]
-# g$grobs[[27]] <- zeroGrob()
-# g$grobs[[65]] <- g$grobs[[63]]
-# g$grobs[[63]] <- zeroGrob()
-# g$grobs[[31]] <- g$grobs[[32]]
-# g$grobs[[33]] <- zeroGrob()
-# p_estimator2 <- ggplotify::as.ggplot(g) # grid::grid.draw(g)
 
 #### map series ####
 
@@ -161,20 +148,20 @@ ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
 
-mobility_maps <- mobility %>% 
+mobility_maps <- mean_mobility %>% 
   dplyr::filter(z %in% c(-5500, -2800, 100)) %>%
   dplyr::group_by(region_id, z) %>%
   dplyr::summarise(
-    mean_mean_km_per_decade = mean(mean_km_per_decade),
-    mean_angle_deg = mobest::mean_deg(angle_deg %>% na.omit()),
-    mean_angle_deg_text = 360 - mean_angle_deg
+    mean_mean_km_per_decade = mean(mean_speed_km_per_decade),
+    mean_mean_angle_deg = mobest::mean_deg(mean_angle_deg),
+    mean_mean_angle_deg_text = 360 - mean_mean_angle_deg
   ) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(
     z_named = dplyr::recode_factor(as.character(z), !!!list(
-      "-5500" = "-5700 ⬳ -5500 calBC", 
-      "-2800" = "-3000 ⬳ -2800 calBC", 
-      "100" = "-100 calBC ⬳ 100 calAD"
+      "-5500" = "-5600 ⬳ -5500 calBC", 
+      "-2800" = "-2900 ⬳ -2800 calBC", 
+      "100" = "0 calBC/calAD ⬳ 100 calAD"
     ))
   ) %>%
   dplyr::left_join(
@@ -214,8 +201,8 @@ p_map <- ggplot() +
     data = mobility_maps_center,
     mapping = aes(
       x = x, y = y, 
-      color = mean_angle_deg, 
-      angle = mean_angle_deg_text,
+      color = mean_mean_angle_deg, 
+      angle = mean_mean_angle_deg_text,
       size = mean_mean_km_per_decade
     ),
     label="\u2191"
@@ -237,14 +224,13 @@ p_map <- ggplot() +
     values = c("TRUE" = 0.3, "FALSE" = 0.8), 
     guide = FALSE
   ) +
-  facet_grid(cols = dplyr::vars(z)) +
+  facet_grid(cols = dplyr::vars(z_named)) +
   theme_bw() +
   theme(
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     axis.title = element_blank(),
-    panel.background = element_rect(fill = "#BFD5E3")#,
-    #strip.background = element_rect(fill = NA)
+    panel.background = element_rect(fill = "#BFD5E3")
   ) +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
