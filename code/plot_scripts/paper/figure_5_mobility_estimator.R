@@ -14,58 +14,38 @@ mobility <- lapply(
   dplyr::mutate(
     kernel_setting_id = dplyr::recode(
       kernel_setting_id, 
-      "ds400_dt200_g001" = "400km / 200y", 
-      "ds600_dt300_g001" = "600km / 300y",
-      "ds800_dt400_g001" = "800km / 400y"
+      "ds550_dt1050_g006" = "550km / 1050y", 
+      "ds550_dt550_g006" = "550km / 550y",
+      "ds1050_dt550_g006" = "1050km / 550y"
     )
-  ) %>%
-  dplyr::filter(
-    kernel_setting_id == "600km / 300y",
-    !is.na(region_id)
   )
 
-mobility$region_id = factor(mobility$region_id, levels = c(
-  "Britain and Ireland",
-  "Southern Scandinavia",
-  "Baltics",
-  "Eastern Europe",
-  "France", 
-  "Central Europe",
-  "Southeastern Europe",
-  "Caucasus",
-  "Iberia",
-  "Italy",
-  "Turkey",
-  "Near East"
-))
+# mobility$region_id = factor(mobility$region_id, levels = c(
+#   "Britain and Ireland",
+#   "Southern Scandinavia",
+#   "Baltics",
+#   "Eastern Europe",
+#   "France", 
+#   "Central Europe",
+#   "Southeastern Europe",
+#   "Caucasus",
+#   "Iberia",
+#   "Italy",
+#   "Turkey",
+#   "Near East"
+# ))
 
 # moving average
 mean_mobility <- mobility %>%
-  dplyr::group_by(kernel_setting_id, region_id, z) %>%
+  dplyr::group_by(independent_table_id, kernel_setting_id, region_id, z) %>%
   dplyr::summarise(
-    mean_mean_km_per_decade = mean(mean_km_per_decade),
-    sd_mean_km_per_decade = sd(mean_km_per_decade)
+    mean_speed_km_per_decade = mean(speed_km_per_decade),
+    sd_speed_km_per_decade = sd(speed_km_per_decade),
+    mean_angle = mobest::vec2deg(c(mean(x_to_origin_norm), mean(y_to_origin_norm)))
   ) %>%
-  dplyr::group_by(kernel_setting_id, region_id) %>%
-  dplyr::arrange(z, .by_group = T) %>%
-  dplyr::mutate(
-    movavg_mean = slider::slide_dbl(mean_mean_km_per_decade, mean, .before = 8, .after = 8),
-    movavg_sd = slider::slide_dbl(sd_mean_km_per_decade, mean, .before = 8, .after = 8)
-  ) %>% 
-  dplyr::ungroup()
-
-# load("data/gpr/temporal_change_age_resampling.RData")
-# get sd value back into the game
-# mobility <- mobility %>% 
-#   dplyr::left_join(
-#     iwrs_age_total %>% dplyr::select(region_id, z, mean_gpr_mean_sd_norm), 
-#     by = c("region_id", "z")
-#   ) 
-# mean_mobility <- mean_mobility %>% 
-#   dplyr::left_join(
-#     iwrs_age_total %>% dplyr::select(region_id, z, mean_gpr_mean_sd_norm), 
-#     by = c("region_id", "z")
-#   )
+  dplyr::filter(
+    !is.na(region_id)
+  )
 
 # no-data windows
 split_vector_at_na <- function( x ){
@@ -82,7 +62,7 @@ no_data_windows_yearwise <- janno_final %>%
         not_covered <- setdiff(
           -7500:1500,
           lapply(Date_BC_AD_Median_Derived, function(x) {
-            seq(x, x+300, 1)
+            seq(x, x+500, 1)
           }) %>% Reduce(union, .)
         )
         schu <- rep(NA, length(-7500:1500))
@@ -102,36 +82,27 @@ no_data_windows <- no_data_windows_yearwise %>%
   
 #### mobility estimator curves ####
 
-p_estimator <- mobility %>%
+mean_mobility %>%
   ggplot() +
   geom_line(
     aes(
-      x = z, y = mean_km_per_decade, 
-      group = independent_table_id, 
-      color = angle_deg#, 
-      #alpha = 1/mean_gpr_mean_sd_norm
+      x = z, y = mean_speed_km_per_decade,
+      group = interaction(independent_table_id, kernel_setting_id),
+      color = mean_angle,
+      #linetype = kernel_setting_id
     ),
-    size = 0.1
+    size = 0.2
   ) +
-  geom_line(
-    data = mean_mobility, #%>% dplyr::mutate(
-    #  movavg_mean = ifelse(mean_gpr_mean_sd_norm < 0.4, movavg_mean, NA)
-    #),
-    aes(
-      x = z, y = movavg_mean
-    ),
-    color = "black", size = 0.7
-  ) +
-  geom_ribbon(
-    data = mean_mobility,# %>% dplyr::mutate(
-    #  movavg_mean = ifelse(mean_gpr_mean_sd_norm < 0.4, movavg_mean, NA)
-    #),
-    aes(
-      x = z, ymin = movavg_mean - movavg_sd, ymax = movavg_mean + movavg_sd
-    ),
-    fill = "grey", alpha = 0.4,
-    color = "black", size = 0.1
-  ) +
+  # geom_ribbon(
+  #   data = mean_mobility,
+  #   aes(
+  #     x = z, ymin = mean_speed_km_per_decade - sd_speed_km_per_decade, ymax = mean_speed_km_per_decade + sd_speed_km_per_decade,
+  #     group = interaction(independent_table_id, kernel_setting_id),
+  #     fill = kernel_setting_id
+  #   ),
+  #   alpha = 0.1,
+  #   color = "black", size = 0.1
+  # ) +
   geom_point(
     data = janno_final,
     aes(x = Date_BC_AD_Median_Derived, y = 0),
@@ -140,8 +111,8 @@ p_estimator <- mobility %>%
   geom_rect(
     data = no_data_windows,
     aes(
-      xmin = min_date_not_covered, xmax = max_date_not_covered, 
-      ymin = -100, ymax = 200
+      xmin = min_date_not_covered, xmax = max_date_not_covered,
+      ymin = -300, ymax = 500
     ),
     alpha = 0.3, fill = "red"
   ) +
@@ -150,11 +121,6 @@ p_estimator <- mobility %>%
     aes(xintercept = x),
     linetype = "dotted"
   ) +
-  # geom_point(
-  #   data = data.frame(x = c(-6800, -5500, -2800, 100)),
-  #   aes(x = x, y = 0),
-  #   shape = "↑", size = 3
-  # ) +
   facet_wrap(dplyr::vars(region_id)) +
   theme_bw() +
   theme(
@@ -165,11 +131,11 @@ p_estimator <- mobility %>%
   xlab("time in years calBC/calAD") +
   ylab("\"Speed\" [km/decade]") +
   scale_color_gradientn(
-    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
-    guide = F
+    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A")#,
+    #guide = F
   ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
-  coord_cartesian(ylim = c(0, max(mean_mobility$movavg_mean, na.rm = T))) +
+  coord_cartesian(ylim = c(-0, max(mean_mobility$mean_speed_km_per_decade, na.rm = T))) +
   xlab("")
 
 # move facets around
