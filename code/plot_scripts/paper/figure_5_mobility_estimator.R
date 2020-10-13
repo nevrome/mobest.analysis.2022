@@ -39,8 +39,8 @@ mobility$region_id = factor(mobility$region_id, levels = c(
 mean_mobility <- mobility %>%
   dplyr::group_by(independent_table_id, kernel_setting_id, region_id, z) %>%
   dplyr::summarise(
-    mean_speed_km_per_decade = mean(speed_km_per_decade),
-    sd_speed_km_per_decade = sd(speed_km_per_decade),
+    mean_speed_km_per_decade = sqrt(mean(x_to_origin)^2 + mean(y_to_origin)^2)/1000/unique(abs(.data[["z"]]-.data[["z_origin"]]))*10,
+    #sd_speed_km_per_decade = sd(speed_km_per_decade),
     mean_angle_deg = mobest::vec2deg(c(mean(x_to_origin_norm), mean(y_to_origin_norm)))
   ) %>%
   dplyr::filter(
