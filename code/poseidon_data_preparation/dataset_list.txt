@@ -23,7 +23,7 @@
 /projects1/poseidon/repo/ancient/2020_AgranatTamir_LevantBA
 /projects1/poseidon/repo/ancient/2020_Brunel_France
 /projects1/poseidon/repo/ancient/2020_Cassidy_IrishDynastic
-# not ready: /projects1/poseidon/repo/ancient/2020_Furtwängler_Switzerland
+/projects1/poseidon/repo/ancient/2020_Furtwängler_Switzerland
 # not ready: /projects1/poseidon/repo/ancient/2020_Immel_Moldova
 # not ready: /projects1/poseidon/repo/ancient/2020_Linderholm_Poland
 /projects1/poseidon/repo/ancient/2020_Skourtanioti_NearEast
