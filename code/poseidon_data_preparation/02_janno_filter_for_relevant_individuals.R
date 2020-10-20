@@ -1,3 +1,5 @@
+# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/poseidon_merged/poseidon2_merged.janno data/poseidon_data/poseidon_merged/poseidon2_merged.janno
+
 library(magrittr)
 
 load("data/spatial/epsg102013.RData")
@@ -68,7 +70,7 @@ tibble::tibble(
   ind = janno_filtered_final$Individual_ID
 ) %>% 
   readr::write_delim(
-    path = "code/poseidon_data_preparation/ind_list.txt",
+    file = "code/poseidon_data_preparation/ind_list.txt",
     delim = " ",
     col_names = FALSE
   )
