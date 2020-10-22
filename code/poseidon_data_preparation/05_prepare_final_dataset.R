@@ -1,4 +1,4 @@
-# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/poseidon_extracted/poseidon2_extracted.janno data/poseidon_data/poseidon_extracted/poseidon2_extracted.janno
+# mkdir data/poseidon_data/poseidon_extracted; scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/poseidon_extracted/poseidon2_extracted.janno data/poseidon_data/poseidon_extracted/poseidon2_extracted.janno
 # scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/mds/poseidon2_extracted.pruned.mds data/poseidon_data/mds/poseidon2_extracted.pruned.mds
 
 library(magrittr)

@@ -8,6 +8,8 @@ janno <- poseidon2::read_janno("data/poseidon_data/poseidon_extracted/poseidon2_
 
 load("data/spatial/mobility_regions.RData")
 load("data/spatial/epsg102013.RData")
+load("data/plot_reference_data/region_id_colors.RData")
+load("data/plot_reference_data/age_group_id_shapes.RData")
 
 janno_mds_sf <- janno %>% 
   dplyr::left_join(
@@ -26,12 +28,12 @@ janno_regions <- janno_regions %>%
   dplyr::mutate(
     age_group_id = cut(
       Date_BC_AD_Median, 
-      breaks = seq(-10000, 2000, 2000), 
-      labels = c(">-8000", paste0(seq(-8000, -2000, 2000), " - ", seq(-6000, -0, 2000)), ">0")
+      breaks = c(-10000, seq(-8000, 2000, 1000)), 
+      labels = c(">-8000", paste0(seq(-8000, 1000, 1000), " - ", seq(-7000, 2000, 1000)))
     )
   )
 
-p <- ggplot() +
+ggplot() +
   geom_point(
     data = janno_regions,
     aes(x = C1, y = C2, color = region_id, shape = age_group_id),
@@ -47,28 +49,10 @@ p <- ggplot() +
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
   scale_shape_manual(
-    values = c(
-      ">-8000" = 15,
-      "-8000 - -6000" = 15,
-      "-6000 - -4000" = 17,
-      "-4000 - -2000" = 6,
-      "-2000 - 0" = 4,
-      ">0" = 1
-    )
+    values = age_group_id_shapes
   ) +
   scale_color_manual(
-    values = c(
-      "Central Europe" = "#999999", 
-      "Iberia" = "#E69F00", 
-      "Eastern Europe" = "#56B4E9", 
-      "Britain and Ireland" = "#009E73", 
-      "Turkey" = "#871200",
-      "France" = "#F0E442", 
-      "Levant" = "#0072B2", 
-      "Caucasus" = "#D55E00", 
-      "Italy" = "#CC79A7", 
-      "Southeastern Europe" = "#2fff00"
-    )
+    values = region_id_colors
   ) +
   guides(
     color = guide_legend(title = ""),
