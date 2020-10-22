@@ -43,7 +43,7 @@ mobility$region_id = factor(mobility$region_id, levels = c(
   "Iberia",
   "Italy",
   "Turkey",
-  "Near East"
+  "Levant"
 ))
 
 # moving average

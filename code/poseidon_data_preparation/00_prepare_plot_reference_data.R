@@ -10,7 +10,7 @@ region_id_colors <- c(
   "Southeastern Europe" = "#6678dc",
   "Caucasus" = "#729d46", 
   "Turkey" = "#5b388a",
-  "Near East" = "#b1467b" 
+  "Levant" = "#b1467b" 
 )
 save(region_id_colors, file = "data/plot_reference_data/region_id_colors.RData")
 

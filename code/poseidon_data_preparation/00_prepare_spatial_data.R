@@ -89,7 +89,7 @@ mobility_regions$region_id <- factor(
     "Southeastern Europe",
     "Caucasus",
     "Turkey",
-    "Near East"
+    "Levant"
   )
 )
 save(mobility_regions, file = "data/spatial/mobility_regions.RData")

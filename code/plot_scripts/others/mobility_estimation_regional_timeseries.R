@@ -14,7 +14,7 @@ mobility_proxy$region_id <- factor(
     "Southeastern Europe",
     "Turkey",
     "Iberia",
-    "Near East"
+    "Levant"
   )
 )
 

@@ -64,7 +64,7 @@ p <- ggplot() +
       "Britain and Ireland" = "#009E73", 
       "Turkey" = "#871200",
       "France" = "#F0E442", 
-      "Near East" = "#0072B2", 
+      "Levant" = "#0072B2", 
       "Caucasus" = "#D55E00", 
       "Italy" = "#CC79A7", 
       "Southeastern Europe" = "#2fff00"
