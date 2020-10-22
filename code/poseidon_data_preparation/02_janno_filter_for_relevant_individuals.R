@@ -1,4 +1,4 @@
-# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/poseidon_merged/poseidon2_merged.janno data/poseidon_data/poseidon_merged/poseidon2_merged.janno
+# mkdir data/poseidon_data/poseidon_merged; scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/poseidon_merged/poseidon2_merged.janno data/poseidon_data/poseidon_merged/poseidon2_merged.janno
 
 library(magrittr)
 
@@ -21,15 +21,14 @@ janno_age_filtered <- janno_with_sufficient_info %>% dplyr::filter(
   Date_BC_AD_Median_Derived > -8000
 )
 
-# spatial filter -> check every now and then if the new data justifies a bigger/different research area
+# spatial filter 
 janno_spatial <- janno_age_filtered %>% 
   sf::st_as_sf(
     coords = c("Longitude", "Latitude"), 
-    crs = sf::st_crs(4326)
+    crs = sf::st_crs(4326),
+    remove = FALSE
   ) %>%
   sf::st_transform(epsg102013)
-
-sf::write_sf(janno_spatial, dsn = "data/poseidon_data/janno_spatial.gpkg", driver = "GPKG")
 
 janno_spatial_filtered <- janno_spatial %>%
   sf::st_intersection(
@@ -50,12 +49,16 @@ janno_spatial_filtered_non_sf <- janno_spatial_filtered %>%
 # Nr_autosomal_SNPs: should be >= 20000 SNPs
 janno_QC <- janno_spatial_filtered_non_sf %>% dplyr::filter(Nr_autosomal_SNPs >= 20000)
 # Xcontam: if male, then should not be higher then 10%
-janno_QC <- janno_QC %>% dplyr::filter(is.na(Xcontam) | Genetic_Sex == "F" | (Genetic_Sex == "M" & Xcontam < 0.1))
+janno_QC <- janno_QC %>% dplyr::filter(
+  is.na(Xcontam) | Genetic_Sex == "F" | (Genetic_Sex == "M" & Xcontam < 0.1)
+)
 # Genetic_Sex: Individuals with unknown genetic sex should be removed
 janno_QC <- janno_QC %>% dplyr::filter(Genetic_Sex != "U")
 # Indicated as contaminated: Individuals which are indicated as potentially contaminated
 # in their ID should be removed
-janno_QC <- janno_QC %>% dplyr::filter(!grepl("cont", x = Individual_ID, ignore.case = T))
+janno_QC <- janno_QC %>% dplyr::filter(
+  !grepl("cont|excluded", x = Individual_ID, ignore.case = T)
+)
 
 # Mehrfachmessungen an einem Individuum und Verwandte Individuen bleiben drin - schwer systematisch zu entfernen und theoretisch kein Problem
 # Coverage ist hier unwichtig
@@ -63,6 +66,15 @@ janno_QC <- janno_QC %>% dplyr::filter(!grepl("cont", x = Individual_ID, ignore.
 
 # prepare extract list for poseidon2 extract
 janno_filtered_final <- janno_QC
+
+# export for QGIS: check every now and then if the new data justifies a bigger/different research area
+janno_filtered_final %>% 
+  sf::st_as_sf(
+    coords = c("Longitude", "Latitude"), 
+    crs = sf::st_crs(4326)
+  ) %>%
+  sf::st_transform(epsg102013) %>%
+  sf::write_sf(dsn = "data/poseidon_data/janno_spatial.gpkg", driver = "GPKG")
 
 # store ind list for poseidon extraction
 tibble::tibble(
