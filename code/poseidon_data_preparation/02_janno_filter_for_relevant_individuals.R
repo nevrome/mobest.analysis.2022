@@ -30,6 +30,9 @@ janno_spatial <- janno_age_filtered %>%
   ) %>%
   sf::st_transform(epsg102013)
 
+janno_spatial %>% 
+  sf::write_sf(dsn = "data/poseidon_data/janno_spatial_pre_filter.gpkg", driver = "GPKG")
+
 janno_spatial_filtered <- janno_spatial %>%
   sf::st_intersection(
     research_area
@@ -74,7 +77,7 @@ janno_filtered_final %>%
     crs = sf::st_crs(4326)
   ) %>%
   sf::st_transform(epsg102013) %>%
-  sf::write_sf(dsn = "data/poseidon_data/janno_spatial.gpkg", driver = "GPKG")
+  sf::write_sf(dsn = "data/poseidon_data/janno_spatial_post_filter.gpkg", driver = "GPKG")
 
 # store ind list for poseidon extraction
 tibble::tibble(
