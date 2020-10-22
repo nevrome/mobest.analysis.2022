@@ -27,7 +27,7 @@ janno_spatial <- janno_mds %>%
 
 janno_spatial_regions <- janno_spatial %>% sf::st_intersection(mobility_regions)
 
-sf::write_sf(janno_spatial_regions, dsn = "data/janno_spatial_filtered.gpkg", driver = "GPKG")
+sf::write_sf(janno_spatial_regions, dsn = "data/poseidon_data/janno_spatial_filtered.gpkg", driver = "GPKG")
 
 janno_regions <- janno_spatial_regions %>%
   dplyr::mutate(

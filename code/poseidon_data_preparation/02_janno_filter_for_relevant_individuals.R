@@ -29,7 +29,7 @@ janno_spatial <- janno_age_filtered %>%
   ) %>%
   sf::st_transform(epsg102013)
 
-sf::write_sf(janno_spatial, dsn = "data/janno_spatial.gpkg", driver = "GPKG")
+sf::write_sf(janno_spatial, dsn = "data/poseidon_data/janno_spatial.gpkg", driver = "GPKG")
 
 janno_spatial_filtered <- janno_spatial %>%
   sf::st_intersection(
