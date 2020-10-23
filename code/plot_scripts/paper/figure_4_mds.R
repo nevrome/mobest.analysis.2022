@@ -40,14 +40,13 @@ p_mds <- ggplot() +
   geom_point(
     data = janno_final,
     aes(x = C1, y = C2, color = region_id, shape = age_group_id),
-    alpha = 0.7,
+    alpha = 0.5,
     size = 2
   ) +
   geom_point(
     data = region_age_group_mean,
     aes(x = mean_C1, y = mean_C2),
-    alpha = 1,
-    size = 3,
+    size = 3.2,
     fill = "white",
     color = "black",
     shape = 21
@@ -55,7 +54,6 @@ p_mds <- ggplot() +
   geom_point(
     data = region_age_group_mean,
     aes(x = mean_C1, y = mean_C2, color = region_id, shape = age_group_id),
-    alpha = 1,
     size = 2
   ) +
   theme_bw() +
