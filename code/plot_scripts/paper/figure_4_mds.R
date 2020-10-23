@@ -18,12 +18,44 @@ poi_timeseries_London <- poi_timeseries %>% dplyr::filter(pred_grid_id == "Londo
 poi_timeseries_Rome <- poi_timeseries %>% dplyr::filter(pred_grid_id == "Rome")
 poi_timeseries_Jerusalem <- poi_timeseries %>% dplyr::filter(pred_grid_id == "Jerusalem")
 
+# mean per region and time
+region_age_group_mean <- janno_final %>%
+  dplyr::group_by(region_id, age_group_id) %>%
+  dplyr::summarise(mean_C1 = mean(C1), mean_C2 = mean(C2)) %>%
+  dplyr::ungroup()
+
+C1_grid <- seq(min(janno_final$C1), max(janno_final$C1), length.out = 40)
+C2_grid <- seq(min(janno_final$C2), max(janno_final$C2), length.out = 42)
+C_grid <- expand.grid(C1_grid, C2_grid)
+taken <- rep(FALSE, nrow(C_grid))
+for (i in 1:nrow(region_age_group_mean)) {
+  C_grid[taken,] <- Inf
+  min_position <- which.min(fields::rdist(C_grid, region_age_group_mean[i,c("mean_C1", "mean_C2")]))
+  taken[min_position] <- TRUE
+  region_age_group_mean[i,c("mean_C1", "mean_C2")] <- C_grid[min_position,]
+}
+
 # normal mds plot
 p_mds <- ggplot() +
   geom_point(
     data = janno_final,
     aes(x = C1, y = C2, color = region_id, shape = age_group_id),
     alpha = 0.7,
+    size = 2
+  ) +
+  geom_point(
+    data = region_age_group_mean,
+    aes(x = mean_C1, y = mean_C2),
+    alpha = 1,
+    size = 3,
+    fill = "white",
+    color = "black",
+    shape = 21
+  ) +
+  geom_point(
+    data = region_age_group_mean,
+    aes(x = mean_C1, y = mean_C2, color = region_id, shape = age_group_id),
+    alpha = 1,
     size = 2
   ) +
   theme_bw() +
