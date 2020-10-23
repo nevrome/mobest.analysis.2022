@@ -50,3 +50,5 @@ janno_age_groups <- janno_regions %>%
 janno_final <- janno_age_groups
 
 save(janno_final, file = "data/poseidon_data/janno_final.RData")
+
+# scp data/poseidon_data/janno_final.RData schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/janno_final.RData
