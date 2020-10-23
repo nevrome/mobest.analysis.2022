@@ -24,16 +24,41 @@ region_age_group_mean <- janno_final %>%
   dplyr::summarise(mean_C1 = mean(C1), mean_C2 = mean(C2)) %>%
   dplyr::ungroup()
 
+# grid arrangement for mean points
 C1_grid <- seq(min(janno_final$C1), max(janno_final$C1), length.out = 40)
 C2_grid <- seq(min(janno_final$C2), max(janno_final$C2), length.out = 42)
 C_grid <- expand.grid(C1_grid, C2_grid)
-taken <- rep(FALSE, nrow(C_grid))
-for (i in 1:nrow(region_age_group_mean)) {
-  C_grid[taken,] <- Inf
-  min_position <- which.min(fields::rdist(C_grid, region_age_group_mean[i,c("mean_C1", "mean_C2")]))
-  taken[min_position] <- TRUE
-  region_age_group_mean[i,c("mean_C1", "mean_C2")] <- C_grid[min_position,]
+distance_matrix <- fields::rdist(C_grid, region_age_group_mean[c("mean_C1", "mean_C2")])
+distance_long <- setNames(reshape2::melt(distance_matrix), c('grid_id', 'mean_point_id', 'distance'))
+
+grid_df <- data.frame()
+repeat {
+  closest_grid_points <- distance_long %>% 
+    dplyr::group_by(mean_point_id) %>%
+    dplyr::arrange(distance) %>%
+    dplyr::filter(dplyr::row_number()==1) %>%
+    dplyr::ungroup()
+  dups <- unique(closest_grid_points$grid_id[duplicated(closest_grid_points$grid_id)])
+  without_dups <- closest_grid_points %>% 
+    dplyr::filter(!(grid_id %in% dups))
+  with_dups <- closest_grid_points %>% 
+    dplyr::filter(grid_id %in% dups)
+  with_dups_better <- with_dups %>%
+    dplyr::group_by(grid_id) %>%
+    dplyr::arrange(distance) %>%
+    dplyr::filter(dplyr::row_number()==1) %>%
+    dplyr::ungroup()
+  grid_df <- unique(rbind(grid_df, without_dups, with_dups_better))
+  distance_long <- distance_long %>%
+    dplyr::filter(
+      !(grid_id %in% grid_df$grid_id) &
+        !(mean_point_id %in% grid_df$mean_point_id)
+    )
+  if (nrow(distance_long) == 0) { break }
 }
+
+region_age_group_mean[grid_df$mean_point_id,c("mean_C1", "mean_C2")] <- 
+  C_grid[grid_df$grid_id,]
 
 # normal mds plot
 p_mds <- ggplot() +
