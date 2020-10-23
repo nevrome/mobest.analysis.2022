@@ -42,7 +42,7 @@ p_mds <- ggplot() +
     color = guide_legend(title = ""),
     shape = guide_legend(title = "median age calBC")
   ) +
-  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.07, 0.065)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02))
 
@@ -100,7 +100,7 @@ p_London <- ggplot() +
     axis.title = element_blank()
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
-  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.07, 0.065)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   guides(
@@ -158,7 +158,7 @@ p_Budapest <- ggplot() +
     axis.title = element_blank()
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
-  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.07, 0.065)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   ggtitle("Budapest")
@@ -213,7 +213,7 @@ p_Rome <- ggplot() +
     axis.title = element_blank()
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
-  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.07, 0.065)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   ggtitle("Rome")
@@ -268,7 +268,7 @@ p_Jerusalem <- ggplot() +
     axis.title = element_blank()
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
-  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.07, 0.065)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   ggtitle("Jerusalem")
