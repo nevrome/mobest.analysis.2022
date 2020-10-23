@@ -102,11 +102,11 @@ p2 <- mean_interpol_comparison_group %>%
     aes(x = ds, y = dt, fill = cut_mean_mean_squared_difference),
     colour = "grey20"
   ) +
-  geom_point(
-    data = data.frame(ds = c(550, 1050), dt = c(550, 550)),
-    aes(x = ds, y = dt), 
-    color = "black", pch = 4, size = 3
-  ) +
+  # geom_point(
+  #   data = data.frame(ds = c(550, 1050), dt = c(550, 550)),
+  #   aes(x = ds, y = dt), 
+  #   color = "black", pch = 4, size = 3
+  # ) +
   geom_point(
     data = min_point,
     aes(x = ds, y = dt), 
