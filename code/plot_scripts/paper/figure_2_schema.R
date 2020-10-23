@@ -1,6 +1,6 @@
 library(magrittr)
 
-DiagrammeR::grViz("code/plot_scripts/figure_2_schema.dot") %>%
+DiagrammeR::grViz("code/plot_scripts/paper/figure_2_schema.dot") %>%
   DiagrammeRsvg::export_svg() %>% 
   charToRaw %>% 
   rsvg::rsvg_png(
