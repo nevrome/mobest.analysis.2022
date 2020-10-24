@@ -83,8 +83,12 @@ p_mds <- ggplot() +
   ) +
   theme_bw() +
   theme(
-    legend.text = element_text(size = 12),
-    legend.position = "none"
+    legend.position = "none",
+    legend.background = element_blank(),
+    legend.title = element_text(size = 13),
+    legend.spacing.x = unit(0.2, 'cm'),
+    legend.key.height = unit(0.4, 'cm'),
+    legend.text = element_text(size = 9),
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
   scale_shape_manual(
@@ -93,13 +97,13 @@ p_mds <- ggplot() +
   scale_color_manual(
     values = region_id_colors
   ) +
-  guides(
-    color = guide_legend(title = ""),
-    shape = guide_legend(title = "median age calBC")
-  ) +
   coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
-  scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02))
+  scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
+  guides(
+    color = guide_legend(title = "Region", nrow = 3, ncol = 4),
+    shape = guide_legend(title = "Time", nrow = 3, ncol = 4)
+  )
 
 # London
 p_London <- ggplot() +
@@ -336,7 +340,13 @@ right <- cowplot::plot_grid(p_Budapest, p_Jerusalem, ncol = 1, labels = c("C", "
 
 top <- cowplot::plot_grid(p_mds, left, right, nrow = 1, rel_widths = c(1.2, 0.5, 0.5), labels = c("A", NA, NA))
 
-p <- cowplot::plot_grid(top, cowplot::get_legend(p_London), rel_heights = c(1, 0.1), ncol = 1)
+p <- cowplot::plot_grid(
+  top, 
+  cowplot::get_legend(p_London),
+  cowplot::get_legend(p_mds + theme(legend.position = "bottom")),
+  rel_heights = c(1, 0.05, 0.1),
+  nrow = 3, ncol = 1
+)
 
 ggsave(
   paste0("plots/figure_4_mds.jpeg"),
@@ -344,7 +354,7 @@ ggsave(
   device = "jpeg",
   scale = 0.5,
   dpi = 300,
-  width = 570, height = 300, units = "mm",
+  width = 630, height = 350, units = "mm",
   limitsize = F
 )
 
