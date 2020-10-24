@@ -1,7 +1,7 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/gpr/interpol_grid.RData")
+load("data/gpr/interpol_grid_median.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/plot_reference_data/age_group_id_shapes.RData")
@@ -24,10 +24,9 @@ ylimit <- c(ex[3], ex[4])
 
 p_C1 <- interpol_grid %>%
   dplyr::filter(
-    independent_table_id == "age_sample_1",
     dependent_var_id %in% "C1",
-    kernel_setting_id == "ds800_dt1400_g001",
-    pred_grid_id == "scs100_tl100",
+    kernel_setting_id == .$kernel_setting_id[1],
+    pred_grid_id == .$pred_grid_id[1],
     z %in% seq(-7000, 1000, 2000)
   ) %>%
   ggplot() +
@@ -36,7 +35,7 @@ p_C1 <- interpol_grid %>%
   facet_grid(rows = dplyr::vars(z), cols = dplyr::vars(dependent_var_id)) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
   geom_point(
-    data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
+    data = . %>% dplyr::filter(sd > (0.15 * diff(range(mean)))),
     aes(x, y), alpha = 0.8, color = "grey", shape = 4
   ) +
   geom_point(
@@ -49,7 +48,9 @@ p_C1 <- interpol_grid %>%
     values = age_group_id_shapes,
     guide = FALSE
   ) +
-  scale_fill_viridis_c() +
+  scale_fill_viridis_c(
+    breaks = c(-0.08, -0.04, 0, 0.04)
+  ) +
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
@@ -66,17 +67,15 @@ p_C1 <- interpol_grid %>%
     axis.text = element_blank(),
     legend.text = element_text(size = 12),
     strip.text = element_text(size = 17),
-    strip.background = element_rect(fill = NA),
     axis.ticks = element_blank(),
     panel.background = element_rect(fill = "#BFD5E3")
   )
 
 p_C2 <- interpol_grid %>%
   dplyr::filter(
-    independent_table_id == "age_sample_1",
     dependent_var_id %in% "C2",
-    kernel_setting_id == "ds800_dt1400_g001",
-    pred_grid_id == "scs100_tl100",
+    kernel_setting_id == .$kernel_setting_id[1],
+    pred_grid_id == .$pred_grid_id[1],
     z %in% seq(-7000, 1000, 2000)
   ) %>%
   ggplot() +
@@ -85,7 +84,7 @@ p_C2 <- interpol_grid %>%
   facet_grid(rows = dplyr::vars(z), cols = dplyr::vars(dependent_var_id)) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
   geom_point(
-    data = . %>% dplyr::filter(sd > (0.2 * diff(range(mean)))),
+    data = . %>% dplyr::filter(sd > (0.15 * diff(range(mean)))),
     aes(x, y), alpha = 0.8, color = "grey", shape = 4
   ) +
   geom_point(
@@ -98,7 +97,10 @@ p_C2 <- interpol_grid %>%
     values = age_group_id_shapes,
     guide = FALSE
   ) +
-  scale_fill_viridis_c(option = "magma") +
+  scale_fill_viridis_c(
+    breaks = c(-0.08, -0.04, 0, 0.04),
+    option = "magma"
+  ) +
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
