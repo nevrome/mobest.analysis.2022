@@ -282,7 +282,7 @@ p <- cowplot::plot_grid(
 )
 
 ggsave(
-  paste0("plots/figure_5_mobility_estimator.png"),
+  paste0("plots/figure_5_mobility_curves_age_resampling+origin_search+directed_speed+one_kernel_setting.png"),
   plot = p,
   device = "png",
   scale = 0.5,
