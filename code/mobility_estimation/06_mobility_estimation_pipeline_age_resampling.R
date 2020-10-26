@@ -1,7 +1,5 @@
 # sbatch code/mobility_estimation/slurm_05_mobility_estimation_pipeline_age_resampling.sh
 
-library(magrittr)
-
 #### read parameters ####
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
@@ -16,21 +14,22 @@ load("data/spatial/mobility_regions.RData")
 
 #### prepare pca model grid ####
 model_grid <- mobest::create_model_grid(
-  independent = list(
+  independent = stats::setNames(list(
       tibble::tibble(
         x = janno_final$x, 
         y = janno_final$y, 
         z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })
       )
-    ) %>% stats::setNames(paste0("age_sample_", age_resampling_run)),
+    ), paste0("age_sample_", age_resampling_run)),
   dependent = list(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds550_dt1050_g006 = list(d = c(550000, 550000, 1050), g = 0.06, on_residuals = T, auto = F),
-    ds550_dt550_g006 = list(d = c(550000, 550000, 550), g = 0.06, on_residuals = T, auto = F),
-    ds1050_dt550_g006 = list(d = c(1050000, 1050000, 550), g = 0.06, on_residuals = T, auto = F)
+    ds450_dt800_g006 = list(d = c(450000, 450000, 800), g = 0.06, on_residuals = T, auto = F)
+    # ds550_dt1050_g006 = list(d = c(550000, 550000, 1050), g = 0.06, on_residuals = T, auto = F),
+    # ds550_dt550_g006 = list(d = c(550000, 550000, 550), g = 0.06, on_residuals = T, auto = F),
+    # ds1050_dt550_g006 = list(d = c(1050000, 1050000, 550), g = 0.06, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     scs100_tl100 = mobest::create_prediction_grid(
