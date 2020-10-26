@@ -29,7 +29,7 @@ model_grid <- mobest::create_model_grid(
       area, 
       mobility_regions,
       spatial_cell_size = 100000, 
-      time_layers = seq(-7600, 1500, 100)
+      time_layers = seq(-7600, 1500, 50)
     )
   )
 )
@@ -40,7 +40,7 @@ interpol_grid <- mobest::run_model_grid(model_grid)
 
 #### spatial origin ####
 
-interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 1)
+interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 6)
 
 #### mobility proxy ####
 
