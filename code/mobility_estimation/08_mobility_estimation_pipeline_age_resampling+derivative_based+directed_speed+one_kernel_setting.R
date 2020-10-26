@@ -1,4 +1,10 @@
-library(magrittr)
+# sbatch code/mobility_estimation/slurm_05_mobility_estimation_pipeline_age_resampling.sh
+
+#### read parameters ####
+
+args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
+age_resampling_run <- 6
+age_resampling_run <- as.numeric(args[1]) + 1
 
 #### data ####
 
@@ -9,7 +15,7 @@ load("data/spatial/mobility_regions.RData")
 main_pred_grid <- mobest::create_prediction_grid(
   area, mobility_regions,
   spatial_cell_size = 100000,
-  time_layers = seq(-7500, 1500, 50)
+  time_layers = seq(-7500, 1500, 100)
 )
 
 delta_x <- 10 * 10000
@@ -18,21 +24,19 @@ delta_z <- 10
 
 #### prepare pca model grid ####
 model_grid <- mobest::create_model_grid(
-  independent = list(
+  independent = stats::setNames(list(
     tibble::tibble(
       x = janno_final$x, 
       y = janno_final$y, 
-      z = janno_final$Date_BC_AD_Median_Derived
+      z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })
     )
-  ) %>% stats::setNames("age_median"),
+  ), paste0("age_sample_", age_resampling_run)),
   dependent = list(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds550_dt1050_g006 = list(d = c(550000, 550000, 1050), g = 0.06, on_residuals = T, auto = F),
-    ds550_dt550_g006 = list(d = c(550000, 550000, 550), g = 0.06, on_residuals = T, auto = F),
-    ds1050_dt550_g006 = list(d = c(1050000, 1050000, 550), g = 0.06, on_residuals = T, auto = F)
+    ds450_dt800_g006 = list(d = c(450000, 450000, 800), g = 0.06, on_residuals = T, auto = F)
   ),
   prediction_grid = list(
     main = main_pred_grid,
@@ -66,12 +70,13 @@ interpol_grid <- mobest::run_model_grid(model_grid)
 
 #### mobility ####
 
-alternative_mobility_proxy <- mobest::estimate_mobility(
+mobility_proxy <- mobest::estimate_mobility(
   interpol_grid, delta_x, delta_y, delta_z
 )
 
-save(alternative_mobility_proxy, file = "data/mobility_estimation/alternative_mobility_proxy_median.RData")
-
+save(mobility_proxy, file = paste0(
+  "data/mobility_estimation/age_resampling+derivative_based+directed_speed+one_kernel_setting/run_", age_resampling_run, ".RData"
+))
 
 # library(ggplot2)
 # mob %>% dplyr::filter(

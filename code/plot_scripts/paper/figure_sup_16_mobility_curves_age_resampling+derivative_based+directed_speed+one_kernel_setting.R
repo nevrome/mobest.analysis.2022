@@ -3,33 +3,13 @@ library(ggplot2)
 
 load("data/poseidon_data/janno_final.RData")
 
-# mobility <- lapply(
-#   list.files("data/mobility_estimation/age_resampling", full.names = T),
-#   function(x) {
-#     load(x)
-#     mobility_proxy
-#   }
-# ) %>% dplyr::bind_rows() %>%
-#   # kernel selection
-#   dplyr::mutate(
-#     kernel_setting_id = dplyr::recode(
-#       kernel_setting_id, 
-#       "ds550_dt1050_g006" = "550km / 1050y", 
-#       "ds550_dt550_g006" = "550km / 550y",
-#       "ds1050_dt550_g006" = "1050km / 550y"
-#     )
-#   )
-
-load("data/mobility_estimation/alternative_mobility_proxy_median.RData")
-
-mobility <- alternative_mobility_proxy %>% dplyr::mutate(
-    kernel_setting_id = dplyr::recode(
-      kernel_setting_id,
-      "ds550_dt1050_g006" = "550km / 1050y",
-      "ds550_dt550_g006" = "550km / 550y",
-      "ds1050_dt550_g006" = "1050km / 550y"
-    )
-  )
+mobility <- lapply(
+  list.files("data/mobility_estimation/age_resampling+derivative_based+directed_speed+one_kernel_setting", full.names = T),
+  function(x) {
+    load(x)
+    mobility_proxy
+  }
+) %>% dplyr::bind_rows()
 
 mobility$region_id = factor(mobility$region_id, levels = c(
   "Britain and Ireland",
@@ -136,7 +116,7 @@ p_estimator <- mean_mobility %>%
   xlab("")
 
 ggsave(
-  paste0("plots/figure_sup_15_mobility_curves_alternative_speed.png"),
+  paste0("plots/figure_sup_16_mobility_curves_age_resampling+derivative_based+directed_speed+one_kernel_setting.png"),
   plot = p_estimator,
   device = "png",
   scale = 0.5,
