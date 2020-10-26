@@ -85,7 +85,10 @@ p_estimator <- mean_mobility %>%
       group = interaction(independent_table_id, kernel_setting_id),
       linetype = kernel_setting_id
     ),
-    size = 0.2
+    size = 0.3
+  ) +
+  scale_linetype_manual(
+    values = c("solid", "longdash", "dotted")
   ) +
   geom_point(
     data = janno_final,
