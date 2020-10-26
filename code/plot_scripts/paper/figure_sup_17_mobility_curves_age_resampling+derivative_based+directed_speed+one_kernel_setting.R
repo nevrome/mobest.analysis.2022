@@ -116,7 +116,7 @@ p_estimator <- mean_mobility %>%
   xlab("")
 
 ggsave(
-  paste0("plots/figure_sup_16_mobility_curves_age_resampling+derivative_based+directed_speed+one_kernel_setting.png"),
+  paste0("plots/figure_sup_17_mobility_curves_age_resampling+derivative_based+directed_speed+one_kernel_setting.png"),
   plot = p_estimator,
   device = "png",
   scale = 0.5,

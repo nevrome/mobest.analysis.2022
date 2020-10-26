@@ -3,13 +3,18 @@ library(ggplot2)
 
 load("data/poseidon_data/janno_final.RData")
 
-mobility <- lapply(
-  list.files("data/mobility_estimation/age_resampling+origin_search+directed_speed+one_kernel_setting", full.names = T),
-  function(x) {
-    load(x)
-    mobility_proxy
-  }
-) %>% dplyr::bind_rows()
+load("data/mobility_estimation/mean_age+origin_search(+multiple_step_settings)+directed_speed+one_kernel_setting/run.RData")
+
+mobility <- mobility_proxy# %>% dplyr::bind_rows() %>%
+# # kernel selection
+# dplyr::mutate(
+#   kernel_setting_id = dplyr::recode(
+#     kernel_setting_id, 
+#     "ds550_dt1050_g006" = "550km / 1050y", 
+#     "ds550_dt550_g006" = "550km / 550y",
+#     "ds1050_dt550_g006" = "1050km / 550y"
+#   )
+# )
 
 mobility$region_id = factor(mobility$region_id, levels = c(
   "Britain and Ireland",
@@ -28,9 +33,9 @@ mobility$region_id = factor(mobility$region_id, levels = c(
 
 # moving average
 mean_mobility <- mobility %>%
-  dplyr::group_by(independent_table_id, kernel_setting_id, region_id, z) %>%
+  dplyr::group_by(independent_table_id, kernel_setting_id, region_id, z, steps) %>%
   dplyr::summarise(
-    mean_speed_km_per_decade = mean(speed_km_per_decade),
+    mean_speed_km_per_decade = sqrt(mean(x_to_origin)^2 + mean(y_to_origin)^2)/1000/unique(abs(.data[["z"]]-.data[["z_origin"]]))*10,
     sd_speed_km_per_decade = sd(speed_km_per_decade)
   ) %>%
   dplyr::filter(
@@ -77,9 +82,13 @@ p_estimator <- mean_mobility %>%
   geom_line(
     aes(
       x = z, y = mean_speed_km_per_decade,
-      group = independent_table_id
+      group = interaction(independent_table_id, as.factor(steps)),
+      linetype = as.factor(steps)
     ),
-    size = 0.2
+    size = 0.3
+  ) +
+  scale_linetype_manual(
+    values = c("solid", "longdash", "dotted")
   ) +
   geom_point(
     data = janno_final,
@@ -102,12 +111,16 @@ p_estimator <- mean_mobility %>%
   ) +
   xlab("time in years calBC/calAD") +
   ylab("\"Speed\" [km/decade]") +
+  scale_color_gradientn(
+    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
+    guide = F
+  ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(ylim = c(-0, max(mean_mobility$mean_speed_km_per_decade, na.rm = T))) +
   xlab("")
 
 ggsave(
-  paste0("plots/figure_sup_15_mobility_curves_mobility_curves_mean_age+origin_search+absolute_speed+multiple_kernel_settings.png"),
+  "plots/figure_sup_15_mobility_curve_mean_age+origin_search(+multiple_step_settings)+directed_speed+one_kernel_setting.png",
   plot = p_estimator,
   device = "png",
   scale = 0.5,
