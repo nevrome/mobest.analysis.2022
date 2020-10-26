@@ -4,7 +4,7 @@ library(ggplot2)
 load("data/poseidon_data/janno_final.RData")
 
 mobility <- lapply(
-  list.files("data/mobility_estimation/age_resampling", full.names = T),
+  list.files("data/mobility_estimation/age_resampling+origin_search+directed_speed+one_kernel_setting", full.names = T),
   function(x) {
     load(x)
     mobility_proxy
