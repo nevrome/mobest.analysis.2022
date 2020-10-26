@@ -9,16 +9,7 @@ mobility <- lapply(
     load(x)
     mobility_proxy
   }
-) %>% dplyr::bind_rows() %>%
-  # kernel selection
-  dplyr::mutate(
-    kernel_setting_id = dplyr::recode(
-      kernel_setting_id, 
-      "ds550_dt1050_g006" = "550km / 1050y", 
-      "ds550_dt550_g006" = "550km / 550y",
-      "ds1050_dt550_g006" = "1050km / 550y"
-    )
-  )
+) %>% dplyr::bind_rows()
 
 mobility$region_id = factor(mobility$region_id, levels = c(
   "Britain and Ireland",
@@ -40,7 +31,6 @@ mean_mobility <- mobility %>%
   dplyr::group_by(independent_table_id, kernel_setting_id, region_id, z) %>%
   dplyr::summarise(
     mean_speed_km_per_decade = sqrt(mean(x_to_origin)^2 + mean(y_to_origin)^2)/1000/unique(abs(.data[["z"]]-.data[["z_origin"]]))*10,
-    #sd_speed_km_per_decade = sd(speed_km_per_decade),
     mean_angle_deg = mobest::vec2deg(c(mean(x_to_origin_norm), mean(y_to_origin_norm)))
   ) %>%
   dplyr::filter(
