@@ -27,7 +27,7 @@ model_grid <- mobest::create_model_grid(
       area, 
       mobility_regions,
       spatial_cell_size = 100000, 
-      time_layers = seq(-7600, 1500, 100)
+      time_layers = seq(-8000, 1500, 50)
     )
   )
 )
@@ -38,15 +38,15 @@ interpol_grid <- mobest::run_model_grid(model_grid)
 
 #### spatial origin ####
 
-interpol_grid_origin_1 <- mobest::search_spatial_origin(interpol_grid, steps = 1)
-interpol_grid_origin_2 <- mobest::search_spatial_origin(interpol_grid, steps = 3)
-interpol_grid_origin_3 <- mobest::search_spatial_origin(interpol_grid, steps = 5)
+interpol_grid_origin_1 <- mobest::search_spatial_origin(interpol_grid, steps = 2)
+interpol_grid_origin_2 <- mobest::search_spatial_origin(interpol_grid, steps = 6)
+interpol_grid_origin_3 <- mobest::search_spatial_origin(interpol_grid, steps = 10)
 
 #### mobility proxy ####
 
-mobility_proxy_1 <- mobest::estimate_mobility(interpol_grid_origin_1) %>% dplyr::mutate(steps = 1)
-mobility_proxy_2 <- mobest::estimate_mobility(interpol_grid_origin_2) %>% dplyr::mutate(steps = 3)
-mobility_proxy_3 <- mobest::estimate_mobility(interpol_grid_origin_3) %>% dplyr::mutate(steps = 5)
+mobility_proxy_1 <- mobest::estimate_mobility(interpol_grid_origin_1) %>% dplyr::mutate(steps = "100y")
+mobility_proxy_2 <- mobest::estimate_mobility(interpol_grid_origin_2) %>% dplyr::mutate(steps = "300y")
+mobility_proxy_3 <- mobest::estimate_mobility(interpol_grid_origin_3) %>% dplyr::mutate(steps = "500y")
 
 mobility_proxy <- rbind(mobility_proxy_1, mobility_proxy_2, mobility_proxy_3)
 

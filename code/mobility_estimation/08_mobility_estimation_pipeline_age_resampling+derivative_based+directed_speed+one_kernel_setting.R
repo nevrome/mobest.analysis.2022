@@ -15,7 +15,7 @@ load("data/spatial/mobility_regions.RData")
 main_pred_grid <- mobest::create_prediction_grid(
   area, mobility_regions,
   spatial_cell_size = 100000,
-  time_layers = seq(-7500, 1500, 100)
+  time_layers = seq(-7500, 1500, 50)
 )
 
 delta_x <- 10 * 10000
