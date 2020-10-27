@@ -2,6 +2,8 @@ library(magrittr)
 library(ggplot2)
 
 load("data/poseidon_data/janno_final.RData")
+load("data/plot_reference_data/no_data_windows.RData")
+load("data/plot_reference_data/no_data_windows_yearwise.RData")
 
 mobility <- lapply(
   list.files("data/mobility_estimation/age_resampling+origin_search+directed_speed+one_kernel_setting", full.names = T),
@@ -36,39 +38,6 @@ mean_mobility <- mobility %>%
   dplyr::filter(
     !is.na(region_id)
   )
-
-# no-data windows
-split_vector_at_na <- function( x ){
-  idx <- 1 + cumsum( is.na( x ) )
-  not.na <- ! is.na( x )
-  split( x[not.na], idx[not.na] )
-}
-
-no_data_windows_yearwise <- janno_final %>%
-  dplyr::group_by(region_id) %>%
-  dplyr::summarise(
-    date_not_covered = 
-      {
-        not_covered <- setdiff(
-          -7500:1500,
-          lapply(Date_BC_AD_Median_Derived, function(x) {
-            seq(x, x+500, 1)
-          }) %>% Reduce(union, .)
-        )
-        schu <- rep(NA, length(-7500:1500))
-        schu[-7500:1500 %in% not_covered] <- not_covered
-        schu
-      }
-  )  %>%
-  dplyr::ungroup()
-
-no_data_windows <- no_data_windows_yearwise %>%
-  dplyr::group_by(region_id) %>%
-  dplyr::summarise(
-    min_date_not_covered = sapply(split_vector_at_na(date_not_covered), min),
-    max_date_not_covered = sapply(split_vector_at_na(date_not_covered), max)
-  ) %>%
-  dplyr::ungroup()
 
 #### mobility estimator curves ####
 
