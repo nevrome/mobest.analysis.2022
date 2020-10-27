@@ -18,21 +18,6 @@ mobility <- mobility_proxy# %>% dplyr::bind_rows() %>%
   #   )
   # )
 
-mobility$region_id = factor(mobility$region_id, levels = c(
-  "Britain and Ireland",
-  "Southern Scandinavia",
-  "Baltics",
-  "Eastern Europe",
-  "France",
-  "Central Europe",
-  "Southeastern Europe",
-  "Caucasus",
-  "Iberia",
-  "Italy",
-  "Turkey",
-  "Levant"
-))
-
 # moving average
 mean_mobility <- mobility %>%
   dplyr::group_by(independent_table_id, kernel_setting_id, region_id, z) %>%
