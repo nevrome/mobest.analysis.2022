@@ -79,18 +79,20 @@ mobility_regions <- sf::st_read(
 mobility_regions$region_id <- factor(
   mobility_regions$region_id, levels = c(
     "Britain and Ireland",
-    "France",
-    "Iberia",
     "Southern Scandinavia",
-    "Central Europe",
-    "Italy",
     "Baltics",
     "Eastern Europe",
+    "France",
+    "Central Europe",
     "Southeastern Europe",
     "Caucasus",
+    "Iberia",
+    "Italy",
     "Turkey",
     "Levant"
   )
 )
 save(mobility_regions, file = "data/spatial/mobility_regions.RData")
+
+
 

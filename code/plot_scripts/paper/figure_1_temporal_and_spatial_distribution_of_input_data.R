@@ -43,8 +43,8 @@ p_map <- ggplot() +
     legend.position = "none",
     legend.background = element_blank(),
     legend.title = element_text(size = 13),
-    legend.spacing.x = unit(0.2, 'cm'),
-    legend.key.height = unit(0.4, 'cm'),
+    legend.spacing.y = unit(0.1, 'cm'),
+    legend.key.height = unit(0.1, 'cm'),
     legend.text = element_text(size = 9),
     panel.background = element_rect(fill = "#BFD5E3")
   ) +
@@ -55,8 +55,8 @@ p_map <- ggplot() +
     values = age_group_id_shapes
   ) +
   guides(
-    color = guide_legend(title = "Region", nrow = 3, ncol = 4),
-    shape = guide_legend(title = "Time", nrow = 3, ncol = 4)
+    color = guide_legend(title = "Region", nrow = 3, ncol = 4, byrow = TRUE),
+    shape = guide_legend(title = "Time", nrow = 3, ncol = 4, byrow = TRUE)
   )
 
 # space time plot

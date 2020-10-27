@@ -86,8 +86,8 @@ p_mds <- ggplot() +
     legend.position = "none",
     legend.background = element_blank(),
     legend.title = element_text(size = 13),
-    legend.spacing.x = unit(0.2, 'cm'),
-    legend.key.height = unit(0.4, 'cm'),
+    legend.spacing.y = unit(0.1, 'cm'),
+    legend.key.height = unit(0.1, 'cm'),
     legend.text = element_text(size = 9),
   ) +
   guides(color = guide_legend(override.aes = list(size = 2))) +
@@ -101,8 +101,8 @@ p_mds <- ggplot() +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   guides(
-    color = guide_legend(title = "Region", nrow = 3, ncol = 4),
-    shape = guide_legend(title = "Time", nrow = 3, ncol = 4)
+    color = guide_legend(title = "Region", nrow = 3, ncol = 4, byrow = T),
+    shape = guide_legend(title = "Time", nrow = 3, ncol = 4, byrow = T)
   )
 
 # London
