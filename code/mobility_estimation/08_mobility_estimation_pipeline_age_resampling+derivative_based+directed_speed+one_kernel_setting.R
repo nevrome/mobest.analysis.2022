@@ -40,9 +40,9 @@ model_grid <- mobest::create_model_grid(
   ),
   prediction_grid = list(
     main = main_pred_grid,
-    offset_x = main_pred_grid %>% dplyr::mutate(x = x + delta_x),
-    offset_y = main_pred_grid %>% dplyr::mutate(y = y + delta_y),
-    offset_z = main_pred_grid %>% dplyr::mutate(z = z + delta_z)
+    offset_x = dplyr::mutate(main_pred_grid, x = x + delta_x),
+    offset_y = dplyr::mutate(main_pred_grid, y = y + delta_y),
+    offset_z = dplyr::mutate(main_pred_grid, z = z + delta_z)
   )
 )
 
