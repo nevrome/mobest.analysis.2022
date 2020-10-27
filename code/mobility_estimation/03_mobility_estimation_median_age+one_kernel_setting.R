@@ -8,7 +8,7 @@ load("data/gpr/interpol_grid_median.RData")
 
 #### spatial origin ####
 
-interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 1)
+interpol_grid_origin <- mobest::search_spatial_origin(interpol_grid, steps = 6)
 
 # gb <- interpol_grid_origin %>%
 #   dplyr::filter(
