@@ -239,7 +239,10 @@ p <- cowplot::plot_grid(
   cowplot::plot_grid(p_Meas, ncol = 1, rel_heights = c(0.9)), 
   p_C1, p_C2, p_Change, p_absolute_speed, 
   nrow = 1,
-  rel_widths = c(1,0.9,0.9,0.9,0.9)
+  rel_widths = c(1,0.9,0.9,0.9,0.9)#,
+  # labels = "AUTO",
+  # label_size = 16,
+  # label_x = -0.02
 )
   
 ggsave(
