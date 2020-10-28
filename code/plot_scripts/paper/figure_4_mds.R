@@ -31,8 +31,7 @@ C_grid <- expand.grid(C1_grid, C2_grid)
 distance_matrix <- fields::rdist(C_grid, region_age_group_mean[c("mean_C1", "mean_C2")])
 distance_long <- setNames(reshape2::melt(distance_matrix), c('grid_id', 'mean_point_id', 'distance'))
 
-grid_df <- data.frame()
-repeat {
+arrange_on_grid <- function(grid_df = data.frame(), distance_long) {
   closest_grid_points <- distance_long %>% 
     dplyr::group_by(mean_point_id) %>%
     dplyr::arrange(distance) %>%
@@ -54,8 +53,14 @@ repeat {
       !(grid_id %in% grid_df$grid_id) &
         !(mean_point_id %in% grid_df$mean_point_id)
     )
-  if (nrow(distance_long) == 0) { break }
+  if (nrow(distance_long) == 0) { 
+    return(grid_df)
+  } else {
+    arrange_on_grid(grid_df, distance_long)
+  }
 }
+
+grid_df <- arrange_on_grid(distance_long = distance_long)
 
 region_age_group_mean[grid_df$mean_point_id,c("mean_C1", "mean_C2")] <- 
   C_grid[grid_df$grid_id,]
