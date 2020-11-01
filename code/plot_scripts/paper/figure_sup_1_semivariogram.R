@@ -40,7 +40,12 @@ d_binned_long <- d_binned %>%
   )
 
 # plot loop
-ps <- lapply(d_binned_long %>% dplyr::group_split(detrended, distance_type), function(x) {
+ps <- lapply(
+  d_binned_long %>% 
+    dplyr::filter(detrended == "detrended (residuals)") %>%
+    dplyr::group_split(distance_type), 
+  
+  function(x) {
   
   ggplot(x) + 
     geom_raster(
@@ -50,7 +55,7 @@ ps <- lapply(d_binned_long %>% dplyr::group_split(detrended, distance_type), fun
         fill = distance_value
       )
     ) +
-    facet_grid(cols = dplyr::vars(detrended, distance_type)) +
+    facet_grid(cols = dplyr::vars(distance_type)) +
     scale_fill_viridis_c(direction = -1) +
     theme_bw() +
     theme(
@@ -65,7 +70,7 @@ ps <- lapply(d_binned_long %>% dplyr::group_split(detrended, distance_type), fun
 
 })
   
-p <- cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 2)
+p <- cowplot::plot_grid(plotlist = ps, nrow = 1, ncol = 2)
 
 ggsave(
   "plots/figure_sup_1_semivariogram.jpeg",
@@ -73,6 +78,6 @@ ggsave(
   device = "jpeg",
   scale = 0.4,
   dpi = 300,
-  width = 500, height = 600, units = "mm",
+  width = 500, height = 300, units = "mm",
   limitsize = F
 )
