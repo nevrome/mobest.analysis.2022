@@ -6,6 +6,7 @@ load("data/spatial/extended_area.RData")
 load("data/spatial/epsg102013.RData")
 load("data/mobility_estimation/mobility_proxy_median.RData")
 load("data/plot_reference_data/region_id_colors.RData")
+load("data/spatial/mobility_regions.RData")
 
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
@@ -15,7 +16,10 @@ p_arrows <- ggplot() +
   geom_sf(data = extended_area, fill = "white") +
   facet_wrap(dplyr::vars(z), ncol = 3) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
-  geom_sf(data = research_area, fill = NA, colour = "black", linetype = "dashed") +
+  geom_sf(
+    data = research_area, fill = NA, colour = "black", linetype = "dashed",
+    size = 0.8
+  ) +
   geom_segment(
     data = mobility_proxy %>%
       dplyr::filter(
@@ -26,7 +30,13 @@ p_arrows <- ggplot() +
       color = region_id
     ),
     alpha = 0.5,
-    size = 0.5
+    size = 0.5,
+    lineend = "round",
+    linejoin = "bevel"
+  ) +
+  geom_sf(
+    data = mobility_regions,
+    fill = NA, colour = "black", size = 0.3
   ) +
   theme_bw() +
   coord_sf(
@@ -51,6 +61,6 @@ ggsave(
   device = "png",
   scale = 0.5,
   dpi = 300,
-  width = 500, height = 700, units = "mm",
+  width = 500, height = 780, units = "mm",
   limitsize = F
 )
