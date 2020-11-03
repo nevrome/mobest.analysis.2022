@@ -1,0 +1,56 @@
+library(magrittr)
+library(ggplot2)
+
+load("data/spatial/research_area.RData")
+load("data/spatial/extended_area.RData")
+load("data/spatial/epsg102013.RData")
+load("data/mobility_estimation/mobility_proxy_median.RData")
+load("data/plot_reference_data/region_id_colors.RData")
+
+ex <- raster::extent(research_area)
+xlimit <- c(ex[1], ex[2])
+ylimit <- c(ex[3], ex[4])
+
+p_arrows <- ggplot() +
+  geom_sf(data = extended_area, fill = "white") +
+  facet_wrap(dplyr::vars(z), ncol = 3) +
+  geom_sf(data = extended_area, fill = NA, colour = "black") +
+  geom_sf(data = research_area, fill = NA, colour = "black", linetype = "dashed") +
+  geom_segment(
+    data = mobility_proxy %>%
+      dplyr::filter(
+        z %in% seq(-7500, 1500, 500)
+      ),
+    aes(
+      x = x, y = y, xend = x_origin, yend = y_origin,
+      color = region_id
+    ),
+    alpha = 0.5,
+    size = 0.5
+  ) +
+  theme_bw() +
+  coord_sf(
+    xlim = xlimit, ylim = ylimit,
+    crs = epsg102013
+  ) +
+  scale_color_manual(
+    values = region_id_colors
+  ) +
+  theme(
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    strip.text = element_text(size = 12),
+    axis.ticks = element_blank(),
+    panel.background = element_rect(fill = "#BFD5E3")
+  )
+
+ggsave(
+  paste0("plots/figure_sup_18_arrow_map_matrix.png"),
+  plot = p_arrows,
+  device = "png",
+  scale = 0.5,
+  dpi = 300,
+  width = 500, height = 700, units = "mm",
+  limitsize = F
+)
