@@ -67,9 +67,9 @@ p_arrows <- ggplot() +
   )
 
 ggsave(
-  paste0("plots/figure_sup_18_arrow_map_matrix.png"),
+  paste0("plots/figure_sup_18_arrow_map_matrix.jpeg"),
   plot = p_arrows,
-  device = "png",
+  device = "jpg",
   scale = 0.5,
   dpi = 300,
   width = 500, height = 780, units = "mm",
