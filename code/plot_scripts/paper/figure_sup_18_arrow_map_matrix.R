@@ -14,25 +14,36 @@ ylimit <- c(ex[3], ex[4])
 
 p_arrows <- ggplot() +
   geom_sf(data = extended_area, fill = "white") +
-  facet_wrap(dplyr::vars(z), ncol = 3) +
+  facet_wrap(dplyr::vars(z), ncol = 2) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
   geom_sf(
     data = research_area, fill = NA, colour = "black", linetype = "dashed",
     size = 0.8
   ) +
-  geom_segment(
-    data = mobility_proxy %>%
-      dplyr::filter(
-        z %in% seq(-7500, 1500, 500)
-      ),
-    aes(
-      x = x, y = y, xend = x_origin, yend = y_origin,
-      color = region_id
-    ),
+  # geom_segment(
+  #   data = mobility_proxy %>% dplyr::filter(z %in% seq(-7500, 1500, 1000)),
+  #   aes(
+  #     x = x, y = y, xend = x_origin, yend = y_origin,
+  #     color = region_id
+  #   ),
+  #   alpha = 0.5,
+  #   size = 0.1,
+  #   lineend = "round",
+  #   linejoin = "bevel"
+  # ) +
+  geom_point(
+    data = mobility_proxy %>% dplyr::filter(z %in% seq(-7500, 1500, 1000), !is.na(region_id)),
+    aes(x = x, y = y, color = region_id),
+    alpha = 1,
+    size = 1.4,
+    shape = 0
+  ) +
+  geom_point(
+    data = mobility_proxy %>% dplyr::filter(z %in% seq(-7500, 1500, 1000), !is.na(region_id)),
+    aes(x = x_origin, y = y_origin, color = region_id),
     alpha = 0.5,
-    size = 0.5,
-    lineend = "round",
-    linejoin = "bevel"
+    size = 1.2,
+    shape = 15
   ) +
   geom_sf(
     data = mobility_regions,
