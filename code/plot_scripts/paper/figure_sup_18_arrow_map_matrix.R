@@ -21,13 +21,13 @@ p_arrows <- ggplot() +
     size = 0.8
   ) +
   # geom_segment(
-  #   data = mobility_proxy %>% dplyr::filter(z %in% seq(-7500, 1500, 1000)),
+  #   data = mobility_proxy %>% dplyr::filter(z %in% seq(-7500, 1500, 1000), !is.na(region_id)),
   #   aes(
   #     x = x, y = y, xend = x_origin, yend = y_origin,
   #     color = region_id
   #   ),
   #   alpha = 0.5,
-  #   size = 0.1,
+  #   size = 0.3,
   #   lineend = "round",
   #   linejoin = "bevel"
   # ) +
@@ -41,7 +41,7 @@ p_arrows <- ggplot() +
   geom_point(
     data = mobility_proxy %>% dplyr::filter(z %in% seq(-7500, 1500, 1000), !is.na(region_id)),
     aes(x = x_origin, y = y_origin, color = region_id),
-    alpha = 0.5,
+    alpha = 0.7,
     size = 1.2,
     shape = 15
   ) +
