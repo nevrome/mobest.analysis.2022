@@ -34,10 +34,10 @@ p_C1 <- interpol_grid %>%
   geom_raster(aes(x, y, fill = mean)) +
   facet_grid(rows = dplyr::vars(z), cols = dplyr::vars(dependent_var_id)) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
-  geom_point(
-    data = . %>% dplyr::filter(sd > (0.15 * diff(range(mean)))),
-    aes(x, y), alpha = 0.8, color = "grey", shape = 4
-  ) +
+  # geom_point(
+  #   data = . %>% dplyr::filter(sd > (0.15 * diff(range(mean)))),
+  #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
+  # ) +
   geom_point(
     data = janno_final,
     aes(x, y, shape = age_group_id),
@@ -83,10 +83,10 @@ p_C2 <- interpol_grid %>%
   geom_raster(aes(x, y, fill = mean)) +
   facet_grid(rows = dplyr::vars(z), cols = dplyr::vars(dependent_var_id)) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
-  geom_point(
-    data = . %>% dplyr::filter(sd > (0.15 * diff(range(mean)))),
-    aes(x, y), alpha = 0.8, color = "grey", shape = 4
-  ) +
+  # geom_point(
+  #   data = . %>% dplyr::filter(sd > (0.15 * diff(range(mean)))),
+  #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
+  # ) +
   geom_point(
     data = janno_final,
     aes(x, y, shape = age_group_id),

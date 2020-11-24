@@ -56,7 +56,7 @@ p_estimator <- mean_mobility %>%
     data = no_data_windows,
     aes(
       xmin = min_date_not_covered, xmax = max_date_not_covered,
-      ymin = -300, ymax = 0
+      ymin = -300, ymax = 3
     ),
     alpha = 0.3, fill = "red"
   ) +
