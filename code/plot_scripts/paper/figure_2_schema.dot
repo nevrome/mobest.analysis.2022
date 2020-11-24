@@ -9,7 +9,7 @@ digraph {
     maindata [label = 'Genetic data', shape = ellipse, fillcolor = Beige]
     context [label = 'Spatiotemporal context', shape = ellipse, fillcolor = Beige]
     
-    label = 'poseidon2'
+    label = 'Genotype data management system: Poseidon'
     fontname = Helvetica
   }
   filtering [label = 'Filtering data (research area, quality control)', fillcolor = darkolivegreen3]
