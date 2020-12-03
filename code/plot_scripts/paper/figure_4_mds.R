@@ -317,7 +317,7 @@ top <- cowplot::plot_grid(p_mds, left, right, nrow = 1, rel_widths = c(1.2, 0.5,
 p <- cowplot::plot_grid(
   top, 
   cowplot::get_legend(p_mds + theme(legend.position = "bottom")),
-  rel_heights = c(0.9, 0.08),
+  rel_heights = c(0.92, 0.08),
   nrow = 2, ncol = 1
 )
 
