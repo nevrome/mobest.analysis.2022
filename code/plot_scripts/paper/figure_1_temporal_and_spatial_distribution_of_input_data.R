@@ -85,7 +85,7 @@ p_tempdist <- janno_final %>%
   ggplot() +
   geom_histogram(
     aes(x = Date_BC_AD_Median_Derived),
-    fill = "black",
+    fill = "grey",
     breaks = seq(-8000, 2000, 200)
   ) +
   theme_bw() +
