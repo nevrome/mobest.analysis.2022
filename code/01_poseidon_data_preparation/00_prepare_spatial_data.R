@@ -32,8 +32,6 @@ save(rivers, file = "data/spatial/rivers.RData")
 load("data_tracked/natural_earth_geodata/lakes.RData")
 save(lakes, file = "data/spatial/lakes.RData")
 
-
-
 #### research area ####
 
 # load manually crafted research area shape file, transform it to
@@ -42,8 +40,6 @@ research_area <- sf::st_read(
   "data_tracked/research_area/research_area.shp", quiet = TRUE
 ) %>% sf::st_transform(epsg102013)
 save(research_area, file = "data/spatial/research_area.RData")
-
-
 
 #### area ####
 
@@ -55,8 +51,6 @@ land_outline_small <- land_outline %>%
 area <- sf::st_intersection(sf::st_buffer(land_outline_small, 0), research_area)
 save(area, file = "data/spatial/area.RData")
 
-
-
 #### extended area ####
 
 # crop land outline to enlarged bbox of research area
@@ -66,8 +60,6 @@ bb[3:4] <- bb[3:4] + 500000
 extended_research_area <- bb %>% sf::st_as_sfc()
 extended_area <- sf::st_intersection(sf::st_buffer(land_outline_small, 0), extended_research_area)
 save(extended_area, file = "data/spatial/extended_area.RData")
-
-
 
 #### mobility regions ####
 
@@ -93,6 +85,3 @@ mobility_regions$region_id <- factor(
   )
 )
 save(mobility_regions, file = "data/spatial/mobility_regions.RData")
-
-
-
