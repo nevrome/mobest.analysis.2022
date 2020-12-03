@@ -1,11 +1,9 @@
-# mkdir data/poseidon_data/poseidon_merged; scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/poseidon_merged/poseidon2_merged.janno data/poseidon_data/poseidon_merged/poseidon2_merged.janno
-
 library(magrittr)
 
 load("data/spatial/epsg102013.RData")
 load("data/spatial/research_area.RData")
 
-janno_raw <- poseidon2::read_janno("data/poseidon_data/poseidon_merged/poseidon2_merged.janno")
+janno_raw <- poseidon2::read_janno("/projects1/poseidon/repo/ancient")
 
 janno_age <- janno_raw %>% poseidon2::process_age()
 
@@ -81,11 +79,11 @@ janno_filtered_final %>%
 
 # store ind list for poseidon extraction
 tibble::tibble(
-  pop = sapply(janno_filtered_final$Group_Name, function(x) { x[[1]] }),
-  ind = janno_filtered_final$Individual_ID
+  #pop = sapply(janno_filtered_final$Group_Name, function(x) { x[[1]] }),
+  ind = paste0("<", janno_filtered_final$Individual_ID, ">")
 ) %>% 
   readr::write_delim(
-    file = "code/poseidon_data_preparation/ind_list.txt",
+    file = "code/01_poseidon_data_preparation/ind_list.txt",
     delim = " ",
     col_names = FALSE
   )
