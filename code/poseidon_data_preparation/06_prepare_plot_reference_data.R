@@ -1,19 +1,36 @@
 # region colors
 region_id_colors <- c(
-  "Britain and Ireland" = "#b8434e", 
-  "France" = "#f1B6da", 
-  "Iberia" = "#7c7120", 
+  "Britain and Ireland" = "#b8434e",
+  "France" = "#f1B6da",
+  "Iberia" = "#7c7120",
   "Southern Scandinavia" = "#404040",
   "Central Europe" = "#b86738",
-  "Italy" = "#09ebe0", 
+  "Italy" = "#09ebe0",
   "Baltics" = "#4bc490",
-  "Eastern Europe" = "#bfa33a", 
+  "Eastern Europe" = "#bfa33a",
   "Southeastern Europe" = "#6678dc",
-  "Caucasus" = "#729d46", 
+  "Caucasus" = "#729d46",
   "Turkey" = "#5b388a",
-  "Levant" = "#b1467b" 
+  "Levant" = "#b1467b"
 )
+
+region_id_shapes <- c(
+  "Britain and Ireland" = 0,
+  "France" = 1,
+  "Iberia" = 2,
+  "Southern Scandinavia" = 15,
+  "Central Europe" = 6,
+  "Italy" = 5,
+  "Baltics" = 16,
+  "Eastern Europe" = 17,
+  "Southeastern Europe" = 18,
+  "Caucasus" = 7,
+  "Turkey" = 3,
+  "Levant" = 8
+)
+
 save(region_id_colors, file = "data/plot_reference_data/region_id_colors.RData")
+save(region_id_shapes, file = "data/plot_reference_data/region_id_shapes.RData")
 
 # age group shapes
 age_group_id_shapes <- c(
@@ -29,7 +46,14 @@ age_group_id_shapes <- c(
   "0 - 1000" = 3,
   "1000 - 2000" = 4
 )
+
+age_colors_gradient <- ggplot2::scale_color_gradient2(
+  limits = c(-8000, 2000), low = "black", mid = "#ff4903", high = "#44d62d", midpoint = -5000,
+  breaks = seq(-7500, 1500, 1000)
+)
+
 save(age_group_id_shapes, file = "data/plot_reference_data/age_group_id_shapes.RData")
+save(age_colors_gradient, file = "data/plot_reference_data/age_colors_gradient.RData")
 
 # spatiotemporal no-data windows
 library(magrittr)

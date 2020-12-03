@@ -2,8 +2,8 @@ library(magrittr)
 library(ggplot2)
 
 load("data/poseidon_data/janno_final.RData")
-load("data/plot_reference_data/region_id_colors.RData")
-load("data/plot_reference_data/age_group_id_shapes.RData")
+load("data/plot_reference_data/region_id_shapes.RData")
+load("data/plot_reference_data/age_colors_gradient.RData")
 load("data/gpr/interpol_grid_examples.RData")
 
 poi_timeseries <- interpol_grid_examples %>%
@@ -21,12 +21,12 @@ poi_timeseries_Jerusalem <- poi_timeseries %>% dplyr::filter(pred_grid_id == "Je
 # mean per region and time
 region_age_group_mean <- janno_final %>%
   dplyr::group_by(region_id, age_group_id) %>%
-  dplyr::summarise(mean_C1 = mean(C1), mean_C2 = mean(C2)) %>%
+  dplyr::summarise(mean_C1 = mean(C1), mean_C2 = mean(C2), z = mean(Date_BC_AD_Median_Derived)) %>%
   dplyr::ungroup()
 
 # grid arrangement for mean points
-C1_grid <- seq(min(janno_final$C1), max(janno_final$C1), length.out = 40)
-C2_grid <- seq(min(janno_final$C2), max(janno_final$C2), length.out = 42)
+C1_grid <- seq(min(janno_final$C1), max(janno_final$C1), length.out = 35)
+C2_grid <- seq(min(janno_final$C2), max(janno_final$C2), length.out = 36)
 C_grid <- expand.grid(C1_grid, C2_grid)
 distance_matrix <- fields::rdist(C_grid, region_age_group_mean[c("mean_C1", "mean_C2")])
 distance_long <- setNames(reshape2::melt(distance_matrix), c('grid_id', 'mean_point_id', 'distance'))
@@ -65,45 +65,42 @@ region_age_group_mean[grid_df$mean_point_id,c("mean_C1", "mean_C2")] <- C_grid[g
 p_mds <- ggplot() +
   geom_point(
     data = janno_final,
-    aes(x = C1, y = C2, color = region_id, shape = age_group_id),
+    aes(x = C1, y = C2, color = Date_BC_AD_Median_Derived, shape = region_id),
     alpha = 0.5,
     size = 2
   ) +
   geom_point(
     data = region_age_group_mean,
     aes(x = mean_C1, y = mean_C2),
-    size = 3.2,
+    size = 4,
     fill = "white",
     color = "black",
     shape = 21
   ) +
   geom_point(
     data = region_age_group_mean,
-    aes(x = mean_C1, y = mean_C2, color = region_id, shape = age_group_id),
+    aes(x = mean_C1, y = mean_C2, color = z, shape = region_id),
     size = 2
   ) +
+  scale_shape_manual(
+    values = region_id_shapes
+  ) +
+  age_colors_gradient +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
+  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
+  scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   theme_bw() +
   theme(
     legend.position = "none",
     legend.background = element_blank(),
     legend.title = element_text(size = 13),
-    legend.spacing.y = unit(0.1, 'cm'),
-    legend.key.height = unit(0.1, 'cm'),
-    legend.text = element_text(size = 9),
+    legend.spacing.y = unit(0.2, 'cm'),
+    legend.key.height = unit(0.4, 'cm'),
+    legend.text = element_text(size = 10),
   ) +
-  guides(color = guide_legend(override.aes = list(size = 2))) +
-  scale_shape_manual(
-    values = age_group_id_shapes
-  ) +
-  scale_color_manual(
-    values = region_id_colors
-  ) +
-  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
-  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
-  scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   guides(
-    color = guide_legend(title = "Region", nrow = 3, ncol = 4, byrow = T),
-    shape = guide_legend(title = "Time", nrow = 3, ncol = 4, byrow = T)
+    color = guide_colorbar(title = "Time", barwidth = 20, barheight = 1.5),
+    shape = guide_legend(title = "Region", nrow = 3, ncol = 4, byrow = F)
   )
 
 # London
@@ -145,21 +142,12 @@ p_London <- ggplot() +
     ),
     size = 2
   ) +
-  scale_color_gradient2(
-    limits = c(-7500, 1500), low = "black", mid = "#fc8d62", high = "#66c2a5", midpoint = -5000,
-    breaks = seq(-7500, 1500, 1000)
-  ) +
+  age_colors_gradient +
   theme_bw() +
   theme(
-    legend.position = "bottom",
-    legend.background = element_blank(),
-    legend.title = element_text(size = 13),
-    legend.spacing.x = unit(0.2, 'cm'),
-    legend.key.height = unit(0.4, 'cm'),
-    legend.text = element_text(size = 9),
+    legend.position = "none",
     axis.title = element_blank()
   ) +
-  guides(color = guide_legend(override.aes = list(size = 2))) +
   coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
@@ -207,17 +195,12 @@ p_Budapest <- ggplot() +
     ),
     size = 2
   ) +
-  scale_color_gradient2(
-    limits = c(-7500, 1500), low = "black", mid = "#fc8d62", high = "#66c2a5", midpoint = -5000,
-    breaks = seq(-7500, 1500, 1000)
-  ) +
+  age_colors_gradient +
   theme_bw() +
   theme(
-    legend.text = element_text(size = 12),
     legend.position = "none",
     axis.title = element_blank()
   ) +
-  guides(color = guide_legend(override.aes = list(size = 2))) +
   coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
@@ -262,17 +245,12 @@ p_Rome <- ggplot() +
     ),
     size = 2
   ) +
-  scale_color_gradient2(
-    limits = c(-7500, 1500), low = "black", mid = "#fc8d62", high = "#66c2a5", midpoint = -5000,
-    breaks = seq(-7500, 1500, 1000)
-  ) +
+  age_colors_gradient +
   theme_bw() +
   theme(
-    legend.text = element_text(size = 12),
     legend.position = "none",
     axis.title = element_blank()
   ) +
-  guides(color = guide_legend(override.aes = list(size = 2))) +
   coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
@@ -317,17 +295,12 @@ p_Jerusalem <- ggplot() +
     ),
     size = 2
   ) +
-  scale_color_gradient2(
-    limits = c(-7500, 1500), low = "black", mid = "#fc8d62", high = "#66c2a5", midpoint = -5000,
-    breaks = seq(-7500, 1500, 1000)
-  ) +
+  age_colors_gradient +
   theme_bw() +
   theme(
-    legend.text = element_text(size = 12),
     legend.position = "none",
     axis.title = element_blank()
   ) +
-  guides(color = guide_legend(override.aes = list(size = 2))) +
   coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
@@ -343,10 +316,9 @@ top <- cowplot::plot_grid(p_mds, left, right, nrow = 1, rel_widths = c(1.2, 0.5,
 
 p <- cowplot::plot_grid(
   top, 
-  cowplot::get_legend(p_London),
   cowplot::get_legend(p_mds + theme(legend.position = "bottom")),
-  rel_heights = c(1, 0.05, 0.1),
-  nrow = 3, ncol = 1
+  rel_heights = c(0.9, 0.08),
+  nrow = 2, ncol = 1
 )
 
 ggsave(
