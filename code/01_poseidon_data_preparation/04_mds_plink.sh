@@ -9,10 +9,10 @@
 
 date 
 
-cd /projects1/coest_mobility/coest.interpol.2020/data/poseidon_data/mds
+cd /projects1/coest_mobility/mobest.analysis.2020/data/poseidon_data/mds
 
 # pruning
-plink --bfile ../poseidon_extracted/poseidon2_extracted --exclude ../../../code/poseidon_data_preparation/myrange.txt --range --maf --make-bed --out poseidon2_extracted.pruned
+plink --bfile ../poseidon_extracted/poseidon2_extracted --exclude ../../../code/01_poseidon_data_preparation/myrange.txt --range --maf --make-bed --out poseidon2_extracted.pruned
 
 # generate general pairwise stats
 plink --bfile poseidon2_extracted.pruned --genome --out poseidon2_extracted.pruned
