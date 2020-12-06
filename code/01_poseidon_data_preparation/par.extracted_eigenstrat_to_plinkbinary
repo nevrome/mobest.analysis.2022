@@ -1,0 +1,8 @@
+genotypename:    poseidon_extracted.eigenstrat.geno
+snpname:         poseidon_extracted.eigenstrat.snp
+indivname:       poseidon_extracted.eigenstrat.ind
+outputformat:    PACKEDPED
+genotypeoutname: poseidon_extracted.bed
+snpoutname:      poseidon_extracted.bim
+indivoutname:    poseidon_extracted.fam
+familynames:     NO
