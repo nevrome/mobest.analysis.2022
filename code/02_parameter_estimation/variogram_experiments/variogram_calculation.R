@@ -3,6 +3,20 @@ library(ggplot2)
 
 load("data/poseidon_data/janno_final.RData")
 
+mobest::calculate_all_distances(
+  mobest::create_spatpos(
+    id = janno_final$Individual_ID,
+    x = janno_final$x,
+    y = janno_final$y,
+    z = janno_final$Date_BC_AD_Median_Derived
+  ),
+  mobest::create_obs(
+    id = janno_final$Individual_ID,
+    C1 = janno_final$C1,
+    C2 = janno_final$C2
+  )
+)
+
 # geo distance
 d_geo <- dist(janno_final %>% dplyr::select(x,y), "euclidean") %>% as.matrix()
 rownames(d_geo) <- janno_final$Individual_ID
@@ -62,3 +76,4 @@ d_all <- d_geo_long %>%
   tibble::as_tibble()
 
 save(d_all, file = "data/parameter_exploration/variogram/all_distances.RData")
+
