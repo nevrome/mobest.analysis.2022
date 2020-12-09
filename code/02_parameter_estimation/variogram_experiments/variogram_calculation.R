@@ -19,3 +19,6 @@ d_all <- mobest::calculate_pairwise_distances(
 
 save(d_all, file = "data/parameter_exploration/variogram/all_distances.RData")
 
+d_binned <- mobest::bin_pairwise_distances(d_all)
+
+save(d_binned, file = "data/parameter_exploration/variogram/binned_distances.RData")
