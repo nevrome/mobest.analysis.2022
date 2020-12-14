@@ -21,9 +21,12 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = list(
-    ds450_dt800_g006 = list(d = c(450000, 450000, 800), g = 0.06, on_residuals = T, auto = F)
-    #ds550_dt550_g006 = list(d = c(550000, 550000, 550), g = 0.06, on_residuals = T, auto = F),
-    #ds1050_dt550_g006 = list(d = c(1050000, 1050000, 550), g = 0.06, on_residuals = T, auto = F)
+    ds450_dt800_g006 = mobest::create_kernset(
+      d = c(450000, 450000, 800), 
+      g = 0.06, 
+      on_residuals = T, 
+      auto = F
+    )
   ),
   prediction_grid = list(
     scs100_tl100 = mobest::create_prediction_grid(
@@ -42,9 +45,8 @@ interpol_grid <- mobest::run_model_grid(model_grid)
 # library(ggplot2)
 # interpol_grid %>%
 #   dplyr::filter(
-#     kernel_setting_id == "ds400_dt700_g001",
-#     dependent_var_id == "C2",
-#     z %in% seq(-7000, -2000, 500)
+#     dependent_var_id == "C1",
+#     z %in% seq(-7000, -1000, 500)
 #   ) %>%
 #   ggplot() +
 #   geom_raster(aes(x, y, fill = mean, alpha = sd)) +
