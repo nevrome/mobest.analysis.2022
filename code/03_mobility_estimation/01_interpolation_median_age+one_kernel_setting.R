@@ -8,12 +8,13 @@ load("data/spatial/mobility_regions.RData")
 
 #### prepare pca model grid ####
 model_grid <- mobest::create_model_grid(
-  independent = mobest::create_spatpos_multi(
-    id = janno_final$Individual_ID,
-    x = list(janno_final$x),
-    y = list(janno_final$y),
-    z = list(janno_final$Date_BC_AD_Median_Derived),
-    it = "age_median"
+  independent = list(
+    age_median = mobest::create_spatpos(
+      id = janno_final$Individual_ID,
+      x = janno_final$x,
+      y = janno_final$y,
+      z = janno_final$Date_BC_AD_Median_Derived
+    )
   ),
   dependent = list(
     C1 = janno_final$C1,
