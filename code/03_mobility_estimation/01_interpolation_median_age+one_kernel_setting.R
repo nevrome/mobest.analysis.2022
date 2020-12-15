@@ -38,6 +38,8 @@ model_grid <- mobest::create_model_grid(
   )
 )
 
+save(interpol_grid, file = "data/gpr/model_grid_median.RData")
+
 #### run interpolation on model grid ####
 
 interpol_grid <- mobest::run_model_grid(model_grid)
