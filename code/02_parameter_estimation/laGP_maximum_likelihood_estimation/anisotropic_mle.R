@@ -16,7 +16,7 @@ mleGPsep_out <- mobest::laGP_mle_anisotropic(
     y = janno_final$y / 1000,
     z = janno_final$Date_BC_AD_Median_Derived
   ),
-  dependent = list(
+  dependent = mobest::create_obs(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
@@ -32,7 +32,7 @@ jmleGPsep_out <- mobest::laGP_jmle_anisotropic(
     y = janno_final$y / 1000,
     z = janno_final$Date_BC_AD_Median_Derived
   ),
-  dependent = list(
+  dependent = mobest::create_obs(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
