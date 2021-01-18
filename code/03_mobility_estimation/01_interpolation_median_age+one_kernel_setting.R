@@ -16,7 +16,7 @@ model_grid <- mobest::create_model_grid(
       z = janno_final$Date_BC_AD_Median_Derived
     )
   ),
-  dependent = list(
+  dependent = mobest::create_obs(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
@@ -29,16 +29,16 @@ model_grid <- mobest::create_model_grid(
     )
   ),
   prediction_grid = list(
-    scs100_tl100 = mobest::create_prediction_grid(
+    scs100_tl100 = mobest::prediction_grid_for_spatiotemporal_area(
       area,
       mobility_regions,
       spatial_cell_size = 100000,
-      time_layers = seq(-7800, 1500, 50)
+      temporal_layers = seq(-7800, 1500, 50)
     )
   )
 )
 
-save(interpol_grid, file = "data/gpr/model_grid_median.RData")
+save(model_grid, file = "data/gpr/model_grid_median.RData")
 
 #### run interpolation on model grid ####
 
