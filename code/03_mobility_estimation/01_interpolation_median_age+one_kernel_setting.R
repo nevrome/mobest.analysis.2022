@@ -33,7 +33,7 @@ model_grid <- mobest::create_model_grid(
       area,
       mobility_regions,
       spatial_cell_size = 100000,
-      temporal_layers = seq(-7800, 1500, 50)
+      temporal_layers = seq(-8000, 1500, 50)
     )
   )
 )
