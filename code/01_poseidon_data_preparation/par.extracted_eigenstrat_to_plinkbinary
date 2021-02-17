@@ -1,8 +1,8 @@
-genotypename:    poseidon_extracted.eigenstrat.geno
-snpname:         poseidon_extracted.eigenstrat.snp
-indivname:       poseidon_extracted.eigenstrat.ind
+genotypename:    data/poseidon_data/poseidon_extracted/poseidon_extracted.eigenstrat.geno
+snpname:         data/poseidon_data/poseidon_extracted/poseidon_extracted.eigenstrat.snp
+indivname:       data/poseidon_data/poseidon_extracted/poseidon_extracted.eigenstrat.ind
 outputformat:    PACKEDPED
-genotypeoutname: poseidon_extracted.bed
-snpoutname:      poseidon_extracted.bim
-indivoutname:    poseidon_extracted.fam
+genotypeoutname: data/poseidon_data/poseidon_extracted/poseidon_extracted.bed
+snpoutname:      data/poseidon_data/poseidon_extracted/poseidon_extracted.bim
+indivoutname:    data/poseidon_data/poseidon_extracted/poseidon_extracted.fam
 familynames:     NO
