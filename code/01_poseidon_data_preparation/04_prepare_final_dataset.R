@@ -1,6 +1,3 @@
-# mkdir data/poseidon_data/poseidon_extracted; scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/mobest.analysis.2020/data/poseidon_data/poseidon_extracted/poseidon_extracted.janno data/poseidon_data/poseidon_extracted/poseidon_extracted.janno
-# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/mobest.analysis.2020/data/poseidon_data/mds/poseidon_extracted.pruned.mds data/poseidon_data/mds/poseidon_extracted.pruned.mds
-
 library(magrittr)
 
 load("data/spatial/mobility_regions.RData")
@@ -50,5 +47,3 @@ janno_age_groups <- janno_regions %>%
 janno_final <- janno_age_groups
 
 save(janno_final, file = "data/poseidon_data/janno_final.RData")
-
-# scp data/poseidon_data/janno_final.RData schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/mobest.analysis.2020/data/poseidon_data/janno_final.RData

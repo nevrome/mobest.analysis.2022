@@ -1,6 +1,6 @@
-genotypename:    data/poseidon_data/poseidon_extracted/poseidon_extracted.eigenstrat.geno
-snpname:         data/poseidon_data/poseidon_extracted/poseidon_extracted.eigenstrat.snp
-indivname:       data/poseidon_data/poseidon_extracted/poseidon_extracted.eigenstrat.ind
+genotypename:    data/poseidon_data/poseidon_extracted/poseidon_extracted.geno
+snpname:         data/poseidon_data/poseidon_extracted/poseidon_extracted.snp
+indivname:       data/poseidon_data/poseidon_extracted/poseidon_extracted.ind
 outputformat:    PACKEDPED
 genotypeoutname: data/poseidon_data/poseidon_extracted/poseidon_extracted.bed
 snpoutname:      data/poseidon_data/poseidon_extracted/poseidon_extracted.bim
