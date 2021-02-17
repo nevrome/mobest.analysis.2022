@@ -1,15 +1,18 @@
 #!/bin/bash
 
-#SBATCH -p long                                           # The queue or 'partition' you want to submit to
-#SBATCH -c 32                                             # number of CPUs
-#SBATCH --mem=100G                                        # memory pool for all cores
-#SBATCH -o /projects1/coest_mobility/log/%j.out           # STDOUT (the standard output stream) into file <JOB_NUMBER>.out
-#SBATCH -e /projects1/coest_mobility/log/%j.err           # STDERR (the output stream for errors) into file <JOB_NUMBER>.err
-#SBATCH -J "mds"
+#$ -S /bin/bash #defines bash as the shell for execution
+#$ -N mobest #Name of the command that will be listed in the queue
+#$ -cwd #change to current directory
+#$ -j y #join error and standard output in one file, no error file will be written
+#$ -o mobest_qsub_output #standard output file or directory (joined with error because of -j y)
+#$ -q archgen.q #queue
+#$ -pe make 32 #needs 8 CPU cores
+#$ -l h_vmem=100G #request 4Gb of memory
+#$ -V # load personal profile
 
-date 
+date
 
-cd /projects1/coest_mobility/mobest.analysis.2020/data/poseidon_data/mds
+cd data/poseidon_data/mds
 
 # pruning
 plink --bfile ../poseidon_extracted/poseidon_extracted --exclude ../../../code/01_poseidon_data_preparation/myrange.txt --range --maf --make-bed --out poseidon_extracted.pruned
