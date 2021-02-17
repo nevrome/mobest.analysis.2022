@@ -7,12 +7,12 @@ load("data/spatial/mobility_regions.RData")
 load("data/spatial/epsg102013.RData")
 
 # read active data
-janno <- poseidon2::read_janno("data/poseidon_data/poseidon_extracted/poseidon_extracted.janno")
+janno <- poseidonR::read_janno("data/poseidon_data/poseidon_extracted/poseidon_extracted.janno")
 mds <- readr::read_delim("data/poseidon_data/mds/poseidon_extracted.pruned.mds", " ", trim_ws = T) %>%
   dplyr::select(IID, C1, C2)
 
 # run age processing
-janno_age <- janno %>% poseidon2::process_age()
+janno_age <- janno %>% poseidonR::process_age()
 
 # merge mds info into dataset
 janno_mds <- janno_age %>% 
