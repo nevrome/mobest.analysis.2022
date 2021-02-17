@@ -1,14 +1,14 @@
 #!/bin/bash
 
-rm -r /projects1/coest_mobility/mobest.analysis.2020/data/poseidon_data/poseidon_extracted
+rm -r data/poseidon_data/poseidon_extracted
 
 trident forge \
-  --forgeFile /projects1/coest_mobility/mobest.analysis.2020/code/01_poseidon_data_preparation/ind_list.txt \
-  -d /projects1/poseidon/repo/ancient \
+  --forgeFile code/01_poseidon_data_preparation/ind_list.txt \
+  -d ../poseidon_full \
   -n poseidon_extracted \
-  -o /projects1/coest_mobility/mobest.analysis.2020/data/poseidon_data/poseidon_extracted
+  -o data/poseidon_data/poseidon_extracted
 
 # so far poseidon does not support PLINK-Binary output
-convertf -p ../../../code/01_poseidon_data_preparation/par.extracted_eigenstrat_to_plinkbinary
+convertf -p code/01_poseidon_data_preparation/par.extracted_eigenstrat_to_plinkbinary
 
-# sbatch -p short -c 1 --mem=5G -J "trident" --wrap="/projects1/coest_mobility/mobest.analysis.2020/code/01_poseidon_data_preparation/02_poseidon_extract.sh"
+# qsub -N trident -b y -cwd -pe make 1 -l h_vmem=4G ./code/01_poseidon_data_preparation/02_poseidon_extract.sh
