@@ -41,7 +41,7 @@ done
 current_g=${gs[${SGE_TASK_ID}]}
 current_dt=${dts[${SGE_TASK_ID}]}
 
-singularity exec --bind=/mnt/archgen/users/schmid ../singularity/singularity_images/nevrome_mobest/nevrome_mobest.sif Rscript code/02_parameter_estimation/crossvalidation/crossvalidation.R ${SGE_TASK_ID} ${current_dt} ${current_g}
+singularity exec --bind=/mnt/archgen/users/schmid ../singularity/images/nevrome_mobest/nevrome_mobest.sif Rscript code/02_parameter_estimation/crossvalidation/crossvalidation.R ${SGE_TASK_ID} ${current_dt} ${current_g}
 
 date
  
