@@ -1,8 +1,6 @@
 library(magrittr)
 library(laGP)
 
-#### data ####
-
 load("data/poseidon_data/janno_final.RData")
 
 mle_out <- mobest::laGP_mle_sequence_isotropic_fixed_g(
@@ -17,7 +15,7 @@ mle_out <- mobest::laGP_mle_sequence_isotropic_fixed_g(
     C2 = janno_final$C2
   ),
   iterations = 2,
-  g = 0.06,
+  g = 0.08,
   space_time_scaling_factor_sequence = c(seq(0.1, 0.9, 0.1), 1, seq(2, 10, 1))
 )
 
