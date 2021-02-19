@@ -104,7 +104,8 @@ p_tempdist <- janno_final %>%
   # scale_fill_manual(
   #   values = region_id_colors
   # ) +
-  scale_x_continuous(breaks = seq(-8000, 2000, 1000))
+  scale_x_continuous(breaks = seq(-8000, 2000, 1000)) +
+  scale_y_continuous(breaks = c(0, 100, 200))
 
 # merge plots
 
