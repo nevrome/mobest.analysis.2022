@@ -8,11 +8,11 @@ qsub <<EOT
 #$ -j y #join error and standard output in one file, no error file will be written
 #$ -o ~/log #standard output file or directory (joined with error because of -j y)
 #$ -q archgen.q #queue
-#$ -pe make 5 #needs X CPU cores
+#$ -pe make 10 #needs X CPU cores
 #$ -l h_vmem=10G #request XGb of memory
 #$ -V # load personal profile
-#$ -t 1:400 # array job length
-#$ -tc 10 # number of concurrently running tasks in array
+#$ -t 1:20 # array job length
+#$ -tc 5 # number of concurrently running tasks in array
 
 
 # parameters
@@ -28,7 +28,7 @@ date
 gs=()
 dts=()
 
-# paramter permutations
+# parameter permutations
 for g in "${g_to_explore[@]}"
 do
         for dt in "${dt_to_explore[@]}"
@@ -40,6 +40,9 @@ done
 
 current_g=${gs[${SGE_TASK_ID}]}
 current_dt=${dts[${SGE_TASK_ID}]}
+
+echo g: $current_g
+echo dt: $current_dt
 
 singularity exec --bind=/mnt/archgen/users/schmid ../singularity/images/nevrome_mobest/nevrome_mobest.sif Rscript code/02_parameter_estimation/crossvalidation/crossvalidation.R ${SGE_TASK_ID} ${current_dt} ${current_g}
 
