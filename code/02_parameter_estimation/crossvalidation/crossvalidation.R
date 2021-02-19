@@ -4,8 +4,9 @@ library(magrittr)
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
 run <- args[1]
-dt_for_this_run <- as.numeric(args[2])
-g_for_this_run <- as.numeric(args[3])
+ds_for_this_run <- as.numeric(args[2])
+dt_for_this_run <- as.numeric(args[3])
+g_for_this_run <- as.numeric(args[4])
 
 #### data ####
 
@@ -23,7 +24,7 @@ interpol_comparison <- mobest::crossvalidate(
     C2 = janno_final$C2
   ),
   kernel = mobest::create_kernset_cross(
-    ds = seq(100, 2000, 100)*1000,
+    ds = ds_for_this_run*1000,
     dt = dt_for_this_run, 
     g = g_for_this_run
   ),
