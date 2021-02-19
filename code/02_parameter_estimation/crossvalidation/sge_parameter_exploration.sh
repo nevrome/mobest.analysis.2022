@@ -11,9 +11,13 @@ qsub <<EOT
 #$ -pe make 10 #needs X CPU cores
 #$ -l h_vmem=10G #request XGb of memory
 #$ -V # load personal profile
-#$ -t 1:20 # array job length
+#$ -t 1-20 # array job length
 #$ -tc 5 # number of concurrently running tasks in array
 
+
+date 
+
+echo Task in Array: ${SGE_TASK_ID}
 
 # parameters
 g_to_explore=(0.08)
@@ -22,8 +26,6 @@ dt_to_explore=($(seq 100 100 2000))
 jobs=$((${#g_to_explore[@]}*${#dt_to_explore[@]}))
 
 echo Number of jobs: $jobs
-
-date 
 
 gs=()
 dts=()
@@ -41,8 +43,8 @@ done
 current_g=${gs[${SGE_TASK_ID}]}
 current_dt=${dts[${SGE_TASK_ID}]}
 
-echo g: $current_g
-echo dt: $current_dt
+echo g: ${current_g}
+echo dt: ${current_dt}
 
 singularity exec --bind=/mnt/archgen/users/schmid ../singularity/images/nevrome_mobest/nevrome_mobest.sif Rscript code/02_parameter_estimation/crossvalidation/crossvalidation.R ${SGE_TASK_ID} ${current_dt} ${current_g}
 
