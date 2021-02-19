@@ -1,4 +1,4 @@
-# ~/singularity/slurm_nevrome_coest.sh medium 16 50 code/parameter_estimation/laGP_maximum_likelihood_estimation/anisotropic_mle.R 
+# ../singularity/sge_nevrome_mobest.sh 16 50 code/02_parameter_estimation/laGP_maximum_likelihood_estimation/anisotropic_mle.R
 
 library(magrittr)
 library(laGP)
@@ -50,5 +50,3 @@ mlesep_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
   )
 
 save(mlesep_out, file = "data/parameter_exploration/mle/mlesep_out.RData")
-
-# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/mobest.analysis.2020/data/parameter_exploration/mle/mlesep_out.RData data/parameter_exploration/mle/mlesep_out.RData
