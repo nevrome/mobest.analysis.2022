@@ -1,4 +1,4 @@
-# ./sge_parameter_exploration.sh
+# qsub code/02_parameter_estimation/crossvalidation/sge_parameter_exploration.sh
 
 library(magrittr)
 
@@ -28,7 +28,7 @@ interpol_comparison <- mobest::crossvalidate(
     dt = dt_for_this_run, 
     g = g_for_this_run
   ),
-  iterations = 2,
+  iterations = 10,
   groups = 10,
   quiet = F
 )
