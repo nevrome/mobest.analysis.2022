@@ -1,4 +1,4 @@
-# sbatch slurm_parameter_exploration.sh
+# ./sge_parameter_exploration.sh
 
 library(magrittr)
 
@@ -12,26 +12,30 @@ g_for_this_run <- as.numeric(args[3])
 load("data/poseidon_data/janno_final.RData")
 
 interpol_comparison <- mobest::crossvalidate(
-  independent = tibble::tibble(
+  independent = mobest::create_spatpos(
+    id = 1:nrow(janno_final),
     x = janno_final$x, 
     y = janno_final$y, 
     z = janno_final$Date_BC_AD_Median_Derived
   ),
-  dependent = list(
+  dependent = mobest::create_obs(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
-  kernel = mobest::create_kernel_grid(
-    ds = seq(50, 2000, 50)*1000,#seq(100, 10000, 100)*1000, 
+  kernel = mobest::create_kernset_cross(
+    ds = seq(100, 2000, 100)*1000,
     dt = dt_for_this_run, 
     g = g_for_this_run
-  )
+  ),
+  iterations = 2,
+  groups = 10,
+  quiet = F
 )
+
+interpol_comparison$ds <- interpol_comparison$ds/1000
 
 save(interpol_comparison, file = paste0(
   "data/parameter_exploration/crossvalidation/interpol_comparison_", 
   run, 
   ".RData"
 ))
-
-# scp schmid@cdag2-new.cdag.shh.mpg.de:/projects1/coest_mobility/coest.interpol.2020/data/parameter_exploration/crossvalidation/interpol_comparison_* .

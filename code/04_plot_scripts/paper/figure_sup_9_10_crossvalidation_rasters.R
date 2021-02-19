@@ -5,7 +5,7 @@ load("data/parameter_exploration/crossvalidation/interpol_comparison.RData")
 
 # group difference by kernel and dependent_dist
 interpol_comparison_group <- interpol_comparison %>%
-  dplyr::group_by(kernel_setting_id, ds, dt, g, dependent_var) %>%
+  dplyr::group_by(ds, dt, g, dependent_var) %>%
   dplyr::summarise(
     mean_squared_difference = mean(difference^2),
   ) %>%
@@ -67,7 +67,7 @@ mean_interpol_comparison_group <- interpol_comparison_group %>%
     mean_squared_difference = (mean_squared_difference - min(mean_squared_difference))/(max(mean_squared_difference) - min(mean_squared_difference))
   ) %>%
   dplyr::ungroup() %>%
-  dplyr::group_by(kernel_setting_id, ds, dt, g) %>%
+  dplyr::group_by(ds, dt, g) %>%
   dplyr::summarise(
     mean_mean_squared_difference = mean(mean_squared_difference)
   ) %>%
