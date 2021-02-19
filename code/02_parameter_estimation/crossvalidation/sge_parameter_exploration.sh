@@ -1,6 +1,4 @@
 #!/bin/bash
-qsub <<EOT
-#!/bin/bash
 #
 #$ -S /bin/bash #defines bash as the shell for execution
 #$ -N cross #Name of the command that will be listed in the queue
@@ -12,12 +10,16 @@ qsub <<EOT
 #$ -l h_vmem=5G #request XGb of memory
 #$ -V # load personal profile
 #$ -t 1-400 # array job length
-#$ -tc 10 # number of concurrently running tasks in array
+#$ -tc 20 # number of concurrently running tasks in array
 
 
-date 
+date
 
 echo Task in Array: ${SGE_TASK_ID}
+
+i=$((SGE_TASK_ID - 1))
+
+echo Index: ${i}
 
 # parameters
 ds_to_explore=($(seq 100 100 2000))
@@ -42,20 +44,20 @@ do
       dss+=($ds)
       dts+=($dt)
       gs+=($g)
-	done
+    done
+  done
 done
 
-current_ds=${dss[${SGE_TASK_ID}]}
-current_dt=${dts[${SGE_TASK_ID}]}
-current_g=${gs[${SGE_TASK_ID}]}
+current_ds=${dss[${i}]}
+current_dt=${dts[${i}]}
+current_g=${gs[${i}]}
 
 echo ds: ${current_ds}
 echo dt: ${current_dt}
 echo g: ${current_g}
 
-singularity exec --bind=/mnt/archgen/users/schmid ../singularity/images/nevrome_mobest/nevrome_mobest.sif Rscript code/02_parameter_estimation/crossvalidation/crossvalidation.R ${SGE_TASK_ID} ${current_ds} ${current_dt} ${current_g}
+singularity exec --bind=/mnt/archgen/users/schmid ../singularity/images/nevrome_mobest/nevrome_mobest.sif Rscript code/02_parameter_estimation/crossvalidation/crossvalidation.R ${i} ${current_ds} ${current_dt} ${current_g}
 
 date
- 
+
 exit 0
-EOT
