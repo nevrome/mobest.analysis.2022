@@ -11,13 +11,13 @@ p <- ggplot(dplyr::filter(d_binned, geo_dist_cut == 450)) +
     mapping = aes(x = time_dist_cut, y = C1_dist_resid)
   ) +
   stat_function(
-    fun = function(r) {var_model(0.25, 100000, 0.0003, r)}, 
+    fun = function(r) {var_model(0.2, 100000, 0.0003, r)}, 
     mapping = aes(color = "A"),
     linetype = "dashed", 
     size = 0.9
   ) + 
   stat_function(
-    fun = function(r) {var_model(25, 1000000, 0.0003, r)}, 
+    fun = function(r) {var_model(20, 1000000, 0.0003, r)}, 
     mapping = aes(color = "B"),
     linetype = "dashed", 
     size = 1.2
