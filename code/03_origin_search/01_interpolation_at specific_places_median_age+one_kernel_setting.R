@@ -36,7 +36,7 @@ Rome <- sf::st_as_sf(
 ) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
 
 time_points <- seq(-7500, 1500, 1000)
-n_time_points <- length(time_points_to_measure) 
+n_time_points <- length(time_points) 
 
 #### prepare pca model grid ####
 model_grid <- mobest::create_model_grid(
@@ -71,7 +71,7 @@ model_grid <- mobest::create_model_grid(
       rep(Jerusalem[2], n_time_points),
       rep(Rome[2], n_time_points)
     ),
-    z = rep(list(time_points_to_measure), 4),
+    z = rep(list(time_points), 4),
     id = 1:n_time_points,
     it = c("Budapest", "London", "Jerusalem", "Rome")
   )
