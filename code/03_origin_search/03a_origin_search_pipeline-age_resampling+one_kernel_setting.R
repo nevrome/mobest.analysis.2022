@@ -4,7 +4,7 @@
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
 age_resampling_run <- 7
-age_resampling_run <- as.numeric(args[1]) + 1
+age_resampling_run <- as.numeric(args[1])
 
 #### data ####
 
