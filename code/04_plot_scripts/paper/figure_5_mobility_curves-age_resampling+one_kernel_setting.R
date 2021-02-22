@@ -9,6 +9,12 @@ load("data/plot_reference_data/no_data_windows_yearwise.RData")
 load("data/origin_search/origin_grid_median.RData")
 load("data/origin_search/age_resampling+one_kernel_setting/origin_grid.RData")
 
+load("data/spatial/mobility_regions.RData")
+load("data/spatial/research_area.RData")
+load("data/spatial/extended_area.RData")
+load("data/spatial/epsg102013.RData")
+load("data/plot_reference_data/region_id_shapes.RData")
+
 #### prepare main table ####
 
 origin_grid_median <- origin_grid_median %>% 
@@ -19,6 +25,26 @@ origin_grid_median <- origin_grid_median %>%
     janno_final %>% dplyr::select(Individual_ID, region_id),
     by = c("search_id" = "Individual_ID")
   )
+
+origin_region_ids <- origin_grid_median %>% 
+  sf::st_as_sf(
+    coords = c("origin_x", "origin_y"),
+    crs = epsg102013
+  ) %>%
+  sf::st_intersects(
+    ., mobility_regions
+  ) %>%
+  purrr::map_int(
+    function(x) {
+      if (length(x) > 0) {
+        x
+      } else {
+        NA
+      }
+    }
+  )
+
+origin_grid_median$origin_region_id <- mobility_regions$region_id[origin_region_ids]
 
 origin_grid <- origin_grid %>% 
   dplyr::mutate(
@@ -41,7 +67,7 @@ origin_grid <- origin_grid %>%
   )
 
 mean_origin <- origin_grid %>%
-  dplyr::group_by(region_id, search_z) %>%
+  dplyr::group_by(region_id, search_z_cut) %>%
   dplyr::summarise(
     mean_spatial_distance = mean(spatial_distance),
     mean_angle_deg = mobest::vec2deg(c(mean(origin_x - search_x), mean(origin_y - search_y)))
@@ -118,10 +144,17 @@ p_estimator <- ggplot() +
   facet_wrap(dplyr::vars(region_id)) +
   geom_point(
     data = origin_grid_median,
-    mapping = aes(x = search_z, y = spatial_distance, color = angle_deg),
+    mapping = aes(
+      x = search_z, y = spatial_distance, color = angle_deg,
+      shape = origin_region_id
+    ),
     alpha = 0.6,
-    size = 0.4,
-    shape = 4
+    size = 0.6
+  ) +
+  scale_shape_manual(
+    values = region_id_shapes,
+    guide = F,
+    na.value = 4
   ) +
   geom_ribbon(
     data = moving_origin_grid,
@@ -156,11 +189,6 @@ p_estimator <- ggplot() +
   )
 
 #### map series ####
-
-load("data/spatial/mobility_regions.RData")
-load("data/spatial/research_area.RData")
-load("data/spatial/extended_area.RData")
-load("data/spatial/epsg102013.RData")
 
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
