@@ -29,32 +29,73 @@ origin_grid <- origin_grid %>%
     by = c("search_id" = "Individual_ID")
   )
 
-r <- range(origin_grid$search_z)
-b <- seq(round(r[1], -3), round(r[2], -3), 200)
-origin_grid <- origin_grid %>%
-  dplyr::mutate(
-    search_z_cut = b[cut(
-      search_z,
-      b,
-      labels = F
-    )] + 100
-  )
+# r <- range(origin_grid$search_z)
+# b <- seq(round(r[1], -3), round(r[2], -3), 200)
+# origin_grid <- origin_grid %>%
+#   dplyr::mutate(
+#     search_z_cut = b[cut(
+#       search_z,
+#       b,
+#       labels = F
+#     )] + 100
+#   )
 
 # moving average
-mean_origin <- origin_grid %>%
-  dplyr::group_by(region_id, search_z_cut) %>%
-  dplyr::summarise(
-    mean_spatial_distance = mean(spatial_distance),
-    mean_angle_deg = mobest::vec2deg(c(mean(origin_x - search_x), mean(origin_y - search_y)))
-  ) %>%
-  dplyr::ungroup() %>%
-  dplyr::filter(
-    !is.na(region_id)
-  )
+std <- function(x) sd(x)/sqrt(length(x))
+
+moving_origin_grid <- purrr::map_dfr(
+  unique(origin_grid$region_id),
+  function(region) {
+    origin_per_region <- origin_grid %>%
+      dplyr::filter(region_id == region)
+    purrr::map2_df(
+      seq(-7500, 1000, 20),
+      seq(-7000, 1500, 20),
+      function(start, end) {
+        io <- dplyr::filter(
+            origin_per_region,
+            search_z >= start,
+            search_z < end
+          )
+        if (nrow(io) > 0) {
+          tibble::tibble(
+            z = mean(c(start, end)),
+            region_id = region,
+            mean_spatial_distance = mean(io$spatial_distance),
+            mean_angle_deg = mobest::vec2deg(
+              c(mean(io$origin_x - io$search_x), mean(io$origin_y - io$search_y))
+            ),
+            std_spatial_distance = std(io$spatial_distance)
+          )
+        } else {
+          tibble::tibble(
+            z = mean(c(start, end)),
+            region_id = region,
+            mean_spatial_distance = NA,
+            mean_angle_deg = NA,
+            std_spatial_distance = NA
+          )
+        }
+      }
+    )
+  }
+)
+
+
+# mean_origin <- origin_grid %>%
+#   dplyr::group_by(region_id, search_z) %>%
+#   dplyr::summarise(
+#     mean_spatial_distance = mean(spatial_distance),
+#     mean_angle_deg = mobest::vec2deg(c(mean(origin_x - search_x), mean(origin_y - search_y)))
+#   ) %>%
+#   dplyr::ungroup() %>%
+#   dplyr::filter(
+#     !is.na(region_id)
+#   )
 
 #### mobility estimator curves ####
 
-p_estimator <- ggplot() +
+ggplot() +
   geom_point(
     data = janno_final,
     aes(x = Date_BC_AD_Median_Derived, y = 0),
@@ -80,10 +121,10 @@ p_estimator <- ggplot() +
     alpha = 0.5,
     size = 0.3
   ) +
-  geom_point(
-    data = mean_origin,
-    mapping = aes(x = search_z_cut, y = mean_spatial_distance, color = mean_angle_deg),
-    size = 2
+  geom_line(
+    data = moving_origin_grid,
+    mapping = aes(x = z, y = mean_spatial_distance, color = mean_angle_deg),
+    size = 1
   ) +
   theme_bw() +
   theme(
