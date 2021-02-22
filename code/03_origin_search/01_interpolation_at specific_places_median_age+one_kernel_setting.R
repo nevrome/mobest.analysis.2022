@@ -14,6 +14,13 @@ Budapest <- sf::st_as_sf(
   remove = FALSE
 ) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
 
+Tallinn <- sf::st_as_sf(
+  tibble::tibble(lon = 24.74, lat = 59.44),
+  coords = c("lon", "lat"),
+  crs = 4326,
+  remove = FALSE
+) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
+
 London <- sf::st_as_sf(
   tibble::tibble(lon = -0.11, lat = 51.50),
   coords = c("lon", "lat"),
@@ -60,20 +67,20 @@ model_grid <- mobest::create_model_grid(
   ),
   prediction_grid = mobest::create_spatpos_multi(
     x = list(
-      rep(Budapest[1], n_time_points),
+      rep(Tallinn[1], n_time_points),
       rep(London[1], n_time_points),
       rep(Jerusalem[1], n_time_points),
       rep(Rome[1], n_time_points)
     ), 
     y = list(
-      rep(Budapest[2], n_time_points),
+      rep(Tallinn[2], n_time_points),
       rep(London[2], n_time_points),
       rep(Jerusalem[2], n_time_points),
       rep(Rome[2], n_time_points)
     ),
     z = rep(list(time_points), 4),
     id = 1:n_time_points,
-    it = c("Budapest", "London", "Jerusalem", "Rome")
+    it = c("Tallinn", "London", "Jerusalem", "Rome")
   )
 )
 
