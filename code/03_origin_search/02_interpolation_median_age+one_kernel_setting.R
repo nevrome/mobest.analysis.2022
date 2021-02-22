@@ -5,7 +5,8 @@ library(magrittr)
 load("data/poseidon_data/janno_final.RData")
 load("data/spatial/area.RData")
 
-#### prepare pca model grid ####
+#### prepare model grid ####
+
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
     id = janno_final$Individual_ID,
@@ -145,4 +146,4 @@ origin_grid %>%
   scale_color_viridis_c()
 
 #### mobility proxy ####
-save(origin_grid, file = "data/mobility_estimation/origin_grid_median.RData")
+save(origin_grid, file = "data/origin_search/origin_grid_median.RData")
