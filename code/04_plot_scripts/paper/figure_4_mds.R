@@ -86,7 +86,7 @@ p_mds <- ggplot() +
     values = region_id_shapes
   ) +
   age_colors_gradient +
-  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.09, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   theme_bw() +
@@ -148,7 +148,7 @@ p_London <- ggplot() +
     legend.position = "none",
     axis.title = element_blank()
   ) +
-  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.09, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   guides(
@@ -201,7 +201,7 @@ p_Budapest <- ggplot() +
     legend.position = "none",
     axis.title = element_blank()
   ) +
-  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.09, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   ggtitle("Budapest")
@@ -251,7 +251,7 @@ p_Rome <- ggplot() +
     legend.position = "none",
     axis.title = element_blank()
   ) +
-  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.09, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   ggtitle("Rome")
@@ -301,7 +301,7 @@ p_Jerusalem <- ggplot() +
     legend.position = "none",
     axis.title = element_blank()
   ) +
-  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.08, 0.065)) +
+  coord_fixed(xlim = c(-0.1, 0.05), ylim = c(-0.09, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   ggtitle("Jerusalem")

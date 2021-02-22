@@ -141,7 +141,8 @@ origin_grid %>%
   ) %>%
   ggplot(aes(x = search_z, y = spatial_distance, color = angle_deg)) +
   geom_point() +
-  facet_wrap(~region_id)
+  facet_wrap(~region_id) +
+  scale_color_viridis_c()
 
 #### mobility proxy ####
 save(origin_grid, file = "data/mobility_estimation/origin_grid_median.RData")

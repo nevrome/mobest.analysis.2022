@@ -4,7 +4,6 @@ library(magrittr)
 
 load("data/poseidon_data/janno_final.RData")
 load("data/spatial/area.RData")
-load("data/spatial/mobility_regions.RData")
 load("data/spatial/epsg102013.RData")
 
 # individual point
@@ -36,47 +35,45 @@ Rome <- sf::st_as_sf(
   remove = FALSE
 ) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
 
+time_points <- seq(-7500, 1500, 1000)
+n_time_points <- length(time_points_to_measure) 
+
 #### prepare pca model grid ####
 model_grid <- mobest::create_model_grid(
-  independent = c(
-    list(age_center = tibble::tibble(
-      x = janno_final$x, 
-      y = janno_final$y, 
-      z = janno_final$Date_BC_AD_Median_Derived
-    ))
+  independent = mobest::create_spatpos_multi(
+    id = janno_final$Individual_ID,
+    x = list(janno_final$x),
+    y = list(janno_final$y),
+    z = list(janno_final$Date_BC_AD_Median_Derived),
+    it = "age_median"
   ),
-  dependent = list(
+  dependent = mobest::create_obs(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
-  kernel = list(
-    ds450_dt800_g006 = list(d = c(450000, 450000, 800), g = 0.06, on_residuals = T, auto = F)
+  kernel = mobest::create_kernset_multi(
+    d = list(c(500000, 500000, 800)), 
+    g = 0.08, 
+    on_residuals = T, 
+    auto = F,
+    it = "ds500_dt800_g008"
   ),
-  prediction_grid = list(
-    Budapest = tibble::tibble(
-      x = Budapest[1], 
-      y = Budapest[2], 
-      z = seq(-7500, 1500, 1000), 
-      point_id = 1:length(z)
+  prediction_grid = mobest::create_spatpos_multi(
+    x = list(
+      rep(Budapest[1], n_time_points),
+      rep(London[1], n_time_points),
+      rep(Jerusalem[1], n_time_points),
+      rep(Rome[1], n_time_points)
+    ), 
+    y = list(
+      rep(Budapest[2], n_time_points),
+      rep(London[2], n_time_points),
+      rep(Jerusalem[2], n_time_points),
+      rep(Rome[2], n_time_points)
     ),
-    London = tibble::tibble(
-      x = London[1], 
-      y = London[2], 
-      z = seq(-7500, 1500, 1000), 
-      point_id = 1:length(z)
-    ),
-    Jerusalem = tibble::tibble(
-      x = Jerusalem[1], 
-      y = Jerusalem[2], 
-      z = seq(-7500, 1500, 1000), 
-      point_id = 1:length(z)
-    ),
-    Rome = tibble::tibble(
-      x = Rome[1], 
-      y = Rome[2], 
-      z = seq(-7500, 1500, 1000), 
-      point_id = 1:length(z)
-    ) 
+    z = rep(list(time_points_to_measure), 4),
+    id = 1:n_time_points,
+    it = c("Budapest", "London", "Jerusalem", "Rome")
   )
 )
 
