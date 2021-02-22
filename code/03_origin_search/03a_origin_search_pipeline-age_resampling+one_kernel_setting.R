@@ -3,7 +3,7 @@
 #### read parameters ####
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
-age_resampling_run <- 8
+age_resampling_run <- 7
 age_resampling_run <- as.numeric(args[1]) + 1
 
 #### data ####
@@ -66,6 +66,8 @@ origin_grid <- mobest::search_spatial_origin(
   interpol_grid = interpol_grid,
   rearview_distance = 300
 )
+
+origin_grid$age_resampling_run <- age_resampling_run
 
 #### mobility proxy ####
 
