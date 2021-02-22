@@ -47,21 +47,21 @@ interpol_grid <- mobest::run_model_grid(model_grid)
 
 #### spatial origin ####
 
-janno_post_7700 <- janno_final %>% dplyr::filter(
-  Date_BC_AD_Median_Derived > -7500
+janno_post_7500 <- janno_final %>% dplyr::filter(
+  Date_BC_AD_Median_Derived >= -7500
 )
 
 origin_grid <- mobest::search_spatial_origin(
   independent = mobest::create_spatpos_multi(
-    id = janno_post_7700$Individual_ID,
-    x = list(janno_post_7700$x),
-    y = list(janno_post_7700$y),
-    z = list(sapply(janno_post_7700$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })),
+    id = janno_post_7500$Individual_ID,
+    x = list(janno_post_7500$x),
+    y = list(janno_post_7500$y),
+    z = list(sapply(janno_post_7500$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })),
     it = "age_sample"
   ),
   dependent = mobest::create_obs(
-    C1 = janno_post_7700$C1,
-    C2 = janno_post_7700$C2
+    C1 = janno_post_7500$C1,
+    C2 = janno_post_7500$C2
   ),
   interpol_grid = interpol_grid,
   rearview_distance = 300

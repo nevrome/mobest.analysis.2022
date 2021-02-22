@@ -6,15 +6,24 @@ library(ggplot2)
 load("data/poseidon_data/janno_final.RData")
 load("data/plot_reference_data/no_data_windows.RData")
 load("data/plot_reference_data/no_data_windows_yearwise.RData")
+load("data/origin_search/origin_grid_median.RData")
 load("data/origin_search/age_resampling+one_kernel_setting/origin_grid.RData")
 
 #### prepare main table ####
 
-origin_grid <- origin_grid %>% dplyr::mutate(
-  spatial_distance = spatial_distance/1000
-)
+origin_grid_median <- origin_grid_median %>% 
+  dplyr::mutate(
+    spatial_distance = spatial_distance/1000
+  ) %>%
+  dplyr::left_join(
+    janno_final %>% dplyr::select(Individual_ID, region_id),
+    by = c("search_id" = "Individual_ID")
+  )
 
-origin_grid <- origin_grid %>%
+origin_grid <- origin_grid %>% 
+  dplyr::mutate(
+    spatial_distance = spatial_distance/1000
+  ) %>%
   dplyr::left_join(
     janno_final %>% dplyr::select(Individual_ID, region_id),
     by = c("search_id" = "Individual_ID")
@@ -66,10 +75,10 @@ p_estimator <- ggplot() +
   ) +
   facet_wrap(dplyr::vars(region_id)) +
   geom_point(
-    data = origin_grid,
+    data = origin_grid_median,
     mapping = aes(x = search_z, y = spatial_distance, color = angle_deg),
     alpha = 0.5,
-    size = 0.2
+    size = 0.3
   ) +
   geom_point(
     data = mean_origin,
