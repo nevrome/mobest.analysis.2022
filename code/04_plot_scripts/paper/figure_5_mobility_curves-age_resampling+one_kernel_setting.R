@@ -29,28 +29,40 @@ origin_grid <- origin_grid %>%
     by = c("search_id" = "Individual_ID")
   )
 
-# r <- range(origin_grid$search_z)
-# b <- seq(round(r[1], -3), round(r[2], -3), 200)
-# origin_grid <- origin_grid %>%
-#   dplyr::mutate(
-#     search_z_cut = b[cut(
-#       search_z,
-#       b,
-#       labels = F
-#     )] + 100
-#   )
+r <- range(origin_grid$search_z)
+b <- seq(round(r[1], -3), round(r[2], -3), 200)
+origin_grid <- origin_grid %>%
+  dplyr::mutate(
+    search_z_cut = b[cut(
+      search_z,
+      b,
+      labels = F
+    )] + 100
+  )
+
+mean_origin <- origin_grid %>%
+  dplyr::group_by(region_id, search_z) %>%
+  dplyr::summarise(
+    mean_spatial_distance = mean(spatial_distance),
+    mean_angle_deg = mobest::vec2deg(c(mean(origin_x - search_x), mean(origin_y - search_y)))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::filter(
+    !is.na(region_id)
+  )
 
 # moving average
 std <- function(x) sd(x)/sqrt(length(x))
 
-moving_origin_grid <- purrr::map_dfr(
+future::plan(future::multisession)
+moving_origin_grid <- furrr::future_map_dfr(
   unique(origin_grid$region_id),
   function(region) {
     origin_per_region <- origin_grid %>%
       dplyr::filter(region_id == region)
     purrr::map2_df(
-      seq(-7500, 1000, 20),
-      seq(-7000, 1500, 20),
+      seq(-8000, 1000, 50),
+      seq(-7000, 2000, 50),
       function(start, end) {
         io <- dplyr::filter(
             origin_per_region,
@@ -82,20 +94,9 @@ moving_origin_grid <- purrr::map_dfr(
 )
 
 
-# mean_origin <- origin_grid %>%
-#   dplyr::group_by(region_id, search_z) %>%
-#   dplyr::summarise(
-#     mean_spatial_distance = mean(spatial_distance),
-#     mean_angle_deg = mobest::vec2deg(c(mean(origin_x - search_x), mean(origin_y - search_y)))
-#   ) %>%
-#   dplyr::ungroup() %>%
-#   dplyr::filter(
-#     !is.na(region_id)
-#   )
-
 #### mobility estimator curves ####
 
-ggplot() +
+p_estimator <- ggplot() +
   geom_point(
     data = janno_final,
     aes(x = Date_BC_AD_Median_Derived, y = 0),
@@ -118,13 +119,24 @@ ggplot() +
   geom_point(
     data = origin_grid_median,
     mapping = aes(x = search_z, y = spatial_distance, color = angle_deg),
-    alpha = 0.5,
-    size = 0.3
+    alpha = 0.6,
+    size = 0.4,
+    shape = 4
+  ) +
+  geom_ribbon(
+    data = moving_origin_grid,
+    mapping = aes(
+      x = z,
+      ymin = mean_spatial_distance - 2*std_spatial_distance,
+      ymax = mean_spatial_distance + 2*std_spatial_distance
+    ),
+    fill = "lightgrey",
+    alpha = 0.7
   ) +
   geom_line(
     data = moving_origin_grid,
     mapping = aes(x = z, y = mean_spatial_distance, color = mean_angle_deg),
-    size = 1
+    size = 0.4
   ) +
   theme_bw() +
   theme(
@@ -138,7 +150,10 @@ ggplot() +
     guide = F
   ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
-  coord_cartesian(ylim = c(-0, max(origin_grid$spatial_distance, na.rm = T)))
+  coord_cartesian(
+    ylim = c(0, 2000)
+    #ylim = c(0, max(origin_grid$spatial_distance, na.rm = T))
+  )
 
 #### map series ####
 
@@ -159,7 +174,7 @@ mobility_maps <- mean_origin %>%
     z_named = dplyr::recode_factor(as.character(search_z_cut), !!!list(
       "-5500" = "5600-5400 calBC", 
       "-2700" = "2800-2600 calBC", 
-      "100" = "-0 calBC/AD - 200 calAD"
+      "100" = "0 calBC/AD - 200 calAD"
     ))
   ) %>%
   dplyr::left_join(
@@ -267,7 +282,7 @@ ggsave(
   plot = p,
   device = "png",
   scale = 0.5,
-  dpi = 300,
+  dpi = 500,
   width = 700, height = 400, units = "mm",
   limitsize = F
 )
