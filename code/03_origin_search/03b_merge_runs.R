@@ -12,3 +12,4 @@ origin_grid <- lapply(
 ) %>% dplyr::bind_rows()
 
 save(origin_grid, file = "data/origin_search/age_resampling+one_kernel_setting/origin_grid.RData")
+

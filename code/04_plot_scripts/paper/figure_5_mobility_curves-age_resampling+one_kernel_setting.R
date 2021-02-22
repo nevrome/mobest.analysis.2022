@@ -1,52 +1,51 @@
 library(magrittr)
 library(ggplot2)
 
+#### data ####
+
 load("data/poseidon_data/janno_final.RData")
 load("data/plot_reference_data/no_data_windows.RData")
 load("data/plot_reference_data/no_data_windows_yearwise.RData")
+load("data/origin_search/age_resampling+one_kernel_setting/origin_grid.RData")
 
-mobility <- lapply(
-  list.files("data/mobility_estimation/age_resampling+origin_search+directed_speed+one_kernel_setting", full.names = T),
-  function(x) {
-    load(x)
-    mobility_proxy
-  }
-) %>% dplyr::bind_rows()
+#### prepare main table ####
+
+origin_grid <- origin_grid %>% dplyr::mutate(
+  spatial_distance = spatial_distance/1000
+)
+
+origin_grid <- origin_grid %>%
+  dplyr::left_join(
+    janno_final %>% dplyr::select(Individual_ID, region_id),
+    by = c("search_id" = "Individual_ID")
+  )
+
+r <- range(origin_grid$search_z)
+b <- seq(round(r[1], -3), round(r[2], -3), 200)
+origin_grid <- origin_grid %>%
+  dplyr::mutate(
+    search_z_cut = b[cut(
+      search_z,
+      b,
+      labels = F
+    )] + 100
+  )
 
 # moving average
-mean_mobility <- mobility %>%
-  dplyr::group_by(independent_table_id, kernel_setting_id, region_id, z) %>%
+mean_origin <- origin_grid %>%
+  dplyr::group_by(region_id, search_z_cut) %>%
   dplyr::summarise(
-    mean_speed_km_per_decade = sqrt(mean(x_to_origin)^2 + mean(y_to_origin)^2)/1000/unique(abs(.data[["z"]]-.data[["z_origin"]]))*10,
-    mean_angle_deg = mobest::vec2deg(c(mean(x_to_origin_norm), mean(y_to_origin_norm)))
+    mean_spatial_distance = mean(spatial_distance),
+    mean_angle_deg = mobest::vec2deg(c(mean(origin_x - search_x), mean(origin_y - search_y)))
   ) %>%
+  dplyr::ungroup() %>%
   dplyr::filter(
     !is.na(region_id)
   )
 
 #### mobility estimator curves ####
 
-p_estimator <- mean_mobility %>%
-  ggplot() +
-  geom_line(
-    aes(
-      x = z, y = mean_speed_km_per_decade,
-      group = interaction(independent_table_id, kernel_setting_id),
-      color = mean_angle_deg#,
-      #linetype = kernel_setting_id
-    ),
-    size = 0.2
-  ) +
-  # geom_ribbon(
-  #   data = mean_mobility,
-  #   aes(
-  #     x = z, ymin = mean_speed_km_per_decade - sd_speed_km_per_decade, ymax = mean_speed_km_per_decade + sd_speed_km_per_decade,
-  #     group = interaction(independent_table_id, kernel_setting_id),
-  #     fill = kernel_setting_id
-  #   ),
-  #   alpha = 0.1,
-  #   color = "black", size = 0.1
-  # ) +
+p_estimator <- ggplot() +
   geom_point(
     data = janno_final,
     aes(x = Date_BC_AD_Median_Derived, y = 0),
@@ -61,25 +60,35 @@ p_estimator <- mean_mobility %>%
     alpha = 0.3, fill = "red"
   ) +
   geom_vline(
-    data = data.frame(x = c(-5500, -2800, 100)),
+    data = data.frame(x = c(-5500, -2700, 100)),
     aes(xintercept = x),
     linetype = "dotted"
   ) +
   facet_wrap(dplyr::vars(region_id)) +
+  geom_point(
+    data = origin_grid,
+    mapping = aes(x = search_z, y = spatial_distance, color = angle_deg),
+    alpha = 0.5,
+    size = 0.2
+  ) +
+  geom_point(
+    data = mean_origin,
+    mapping = aes(x = search_z_cut, y = mean_spatial_distance, color = mean_angle_deg),
+    size = 2
+  ) +
   theme_bw() +
   theme(
     legend.position = "bottom",
     axis.text.x = element_text(angle = 40, hjust = 1)
   ) +
   xlab("time in years calBC/calAD") +
-  ylab("\"Speed\" [km/decade]") +
+  ylab("spatial distance to \"origin\" [km]") +
   scale_color_gradientn(
     colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
     guide = F
   ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
-  coord_cartesian(ylim = c(-0, max(mean_mobility$mean_speed_km_per_decade, na.rm = T))) +
-  xlab("")
+  coord_cartesian(ylim = c(-0, max(origin_grid$spatial_distance, na.rm = T)))
 
 #### map series ####
 
@@ -92,31 +101,16 @@ ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
 
-mobility_maps <- mean_mobility %>% 
-  dplyr::filter(z %in% c(-5500, -2800, 100)) %>%
-  dplyr::group_by(region_id, z) %>%
-  dplyr::summarise(
-    mean_mean_km_per_decade = mean(mean_speed_km_per_decade),
-    mean_mean_angle_deg = mobest::mean_deg(mean_angle_deg),
-    mean_mean_angle_deg_text = 360 - mean_mean_angle_deg
-  ) %>%
-  dplyr::ungroup() %>%
+mobility_maps <- mean_origin %>%
+  dplyr::filter(search_z_cut %in% c(-5500, -2700, 100)) %>%
+  tidyr::complete(region_id, search_z_cut) %>%
   dplyr::mutate(
-    z_named = dplyr::recode_factor(as.character(z), !!!list(
-      "-5500" = "-5600 ⬳ -5500 calBC", 
-      "-2800" = "-2900 ⬳ -2800 calBC", 
-      "100" = "0 calBC/calAD ⬳ 100 calAD"
+    mean_angle_deg_text = 360 - mean_angle_deg,
+    z_named = dplyr::recode_factor(as.character(search_z_cut), !!!list(
+      "-5500" = "5600-5400 calBC", 
+      "-2700" = "2800-2600 calBC", 
+      "100" = "-0 calBC/AD - 200 calAD"
     ))
-  ) %>%
-  dplyr::left_join(
-    no_data_windows_yearwise %>% 
-      dplyr::filter(date_not_covered %in% c(-5500, -2800, 100)) %>% 
-      unique %>%
-      dplyr::mutate(not_covered = TRUE), 
-    by = c("region_id", "z" = "date_not_covered")
-  ) %>% 
-  dplyr::mutate(
-    not_covered = tidyr::replace_na(not_covered, FALSE)
   ) %>%
   dplyr::left_join(
     mobility_regions,
@@ -137,36 +131,29 @@ p_map <- ggplot() +
   ) +
   geom_sf(
     data = mobility_maps,
-    aes(fill = not_covered, alpha = not_covered),
+    fill = "white", 
+    alpha = 0.7,
     color = "black",
     size = 0.4
   ) +
   geom_text(
-    data = mobility_maps_center,
+    data = mobility_maps_center %>% dplyr::filter(!is.na(mean_spatial_distance)),
     mapping = aes(
       x = x, y = y, 
-      color = mean_mean_angle_deg, 
-      angle = mean_mean_angle_deg_text,
-      size = mean_mean_km_per_decade
+      color = mean_angle_deg, 
+      angle = mean_angle_deg_text,
+      size = mean_spatial_distance
     ),
     label="\u2191"
   ) +
   scale_size_continuous(
-    range = c(3, 12), name = "mean \"Speed\" [km/decade]",
-    breaks = round(diff(range(mobility_maps_center$mean_mean_km_per_decade))/5)*(1:5),
+    range = c(3, 12), name = "spatial distance to \"origin\" [km]",
+    breaks = round(diff(range(mobility_maps_center$mean_spatial_distance, na.rm = T))/5, -2)*(1:5),
     guide = guide_legend(nrow = 1, label.position = "bottom")
   ) +
   scale_color_gradientn(
-    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
+    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
     guide = F
-  ) +
-  scale_fill_manual(
-    values = c("TRUE" = "red", "FALSE" = "white"), 
-    guide = FALSE
-  ) +
-  scale_alpha_manual(
-    values = c("TRUE" = 0.3, "FALSE" = 0.8), 
-    guide = FALSE
   ) +
   facet_grid(cols = dplyr::vars(z_named)) +
   theme_bw() +
@@ -226,7 +213,7 @@ p <- cowplot::plot_grid(
 )
 
 ggsave(
-  paste0("plots/figure_5_mobility_curves_age_resampling+origin_search+directed_speed+one_kernel_setting.png"),
+  paste0("plots/figure_5_mobility_curves-age_resampling+one_kernel_setting.png"),
   plot = p,
   device = "png",
   scale = 0.5,

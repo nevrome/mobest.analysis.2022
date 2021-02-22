@@ -109,7 +109,7 @@ save(interpol_grid, file = "data/gpr/interpol_grid_median.RData")
 #### spatial origin ####
 
 janno_post_7700 <- janno_final %>% dplyr::filter(
-  Date_BC_AD_Median_Derived > -7700
+  Date_BC_AD_Median_Derived > -7500
 )
   
 

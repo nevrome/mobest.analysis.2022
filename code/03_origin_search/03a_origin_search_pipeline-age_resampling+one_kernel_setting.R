@@ -48,7 +48,7 @@ interpol_grid <- mobest::run_model_grid(model_grid)
 #### spatial origin ####
 
 janno_post_7700 <- janno_final %>% dplyr::filter(
-  Date_BC_AD_Median_Derived > -7700
+  Date_BC_AD_Median_Derived > -7500
 )
 
 origin_grid <- mobest::search_spatial_origin(
