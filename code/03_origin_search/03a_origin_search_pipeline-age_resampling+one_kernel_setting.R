@@ -1,9 +1,11 @@
 # sbatch code/mobility_estimation/slurm_05_mobility_estimation_pipeline_age_resampling.sh
 
+library(magrittr)
+
 #### read parameters ####
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
-age_resampling_run <- 7
+age_resampling_run <- 5
 age_resampling_run <- as.numeric(args[1])
 
 #### data ####

@@ -111,7 +111,6 @@ save(interpol_grid, file = "data/gpr/interpol_grid_median.RData")
 janno_post_7500 <- janno_final %>% dplyr::filter(
   Date_BC_AD_Median_Derived >= -7500
 )
-  
 
 origin_grid_median <- mobest::search_spatial_origin(
   independent = mobest::create_spatpos_multi(
@@ -129,11 +128,11 @@ origin_grid_median <- mobest::search_spatial_origin(
   rearview_distance = 300
 )
 
-origin_grid_median <- origin_grid_median %>%
-  dplyr::left_join(
-    janno_final %>% dplyr::select(Individual_ID, region_id),
-    by = c("search_id" = "Individual_ID")
-  )
+# origin_grid_median <- origin_grid_median %>%
+#   dplyr::left_join(
+#     janno_final %>% dplyr::select(Individual_ID, region_id),
+#     by = c("search_id" = "Individual_ID")
+#   )
 
 # library(ggplot2)
 # origin_grid %>%
