@@ -3,7 +3,7 @@
 #### read parameters ####
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
-age_resampling_run <- 7
+age_resampling_run <- 8
 age_resampling_run <- as.numeric(args[1]) + 1
 
 #### data ####
@@ -56,7 +56,7 @@ origin_grid <- mobest::search_spatial_origin(
     id = janno_post_7700$Individual_ID,
     x = list(janno_post_7700$x),
     y = list(janno_post_7700$y),
-    z = list(sapply(janno_final$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })),
+    z = list(sapply(janno_post_7700$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })),
     it = "age_sample"
   ),
   dependent = mobest::create_obs(
@@ -69,6 +69,6 @@ origin_grid <- mobest::search_spatial_origin(
 
 #### mobility proxy ####
 
-save(mobility_proxy, file = paste0(
+save(origin_grid, file = paste0(
   "data/origin_search/age_resampling+one_kernel_setting/run_", age_resampling_run, ".RData"
 ))
