@@ -7,10 +7,10 @@
 #$ -o ~/log #standard output file or directory (joined with error because of -j y)
 #$ -q archgen.q #queue
 #$ -pe make 4 #needs X CPU cores
-#$ -l h_vmem=5G #request XGb of memory
+#$ -l h_vmem=20G #request XGb of memory
 #$ -V # load personal profile
 #$ -t 1-100 # array job length
-#$ -tc 10 # number of concurrently running tasks in array
+#$ -tc 5 # number of concurrently running tasks in array
 
 date 
 
