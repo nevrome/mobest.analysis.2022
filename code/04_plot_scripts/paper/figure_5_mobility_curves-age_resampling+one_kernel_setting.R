@@ -86,6 +86,8 @@ moving_origin_grid <- furrr::future_map_dfr(
   function(region) {
     origin_per_region <- origin_grid %>%
       dplyr::filter(region_id == region)
+    age_median_origin_per_region <- origin_grid_median %>%
+      dplyr::filter(region_id == region)
     purrr::map2_df(
       seq(-8000, 1000, 50),
       seq(-7000, 2000, 50),
@@ -95,6 +97,11 @@ moving_origin_grid <- furrr::future_map_dfr(
             search_z >= start,
             search_z < end
           )
+        age_median_io <- dplyr::filter(
+          age_median_origin_per_region,
+          search_z >= start,
+          search_z < end
+        )
         if (nrow(io) > 0) {
           tibble::tibble(
             z = mean(c(start, end)),
@@ -103,7 +110,14 @@ moving_origin_grid <- furrr::future_map_dfr(
             mean_angle_deg = mobest::vec2deg(
               c(mean(io$origin_x - io$search_x), mean(io$origin_y - io$search_y))
             ),
-            std_spatial_distance = std(io$spatial_distance)
+            # version based on the age resampling runs
+            #std_spatial_distance = std(io$spatial_distance)
+            # version based on the number of individual observations
+            std_spatial_distance = if (nrow(age_median_io) > 1) {
+              std(age_median_io$spatial_distance)
+            } else {
+              Inf
+            }
           )
         } else {
           tibble::tibble(
