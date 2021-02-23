@@ -137,19 +137,6 @@ moving_origin_grid <- furrr::future_map_dfr(
 #### mobility estimator curves ####
 
 p_estimator <- ggplot() +
-  geom_point(
-    data = janno_final,
-    aes(x = Date_BC_AD_Median_Derived, y = 0),
-    shape = "|"
-  ) +
-  geom_rect(
-    data = no_data_windows,
-    aes(
-      xmin = min_date_not_covered, xmax = max_date_not_covered,
-      ymin = -300, ymax = 3
-    ),
-    alpha = 0.3, fill = "red"
-  ) +
   geom_vline(
     data = data.frame(x = c(-5500, -2700, 100)),
     aes(xintercept = x),
@@ -185,6 +172,27 @@ p_estimator <- ggplot() +
     mapping = aes(x = z, y = mean_spatial_distance, color = mean_angle_deg),
     size = 0.4
   ) +
+  geom_rect(
+    data = tibble::tibble(xmin = -Inf, ymin = -Inf, ymax = 0, xmax = Inf),
+    mapping = aes(
+      xmin = xmin, xmax = xmax,
+      ymin = ymin, ymax = ymax
+    ),
+    fill = "white"
+  ) +
+  geom_point(
+    data = janno_final,
+    aes(x = Date_BC_AD_Median_Derived, y = -100),
+    shape = "|"
+  ) +
+  geom_rect(
+    data = no_data_windows,
+    aes(
+      xmin = min_date_not_covered, xmax = max_date_not_covered,
+      ymin = -150, ymax = -50
+    ),
+    alpha = 0.3, fill = "red"
+  ) +
   theme_bw() +
   theme(
     legend.position = "bottom",
@@ -198,7 +206,7 @@ p_estimator <- ggplot() +
   ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(
-    ylim = c(0, 2000)
+    ylim = c(-100, 2000)
     #ylim = c(0, max(origin_grid$spatial_distance, na.rm = T))
   )
 
