@@ -96,8 +96,8 @@ moving_origin_grid <- furrr::future_map_dfr(
     age_median_origin_per_region <- origin_grid_median %>%
       dplyr::filter(region_id == region)
     purrr::map2_df(
-      seq(-8000, 1000, moving_window_step_resolution),
-      seq(-7000, 2000, moving_window_step_resolution),
+      seq(-8000, 1500, moving_window_step_resolution),
+      seq(-7500, 2000, moving_window_step_resolution),
       function(start, end) {
         io <- dplyr::filter(
             origin_per_region,
@@ -134,7 +134,7 @@ moving_origin_grid <- furrr::future_map_dfr(
           tibble::tibble(
             z = mean(c(start, end)),
             region_id = region,
-            undirected_mean_spatial_distance = NA, # just for plotting
+            undirected_mean_spatial_distance = NA,
             directed_mean_spatial_distance = NA,
             mean_angle_deg = NA,
             std_spatial_distance = Inf
