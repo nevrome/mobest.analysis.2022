@@ -86,6 +86,7 @@ mean_origin <- origin_grid %>%
 # moving average
 std <- function(x) sd(x)/sqrt(length(x))
 
+moving_window_step_resolution <- 50
 future::plan(future::multisession)
 moving_origin_grid <- furrr::future_map_dfr(
   unique(origin_grid$region_id),
@@ -95,8 +96,8 @@ moving_origin_grid <- furrr::future_map_dfr(
     age_median_origin_per_region <- origin_grid_median %>%
       dplyr::filter(region_id == region)
     purrr::map2_df(
-      seq(-8000, 1000, 50),
-      seq(-7000, 2000, 50),
+      seq(-8000, 1000, moving_window_step_resolution),
+      seq(-7000, 2000, moving_window_step_resolution),
       function(start, end) {
         io <- dplyr::filter(
             origin_per_region,
@@ -133,9 +134,10 @@ moving_origin_grid <- furrr::future_map_dfr(
           tibble::tibble(
             z = mean(c(start, end)),
             region_id = region,
+            undirected_mean_spatial_distance = NA, # just for plotting
             directed_mean_spatial_distance = NA,
             mean_angle_deg = NA,
-            std_spatial_distance = NA
+            std_spatial_distance = Inf
           )
         }
       }
@@ -143,6 +145,23 @@ moving_origin_grid <- furrr::future_map_dfr(
   }
 )
 
+# no data windows
+no_data_windows <- moving_origin_grid %>%
+  dplyr::group_by(region_id) %>% 
+  dplyr::mutate(
+    usd = tidyr::replace_na(undirected_mean_spatial_distance, 0),
+    cumsum_undir_dist = cumsum(usd)
+  ) %>%
+  dplyr::filter(
+    is.na(undirected_mean_spatial_distance)
+  ) %>%
+  dplyr::group_by(region_id, cumsum_undir_dist) %>%
+  dplyr::summarise(
+    min_date_not_covered = min(z) - moving_window_step_resolution,
+    max_date_not_covered = max(z) + moving_window_step_resolution,
+    .groups = "drop"
+  ) %>%
+  dplyr::select(-cumsum_undir_dist)
 
 #### mobility estimator curves ####
 
@@ -166,6 +185,17 @@ p_estimator <- ggplot() +
     values = region_id_shapes,
     guide = F,
     na.value = 4
+  ) +
+  geom_rect(
+    data = no_data_windows,
+    mapping = aes(
+      ymax = Inf,
+      ymin = -Inf,
+      xmin = min_date_not_covered,
+      xmax = max_date_not_covered
+    ),
+    fill = "lightgrey",
+    alpha = 0.7
   ) +
   geom_ribbon(
     data = moving_origin_grid,
@@ -204,6 +234,7 @@ p_estimator <- ggplot() +
   ylab("spatial distance to \"origin\" (undirected mean) [km]") +
   scale_color_gradientn(
     colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
+    na.value = NA,
     guide = F
   ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
