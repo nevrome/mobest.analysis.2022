@@ -3,12 +3,12 @@ library(ggplot2)
 
 #### data ####
 
+# curves
 load("data/poseidon_data/janno_final.RData")
-load("data/plot_reference_data/no_data_windows.RData")
-load("data/plot_reference_data/no_data_windows_yearwise.RData")
 load("data/origin_search/origin_grid_median.RData")
 load("data/origin_search/age_resampling+one_kernel_setting/origin_grid.RData")
 
+# maps
 load("data/spatial/mobility_regions.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
@@ -17,6 +17,7 @@ load("data/plot_reference_data/region_id_shapes.RData")
 
 #### prepare main table ####
 
+# age median data
 origin_grid_median <- origin_grid_median %>% 
   dplyr::mutate(
     spatial_distance = spatial_distance/1000
@@ -46,6 +47,7 @@ origin_region_ids <- origin_grid_median %>%
 
 origin_grid_median$origin_region_id <- mobility_regions$region_id[origin_region_ids]
 
+# age resampling data
 origin_grid <- origin_grid %>% 
   dplyr::mutate(
     spatial_distance = spatial_distance/1000
@@ -69,7 +71,11 @@ origin_grid <- origin_grid %>%
 mean_origin <- origin_grid %>%
   dplyr::group_by(region_id, search_z_cut) %>%
   dplyr::summarise(
-    mean_spatial_distance = mean(spatial_distance),
+    undirected_mean_spatial_distance = mean(spatial_distance),
+    directed_mean_spatial_distance = sqrt(
+      mean(search_x - origin_x)^2 +
+        mean(search_y - origin_y)^2
+    ) / 1000,
     mean_angle_deg = mobest::vec2deg(c(mean(origin_x - search_x), mean(origin_y - search_y)))
   ) %>%
   dplyr::ungroup() %>%
@@ -106,7 +112,11 @@ moving_origin_grid <- furrr::future_map_dfr(
           tibble::tibble(
             z = mean(c(start, end)),
             region_id = region,
-            mean_spatial_distance = mean(io$spatial_distance),
+            undirected_mean_spatial_distance = mean(io$spatial_distance),
+            directed_mean_spatial_distance = sqrt(
+              mean(io$search_x - io$origin_x)^2 +
+                mean(io$search_y - io$origin_y)^2
+            ) / 1000,
             mean_angle_deg = mobest::vec2deg(
               c(mean(io$origin_x - io$search_x), mean(io$origin_y - io$search_y))
             ),
@@ -123,7 +133,7 @@ moving_origin_grid <- furrr::future_map_dfr(
           tibble::tibble(
             z = mean(c(start, end)),
             region_id = region,
-            mean_spatial_distance = NA,
+            directed_mean_spatial_distance = NA,
             mean_angle_deg = NA,
             std_spatial_distance = NA
           )
@@ -161,15 +171,15 @@ p_estimator <- ggplot() +
     data = moving_origin_grid,
     mapping = aes(
       x = z,
-      ymin = mean_spatial_distance - 2*std_spatial_distance,
-      ymax = mean_spatial_distance + 2*std_spatial_distance
+      ymin = undirected_mean_spatial_distance - 2*std_spatial_distance,
+      ymax = undirected_mean_spatial_distance + 2*std_spatial_distance
     ),
     fill = "lightgrey",
     alpha = 0.7
   ) +
   geom_line(
     data = moving_origin_grid,
-    mapping = aes(x = z, y = mean_spatial_distance, color = mean_angle_deg),
+    mapping = aes(x = z, y = undirected_mean_spatial_distance, color = mean_angle_deg),
     size = 0.4
   ) +
   geom_rect(
@@ -185,21 +195,13 @@ p_estimator <- ggplot() +
     aes(x = Date_BC_AD_Median_Derived, y = -100),
     shape = "|"
   ) +
-  geom_rect(
-    data = no_data_windows,
-    aes(
-      xmin = min_date_not_covered, xmax = max_date_not_covered,
-      ymin = -150, ymax = -50
-    ),
-    alpha = 0.3, fill = "red"
-  ) +
   theme_bw() +
   theme(
     legend.position = "bottom",
     axis.text.x = element_text(angle = 40, hjust = 1)
   ) +
   xlab("time in years calBC/calAD") +
-  ylab("spatial distance to \"origin\" [km]") +
+  ylab("spatial distance to \"origin\" (undirected mean) [km]") +
   scale_color_gradientn(
     colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
     guide = F
@@ -252,18 +254,18 @@ p_map <- ggplot() +
     size = 0.4
   ) +
   geom_text(
-    data = mobility_maps_center %>% dplyr::filter(!is.na(mean_spatial_distance)),
+    data = mobility_maps_center %>% dplyr::filter(!is.na(directed_mean_spatial_distance)),
     mapping = aes(
       x = x, y = y, 
       color = mean_angle_deg, 
       angle = mean_angle_deg_text,
-      size = mean_spatial_distance
+      size = directed_mean_spatial_distance
     ),
     label="\u2191"
   ) +
   scale_size_continuous(
-    range = c(3, 12), name = "spatial distance to \"origin\" [km]",
-    breaks = round(diff(range(mobility_maps_center$mean_spatial_distance, na.rm = T))/5, -2)*(1:5),
+    range = c(3, 12), name = "spatial distance to \"origin\"\n(directed mean) [km]",
+    breaks = round(diff(range(mobility_maps_center$directed_mean_spatial_distance, na.rm = T))/5, -2)*(1:5),
     guide = guide_legend(nrow = 1, label.position = "bottom")
   ) +
   scale_color_gradientn(
@@ -328,7 +330,7 @@ p <- cowplot::plot_grid(
 )
 
 ggsave(
-  paste0("plots/figure_5_mobility_curves-age_resampling+one_kernel_setting.png"),
+  paste0("plots/figure_5_mobility_curves-age_resampling+one_kernel_setting2.png"),
   plot = p,
   device = "png",
   scale = 0.5,
