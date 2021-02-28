@@ -1,12 +1,36 @@
 library(magrittr)
 
 load("data/poseidon_data/janno_final.RData")
-load("data/gpr/interpol_grid_median_scs200_tl200.RData")
-inter <- interpol_grid %>%
-  dplyr::filter(
-    dependent_var_id == "C1",
-    kernel_setting_id == "ds600_dt300_g001",
+load("data/spatial/area.RData")
+
+model_grid <- mobest::create_model_grid(
+  independent = mobest::create_spatpos_multi(
+    id = janno_final$Individual_ID,
+    x = list(janno_final$x),
+    y = list(janno_final$y),
+    z = list(janno_final$Date_BC_AD_Median_Derived),
+    it = "age_median"
+  ),
+  dependent = mobest::create_obs(
+    C1 = janno_final$C1
+  ),
+  kernel = mobest::create_kernset_multi(
+    d = list(c(500000, 500000, 800)), 
+    g = 0.08, 
+    on_residuals = T, 
+    auto = F,
+    it = "ds500_dt800_g008"
+  ),
+  prediction_grid = list(
+    scs100_tl50 = mobest::prediction_grid_for_spatiotemporal_area(
+      area,
+      spatial_cell_size = 100000,
+      temporal_layers = seq(-8000, 1500, 300)
+    )
   )
+)
+
+interpol_grid <- mobest::run_model_grid(model_grid)
 
 threed <- janno_final %>%
   dplyr::transmute(
@@ -18,7 +42,7 @@ threed <- janno_final %>%
     ]
   )
 
-threedinter <- inter %>%
+threedinter <- interpol_grid %>%
   dplyr::mutate(
     order = findInterval(mean, sort(mean)),
     mean_limited = ifelse(
@@ -36,7 +60,7 @@ threedinter <- inter %>%
     color = viridis::viridis(50)[
       as.numeric(cut(mean_limited, breaks = 50))
     ],
-    alpha = (1 - (sd - min(sd)) / (max(sd) - min(sd))) * 3
+    alpha = (1 - (sd - min(sd)) / (max(sd) - min(sd))) * 0.7
   )
 
 # plot
