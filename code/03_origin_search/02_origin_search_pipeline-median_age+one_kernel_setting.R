@@ -30,7 +30,7 @@ model_grid <- mobest::create_model_grid(
     scs100_tl50 = mobest::prediction_grid_for_spatiotemporal_area(
       area,
       spatial_cell_size = 100000,
-      temporal_layers = seq(-8000, 1500, 50)
+      temporal_layers = seq(-7500, 1500, 50)
     )
   )
 )
@@ -108,24 +108,28 @@ save(interpol_grid, file = "data/gpr/interpol_grid_median.RData")
 
 #### spatial origin ####
 
-janno_post_7500 <- janno_final %>% dplyr::filter(
-  Date_BC_AD_Median_Derived >= -7500
-)
+janno_search <- janno_final %>%
+  dplyr::mutate(
+    search_z = Date_BC_AD_Median_Derived
+  ) %>% dplyr::filter(
+    search_z >= -7500 &
+      search_z <= 1500
+  )
 
 origin_grid_median <- mobest::search_spatial_origin(
   independent = mobest::create_spatpos_multi(
-    id = janno_post_7500$Individual_ID,
-    x = list(janno_post_7500$x),
-    y = list(janno_post_7500$y),
-    z = list(janno_post_7500$Date_BC_AD_Median_Derived),
+    id = janno_search$Individual_ID,
+    x = list(janno_search$x),
+    y = list(janno_search$y),
+    z = list(janno_search$search_z),
     it = "age_median"
   ),
   dependent = mobest::create_obs(
-    C1 = janno_post_7500$C1,
-    C2 = janno_post_7500$C2
+    C1 = janno_search$C1,
+    C2 = janno_search$C2
   ),
   interpol_grid = interpol_grid,
-  rearview_distance = 300
+  rearview_distance = 0
 )
 
 # origin_grid_median <- origin_grid_median %>%

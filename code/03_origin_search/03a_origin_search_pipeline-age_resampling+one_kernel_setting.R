@@ -1,4 +1,4 @@
-# sbatch code/mobility_estimation/slurm_05_mobility_estimation_pipeline_age_resampling.sh
+# qsub code/03_origin_search/sge_origin_search.sh
 
 library(magrittr)
 
@@ -38,7 +38,7 @@ model_grid <- mobest::create_model_grid(
     scs100_tl50 = mobest::prediction_grid_for_spatiotemporal_area(
       area,
       spatial_cell_size = 100000,
-      temporal_layers = seq(-8000, 1500, 50)
+      temporal_layers = seq(-7500, 1500, 50)
     )
   )
 )
@@ -49,24 +49,28 @@ interpol_grid <- mobest::run_model_grid(model_grid)
 
 #### spatial origin ####
 
-janno_post_7500 <- janno_final %>% dplyr::filter(
-  Date_BC_AD_Median_Derived >= -7500
-)
+janno_search <- janno_final %>%
+  dplyr::mutate(
+    search_z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })
+  ) %>% dplyr::filter(
+    search_z >= -7500 &
+      search_z <= 1500
+    )
 
 origin_grid <- mobest::search_spatial_origin(
   independent = mobest::create_spatpos_multi(
-    id = janno_post_7500$Individual_ID,
-    x = list(janno_post_7500$x),
-    y = list(janno_post_7500$y),
-    z = list(sapply(janno_post_7500$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })),
+    id = janno_search$Individual_ID,
+    x = list(janno_search$x),
+    y = list(janno_search$y),
+    z = list(janno_search$search_z),
     it = "age_sample"
   ),
   dependent = mobest::create_obs(
-    C1 = janno_post_7500$C1,
-    C2 = janno_post_7500$C2
+    C1 = janno_search$C1,
+    C2 = janno_search$C2
   ),
   interpol_grid = interpol_grid,
-  rearview_distance = 300
+  rearview_distance = 0
 )
 
 origin_grid$age_resampling_run <- age_resampling_run
