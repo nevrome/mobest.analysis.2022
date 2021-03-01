@@ -219,7 +219,7 @@ ggsave(
   plot = p,
   device = "png",
   scale = 0.5,
-  dpi = 500,
+  dpi = 300,
   width = 700, height = 400, units = "mm",
   limitsize = F
 )
