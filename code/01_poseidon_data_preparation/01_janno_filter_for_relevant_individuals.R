@@ -12,7 +12,7 @@ janno_raw_spatial_positions <- janno_raw %>%
   )
 
 # process age information
-janno_age <- janno_raw_spatial_positions %>% poseidon2::process_age()
+janno_age <- janno_raw_spatial_positions %>% poseidonR::process_age()
 
 # temporal filter
 janno_age_filtered <- janno_age %>% dplyr::filter(
