@@ -117,7 +117,7 @@ moving_origin_grid <- furrr::future_map_dfr(
             # version based on the age resampling runs
             #std_spatial_distance = std(io$spatial_distance)
             # version based on the number of individual observations
-            std_spatial_distance = if (nrow(age_median_io) >= 5) {
+            std_spatial_distance = if (nrow(age_median_io) >= 3) {
               std(age_median_io$spatial_distance)
             } else {
               Inf
