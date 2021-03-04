@@ -4,7 +4,6 @@ library(ggplot2)
 load("data/gpr/interpol_grid_median.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
-load("data/plot_reference_data/age_group_id_shapes.RData")
 load("data/spatial/epsg102013.RData")
 load("data/poseidon_data/janno_final.RData")
 
@@ -12,49 +11,38 @@ janno_final <- janno_final %>%
   dplyr::mutate(
     z = as.numeric(as.character(cut(
       Date_BC_AD_Median_Derived, 
-      breaks = c(8000, seq(-6500, 500, 1000), 2000), 
-      labels = seq(-7000, 1000, 1000),
+      breaks = seq(-8000, 2000, 2000), 
+      labels = seq(-7000, 1000, 2000),
       include.lowest = T
     )))
-  ) %>%
-  dplyr::filter(
-    z %in% seq(-7000, 0, 1000)
   )
-
-igprep <- interpol_grid %>%
-  dplyr::filter(
-    dependent_var_id %in% "C1",
-    kernel_setting_id == "ds600_dt300_g001",
-    z %in% seq(-7000, 0, 1000)
-  ) 
 
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
 
-p <- igprep %>%
+p_C1 <- interpol_grid %>%
+  dplyr::filter(
+    dependent_var_id %in% "C1",
+    z %in% seq(-7000, 1000, 2000)
+  ) %>%
   ggplot() +
-  geom_sf(data = extended_area, fill = "white") +
+  geom_sf(data = extended_area, fill = "black") +
   geom_raster(aes(x, y, fill = mean)) +
-  facet_wrap(dplyr::vars(z), nrow = 2) +
+  facet_wrap(~z, nrow = 2) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
-  geom_point(
-    data = . %>% dplyr::filter(sd > (0.5 * diff(c(min(janno_final$C1), max(janno_final$C1))))),
-    aes(x, y), alpha = 1, color = "red", shape = 4
-  ) +
+  # geom_point(
+  #   data = . %>% dplyr::filter(sd > (0.15 * diff(range(mean)))),
+  #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
+  # ) +
   geom_point(
     data = janno_final,
-    aes(x, y, shape = age_group_id),
-    size = 1.5,
+    aes(x, y),
+    size = 0.5,
     color = "white"
   ) +
-  scale_shape_manual(
-    values = age_group_id_shapes,
-    guide = FALSE
-  ) +
   scale_fill_viridis_c(
-    limits = c(min(janno_final$C1), max(janno_final$C1)), 
-    oob = scales::squish
+    breaks = seq(-0.1, 0.1, 0.02)
   ) +
   theme_bw() +
   coord_sf(
@@ -62,29 +50,33 @@ p <- igprep %>%
     crs = epsg102013
   ) +
   guides(
-    fill = guide_colorbar(title = "Prediction", barwidth = 30)
+    fill = guide_colorbar(title = "Prediction C1  ", barwidth = 25)
   ) +
   theme(
-    plot.title = element_text(size = 30, face = "bold"),
     legend.position = "bottom",
-    legend.title = element_text(size = 20, face = "bold"),
+    legend.box = "horizontal",
+    legend.title = element_text(size = 12),
     axis.title = element_blank(),
     axis.text = element_blank(),
-    legend.text = element_text(size = 20),
-    panel.grid.major = element_line(colour = "grey", size = 0.3),
-    strip.text.x = element_text(size = 20),
+    legend.text = element_text(size = 12),
+    strip.text = element_text(size = 15),
     axis.ticks = element_blank(),
     panel.background = element_rect(fill = "#BFD5E3")
   )
 
-p %>% 
-  ggsave(
-    "plots/interpolation_map_matrix.jpeg",
-    plot = .,
-    device = "jpeg",
-    scale = 0.7,
-    dpi = 300,
-    width = 750, height = 280, units = "mm",
-    limitsize = F
-  )
+
+# merge plots
+C1_legend <- cowplot::get_legend(p_C1)
+p_C1 <- p_C1 + theme(legend.position = "none")
+
+
+ggsave(
+  "plots/interpolation_map_matrix.jpeg",
+  plot = p_C1,
+  device = "jpeg",
+  scale = 0.5,
+  dpi = 300,
+  width = 600, height = 280, units = "mm",
+  limitsize = F
+)
 
