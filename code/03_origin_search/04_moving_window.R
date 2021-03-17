@@ -20,7 +20,7 @@ origin_grid_median_modified <- origin_grid_median %>%
     by = c("search_id" = "Individual_ID")
   )
 
-origin_region_ids <- origin_grid_median_modified %>% 
+origin_region_ids <- origin_grid_median_modified %>%
   sf::st_as_sf(
     coords = c("origin_x", "origin_y"),
     crs = epsg102013
@@ -69,9 +69,9 @@ mean_origin <- origin_grid %>%
       mean(search_x - origin_x)^2 +
         mean(search_y - origin_y)^2
     ) / 1000,
-    mean_angle_deg = mobest::vec2deg(c(mean(origin_x - search_x), mean(origin_y - search_y)))
+    mean_angle_deg = mobest::vec2deg(c(mean(origin_x - search_x), mean(origin_y - search_y))),
+    .groups = "drop"
   ) %>%
-  dplyr::ungroup() %>%
   dplyr::filter(
     !is.na(region_id)
   )
@@ -115,10 +115,17 @@ moving_origin_grid <- furrr::future_map_dfr(
               c(mean(io$origin_x - io$search_x), mean(io$origin_y - io$search_y))
             ),
             # version based on the age resampling runs
-            #std_spatial_distance = std(io$spatial_distance)
-            # version based on the number of individual observations
+            # std_spatial_distance = std(io$spatial_distance)
+            # this does not make much sense
+            # therefore: version based on the number of individual observations
+            # with median age
             std_spatial_distance = if (nrow(age_median_io) >= 3) {
               std(age_median_io$spatial_distance)
+            } else {
+              Inf
+            },
+            sd_spatial_distance = if (nrow(age_median_io) >= 3) {
+              sd(age_median_io$spatial_distance)
             } else {
               Inf
             }
@@ -130,7 +137,8 @@ moving_origin_grid <- furrr::future_map_dfr(
             undirected_mean_spatial_distance = NA,
             directed_mean_spatial_distance = NA,
             mean_angle_deg = NA,
-            std_spatial_distance = Inf
+            std_spatial_distance = Inf,
+            sd_spatial_distance = Inf
           )
         }
       }

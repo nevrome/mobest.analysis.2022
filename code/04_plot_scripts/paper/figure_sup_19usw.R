@@ -7,7 +7,6 @@ library(ggplot2)
 load("data/poseidon_data/janno_final.RData")
 load("data/origin_search/origin_grid_median_modified.RData")
 load("data/origin_search/moving_origin_grid.RData")
-load("data/origin_search/mean_origin.RData")
 load("data/origin_search/no_data_windows.RData")
 
 # maps
@@ -35,6 +34,9 @@ purrr::walk(
     
     #### mobility estimator curves ####
     
+    alpha_standard_deviation <- 0.3
+    alpha_standard_error <- 0.7
+    
     p_estimator <- ggplot() +
       ggpointgrid::geom_pointgrid(
         data = cur_origin_grid_median_modified,
@@ -60,7 +62,18 @@ purrr::walk(
           xmax = max_date_not_covered
         ),
         fill = "lightgrey",
-        alpha = 0.7
+        # https://stackoverflow.com/questions/3658804/formula-for-alpha-value-when-blending-two-transparent-colors
+        alpha = alpha_standard_error + (1.0 - alpha_standard_error) * alpha_standard_deviation
+      ) +
+      geom_ribbon(
+        data = cur_moving_origin_grid,
+        mapping = aes(
+          x = z,
+          ymin = undirected_mean_spatial_distance - 2*sd_spatial_distance,
+          ymax = undirected_mean_spatial_distance + 2*sd_spatial_distance
+        ),
+        fill = "lightgrey",
+        alpha = alpha_standard_deviation
       ) +
       geom_ribbon(
         data = cur_moving_origin_grid,
@@ -70,7 +83,7 @@ purrr::walk(
           ymax = undirected_mean_spatial_distance + 2*std_spatial_distance
         ),
         fill = "lightgrey",
-        alpha = 0.7
+        alpha = alpha_standard_error
       ) +
       geom_line(
         data = cur_moving_origin_grid,
@@ -155,7 +168,7 @@ purrr::walk(
       )
     
     ggsave(
-      paste0(paste0("plots/figure_sup_19_", gsub(" ", "_", as.character(x)) ,".png")),
+      paste0(paste0("plots/figure_sup_mobility_", gsub(" ", "_", as.character(x)) ,".png")),
       plot = p,
       device = "png",
       scale = 0.35,
