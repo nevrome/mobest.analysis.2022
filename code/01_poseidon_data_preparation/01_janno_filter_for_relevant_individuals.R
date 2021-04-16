@@ -3,7 +3,7 @@ library(magrittr)
 load("data/spatial/epsg102013.RData")
 load("data/spatial/research_area.RData")
 
-janno_raw <- poseidonR::read_janno("/projects1/poseidon/repo/ancient")
+janno_raw <- poseidonR::read_janno("data/poseidon_data/poseidon_full/")
 
 # lacking spatial info filter
 janno_raw_spatial_positions <- janno_raw %>%
