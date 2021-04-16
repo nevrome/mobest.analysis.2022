@@ -1,3 +1,5 @@
+# ../singularity/sge_nevrome_mobest.sh 16 50 code/02_parameter_estimation/laGP_maximum_likelihood_estimation/isotropic_mle.R
+
 library(magrittr)
 library(laGP)
 
@@ -14,7 +16,7 @@ mle_out <- mobest::laGP_mle_sequence_isotropic_fixed_g(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
-  iterations = 2,
+  iterations = 50,
   g = 0.08,
   space_time_scaling_factor_sequence = c(seq(0.1, 0.9, 0.1), 1, seq(2, 10, 1))
 )

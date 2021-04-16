@@ -1,3 +1,5 @@
+source("code/technical_helpers.R")
+
 source("code/03_origin_search/01_interpolation_at specific_places_median_age+one_kernel_setting.R")
 
 source("code/03_origin_search/02_origin_search_pipeline-median_age+one_kernel_setting.R")
