@@ -1,5 +1,21 @@
 basepath <- "/mnt/archgen/users/schmid/mobest.analysis.2020"
 
+cluster_script <- function(path) {
+  cluster_run(paste0("cd ", basepath, " && ./", path))
+}
+
+cluster_qsub_script <- function(path) {
+  cluster_run(paste0("cd ", basepath, " && qsub ", path))
+}
+
+cluster_run <- function(command) {
+  rstudioapi::terminalExecute(paste0(
+    "ssh -oProxyJump=clemens_schmid@sshgw.eva.mpg.de ", 
+    "clemens_schmid@daghead1.eva.mpg.de -t ",
+    "\'bash -l -c \"", command, "\"\'"
+  ))
+}
+
 cluster_up <- function(path) {
   if (dir.exists(path)) { 
     scp <- "scp -r"
