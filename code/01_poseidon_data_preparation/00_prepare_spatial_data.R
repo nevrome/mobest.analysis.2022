@@ -1,17 +1,18 @@
 library(magrittr)
 
-# epsg102013 <- paste(
-#   "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30",
-#   "+lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs"
-# )
+#### research area ####
+
+# load manually crafted research area shape file
+research_area <- sf::st_read(
+  "data_tracked/research_area/research_area.gpkg", quiet = TRUE
+)
+save(research_area, file = "data/spatial/research_area.RData")
+
+#### coordinate reference system ####
 
 # ETRS89 Lambert Azimuthal Equal-Area projection "European grid"
 # https://www.eea.europa.eu/data-and-maps/data/eea-reference-grids-2
-epsg3035 <- paste(
-  "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80",
-  "+towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-)
-
+epsg3035 <- sf::st_crs(research_area)
 save(epsg3035, file = "data/spatial/epsg3035.RData")
 
 #### natural earth data ####
@@ -40,15 +41,6 @@ save(rivers, file = "data/spatial/rivers.RData")
 load("data_tracked/natural_earth_geodata/lakes.RData")
 save(lakes, file = "data/spatial/lakes.RData")
 
-#### research area ####
-
-# load manually crafted research area shape file, transform it to
-# EPSG:3035 and store the result
-research_area <- sf::st_read(
-  "data_tracked/research_area/research_area.shp", quiet = TRUE
-) %>% sf::st_transform(epsg3035)
-save(research_area, file = "data/spatial/research_area.RData")
-
 #### area ####
 
 # load natural earth data land outline shape, crop it approximately to
@@ -63,8 +55,8 @@ save(area, file = "data/spatial/area.RData")
 
 # crop land outline to enlarged bbox of research area
 bb <- sf::st_bbox(research_area)
-bb[1:2] <- bb[1:2] - 500000
-bb[3:4] <- bb[3:4] + 500000
+bb[1:2] <- bb[1:2] - 20000
+bb[3:4] <- bb[3:4] + 20000
 extended_research_area <- bb %>% sf::st_as_sfc()
 extended_area <- sf::st_intersection(sf::st_buffer(land_outline_small, 0), extended_research_area)
 save(extended_area, file = "data/spatial/extended_area.RData")
@@ -74,22 +66,22 @@ save(extended_area, file = "data/spatial/extended_area.RData")
 # load manually crafted mobility regions shape file, transform it to
 # EPSG:3035 and store the result
 mobility_regions <- sf::st_read(
-  "data_tracked/mobility_regions/mobility_regions.shp", quiet = TRUE
-) %>% sf::st_transform(epsg3035)
+  "data_tracked/mobility_regions/mobility_regions.gpkg", quiet = TRUE
+)
+mobility_region_names <- c(
+  "Central Europe",
+  "Pannonian Basin",
+  "Southeastern Britain",
+  "Northeastern Iberia"
+)
 mobility_regions$region_id <- factor(
-  mobility_regions$region_id, levels = c(
-    "Britain and Ireland",
-    "Southern Scandinavia",
-    "Baltics",
-    "Eastern Europe",
-    "France",
-    "Central Europe",
-    "Southeastern Europe",
-    "Caucasus",
-    "Iberia",
-    "Italy",
-    "Turkey",
-    "Levant"
-  )
+  mobility_region_names, levels = mobility_region_names
 )
 save(mobility_regions, file = "data/spatial/mobility_regions.RData")
+
+# library(ggplot2)
+# ggplot() +
+#   geom_sf(data = extended_area) +
+#   geom_sf(data = research_area, fill = NA) +
+#   geom_sf(data = mobility_regions, aes(color = region_id), fill = NA)
+
