@@ -8,6 +8,15 @@ cluster_qsub_script <- function(path) {
   cluster_run(paste0("cd ", basepath, " && qsub ", path))
 }
 
+cluster_singularity_script <- function(path, cores = 16, memory = 50) {
+  cluster_run(paste0(
+    "cd ", basepath, " && ",
+    "/mnt/archgen/users/schmid/singularity/sge_nevrome_mobest.sh ", 
+    cores, " ", memory, " ",
+    path
+  ))
+}
+
 cluster_run <- function(command) {
   rstudioapi::terminalExecute(paste0(
     "ssh -oProxyJump=clemens_schmid@sshgw.eva.mpg.de ", 
