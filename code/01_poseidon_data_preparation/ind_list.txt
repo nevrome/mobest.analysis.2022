@@ -304,6 +304,7 @@
 <GRG056>
 <GRG057>
 <GW1001>
+<HAN004>
 <HBS002>
 <HBS004>
 <HBS005>
@@ -1594,6 +1595,7 @@
 <ISB001>
 <ISC001>
 <IV3002>
+<IVA001>
 <Jeb8>
 <JP14>
 <KBD001>
@@ -2244,6 +2246,7 @@
 <SNPRA62.fixedHeader>
 <SNPRA63.fixedHeader>
 <SNPRA64.fixedHeader>
+<SOP002>
 <SRA62>
 <StoraForvar11.SG>
 <Stuttgart_published.DG>

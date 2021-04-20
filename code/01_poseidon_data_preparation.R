@@ -14,4 +14,4 @@ cluster_down("data/poseidon_data/mds/poseidon_extracted.pruned.mds")
 
 source("./code/01_poseidon_data_preparation/04_prepare_final_dataset.R")
 
-# TODO: upload janno_final!
+cluster_up("data/poseidon_data/janno_final.RData")
