@@ -4,6 +4,14 @@ epsg102013 <- paste(
   "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30",
   "+lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs"
 )
+
+# ETRS89 Lambert Azimuthal Equal-Area projection "European grid"
+# https://www.eea.europa.eu/data-and-maps/data/eea-reference-grids-2
+epsg3035 <- paste(
+  "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80",
+  "+towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+)
+
 save(epsg102013, file = "data/spatial/epsg102013.RData")
 
 #### natural earth data ####
