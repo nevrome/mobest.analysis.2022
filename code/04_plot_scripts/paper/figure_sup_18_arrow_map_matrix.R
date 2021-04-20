@@ -3,7 +3,7 @@ library(ggplot2)
 
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
-load("data/spatial/epsg102013.RData")
+load("data/spatial/epsg3035.RData")
 load("data/mobility_estimation/mobility_proxy_median.RData")
 load("data/plot_reference_data/region_id_colors.RData")
 load("data/spatial/mobility_regions.RData")
@@ -52,7 +52,7 @@ p_arrows <- ggplot() +
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
+    crs = epsg3035
   ) +
   scale_color_manual(
     values = region_id_colors

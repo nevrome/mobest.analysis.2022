@@ -5,7 +5,7 @@ load("data/gpr/interpol_grid_median.RData")
 load("data/gpr/interpol_grid_median_with_change.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
-load("data/spatial/epsg102013.RData")
+load("data/spatial/epsg3035.RData")
 load("data/poseidon_data/janno_final.RData")
 load("data/mobility_estimation/mobility_proxy_median.RData")
 #load("data/mobility_estimation/alternative_mobility_proxy_median.RData")
@@ -39,7 +39,7 @@ p_Meas <- ggplot() +
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
+    crs = epsg3035
   ) +
   theme(
     legend.position = "none",
@@ -72,7 +72,7 @@ p_C1 <- interpol_grid %>%
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
+    crs = epsg3035
   ) +
   guides(
     fill = guide_colorbar(title = "Prediction C1", barwidth = 10)
@@ -112,7 +112,7 @@ p_C2 <- interpol_grid %>%
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
+    crs = epsg3035
   ) +
   guides(
     fill = guide_colorbar(title = "Prediction C2", barwidth = 10)
@@ -147,7 +147,7 @@ p_Change <- interpol_grid_with_change %>%
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
+    crs = epsg3035
   ) +
   guides(
     fill = guide_colorbar(title = "Change", barwidth = 10)
@@ -181,7 +181,7 @@ p_absolute_speed <- mobility_proxy %>%
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
+    crs = epsg3035
   ) +
   guides(
     fill = guide_colorbar(title = "Speed", barwidth = 10)
@@ -216,7 +216,7 @@ p_absolute_speed <- mobility_proxy %>%
 #   theme_bw() +
 #   coord_sf(
 #     xlim = xlimit, ylim = ylimit,
-#     crs = epsg102013
+#     crs = epsg3035
 #   ) +
 #   guides(
 #     fill = guide_colorbar(title = "Speed", barwidth = 10)

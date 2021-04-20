@@ -4,7 +4,7 @@ library(ggplot2)
 load("data/gpr/interpol_grid_median.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
-load("data/spatial/epsg102013.RData")
+load("data/spatial/epsg3035.RData")
 load("data/poseidon_data/janno_final.RData")
 
 janno_final <- janno_final %>% 
@@ -47,7 +47,7 @@ p_C1 <- interpol_grid %>%
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
+    crs = epsg3035
   ) +
   guides(
     fill = guide_colorbar(title = "Prediction C1  ", barwidth = 25)

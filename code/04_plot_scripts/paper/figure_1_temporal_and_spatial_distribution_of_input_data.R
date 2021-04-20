@@ -4,7 +4,7 @@ library(ggplot2)
 load("data/poseidon_data/janno_final.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
-load("data/spatial/epsg102013.RData")
+load("data/spatial/epsg3035.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 load("data/spatial/mobility_regions.RData")
@@ -35,7 +35,7 @@ p_map <- ggplot() +
   theme_bw() +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
-    crs = sf::st_crs(epsg102013)
+    crs = sf::st_crs(epsg3035)
   ) + 
   theme(
     axis.title = element_blank(),

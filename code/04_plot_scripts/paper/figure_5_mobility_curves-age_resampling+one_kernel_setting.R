@@ -14,7 +14,7 @@ load("data/origin_search/no_data_windows.RData")
 load("data/spatial/mobility_regions.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
-load("data/spatial/epsg102013.RData")
+load("data/spatial/epsg3035.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
 
 #### mobility estimator curves ####
@@ -167,7 +167,7 @@ p_map <- ggplot() +
   ) +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
+    crs = epsg3035
   )
 
 p_arrows_legend <- cowplot::get_legend(p_map)

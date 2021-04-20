@@ -5,7 +5,7 @@ library(magrittr)
 load("data/poseidon_data/janno_final.RData")
 load("data/origin_search/age_resampling+one_kernel_setting/origin_grid.RData")
 load("data/origin_search/origin_grid_median.RData")
-load("data/spatial/epsg102013.RData")
+load("data/spatial/epsg3035.RData")
 load("data/spatial/mobility_regions.RData")
 
 #### prepare main table ####
@@ -23,7 +23,7 @@ origin_grid_median_modified <- origin_grid_median %>%
 origin_region_ids <- origin_grid_median_modified %>%
   sf::st_as_sf(
     coords = c("origin_x", "origin_y"),
-    crs = epsg102013
+    crs = epsg3035
   ) %>%
   sf::st_intersects(
     ., mobility_regions

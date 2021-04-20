@@ -7,7 +7,7 @@ mds <- readr::read_delim("data/poseidon_data/mds/poseidon_extracted.pruned.mds",
 janno <- poseidonR::read_janno("data/poseidon_data/poseidon_extracted/poseidon_extracted.janno")
 
 load("data/spatial/mobility_regions.RData")
-load("data/spatial/epsg102013.RData")
+load("data/spatial/epsg3035.RData")
 
 janno_mds <- janno %>% 
   dplyr::left_join(

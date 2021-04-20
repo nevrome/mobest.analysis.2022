@@ -1,7 +1,7 @@
 library(magrittr)
 
 load("data/spatial/mobility_regions.RData")
-load("data/spatial/epsg102013.RData")
+load("data/spatial/epsg3035.RData")
 
 # read active data
 janno <- poseidonR::read_janno("data/poseidon_data/poseidon_extracted/poseidon_extracted.janno")
@@ -20,7 +20,7 @@ janno_mds <- janno_age %>%
 # add spatial and temporal grouping and coordinates
 janno_spatial <- janno_mds %>%
   sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = FALSE) %>%
-  sf::st_transform(crs = epsg102013)
+  sf::st_transform(crs = epsg3035)
 
 janno_spatial_regions <- janno_spatial %>% sf::st_intersection(mobility_regions)
 

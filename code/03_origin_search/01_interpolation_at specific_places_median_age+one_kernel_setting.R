@@ -4,7 +4,7 @@ library(magrittr)
 
 load("data/poseidon_data/janno_final.RData")
 load("data/spatial/area.RData")
-load("data/spatial/epsg102013.RData")
+load("data/spatial/epsg3035.RData")
 
 # individual point
 Budapest <- sf::st_as_sf(
@@ -12,35 +12,35 @@ Budapest <- sf::st_as_sf(
   coords = c("lon", "lat"),
   crs = 4326,
   remove = FALSE
-) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
+) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
 
 Tallinn <- sf::st_as_sf(
   tibble::tibble(lon = 24.74, lat = 59.44),
   coords = c("lon", "lat"),
   crs = 4326,
   remove = FALSE
-) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
+) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
 
 London <- sf::st_as_sf(
   tibble::tibble(lon = -0.11, lat = 51.50),
   coords = c("lon", "lat"),
   crs = 4326,
   remove = FALSE
-) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
+) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
 
 Jerusalem <- sf::st_as_sf(
   tibble::tibble(lon = 35.22, lat = 31.77),
   coords = c("lon", "lat"),
   crs = 4326,
   remove = FALSE
-) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
+) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
 
 Rome <- sf::st_as_sf(
   tibble::tibble(lon = 12.50, lat = 41.90),
   coords = c("lon", "lat"),
   crs = 4326,
   remove = FALSE
-) %>% sf::st_transform(crs = epsg102013) %>% sf::st_coordinates()
+) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
 
 time_points <- seq(-7500, 1500, 1000)
 n_time_points <- length(time_points) 

@@ -1,6 +1,6 @@
 library(magrittr)
 
-load("data/spatial/epsg102013.RData")
+load("data/spatial/epsg3035.RData")
 load("data/spatial/research_area.RData")
 
 janno_raw <- poseidonR::read_janno("data/poseidon_data/poseidon_full/")
@@ -26,7 +26,7 @@ janno_spatial <- janno_age_filtered %>%
     crs = sf::st_crs(4326),
     remove = FALSE
   ) %>%
-  sf::st_transform(epsg102013)
+  sf::st_transform(epsg3035)
 
 # export for QGIS: Check if the research area is still adequate
 janno_spatial %>%
@@ -73,7 +73,7 @@ janno_filtered_final %>%
     coords = c("Longitude", "Latitude"), 
     crs = sf::st_crs(4326)
   ) %>%
-  sf::st_transform(epsg102013) %>%
+  sf::st_transform(epsg3035) %>%
   dplyr::select_if(is.list %>% Negate) %>%
   sf::write_sf(dsn = "data/poseidon_data/janno_spatial_post_filter.gpkg", driver = "GPKG")
 

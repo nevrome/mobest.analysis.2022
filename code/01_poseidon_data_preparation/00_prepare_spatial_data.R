@@ -1,9 +1,9 @@
 library(magrittr)
 
-epsg102013 <- paste(
-  "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30",
-  "+lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs"
-)
+# epsg102013 <- paste(
+#   "+proj=aea +lat_1=43 +lat_2=62 +lat_0=30",
+#   "+lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs"
+# )
 
 # ETRS89 Lambert Azimuthal Equal-Area projection "European grid"
 # https://www.eea.europa.eu/data-and-maps/data/eea-reference-grids-2
@@ -12,7 +12,7 @@ epsg3035 <- paste(
   "+towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
 )
 
-save(epsg102013, file = "data/spatial/epsg102013.RData")
+save(epsg3035, file = "data/spatial/epsg3035.RData")
 
 #### natural earth data ####
 
@@ -43,19 +43,19 @@ save(lakes, file = "data/spatial/lakes.RData")
 #### research area ####
 
 # load manually crafted research area shape file, transform it to
-# EPSG:102013 and store the result
+# EPSG:3035 and store the result
 research_area <- sf::st_read(
   "data_tracked/research_area/research_area.shp", quiet = TRUE
-) %>% sf::st_transform(epsg102013)
+) %>% sf::st_transform(epsg3035)
 save(research_area, file = "data/spatial/research_area.RData")
 
 #### area ####
 
 # load natural earth data land outline shape, crop it approximately to
-# Europe, transform it to EPSG:102013, crop it to the research area and store the result
+# Europe, transform it to EPSG:3035, crop it to the research area and store the result
 land_outline_small <- land_outline %>%
   sf::st_crop(xmin = -20, ymin = 15, xmax = 75, ymax = 65) %>%
-  sf::st_transform(epsg102013)
+  sf::st_transform(epsg3035)
 area <- sf::st_intersection(sf::st_buffer(land_outline_small, 0), research_area)
 save(area, file = "data/spatial/area.RData")
 
@@ -72,10 +72,10 @@ save(extended_area, file = "data/spatial/extended_area.RData")
 #### mobility regions ####
 
 # load manually crafted mobility regions shape file, transform it to
-# EPSG:102013 and store the result
+# EPSG:3035 and store the result
 mobility_regions <- sf::st_read(
   "data_tracked/mobility_regions/mobility_regions.shp", quiet = TRUE
-) %>% sf::st_transform(epsg102013)
+) %>% sf::st_transform(epsg3035)
 mobility_regions$region_id <- factor(
   mobility_regions$region_id, levels = c(
     "Britain and Ireland",

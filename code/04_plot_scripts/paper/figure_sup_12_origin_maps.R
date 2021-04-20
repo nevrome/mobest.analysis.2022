@@ -12,7 +12,7 @@ mobility <- lapply(
 load("data/spatial/mobility_regions.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
-load("data/spatial/epsg102013.RData")
+load("data/spatial/epsg3035.RData")
 
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
@@ -79,7 +79,7 @@ p <- ggplot() +
   ) +
   coord_sf(
     xlim = xlimit, ylim = ylimit,
-    crs = epsg102013
+    crs = epsg3035
   )
 
 ggsave(
