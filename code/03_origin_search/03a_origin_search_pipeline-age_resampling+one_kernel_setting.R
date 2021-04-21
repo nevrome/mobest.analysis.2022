@@ -20,7 +20,7 @@ model_grid <- mobest::create_model_grid(
     id = janno_final$Individual_ID,
     x = list(janno_final$x),
     y = list(janno_final$y),
-    z = list(sapply(janno_final$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })),
+    z = list(Map(function(x) {x[age_resampling_run]}, janno_final$Date_BC_AD_Sample) %>% unlist()),
     it = "age_median"
   ),
   dependent = mobest::create_obs(
@@ -50,10 +50,10 @@ interpol_grid <- mobest::run_model_grid(model_grid)
 #### spatial origin ####
 
 janno_search <- janno_final %>%
-  dplyr::filter(!is.na(region_id)) %>%
   dplyr::mutate(
     search_z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })
   ) %>% dplyr::filter(
+    !is.na(region_id),
     search_z >= -7500 &
       search_z <= 1500
     )

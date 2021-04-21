@@ -18,7 +18,8 @@ origin_grid_median_modified <- origin_grid_median %>%
   dplyr::left_join(
     janno_final %>% dplyr::select(Individual_ID, region_id),
     by = c("search_id" = "Individual_ID")
-  )
+  ) %>%
+  dplyr::filter(!is.na(region_id))
 
 origin_region_ids <- origin_grid_median_modified %>%
   sf::st_as_sf(
@@ -48,7 +49,8 @@ origin_grid <- origin_grid %>%
   dplyr::left_join(
     janno_final %>% dplyr::select(Individual_ID, region_id),
     by = c("search_id" = "Individual_ID")
-  )
+  ) %>%
+  dplyr::filter(!is.na(region_id))
 
 r <- range(origin_grid$search_z)
 b <- seq(round(r[1], -3), round(r[2], -3), 200)
