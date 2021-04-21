@@ -1,5 +1,12 @@
 basepath <- "/mnt/archgen/users/schmid/mobest.analysis.2020"
 
+local_script <- function(path) {
+  rstudioapi::terminalExecute(paste0(
+    "cd ", basepath, " && ./",
+    path
+  ))
+}
+
 cluster_script <- function(path) {
   cluster_run(paste0("cd ", basepath, " && ./", path))
 }
