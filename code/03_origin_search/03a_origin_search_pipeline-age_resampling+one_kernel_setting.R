@@ -29,7 +29,7 @@ model_grid <- mobest::create_model_grid(
   ),
   kernel = mobest::create_kernset_multi(
     d = list(c(500000, 500000, 800)), 
-    g = 0.08, 
+    g = 0.06, 
     on_residuals = T, 
     auto = F,
     it = "ds500_dt800_g008"
