@@ -22,33 +22,31 @@ janno_spatial <- janno_mds %>%
   sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = FALSE) %>%
   sf::st_transform(crs = epsg3035)
 
-janno_spatial_regions <- janno_spatial %>% sf::st_intersection(mobility_regions)
+region_vector <- janno_spatial %>% 
+  sf::st_intersects(mobility_regions, sparse = FALSE) %>%
+  tibble::as_tibble() %>%
+  magrittr::set_names(as.character(mobility_regions$region_id)) %>%
+  dplyr::mutate(id = seq_len(nrow(.))) %>%
+  tidyr::pivot_longer(setdiff(everything(), one_of("id")), names_to = "region") %>%
+  dplyr::group_by(id) %>%
+  dplyr::summarise(
+    region_id = if (any(value)) { region[value] } else { NA_character_ }
+  ) %$%
+  as.character(region_id)
 
-janno_spatial_regions %>% 
-  dplyr::select_if(is.list %>% Negate) %>%
-  sf::write_sf(dsn = "data/poseidon_data/janno_spatial_filtered.gpkg", driver = "GPKG")
-
-janno_regions <- janno_spatial_regions %>%
+janno_final <- janno_spatial %>%
   dplyr::mutate(
+    region_id = region_vector,
+    age_group_id = cut(
+      Date_BC_AD_Median_Derived, 
+      breaks = c(-10000, seq(-8000, 2000, 1000)), 
+      labels = c(">-8000", paste0(seq(-8000, 1000, 1000), " - ", seq(-7000, 2000, 1000)))
+    ),
     x = sf::st_coordinates(.)[,1],
     y = sf::st_coordinates(.)[,2]
   ) %>%
   sf::st_drop_geometry()
 
-# janno_regions %>% 
-#   ggplot() + geom_bar(aes(x = region_id))
-
-janno_age_groups <- janno_regions %>%
-  dplyr::mutate(
-    age_group_id = cut(
-      Date_BC_AD_Median_Derived, 
-      breaks = c(-10000, seq(-8000, 2000, 1000)), 
-      labels = c(">-8000", paste0(seq(-8000, 1000, 1000), " - ", seq(-7000, 2000, 1000)))
-    )
-  )
-
 # finalize data
-
-janno_final <- janno_age_groups
 
 save(janno_final, file = "data/poseidon_data/janno_final.RData")
