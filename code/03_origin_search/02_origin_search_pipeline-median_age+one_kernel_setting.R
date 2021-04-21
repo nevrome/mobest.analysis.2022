@@ -109,6 +109,7 @@ save(interpol_grid, file = "data/gpr/interpol_grid_median.RData")
 #### spatial origin ####
 
 janno_search <- janno_final %>%
+  dplyr::filter(!is.na(region_id)) %>%
   dplyr::mutate(
     search_z = Date_BC_AD_Median_Derived
   ) %>% dplyr::filter(

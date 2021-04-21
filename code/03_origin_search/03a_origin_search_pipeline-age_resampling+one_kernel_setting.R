@@ -50,6 +50,7 @@ interpol_grid <- mobest::run_model_grid(model_grid)
 #### spatial origin ####
 
 janno_search <- janno_final %>%
+  dplyr::filter(!is.na(region_id)) %>%
   dplyr::mutate(
     search_z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })
   ) %>% dplyr::filter(
