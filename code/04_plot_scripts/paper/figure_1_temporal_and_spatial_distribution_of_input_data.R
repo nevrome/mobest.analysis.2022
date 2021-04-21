@@ -6,6 +6,7 @@ load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
+load("data/plot_reference_data/region_id_fill.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 load("data/spatial/mobility_regions.RData")
 
@@ -21,20 +22,23 @@ p_map <- ggplot() +
   ) +
   geom_sf(
     data = mobility_regions,
-    fill = NA, colour = "black", size = 0.1
+    fill = NA, colour = "black", size = 0.3
   ) +
   geom_sf(
     data = research_area,
     fill = NA, colour = "black", size = 0.8, linetype = "dashed"
   ) +
-  geom_point(
-    data = janno_final,
-    aes(x = x, y = y, color = Date_BC_AD_Median_Derived, shape = region_id),
-    size = 2
+  geom_jitter(
+    data = janno_final %>% dplyr::arrange(Date_BC_AD_Median_Derived),
+    aes(x = x, y = y, color = Date_BC_AD_Median_Derived, shape = region_id, fill = region_id),
+    size = 1.5,
+    alpha = 1,
+    width = 50000,
+    height = 50000
   ) +
   theme_bw() +
   coord_sf(
-    xlim = xlimit, ylim = ylimit,
+    expand = FALSE,
     crs = sf::st_crs(epsg3035)
   ) + 
   theme(
@@ -50,7 +54,12 @@ p_map <- ggplot() +
   ) +
   age_colors_gradient +
   scale_shape_manual(
-    values = region_id_shapes
+    values = region_id_shapes,
+    na.value = 3
+  ) +
+  scale_fill_manual(
+    values = region_id_fill,
+    guide = FALSE
   ) +
   guides(
     color = guide_colorbar(title = "Time", barwidth = 20, barheight = 1.5),
@@ -60,15 +69,24 @@ p_map <- ggplot() +
 # space time plot
 p_space_time <- ggplot(
   data = janno_final,
-  aes(x = Longitude, y = Date_BC_AD_Median_Derived, color = Date_BC_AD_Median_Derived, shape = region_id)
+  aes(
+    x = region_id, y = Date_BC_AD_Median_Derived, 
+    color = Date_BC_AD_Median_Derived, 
+    shape = region_id,
+    fill = region_id
+  )
 ) +
-  geom_point() +
+  geom_jitter(height = 0, width = 0.3) +
   age_colors_gradient +
   scale_shape_manual(
-    values = region_id_shapes
+    values = region_id_shapes,
+    na.value = 3
+  ) +
+  scale_fill_manual(
+    values = region_id_fill
   ) +
   theme_bw() +
-  xlab("Longitude") +
+  xlab("") +
   ylab("time in years calBC/AD") +
   theme(
     legend.position = "none",
@@ -121,9 +139,9 @@ ggsave(
   paste0("plots/figure_1_temporal_and_spatial_distribution_of_input_data.jpeg"),
   plot = p,
   device = "jpeg",
-  scale = 0.5,
+  scale = 0.6,
   dpi = 300,
-  width = 630, height = 300, units = "mm",
+  width = 590, height = 300, units = "mm",
   limitsize = F
 )
 
