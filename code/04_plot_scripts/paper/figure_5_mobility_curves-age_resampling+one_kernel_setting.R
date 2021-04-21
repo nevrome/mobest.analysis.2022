@@ -75,7 +75,7 @@ p_estimator <- ggplot() +
     fill = "white"
   ) +
   geom_point(
-    data = janno_final,
+    data = janno_final %>% dplyr::filter(!is.na(region_id)),
     aes(x = Date_BC_AD_Median_Derived, y = -100),
     shape = "|"
   ) +
