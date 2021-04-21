@@ -141,7 +141,7 @@ ggsave(
   device = "jpeg",
   scale = 0.6,
   dpi = 300,
-  width = 590, height = 300, units = "mm",
+  width = 530, height = 300, units = "mm",
   limitsize = F
 )
 
