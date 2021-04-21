@@ -3,7 +3,14 @@ library(ggplot2)
 
 load("data/parameter_exploration/mle/mle_out.RData")
 
-p1 <- mle_out %>%
+mle_mean_across_iterations <- mle_out %>%
+  dplyr::group_by(ancestry_component, scaling_factor_label) %>%
+  dplyr::summarise(
+    d = mean(d),
+    l = mean(l)
+  )
+
+p1 <- mle_mean_across_iterations %>%
   ggplot() +
   geom_point(
     aes(x = scaling_factor_label, y = d),
@@ -21,7 +28,8 @@ p1 <- mle_out %>%
     axis.title.x = element_blank()
   )
 
-p2 <- mle_out %>% ggplot() +
+p2 <- mle_mean_across_iterations %>% 
+  ggplot() +
   geom_point(
     aes(x = scaling_factor_label, y = l)
   ) +
