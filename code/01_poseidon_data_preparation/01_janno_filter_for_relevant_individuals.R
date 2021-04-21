@@ -38,7 +38,7 @@ janno_spatial_filtered <- janno_spatial %>%
     research_area
   )
 
-janno_spatial_filtered_non_sf <- janno_spatial_filtered %>% 
+janno_spatial_filtered_non_sf <- janno_spatial_filtered %>%
   # transform back to tibble
   dplyr::mutate(
     x = sf::st_coordinates(.)[,1],
@@ -76,6 +76,10 @@ janno_filtered_final %>%
   sf::st_transform(epsg3035) %>%
   dplyr::select_if(is.list %>% Negate) %>%
   sf::write_sf(dsn = "data/poseidon_data/janno_spatial_post_filter.gpkg", driver = "GPKG")
+
+# library(ggplot2)
+# ggplot(janno_filtered_final) +
+#   geom_point(aes(x, y))
 
 # store ind list for poseidon extraction
 tibble::tibble(
