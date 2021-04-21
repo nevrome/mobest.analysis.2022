@@ -17,10 +17,6 @@ janno_final <- janno_final %>%
     )))
   )
 
-ex <- raster::extent(research_area)
-xlimit <- c(ex[1], ex[2])
-ylimit <- c(ex[3], ex[4])
-
 p_C1 <- interpol_grid %>%
   dplyr::filter(
     dependent_var_id %in% "C1",
@@ -46,7 +42,7 @@ p_C1 <- interpol_grid %>%
   ) +
   theme_bw() +
   coord_sf(
-    xlim = xlimit, ylim = ylimit,
+    expand = FALSE,
     crs = epsg3035
   ) +
   guides(
@@ -90,7 +86,7 @@ p_C2 <- interpol_grid %>%
   ) +
   theme_bw() +
   coord_sf(
-    xlim = xlimit, ylim = ylimit,
+    expand = FALSE,
     crs = epsg3035
   ) +
   guides(
@@ -126,7 +122,7 @@ ggsave(
   device = "jpeg",
   scale = 0.5,
   dpi = 300,
-  width = 800, height = 260, units = "mm",
+  width = 800, height = 300, units = "mm",
   limitsize = F
 )
 

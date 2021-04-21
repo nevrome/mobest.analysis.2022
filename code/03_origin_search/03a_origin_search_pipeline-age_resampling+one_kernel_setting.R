@@ -32,7 +32,7 @@ model_grid <- mobest::create_model_grid(
     g = 0.06, 
     on_residuals = T, 
     auto = F,
-    it = "ds500_dt800_g008"
+    it = "ds500_dt800_g006"
   ),
   prediction_grid = list(
     scs100_tl50 = mobest::prediction_grid_for_spatiotemporal_area(
