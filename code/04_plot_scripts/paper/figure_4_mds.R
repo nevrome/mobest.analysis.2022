@@ -34,7 +34,6 @@ p_mds <- ggplot() +
       x = C1, y = C2, 
       color = Date_BC_AD_Median_Derived
     ),
-    alpha = 0.5,
     size = 2,
     shape = 3
   ) +

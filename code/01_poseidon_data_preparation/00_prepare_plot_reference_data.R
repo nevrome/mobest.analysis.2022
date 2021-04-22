@@ -18,8 +18,9 @@ region_id_fill <- c(
 save(region_id_fill, file = "data/plot_reference_data/region_id_fill.RData")
 
 # age group colors
-age_colors_gradient <- ggplot2::scale_color_gradient2(
-  limits = c(-8000, 2000), low = "black", mid = "#ff4903", high = "#44d62d", midpoint = -5000,
+age_colors_gradient <- ggplot2::scale_color_gradientn(
+  limits = c(-8000, 2000),
+  colors = khroma::colour("smooth rainbow", reverse = T)(256, range = c(0, 0.75)),
   breaks = seq(-7500, 1500, 1000)
 )
 
