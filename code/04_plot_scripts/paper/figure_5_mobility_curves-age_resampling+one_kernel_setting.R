@@ -107,25 +107,26 @@ origin_grid %>%
   dplyr::filter(!is.na(region_id))
 
 mobility_maps <- origin_grid_modified %>% 
-  dplyr::select(region_id, search_z_cut, angle_deg_cut) %>%
-  dplyr::filter(search_z_cut %in% c(-5500, -2700, 100)) %>%
-  # tidyr::complete(region_id, search_z_cut) %>%
+  dplyr::select(region_id, search_z_cut, angle_deg_cut, spatial_distance) %>%
+  dplyr::filter(search_z_cut %in% c(-5000, -3000, -1000, 1000)) %>%
+  tidyr::complete(region_id, search_z_cut) %>%
   dplyr::group_by(region_id, search_z_cut, angle_deg_cut) %>%
-  dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+  dplyr::summarise(mean_distance = mean(spatial_distance, na.rm = T), .groups = "drop") %>%
   dplyr::left_join(
     mobility_regions,
     by = "region_id"
   ) %>% sf::st_as_sf() %>%
   dplyr::mutate(
     z_named = dplyr::recode_factor(as.character(search_z_cut), !!!list(
-      "-5500" = "5600-5400 calBC", 
-      "-2700" = "2800-2600 calBC", 
-      "100" = "0 calBC/AD - 200 calAD"
+      "-5000" = "5250-4750 calBC", 
+      "-3000" = "3250-2750 calBC", 
+      "-1000" = "1250-750 calBC",
+      "1000"  = "750-1250 calAD"
     ))
   )
   
-x_offset <- 200000
-y_offset <- 200000
+x_offset <- 180000
+y_offset <- 180000
 
 mobility_maps_center <- mobility_maps %>%
   sf::st_centroid() %>%
@@ -151,24 +152,24 @@ p_map <- ggplot() +
   ) +
   geom_sf(
     data = mobility_maps,
-    fill = "white", 
-    alpha = 0.7,
     color = "black",
-    size = 0.4
+    size = 0.7,
+    fill = "white"
   ) +
   geom_point(
     data = mobility_maps_center,
     mapping = aes(
       x = x, 
       y = y,
-      alpha = n,
+      size = mean_distance,
       color = angle_deg_cut
     )
   ) +
   scale_size_continuous(
-    range = c(3, 12), name = "spatial distance to \"origin\"\n(directed mean) [km]",
-    breaks = round(diff(range(mobility_maps_center$directed_mean_spatial_distance, na.rm = T))/5, -2)*(1:5),
-    guide = guide_legend(nrow = 1, label.position = "bottom")
+    range = c(0.1, 5), 
+    name = "mean\nspatial\ndistance\n[km]",
+    breaks = round(diff(range(mobility_maps_center$mean_distance, na.rm = T))/5, -2)*(1:5),
+    guide = guide_legend(ncol = 1, label.position = "right")
   ) +
   facet_grid(cols = dplyr::vars(z_named)) +
   theme_bw() +
@@ -227,9 +228,9 @@ p_legend <- tibble::tibble(
 
 #### compile plots ####
 
-p_double_legend <- cowplot::plot_grid(p_legend, p_arrows_legend, ncol = 2, rel_widths = c(0.6, 1))
+p_double_legend <- cowplot::plot_grid(p_legend, p_arrows_legend, ncol = 2, rel_widths = c(0.7, 0.5))
 
-plot_bottom <- cowplot::plot_grid(p_map, p_double_legend, ncol = 2, rel_widths = c(0.7, 0.3))
+plot_bottom <- cowplot::plot_grid(p_map, p_double_legend, ncol = 2, rel_widths = c(0.8, 0.2))
 
 p <- cowplot::plot_grid(
   p_estimator, plot_bottom, nrow = 2, rel_heights = c(1, 0.44), labels = c("A", "B"),

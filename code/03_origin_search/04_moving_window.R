@@ -54,7 +54,7 @@ origin_grid_modified <- origin_grid %>%
 
 # age and direction groups
 r <- range(origin_grid$search_z)
-age_groups_limts <- seq(round(r[1], -3), round(r[2], -3), 200)
+age_groups_limits <- seq(-7250, 1750, 500)
 
 cut_angle <- function(x) {
   dplyr::case_when(
@@ -69,7 +69,7 @@ cut_angle <- function(x) {
 
 origin_grid_modified <- origin_grid_modified %>%
   dplyr::mutate(
-    search_z_cut = age_groups_limts[cut(search_z, age_groups_limts, labels = F)] + 100,
+    search_z_cut = age_groups_limits[cut(search_z, age_groups_limits, labels = F)] + 250,
     angle_deg_cut = cut_angle(angle_deg)
   )
 
