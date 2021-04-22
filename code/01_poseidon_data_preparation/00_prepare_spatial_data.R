@@ -55,8 +55,8 @@ save(area, file = "data/spatial/area.RData")
 
 # crop land outline to enlarged bbox of research area
 bb <- sf::st_bbox(research_area)
-bb[1:2] <- bb[1:2] - 20000
-bb[3:4] <- bb[3:4] + 20000
+bb[1:2] <- bb[1:2] - 50000
+bb[3:4] <- bb[3:4] + 50000
 extended_research_area <- bb %>% sf::st_as_sfc()
 extended_area <- sf::st_intersection(sf::st_buffer(land_outline_small, 0), extended_research_area)
 save(extended_area, file = "data/spatial/extended_area.RData")
@@ -72,16 +72,18 @@ mobility_region_names <- c(
   "Central Europe",
   "Pannonian Basin",
   "Southeastern Britain",
-  "Northeastern Iberia"
+  "Northeastern Iberia",
+  "Western Pontic steppe",
+  "Southern Levant"
 )
 mobility_regions$region_id <- factor(
   mobility_region_names, levels = mobility_region_names
 )
 save(mobility_regions, file = "data/spatial/mobility_regions.RData")
 
-# library(ggplot2)
-# ggplot() +
-#   geom_sf(data = extended_area) +
-#   geom_sf(data = research_area, fill = NA) +
-#   geom_sf(data = mobility_regions, aes(color = region_id), fill = NA)
+library(ggplot2)
+ggplot() +
+  geom_sf(data = extended_area) +
+  geom_sf(data = research_area, fill = NA) +
+  geom_sf(data = mobility_regions, aes(color = region_id), fill = NA)
 

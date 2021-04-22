@@ -22,7 +22,7 @@ p_map <- ggplot() +
   ) +
   geom_sf(
     data = mobility_regions,
-    fill = NA, colour = "black", size = 0.3
+    fill = NA, colour = "black", size = 0.5
   ) +
   geom_sf(
     data = research_area,
@@ -30,7 +30,7 @@ p_map <- ggplot() +
   ) +
   geom_jitter(
     data = janno_final %>% dplyr::arrange(Date_BC_AD_Median_Derived),
-    aes(x = x, y = y, color = Date_BC_AD_Median_Derived, shape = region_id, fill = region_id),
+    aes(x = x, y = y, color = Date_BC_AD_Median_Derived, shape = region_id),
     size = 1.5,
     alpha = 1,
     width = 50000,
@@ -57,10 +57,6 @@ p_map <- ggplot() +
     values = region_id_shapes,
     na.value = 3
   ) +
-  scale_fill_manual(
-    values = region_id_fill,
-    guide = FALSE
-  ) +
   guides(
     color = guide_colorbar(title = "Time", barwidth = 20, barheight = 1.5),
     shape = guide_legend(title = "Region", nrow = 3, ncol = 4, byrow = F)
@@ -68,12 +64,11 @@ p_map <- ggplot() +
 
 # space time plot
 p_space_time <- ggplot(
-  data = janno_final,
+  data = janno_final %>% dplyr::filter(!is.na(region_id)),
   aes(
     x = region_id, y = Date_BC_AD_Median_Derived, 
     color = Date_BC_AD_Median_Derived, 
-    shape = region_id,
-    fill = region_id
+    shape = region_id
   )
 ) +
   geom_jitter(height = 0, width = 0.3) +
@@ -81,9 +76,6 @@ p_space_time <- ggplot(
   scale_shape_manual(
     values = region_id_shapes,
     na.value = 3
-  ) +
-  scale_fill_manual(
-    values = region_id_fill
   ) +
   theme_bw() +
   xlab("") +
