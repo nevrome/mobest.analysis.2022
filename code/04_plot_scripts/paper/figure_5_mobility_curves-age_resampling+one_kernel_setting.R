@@ -19,8 +19,20 @@ load("data/plot_reference_data/region_id_shapes.RData")
 
 #### mobility estimator curves ####
 
+moving_origin_grid$region_id <- factor(
+  moving_origin_grid$region_id, 
+  
+)
+
 p_estimator <- ggplot() +
-  facet_wrap(dplyr::vars(region_id)) +
+  facet_wrap(~factor(region_id, levels = c(
+    "Southeastern Britain",
+    "Central Europe",
+    "Western Pontic steppe",
+    "Northeastern Iberia",
+    "Pannonian Basin",
+    "Southern Levant"
+  ))) +
   geom_rect(
     data = no_data_windows,
     mapping = aes(
