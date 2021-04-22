@@ -6,8 +6,8 @@ library(ggplot2)
 # curves
 load("data/poseidon_data/janno_final.RData")
 load("data/origin_search/origin_grid_median_modified.RData")
+load("data/origin_search/origin_grid_modified.RData")
 load("data/origin_search/moving_origin_grid.RData")
-load("data/origin_search/mean_origin.RData")
 load("data/origin_search/no_data_windows.RData")
 
 # maps
@@ -103,27 +103,45 @@ ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
 
-mobility_maps <- mean_origin %>%
+origin_grid %>%
+  dplyr::filter(!is.na(region_id))
+
+mobility_maps <- origin_grid_modified %>% 
+  dplyr::select(region_id, search_z_cut, angle_deg_cut) %>%
   dplyr::filter(search_z_cut %in% c(-5500, -2700, 100)) %>%
-  tidyr::complete(region_id, search_z_cut) %>%
+  # tidyr::complete(region_id, search_z_cut) %>%
+  dplyr::group_by(region_id, search_z_cut, angle_deg_cut) %>%
+  dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+  dplyr::left_join(
+    mobility_regions,
+    by = "region_id"
+  ) %>% sf::st_as_sf() %>%
   dplyr::mutate(
-    mean_angle_deg_text = 360 - mean_angle_deg,
     z_named = dplyr::recode_factor(as.character(search_z_cut), !!!list(
       "-5500" = "5600-5400 calBC", 
       "-2700" = "2800-2600 calBC", 
       "100" = "0 calBC/AD - 200 calAD"
     ))
-  ) %>%
-  dplyr::left_join(
-    mobility_regions,
-    by = "region_id"
-  ) %>% sf::st_as_sf()
+  )
+  
+x_offset <- 200000
+y_offset <- 200000
 
 mobility_maps_center <- mobility_maps %>%
   sf::st_centroid() %>%
   dplyr::mutate(
     x = sf::st_coordinates(.)[,1],
-    y = sf::st_coordinates(.)[,2]
+    y = sf::st_coordinates(.)[,2],
+    x = dplyr::case_when(
+      angle_deg_cut == "E" ~ x + x_offset,
+      angle_deg_cut == "W" ~ x - x_offset,
+      TRUE ~ x
+    ),
+    y = dplyr::case_when(
+      angle_deg_cut == "N" ~ y + y_offset,
+      angle_deg_cut == "S" ~ y - y_offset,
+      TRUE ~ y
+    )
   )
 
 p_map <- ggplot() +
@@ -138,24 +156,19 @@ p_map <- ggplot() +
     color = "black",
     size = 0.4
   ) +
-  geom_text(
-    data = mobility_maps_center %>% dplyr::filter(!is.na(directed_mean_spatial_distance)),
+  geom_point(
+    data = mobility_maps_center,
     mapping = aes(
-      x = x, y = y, 
-      color = mean_angle_deg, 
-      angle = mean_angle_deg_text,
-      size = directed_mean_spatial_distance
-    ),
-    label="\u2191"
+      x = x, 
+      y = y,
+      alpha = n,
+      color = angle_deg_cut
+    )
   ) +
   scale_size_continuous(
     range = c(3, 12), name = "spatial distance to \"origin\"\n(directed mean) [km]",
     breaks = round(diff(range(mobility_maps_center$directed_mean_spatial_distance, na.rm = T))/5, -2)*(1:5),
     guide = guide_legend(nrow = 1, label.position = "bottom")
-  ) +
-  scale_color_gradientn(
-    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
-    guide = F
   ) +
   facet_grid(cols = dplyr::vars(z_named)) +
   theme_bw() +
@@ -166,8 +179,17 @@ p_map <- ggplot() +
     panel.background = element_rect(fill = "#BFD5E3")
   ) +
   coord_sf(
-    xlim = xlimit, ylim = ylimit,
+    expand = FALSE,
     crs = epsg3035
+  ) +
+  scale_color_manual(
+    values = c(
+      "N" = "#F5793A", 
+      "E" = "#85C0F9", 
+      "S" = "#A95AA1",
+      "W" = "#33a02c"
+    ),
+    guide = F
   )
 
 p_arrows_legend <- cowplot::get_legend(p_map)

@@ -42,7 +42,7 @@ origin_region_ids <- origin_grid_median_modified %>%
 origin_grid_median_modified$origin_region_id <- mobility_regions$region_id[origin_region_ids]
 
 # age resampling data
-origin_grid <- origin_grid %>% 
+origin_grid_modified <- origin_grid %>% 
   dplyr::mutate(
     spatial_distance = spatial_distance/1000
   ) %>%
@@ -52,30 +52,25 @@ origin_grid <- origin_grid %>%
   ) %>%
   dplyr::filter(!is.na(region_id))
 
+# age and direction groups
 r <- range(origin_grid$search_z)
-b <- seq(round(r[1], -3), round(r[2], -3), 200)
-origin_grid <- origin_grid %>%
-  dplyr::mutate(
-    search_z_cut = b[cut(
-      search_z,
-      b,
-      labels = F
-    )] + 100
-  )
+age_groups_limts <- seq(round(r[1], -3), round(r[2], -3), 200)
 
-mean_origin <- origin_grid %>%
-  dplyr::group_by(region_id, search_z_cut) %>%
-  dplyr::summarise(
-    undirected_mean_spatial_distance = mean(spatial_distance),
-    directed_mean_spatial_distance = sqrt(
-      mean(search_x - origin_x)^2 +
-        mean(search_y - origin_y)^2
-    ) / 1000,
-    mean_angle_deg = mobest::vec2deg(c(mean(origin_x - search_x), mean(origin_y - search_y))),
-    .groups = "drop"
-  ) %>%
-  dplyr::filter(
-    !is.na(region_id)
+cut_angle <- function(x) {
+  dplyr::case_when(
+    x >= 0   & x <  45  ~ "N",
+    x >= 45  & x <  135 ~ "E",
+    x >= 135 & x <  225 ~ "S",
+    x >= 225 & x <  315 ~ "W",
+    x >= 315 & x <= 360 ~ "N",
+    TRUE ~ NA_character_
+  )
+}
+
+origin_grid_modified <- origin_grid_modified %>%
+  dplyr::mutate(
+    search_z_cut = age_groups_limts[cut(search_z, age_groups_limts, labels = F)] + 100,
+    angle_deg_cut = cut_angle(angle_deg)
   )
 
 # moving average
@@ -84,9 +79,9 @@ std <- function(x) sd(x)/sqrt(length(x))
 moving_window_step_resolution <- 50
 future::plan(future::multisession)
 moving_origin_grid <- furrr::future_map_dfr(
-  unique(origin_grid$region_id),
+  unique(origin_grid_modified$region_id),
   function(region) {
-    origin_per_region <- origin_grid %>%
+    origin_per_region <- origin_grid_modified %>%
       dplyr::filter(region_id == region)
     age_median_origin_per_region <- origin_grid_median_modified %>%
       dplyr::filter(region_id == region)
@@ -169,6 +164,6 @@ no_data_windows <- moving_origin_grid %>%
 #### save output ####
 
 save(origin_grid_median_modified, file = "data/origin_search/origin_grid_median_modified.RData")
+save(origin_grid_modified, file = "data/origin_search/origin_grid_modified.RData")
 save(moving_origin_grid, file = "data/origin_search/moving_origin_grid.RData")
-save(mean_origin, file = "data/origin_search/mean_origin.RData")
 save(no_data_windows, file = "data/origin_search/no_data_windows.RData")
