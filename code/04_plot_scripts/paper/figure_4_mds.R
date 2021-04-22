@@ -32,10 +32,10 @@ p_mds <- ggplot() +
     data = janno_final,
     aes(
       x = C1, y = C2, 
-      color = Date_BC_AD_Median_Derived
+      color = Date_BC_AD_Median_Derived,
+      shape = region_id
     ),
-    size = 2,
-    shape = 3
+    size = 2
   ) +
   ggpointgrid::geom_pointgrid(
     data = region_age_group_mean,
@@ -44,15 +44,15 @@ p_mds <- ggplot() +
     fill = "white",
     color = "black",
     shape = 21,
-    grid_x = 20,
-    grid_y = 21
+    grid_x = 24,
+    grid_y = 27
   ) +
   ggpointgrid::geom_pointgrid(
     data = region_age_group_mean,
-    aes(x = mean_C1, y = mean_C2, color = z, shape = region_id, fill = region_id),
+    aes(x = mean_C1, y = mean_C2, color = z, shape = region_id),
     size = 2,
-    grid_x = 20,
-    grid_y = 21,
+    grid_x = 24,
+    grid_y = 27,
     stroke = 1
   ) +
   scale_shape_manual(
@@ -60,10 +60,6 @@ p_mds <- ggplot() +
     na.value = 3
   ) +
   age_colors_gradient +
-  scale_fill_manual(
-    values = region_id_fill,
-    guide = FALSE
-  ) +
   coord_fixed(xlim = c(-0.05, 0.08), ylim = c(-0.1, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
