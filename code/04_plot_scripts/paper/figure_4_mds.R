@@ -14,9 +14,9 @@ poi_timeseries <- interpol_grid_examples %>%
     values_from = c("mean", "sd")
   )
 
-poi_timeseries_Tallinn <- poi_timeseries %>% dplyr::filter(pred_grid_id == "Tallinn")
+poi_timeseries_Barcelona <- poi_timeseries %>% dplyr::filter(pred_grid_id == "Barcelona")
 poi_timeseries_London <- poi_timeseries %>% dplyr::filter(pred_grid_id == "London")
-poi_timeseries_Rome <- poi_timeseries %>% dplyr::filter(pred_grid_id == "Rome")
+poi_timeseries_Dnipro <- poi_timeseries %>% dplyr::filter(pred_grid_id == "Dnipro")
 poi_timeseries_Jerusalem <- poi_timeseries %>% dplyr::filter(pred_grid_id == "Jerusalem")
 
 # mean per region and time
@@ -130,20 +130,20 @@ p_London <- ggplot() +
   ) +
   ggtitle("London")
 
-# Tallinn
-p_Tallinn <- ggplot() +
+# Barcelona
+p_Barcelona <- ggplot() +
   geom_point(
     data = janno_final,
     aes(x = C1, y = C2),
     alpha = 0.1, size = 1, shape = 3
   ) +  
   geom_path(
-    data = poi_timeseries_Tallinn,
+    data = poi_timeseries_Barcelona,
     aes(x = mean_C1, y = mean_C2),
     size = 0.8
   ) +
   geom_errorbar(
-    data = poi_timeseries_Tallinn,
+    data = poi_timeseries_Barcelona,
     aes(
       x = mean_C1, 
       ymin = mean_C2 - sd_C2, ymax = mean_C2 + sd_C2,
@@ -152,7 +152,7 @@ p_Tallinn <- ggplot() +
     size = 0.4,
   ) +
   geom_errorbarh(
-    data = poi_timeseries_Tallinn,
+    data = poi_timeseries_Barcelona,
     aes(
       y = mean_C2, 
       xmin = mean_C1 - sd_C1, xmax = mean_C1 + sd_C1,
@@ -161,7 +161,7 @@ p_Tallinn <- ggplot() +
     size = 0.4,
   ) +
   geom_point(
-    data = poi_timeseries_Tallinn,
+    data = poi_timeseries_Barcelona,
     aes(
       x = mean_C1, 
       y = mean_C2,
@@ -178,22 +178,22 @@ p_Tallinn <- ggplot() +
   coord_fixed(xlim = c(-0.05, 0.08), ylim = c(-0.1, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
-  ggtitle("Tallinn")
+  ggtitle("Barcelona")
 
-# Rome
-p_Rome <- ggplot() +
+# Dnipro
+p_Dnipro <- ggplot() +
   geom_point(
     data = janno_final,
     aes(x = C1, y = C2),
     alpha = 0.1, size = 1, shape = 3
   ) +  
   geom_path(
-    data = poi_timeseries_Rome,
+    data = poi_timeseries_Dnipro,
     aes(x = mean_C1, y = mean_C2),
     size = 0.8
   ) +
   geom_errorbar(
-    data = poi_timeseries_Rome,
+    data = poi_timeseries_Dnipro,
     aes(
       x = mean_C1, 
       ymin = mean_C2 - sd_C2, ymax = mean_C2 + sd_C2,
@@ -202,7 +202,7 @@ p_Rome <- ggplot() +
     size = 0.4,
   ) +
   geom_errorbarh(
-    data = poi_timeseries_Rome,
+    data = poi_timeseries_Dnipro,
     aes(
       y = mean_C2, 
       xmin = mean_C1 - sd_C1, xmax = mean_C1 + sd_C1,
@@ -211,7 +211,7 @@ p_Rome <- ggplot() +
     size = 0.4,
   ) +
   geom_point(
-    data = poi_timeseries_Rome,
+    data = poi_timeseries_Dnipro,
     aes(
       x = mean_C1, 
       y = mean_C2,
@@ -228,7 +228,7 @@ p_Rome <- ggplot() +
   coord_fixed(xlim = c(-0.05, 0.08), ylim = c(-0.1, 0.065)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
-  ggtitle("Rome")
+  ggtitle("Dnipro (Ukraine)")
 
 # Jerusalem
 p_Jerusalem <- ggplot() +
@@ -282,9 +282,9 @@ p_Jerusalem <- ggplot() +
 
 # merge plots
 
-left <- cowplot::plot_grid(p_London + theme(legend.position = "none"), p_Rome, ncol = 1, labels = c("B", "D"))
+left <- cowplot::plot_grid(p_London + theme(legend.position = "none"), p_Barcelona, ncol = 1, labels = c("B", "D"))
 
-right <- cowplot::plot_grid(p_Tallinn, p_Jerusalem, ncol = 1, labels = c("C", "E"))
+right <- cowplot::plot_grid(p_Dnipro, p_Jerusalem, ncol = 1, labels = c("C", "E"))
 
 top <- cowplot::plot_grid(p_mds, left, right, nrow = 1, rel_widths = c(1.2, 0.5, 0.5), labels = c("A", NA, NA))
 
