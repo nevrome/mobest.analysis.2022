@@ -20,13 +20,6 @@ load("data/plot_reference_data/region_id_shapes.RData")
 #### mobility estimator curves ####
 
 p_estimator <- ggplot() +
-  geom_vline(
-    data = data.frame(
-      x = c(-5000, -3000, -1000, 1000)
-    ),
-    aes(xintercept = x),
-    linetype = "dotted"
-  ) +
   facet_wrap(dplyr::vars(region_id)) +
   geom_rect(
     data = no_data_windows,
@@ -84,10 +77,16 @@ p_estimator <- ggplot() +
     aes(x = Date_BC_AD_Median_Derived, y = -100),
     shape = "|"
   ) +
+  geom_vline(
+    data = data.frame(
+      x = c(-5000, -3000, -1000, 1000)
+    ),
+    aes(xintercept = x),
+    linetype = "dotted"
+  ) +
   theme_bw() +
   theme(
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 40, hjust = 1)
   ) +
   xlab("time in years calBC/calAD") +
   ylab("spatial distance to \"link point\" (undirected mean) [km]") +
