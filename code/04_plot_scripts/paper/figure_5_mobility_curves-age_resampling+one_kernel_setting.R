@@ -21,25 +21,13 @@ load("data/plot_reference_data/region_id_shapes.RData")
 
 p_estimator <- ggplot() +
   geom_vline(
-    data = data.frame(x = c(-5500, -2700, 100)),
+    data = data.frame(
+      x = c(-5000, -3000, -1000, 1000)
+    ),
     aes(xintercept = x),
     linetype = "dotted"
   ) +
   facet_wrap(dplyr::vars(region_id)) +
-  geom_point(
-    data = origin_grid_median_modified,
-    mapping = aes(
-      x = search_z, y = spatial_distance, color = angle_deg,
-      shape = origin_region_id
-    ),
-    alpha = 0.6,
-    size = 0.6
-  ) +
-  scale_shape_manual(
-    values = region_id_shapes,
-    guide = F,
-    na.value = 4
-  ) +
   geom_rect(
     data = no_data_windows,
     mapping = aes(
@@ -48,8 +36,17 @@ p_estimator <- ggplot() +
       xmin = min_date_not_covered,
       xmax = max_date_not_covered
     ),
+    fill = "lightgrey"
+  ) +
+  geom_ribbon(
+    data = moving_origin_grid,
+    mapping = aes(
+      x = z,
+      ymin = undirected_mean_spatial_distance - 2*sd_spatial_distance,
+      ymax = undirected_mean_spatial_distance + 2*sd_spatial_distance
+    ),
     fill = "lightgrey",
-    alpha = 0.7
+    alpha = 0.3
   ) +
   geom_ribbon(
     data = moving_origin_grid,
@@ -59,11 +56,10 @@ p_estimator <- ggplot() +
       ymax = undirected_mean_spatial_distance + 2*std_spatial_distance
     ),
     fill = "lightgrey",
-    alpha = 0.7
   ) +
   geom_line(
     data = moving_origin_grid,
-    mapping = aes(x = z, y = undirected_mean_spatial_distance, color = mean_angle_deg),
+    mapping = aes(x = z, y = undirected_mean_spatial_distance),
     size = 0.4
   ) +
   geom_rect(
@@ -73,6 +69,15 @@ p_estimator <- ggplot() +
       ymin = ymin, ymax = ymax
     ),
     fill = "white"
+  ) +
+  geom_point(
+    data = origin_grid_median_modified,
+    mapping = aes(
+      x = search_z, y = spatial_distance, color = angle_deg
+    ),
+    alpha = 1,
+    size = 1.5,
+    shape = 4
   ) +
   geom_point(
     data = janno_final %>% dplyr::filter(!is.na(region_id)),
@@ -85,7 +90,7 @@ p_estimator <- ggplot() +
     axis.text.x = element_text(angle = 40, hjust = 1)
   ) +
   xlab("time in years calBC/calAD") +
-  ylab("spatial distance to \"origin\" (undirected mean) [km]") +
+  ylab("spatial distance to \"link point\" (undirected mean) [km]") +
   scale_color_gradientn(
     colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
     na.value = NA,
@@ -93,8 +98,7 @@ p_estimator <- ggplot() +
   ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(
-    #ylim = c(-100, 2000)
-    #ylim = c(0, max(origin_grid$spatial_distance, na.rm = T))
+    ylim = c(-100, max(origin_grid_median_modified$spatial_distance, na.rm = T))
   )
 
 #### map series ####
@@ -222,7 +226,7 @@ p_legend <- tibble::tibble(
     panel.grid.minor = element_blank(),
     panel.grid.major = element_blank(),
     axis.text.y = element_blank(),
-    axis.text.x = element_text(size = 10)
+    axis.text.x = element_text(size = 10, colour = "black")
   )
   
 
