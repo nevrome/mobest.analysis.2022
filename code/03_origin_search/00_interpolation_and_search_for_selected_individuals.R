@@ -58,7 +58,7 @@ grid_list <- interpol_grid_specific %>%
   ) %>%
   dplyr::group_split(z)
 
-dist_grid <- purrr::map(seq_len(nrow(janno_search)), function(i) {
+distance_grid_examples <- purrr::map(seq_len(nrow(janno_search)), function(i) {
   js <- janno_search[i,]
   sg <- grid_list[[i]]
   sg %>%
@@ -68,35 +68,5 @@ dist_grid <- purrr::map(seq_len(nrow(janno_search)), function(i) {
     )
 }) %>% dplyr::bind_rows()
 
-
-
-library(ggplot2)
-ggplot() +
-  facet_wrap(~z) +
-  geom_raster(
-    data = dist_grid,
-    mapping = aes(x = x, y = y, fill = gen_dist)
-  ) +
-  scale_fill_viridis_c() +
-  geom_point(
-    data = janno_search,
-    mapping = aes(x = x, y = y),
-    colour = "red",
-    size = 5
-  ) +
-  geom_point(
-    data = dist_grid %>% dplyr::filter(min_gen_dist),
-    mapping = aes(x = x, y = y),
-    colour = "orange",
-    shape = 4,
-    size = 5
-  )
-
-
-
-
-
-
-
-
-
+save(janno_search, file = "data/origin_search/janno_search.RData")
+save(distance_grid_examples, file = "data/origin_search/distance_grid_examples.RData")
