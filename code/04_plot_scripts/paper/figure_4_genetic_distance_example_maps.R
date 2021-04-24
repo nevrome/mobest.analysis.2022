@@ -7,14 +7,29 @@ load("data/spatial/epsg3035.RData")
 load("data/origin_search/janno_search.RData")
 load("data/origin_search/distance_grid_examples.RData")
 
-ggplot() +
+p <- ggplot() +
   facet_wrap(
     ~Individual_ID,
     ncol = 3,
     labeller = ggplot2::labeller(Individual_ID = c(
-      "Stuttgart_published.DG" = "hu1", 
-      "RISE434.SG" = "hu2", 
-      "3DT26.SG" = "hu3"
+      "Stuttgart_published.DG" = paste(
+        "Stuttgart <Stuttgart_published.DG>", 
+        "Early Neolithic, Linear Pottery culture",
+        "Lazaridis et al. 2014", 
+        sep = "\n"
+      ), 
+      "RISE434.SG" = paste(
+        "? <RISE434.SG>", 
+        "Late Neolithic, Corded Ware culture",
+        "Allentoft et al. 2015", 
+        sep = "\n"
+      ), 
+      "3DT26.SG" = paste(
+        "? <3DT26.SG>", 
+        "Roman Britain",
+        "Martiniano et al. 2016", 
+        sep = "\n"
+      )
     ))
   ) +
   geom_sf(data = extended_area, fill = "black") +
@@ -28,14 +43,14 @@ ggplot() +
     data = janno_search,
     mapping = aes(x = x, y = y),
     colour = "red",
-    size = 4
+    size = 5
   ) +
   geom_point(
     data = distance_grid_examples %>% dplyr::filter(min_gen_dist),
     mapping = aes(x = x, y = y),
     colour = "red",
     shape = "✖",
-    size = 5
+    size = 7
   ) +
   theme_bw() +
   coord_sf(
