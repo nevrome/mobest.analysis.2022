@@ -14,8 +14,8 @@ p <- ggplot() +
     labeller = ggplot2::labeller(Individual_ID = c(
       "I3025" = paste(
         "? <I3025>",
-        "?",
-        "?",
+        "~7300BC, Mesolithic",
+        "Brace et al. 2019",
         sep = "\n"
       ),
       "Stuttgart_published.DG" = paste(
@@ -38,14 +38,14 @@ p <- ggplot() +
       ),
       "VK326.SG" = paste(
         "? <VK326.SG>",
-        "?",
-        "?",
+        "~930AD, Viking Age",
+        "Margaryan et al. 2020",
         sep = "\n"
       ),
       "SI-40.SG" = paste(
         "? <SI-40.SG>",
-        "?",
-        "?",
+        "~1150AD, Medieval Period, Crusades",
+        "Haber 2019",
         sep = "\n"
       )
     ))
@@ -81,10 +81,10 @@ p <- ggplot() +
   theme(
     legend.position = "bottom",
     legend.box = "horizontal",
-    legend.title = element_text(size = 12),
+    legend.title = element_text(size = 15),
     axis.title = element_blank(),
     axis.text = element_blank(),
-    legend.text = element_text(size = 12),
+    legend.text = element_text(size = 15),
     strip.text = element_text(size = 15),
     axis.ticks = element_blank(),
     panel.background = element_rect(fill = "#BFD5E3")
@@ -96,7 +96,7 @@ ggsave(
   device = "jpeg",
   scale = 0.8,
   dpi = 300,
-  width = 500, height = 300, units = "mm",
+  width = 470, height = 300, units = "mm",
   limitsize = F
 )
 
