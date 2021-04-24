@@ -7,11 +7,19 @@ load("data/spatial/epsg3035.RData")
 load("data/origin_search/janno_search.RData")
 load("data/origin_search/distance_grid_examples.RData")
 
-p <- ggplot() +
-  facet_wrap(~z) +
+ggplot() +
+  facet_wrap(
+    ~Individual_ID,
+    ncol = 3,
+    labeller = ggplot2::labeller(Individual_ID = c(
+      "Stuttgart_published.DG" = "hu1", 
+      "RISE434.SG" = "hu2", 
+      "3DT26.SG" = "hu3"
+    ))
+  ) +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(
-    data = dist_grid,
+    data = distance_grid_examples,
     mapping = aes(x = x, y = y, fill = gen_dist),
   ) +
   scale_fill_viridis_c(option = "mako", direction = -1) +
@@ -23,7 +31,7 @@ p <- ggplot() +
     size = 4
   ) +
   geom_point(
-    data = dist_grid %>% dplyr::filter(min_gen_dist),
+    data = distance_grid_examples %>% dplyr::filter(min_gen_dist),
     mapping = aes(x = x, y = y),
     colour = "red",
     shape = "✖",

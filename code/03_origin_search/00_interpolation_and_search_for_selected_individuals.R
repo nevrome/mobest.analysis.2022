@@ -14,6 +14,13 @@ janno_search <- janno_final %>%
   ) %>%
   dplyr::filter(
     Individual_ID %in% c("Stuttgart_published.DG", "RISE434.SG", "3DT26.SG")
+  ) %>%
+  dplyr::mutate(
+    Individual_ID = factor(Individual_ID, levels = c(
+      "Stuttgart_published.DG" , 
+      "RISE434.SG", 
+      "3DT26.SG"
+    ))
   )
 
 #### prepare model grid ####
@@ -55,6 +62,10 @@ grid_list <- interpol_grid_specific %>%
   dplyr::select(dependent_var_id, x, y, z, mean, id) %>%
   tidyr::pivot_wider(
     id_cols = c("id", "x", "y", "z"), names_from = "dependent_var_id", values_from = "mean"
+  ) %>%
+  dplyr::left_join(
+    janno_search %>% dplyr::select(Individual_ID, Date_BC_AD_Median_Derived), 
+    by = c("z" = "Date_BC_AD_Median_Derived")
   ) %>%
   dplyr::group_split(z)
 
