@@ -8,20 +8,26 @@ load("data/spatial/epsg3035.RData")
 
 #### select individuals ####
 
+ioi <- c(
+  "I3025",
+  "Stuttgart_published.DG" , 
+  "RISE434.SG", 
+  "3DT26.SG",
+  "VK326.SG",
+  "SI-40.SG"
+)
+
 janno_search <- janno_final %>%
   dplyr::mutate(
     z = Date_BC_AD_Median_Derived
   ) %>%
   dplyr::filter(
-    Individual_ID %in% c("Stuttgart_published.DG", "RISE434.SG", "3DT26.SG")
+    Individual_ID %in% ioi
   ) %>%
   dplyr::mutate(
-    Individual_ID = factor(Individual_ID, levels = c(
-      "Stuttgart_published.DG" , 
-      "RISE434.SG", 
-      "3DT26.SG"
-    ))
-  )
+    Individual_ID = factor(Individual_ID, levels = ioi)
+  ) %>%
+  dplyr::arrange(Individual_ID)
 
 #### prepare model grid ####
 model_grid <- mobest::create_model_grid(

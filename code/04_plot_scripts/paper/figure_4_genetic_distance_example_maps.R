@@ -12,22 +12,40 @@ p <- ggplot() +
     ~Individual_ID,
     ncol = 3,
     labeller = ggplot2::labeller(Individual_ID = c(
+      "I3025" = paste(
+        "? <I3025>",
+        "?",
+        "?",
+        sep = "\n"
+      ),
       "Stuttgart_published.DG" = paste(
-        "Stuttgart <Stuttgart_published.DG>", 
-        "Early Neolithic, Linear Pottery culture",
-        "Lazaridis et al. 2014", 
+        "Stuttgart <Stuttgart_published.DG>",
+        "~5250BC, Early Neolithic, Linear Pottery culture",
+        "Lazaridis et al. 2014",
         sep = "\n"
-      ), 
+      ),
       "RISE434.SG" = paste(
-        "? <RISE434.SG>", 
-        "Late Neolithic, Corded Ware culture",
-        "Allentoft et al. 2015", 
+        "? <RISE434.SG>",
+        "~2750BC, Late Neolithic, Corded Ware culture",
+        "Allentoft et al. 2015",
         sep = "\n"
-      ), 
+      ),
       "3DT26.SG" = paste(
-        "? <3DT26.SG>", 
-        "Roman Britain",
-        "Martiniano et al. 2016", 
+        "? <3DT26.SG>",
+        "~200AD, Roman Britain",
+        "Martiniano et al. 2016",
+        sep = "\n"
+      ),
+      "VK326.SG" = paste(
+        "? <VK326.SG>",
+        "?",
+        "?",
+        sep = "\n"
+      ),
+      "SI-40.SG" = paste(
+        "? <SI-40.SG>",
+        "?",
+        "?",
         sep = "\n"
       )
     ))
@@ -76,9 +94,9 @@ ggsave(
   "plots/figure_4_genetic_distance_example_maps.jpeg",
   plot = p,
   device = "jpeg",
-  scale = 0.5,
+  scale = 0.8,
   dpi = 300,
-  width = 800, height = 300, units = "mm",
+  width = 500, height = 300, units = "mm",
   limitsize = F
 )
 
