@@ -1,0 +1,102 @@
+library(magrittr)
+
+#### data ####
+
+load("data/poseidon_data/janno_final.RData")
+load("data/spatial/area.RData")
+load("data/spatial/epsg3035.RData")
+
+#### select individuals ####
+
+janno_search <- janno_final %>%
+  dplyr::mutate(
+    z = Date_BC_AD_Median_Derived
+  ) %>%
+  dplyr::filter(
+    Individual_ID %in% c("Stuttgart_published.DG", "RISE434.SG", "3DT26.SG")
+  )
+
+#### prepare model grid ####
+model_grid <- mobest::create_model_grid(
+  independent = mobest::create_spatpos_multi(
+    id = janno_final$Individual_ID,
+    x = list(janno_final$x),
+    y = list(janno_final$y),
+    z = list(janno_final$Date_BC_AD_Median_Derived),
+    it = "age_median"
+  ),
+  dependent = mobest::create_obs(
+    C1 = janno_final$C1,
+    C2 = janno_final$C2
+  ),
+  kernel = mobest::create_kernset_multi(
+    d = list(c(500000, 500000, 800)), 
+    g = 0.06, 
+    on_residuals = T, 
+    auto = F,
+    it = "ds500_dt800_g006"
+  ),
+  prediction_grid = list(
+    scs100_tlspecific = mobest::prediction_grid_for_spatiotemporal_area(
+      area,
+      spatial_cell_size = 100000,
+      temporal_layers = janno_search$z
+    )
+  )
+)
+
+#### run interpolation on model grid ####
+
+interpol_grid_specific <- mobest::run_model_grid(model_grid)
+
+#### relatedness grid ####
+
+grid_list <- interpol_grid_specific %>% 
+  dplyr::select(dependent_var_id, x, y, z, mean, id) %>%
+  tidyr::pivot_wider(
+    id_cols = c("id", "x", "y", "z"), names_from = "dependent_var_id", values_from = "mean"
+  ) %>%
+  dplyr::group_split(z)
+
+dist_grid <- purrr::map(seq_len(nrow(janno_search)), function(i) {
+  js <- janno_search[i,]
+  sg <- grid_list[[i]]
+  sg %>%
+    dplyr::mutate(
+      gen_dist = sqrt((C1 - js$C1)^2 + (C2 - js$C2)^2),
+      min_gen_dist = gen_dist == min(gen_dist)
+    )
+}) %>% dplyr::bind_rows()
+
+
+
+library(ggplot2)
+ggplot() +
+  facet_wrap(~z) +
+  geom_raster(
+    data = dist_grid,
+    mapping = aes(x = x, y = y, fill = gen_dist)
+  ) +
+  scale_fill_viridis_c() +
+  geom_point(
+    data = janno_search,
+    mapping = aes(x = x, y = y),
+    colour = "red",
+    size = 5
+  ) +
+  geom_point(
+    data = dist_grid %>% dplyr::filter(min_gen_dist),
+    mapping = aes(x = x, y = y),
+    colour = "orange",
+    shape = 4,
+    size = 5
+  )
+
+
+
+
+
+
+
+
+

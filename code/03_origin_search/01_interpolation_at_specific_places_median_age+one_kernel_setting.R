@@ -45,7 +45,7 @@ Dnipro <- sf::st_as_sf(
 time_points <- seq(-7500, 1500, 1000)
 n_time_points <- length(time_points) 
 
-#### prepare pca model grid ####
+#### prepare model grid ####
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
     id = janno_final$Individual_ID,
