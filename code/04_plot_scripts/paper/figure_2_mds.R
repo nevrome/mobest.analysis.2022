@@ -6,7 +6,6 @@ load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/region_id_fill.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 
-
 # mean per region and time
 region_age_group_mean <- janno_final %>%
   dplyr::filter(!is.na(region_id)) %>%
@@ -15,7 +14,7 @@ region_age_group_mean <- janno_final %>%
   dplyr::ungroup()
 
 # normal mds plot
-p_mds <- ggplot() +
+p <- ggplot() +
   geom_point(
     data = janno_final,
     aes(
@@ -29,7 +28,7 @@ p_mds <- ggplot() +
     data = region_age_group_mean,
     aes(x = mean_C1, y = mean_C2),
     size = 5,
-    fill = "white",
+    fill = "black",
     color = "black",
     shape = 21,
     grid_x = 24,
@@ -53,7 +52,8 @@ p_mds <- ggplot() +
   scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   theme_bw() +
   theme(
-    legend.position = "none",
+    legend.position = "bottom",
+    legend.box = "vertical",
     legend.background = element_blank(),
     legend.title = element_text(size = 13),
     legend.spacing.y = unit(0.2, 'cm'),
@@ -65,14 +65,13 @@ p_mds <- ggplot() +
     shape = guide_legend(title = "Region", nrow = 3, ncol = 4, byrow = F)
   )
 
-
 ggsave(
   paste0("plots/figure_2_mds.jpeg"),
   plot = p,
   device = "jpeg",
-  scale = 0.5,
+  scale = 0.7,
   dpi = 300,
-  width = 530, height = 350, units = "mm",
+  width = 200, height = 300, units = "mm",
   limitsize = F
 )
 
