@@ -21,7 +21,7 @@ model_grid <- mobest::create_model_grid(
     x = list(janno_final$x),
     y = list(janno_final$y),
     z = list(Map(function(x) {x[age_resampling_run]}, janno_final$Date_BC_AD_Sample) %>% unlist()),
-    it = "age_median"
+    it = "age_sample"
   ),
   dependent = mobest::create_obs(
     C1 = janno_final$C1,

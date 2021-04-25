@@ -5,6 +5,7 @@ load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/origin_search/janno_search.RData")
+load("data/origin_search/closest_points_examples.RData")
 load("data/origin_search/distance_grid_examples.RData")
 
 p <- ggplot() +
@@ -64,11 +65,12 @@ p <- ggplot() +
     size = 5
   ) +
   geom_point(
-    data = distance_grid_examples %>% dplyr::filter(min_gen_dist),
+    data = closest_points_examples,
     mapping = aes(x = x, y = y),
-    colour = "red",
+    colour = "orange",
     shape = "✖",
-    size = 7
+    size = 7,
+    alpha = 0.7
   ) +
   theme_bw() +
   coord_sf(
