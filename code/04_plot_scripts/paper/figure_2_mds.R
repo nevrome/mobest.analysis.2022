@@ -296,7 +296,7 @@ p <- cowplot::plot_grid(
 )
 
 ggsave(
-  paste0("plots/figure_4_mds.jpeg"),
+  paste0("plots/figure_2_mds.jpeg"),
   plot = p,
   device = "jpeg",
   scale = 0.5,
