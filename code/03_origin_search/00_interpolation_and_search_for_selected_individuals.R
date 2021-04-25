@@ -30,18 +30,20 @@ janno_search <- janno_final %>%
   dplyr::arrange(Individual_ID)
 
 #### prepare model grid ####
+nr_of_resampling_runs <- 10
+
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
     id = janno_final$Individual_ID,
-    x = Map(function(i){janno_final$x}, 1:5),
-    y = Map(function(i){janno_final$y}, 1:5),
+    x = Map(function(i){janno_final$x}, seq_len(nr_of_resampling_runs)),
+    y = Map(function(i){janno_final$y}, seq_len(nr_of_resampling_runs)),
     z = Map(
       function(i){
         Map(function(x) { x[i]}, janno_final$Date_BC_AD_Sample) %>% unlist()
       }, 
-      1:5
+      seq_len(nr_of_resampling_runs)
     ),
-    it = paste0("age_sample_", 1:5)
+    it = paste0("age_sample_", seq_len(nr_of_resampling_runs))
   ),
   dependent = mobest::create_obs(
     C1 = janno_final$C1,
