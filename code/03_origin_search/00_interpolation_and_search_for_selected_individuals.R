@@ -9,11 +9,9 @@ load("data/spatial/epsg3035.RData")
 #### select individuals ####
 
 ioi <- c(
-  "I3025",
   "Stuttgart_published.DG" , 
   "RISE434.SG", 
   "3DT26.SG",
-  "VK326.SG",
   "SI-40.SG"
 )
 
@@ -59,7 +57,7 @@ model_grid <- mobest::create_model_grid(
   prediction_grid = list(
     scs100_tlspecific = mobest::prediction_grid_for_spatiotemporal_area(
       area,
-      spatial_cell_size = 100000,
+      spatial_cell_size = 50000,
       temporal_layers = janno_search$z
     )
   )
