@@ -11,42 +11,30 @@ load("data/origin_search/distance_grid_examples.RData")
 p <- ggplot() +
   facet_wrap(
     ~Individual_ID,
-    ncol = 3,
+    ncol = 2,
     labeller = ggplot2::labeller(Individual_ID = c(
-      "I3025" = paste(
-        "? <I3025>",
-        "~7300BC, Mesolithic",
-        "Brace et al. 2019",
-        sep = "\n"
-      ),
       "Stuttgart_published.DG" = paste(
-        "Stuttgart <Stuttgart_published.DG>",
-        "~5250BC, Early Neolithic, Linear Pottery culture",
+        "Stuttgart ~5250BC",
+        "Early Neolithic, Linear Pottery culture",
         "Lazaridis et al. 2014",
         sep = "\n"
       ),
       "RISE434.SG" = paste(
-        "? <RISE434.SG>",
-        "~2750BC, Late Neolithic, Corded Ware culture",
+        "RISE434 ~2750BC",
+        "Late Neolithic, Corded Ware culture",
         "Allentoft et al. 2015",
         sep = "\n"
       ),
       "3DT26.SG" = paste(
-        "? <3DT26.SG>",
-        "~200AD, Roman Britain",
+        "3DRIF-26 ~200AD",
+        "Roman Britain",
         "Martiniano et al. 2016",
         sep = "\n"
       ),
-      "VK326.SG" = paste(
-        "? <VK326.SG>",
-        "~930AD, Viking Age",
-        "Margaryan et al. 2020",
-        sep = "\n"
-      ),
       "SI-40.SG" = paste(
-        "? <SI-40.SG>",
-        "~1150AD, Medieval Period, Crusades",
-        "Haber 2019",
+        "SI-40 ~1150AD",
+        "Medieval Period, Crusades",
+        "Haber et al. 2019",
         sep = "\n"
       )
     ))
@@ -72,6 +60,16 @@ p <- ggplot() +
     size = 7,
     alpha = 0.7
   ) +
+  geom_text(
+    data = data.frame(
+      Individual_ID = janno_search$Individual_ID,
+      plot_label = LETTERS[seq_len(nrow(janno_search))]
+    ),
+    aes(label = plot_label),
+    x = -Inf, y = Inf, hjust = -0.4, vjust = 1.4,
+    inherit.aes = FALSE,
+    size = 7
+  ) +
   theme_bw() +
   coord_sf(
     expand = FALSE,
@@ -96,9 +94,9 @@ ggsave(
   "plots/figure_4_genetic_distance_example_maps.jpeg",
   plot = p,
   device = "jpeg",
-  scale = 0.8,
+  scale = 0.75,
   dpi = 300,
-  width = 470, height = 300, units = "mm",
+  width = 300, height = 300, units = "mm",
   limitsize = F
 )
 
