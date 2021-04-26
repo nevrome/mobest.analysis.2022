@@ -1,7 +1,7 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/gpr/interpol_grid_median.RData")
+load("data/gpr/interpol_grid_median_selected_timeslices.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
@@ -19,8 +19,7 @@ janno_final <- janno_final %>%
 
 p_C1 <- interpol_grid %>%
   dplyr::filter(
-    dependent_var_id %in% "C1",
-    z %in% seq(-7000, 1000, 2000)
+    dependent_var_id %in% "C1"
   ) %>%
   ggplot() +
   geom_sf(data = extended_area, fill = "black") +
@@ -62,8 +61,7 @@ p_C1 <- interpol_grid %>%
 
 p_C2 <- interpol_grid %>%
   dplyr::filter(
-    dependent_var_id %in% "C2",
-    z %in% seq(-7000, 1000, 2000)
+    dependent_var_id %in% "C2"
   ) %>%
   ggplot() +
   geom_sf(data = extended_area, fill = "black") +
@@ -122,7 +120,7 @@ ggsave(
   device = "jpeg",
   scale = 0.5,
   dpi = 300,
-  width = 800, height = 300, units = "mm",
+  width = 770, height = 300, units = "mm",
   limitsize = F
 )
 
