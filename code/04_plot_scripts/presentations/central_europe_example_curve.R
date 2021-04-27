@@ -95,6 +95,59 @@ p0 <- ggplot() +
 
 p1 <- p0 + 
   geom_point(
+    data = origin_grid_median_modified %>% dplyr::filter(
+      search_id %in% c("Stuttgart_published.DG", "RISE434.SG")
+    ),
+    mapping = aes(
+      x = search_z, y = spatial_distance
+    ),
+    alpha = 1,
+    size = 3,
+    shape = 4
+  ) +
+  ggrepel::geom_label_repel(
+    data = origin_grid_median_modified %>% dplyr::filter(
+      search_id %in% c("Stuttgart_published.DG", "RISE434.SG")
+    ),
+    mapping = aes(
+      x = search_z, y = spatial_distance,
+      label = search_id
+    ),
+    size = 4,
+    ylim = c(3000, 4000),
+    xlim = c(-7000, -4500),
+    direction = "x",
+    arrow = arrow(length = unit(0.015, "npc"), type = "closed"),
+    #segment.curvature = 0.2,
+    point.padding = 2
+  ) +
+  geom_rect(
+    data = tibble::tibble(xmin = -Inf, ymin = -Inf, ymax = 0, xmax = Inf),
+    mapping = aes(
+      xmin = xmin, xmax = xmax,
+      ymin = ymin, ymax = ymax
+    ),
+    fill = "white"
+  ) + 
+  geom_point(
+    data = janno_final %>% dplyr::filter(!is.na(region_id)),
+    aes(x = Date_BC_AD_Median_Derived, y = -100),
+    shape = "|",
+    size = 3
+  )
+
+ggsave(
+  "plots/presentation/central_europe_example_p1.png",
+  plot = p1,
+  device = "png",
+  scale = 0.35,
+  dpi = 500,
+  width = 850, height = 400, units = "mm",
+  limitsize = F
+)
+
+p2 <- p0 + 
+  geom_point(
     data = origin_grid_median_modified,
     mapping = aes(
       x = search_z, y = spatial_distance, color = angle_deg
@@ -118,9 +171,9 @@ p1 <- p0 +
     size = 3
   )
 
-render_plot(p1, "plots/presentation/central_europe_example_p1.png")
+render_plot(p2, "plots/presentation/central_europe_example_p2.png")
 
-p2 <- p1 + 
+p3 <- p2 + 
   geom_line(
     data = moving_origin_grid,
     mapping = aes(x = z, y = undirected_mean_spatial_distance),
@@ -141,9 +194,9 @@ p2 <- p1 +
     size = 3
   )
 
-render_plot(p2, "plots/presentation/central_europe_example_p2.png")
+render_plot(p3, "plots/presentation/central_europe_example_p3.png")
 
-p3 <- p0 + 
+p4 <- p0 + 
   geom_rect(
     data = no_data_windows,
     mapping = aes(
@@ -202,4 +255,4 @@ p3 <- p0 +
     size = 3
   )
   
-render_plot(p3, "plots/presentation/central_europe_example_p3.png")
+render_plot(p4, "plots/presentation/central_europe_example_p4.png")
