@@ -16,7 +16,7 @@ model_grid <- mobest::create_model_grid(
   ),
   kernel = mobest::create_kernset_multi(
     d = list(c(500000, 500000, 800)), 
-    g = 0.08, 
+    g = 0.06, 
     on_residuals = T, 
     auto = F,
     it = "ds500_dt800_g008"
@@ -24,8 +24,8 @@ model_grid <- mobest::create_model_grid(
   prediction_grid = list(
     scs100_tl50 = mobest::prediction_grid_for_spatiotemporal_area(
       area,
-      spatial_cell_size = 100000,
-      temporal_layers = seq(-8000, 1500, 300)
+      spatial_cell_size = 150000,
+      temporal_layers = seq(-8000, 2000, 200)
     )
   )
 )
@@ -60,11 +60,11 @@ threedinter <- interpol_grid %>%
     color = viridis::viridis(50)[
       as.numeric(cut(mean_limited, breaks = 50))
     ],
-    alpha = (1 - (sd - min(sd)) / (max(sd) - min(sd))) * 0.7
+    alpha = (1 - (sd - min(sd)) / (max(sd) - min(sd))) * 0.9
   )
 
 # plot
-png(filename = "plots/3D_plot_gpr_C1.png", width = 22, height = 14, units = "cm", res = 300)
+png(filename = "plots/presentation/3D_plot_gpr_C1.png", width = 22, height = 14, units = "cm", res = 300)
 
 s <- scatterplot3d::scatterplot3d(
   threed$x, threed$y, threed$z, color = threed$color,

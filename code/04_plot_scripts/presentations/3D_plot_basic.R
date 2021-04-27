@@ -11,7 +11,7 @@ threed <- janno_final %>%
   )
 
 # plot
-png(filename = "plots/3D_plot_basic_C1.png", width = 22, height = 14, units = "cm", res = 300)
+png(filename = "plots/presentation/3D_plot_basic_C1.png", width = 22, height = 14, units = "cm", res = 300)
 
 s <- scatterplot3d::scatterplot3d(
   threed$x, threed$y, threed$z, color = threed$color,

@@ -1,7 +1,7 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/gpr/interpol_grid_median.RData")
+load("data/gpr/interpol_grid_median_selected_timeslices.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
@@ -16,10 +16,6 @@ janno_final <- janno_final %>%
       include.lowest = T
     )))
   )
-
-ex <- raster::extent(research_area)
-xlimit <- c(ex[1], ex[2])
-ylimit <- c(ex[3], ex[4])
 
 p_C1 <- interpol_grid %>%
   dplyr::filter(
@@ -39,14 +35,14 @@ p_C1 <- interpol_grid %>%
     data = janno_final,
     aes(x, y),
     size = 0.5,
-    color = "white"
+    color = "red"
   ) +
   scale_fill_viridis_c(
     breaks = seq(-0.1, 0.1, 0.02)
   ) +
   theme_bw() +
   coord_sf(
-    xlim = xlimit, ylim = ylimit,
+    expand = F,
     crs = epsg3035
   ) +
   guides(
@@ -71,7 +67,7 @@ p_C1 <- p_C1 + theme(legend.position = "none")
 
 
 ggsave(
-  "plots/interpolation_map_matrix.jpeg",
+  "plots/presentation/interpolation_map_matrix.jpeg",
   plot = p_C1,
   device = "jpeg",
   scale = 0.5,
