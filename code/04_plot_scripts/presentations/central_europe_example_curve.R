@@ -25,89 +25,6 @@ moving_origin_grid %<>% dplyr::filter(region_id == "Central Europe")
 mean_origin %<>% dplyr::filter(region_id == "Central Europe")
 no_data_windows %<>% dplyr::filter(region_id == "Central Europe")
 
-#### mobility estimator curves ####
-
-p_estimator <- ggplot() +
-  ggpointgrid::geom_pointgrid(
-    data = origin_grid_median_modified,
-    mapping = aes(
-      x = search_z, y = spatial_distance, color = angle_deg,
-      shape = origin_region_id
-    ),
-    size = 1.5,
-    grid_x = 100,
-    grid_y = 60
-  ) +
-  scale_shape_manual(
-    values = region_id_shapes,
-    na.value = 4
-  ) +
-  geom_rect(
-    data = no_data_windows,
-    mapping = aes(
-      ymax = Inf,
-      ymin = -Inf,
-      xmin = min_date_not_covered,
-      xmax = max_date_not_covered
-    ),
-    fill = "lightgrey",
-    alpha = 0.7
-  ) +
-  geom_ribbon(
-    data = moving_origin_grid,
-    mapping = aes(
-      x = z,
-      ymin = undirected_mean_spatial_distance - 2*std_spatial_distance,
-      ymax = undirected_mean_spatial_distance + 2*std_spatial_distance
-    ),
-    fill = "lightgrey",
-    alpha = 0.7
-  ) +
-  geom_line(
-    data = moving_origin_grid,
-    mapping = aes(x = z, y = undirected_mean_spatial_distance, color = mean_angle_deg),
-    size = 0.8
-  ) +
-  geom_rect(
-    data = tibble::tibble(xmin = -Inf, ymin = -Inf, ymax = 0, xmax = Inf),
-    mapping = aes(
-      xmin = xmin, xmax = xmax,
-      ymin = ymin, ymax = ymax
-    ),
-    fill = "white"
-  ) +
-  geom_point(
-    data = janno_final,
-    aes(x = Date_BC_AD_Median_Derived, y = -50),
-    shape = "|",
-    size = 2
-  ) +
-  theme_bw() +
-  theme(
-    legend.position = "right",
-    legend.background = element_blank(),
-    legend.title = element_text(size = 13),
-    legend.spacing.y = unit(0.2, 'cm'),
-    legend.key.height = unit(0.4, 'cm'),
-    legend.text = element_text(size = 10),
-  ) +
-  guides(
-    shape = guide_legend(title = "Region", nrow = 11, ncol = 1, byrow = F, override.aes = list(size = 3))
-  ) +
-  xlab("time in years calBC/calAD") +
-  ylab("spatial distance to \"origin\" (undirected mean) [km]") +
-  scale_color_gradientn(
-    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
-    na.value = NA,
-    guide = F
-  ) +
-  scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
-  coord_cartesian(
-    ylim = c(0, 2350),
-    #ylim = c(0, max(origin_grid$spatial_distance, na.rm = T)),
-    xlim = c(-7500, 1500)
-  )
-
 #### direction legend ####
 
 p_legend <- tibble::tibble(
@@ -137,20 +54,152 @@ p_legend <- tibble::tibble(
     axis.text.x = element_text(size = 10)
   )
 
-#### compile plots ####
-
-p <- cowplot::ggdraw(p_estimator) +
+add_legend <- function(p) {
+  cowplot::ggdraw(p) +
   cowplot::draw_plot(
-    p_legend, .76, .69, .3, .3
+    p_legend, .70, .60, .35, .35
+  )
+}
+
+render_plot <- function(p, path) {
+  ggsave(
+    path,
+    plot = p %>% add_legend(),
+    device = "png",
+    scale = 0.35,
+    dpi = 500,
+    width = 850, height = 400, units = "mm",
+    limitsize = F
+  )
+}
+
+#### prepare and render sequence of plots ####
+
+p0 <- ggplot() +
+  theme_bw() +
+  theme(
+    legend.position = "bottom",
+  ) +
+  xlab("time in years calBC/calAD") +
+  ylab("spatial distance to \"link point\" (undirected mean) [km]") +
+  scale_color_gradientn(
+    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
+    na.value = NA,
+    guide = F
+  ) +
+  scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
+  coord_cartesian(
+    xlim = c(-7000, 1000),
+    ylim = c(-30, max(origin_grid_median_modified$spatial_distance, na.rm = T))
   )
 
-ggsave(
-  paste0("plots/central_europe_example_curve.png"),
-  plot = p,
-  device = "png",
-  scale = 0.35,
-  dpi = 500,
-  width = 850, height = 400, units = "mm",
-  limitsize = F
-)
+p1 <- p0 + 
+  geom_point(
+    data = origin_grid_median_modified,
+    mapping = aes(
+      x = search_z, y = spatial_distance, color = angle_deg
+    ),
+    alpha = 1,
+    size = 3,
+    shape = 4
+  ) +
+  geom_rect(
+    data = tibble::tibble(xmin = -Inf, ymin = -Inf, ymax = 0, xmax = Inf),
+    mapping = aes(
+      xmin = xmin, xmax = xmax,
+      ymin = ymin, ymax = ymax
+    ),
+    fill = "white"
+  ) + 
+  geom_point(
+    data = janno_final %>% dplyr::filter(!is.na(region_id)),
+    aes(x = Date_BC_AD_Median_Derived, y = -100),
+    shape = "|",
+    size = 3
+  )
 
+render_plot(p1, "plots/presentation/central_europe_example_p1.png")
+
+p2 <- p1 + 
+  geom_line(
+    data = moving_origin_grid,
+    mapping = aes(x = z, y = undirected_mean_spatial_distance),
+    size = 0.4
+  ) +
+  geom_rect(
+    data = tibble::tibble(xmin = -Inf, ymin = -Inf, ymax = 0, xmax = Inf),
+    mapping = aes(
+      xmin = xmin, xmax = xmax,
+      ymin = ymin, ymax = ymax
+    ),
+    fill = "white"
+  ) + 
+  geom_point(
+    data = janno_final %>% dplyr::filter(!is.na(region_id)),
+    aes(x = Date_BC_AD_Median_Derived, y = -100),
+    shape = "|",
+    size = 3
+  )
+
+render_plot(p2, "plots/presentation/central_europe_example_p2.png")
+
+p3 <- p0 + 
+  geom_rect(
+    data = no_data_windows,
+    mapping = aes(
+      ymax = Inf,
+      ymin = -Inf,
+      xmin = min_date_not_covered,
+      xmax = max_date_not_covered
+    ),
+    fill = "lightgrey"
+  ) +
+  geom_ribbon(
+    data = moving_origin_grid,
+    mapping = aes(
+      x = z,
+      ymin = undirected_mean_spatial_distance - 2*sd_spatial_distance,
+      ymax = undirected_mean_spatial_distance + 2*sd_spatial_distance
+    ),
+    fill = "lightgrey",
+    alpha = 0.3
+  ) +
+  geom_ribbon(
+    data = moving_origin_grid,
+    mapping = aes(
+      x = z,
+      ymin = undirected_mean_spatial_distance - 2*std_spatial_distance,
+      ymax = undirected_mean_spatial_distance + 2*std_spatial_distance
+    ),
+    fill = "lightgrey",
+  ) +
+  geom_line(
+    data = moving_origin_grid,
+    mapping = aes(x = z, y = undirected_mean_spatial_distance),
+    size = 0.4
+  ) + 
+  geom_point(
+    data = origin_grid_median_modified,
+    mapping = aes(
+      x = search_z, y = spatial_distance, color = angle_deg
+    ),
+    alpha = 1,
+    size = 3,
+    shape = 4
+  ) +
+  geom_rect(
+    data = tibble::tibble(xmin = -Inf, ymin = -Inf, ymax = 0, xmax = Inf),
+    mapping = aes(
+      xmin = xmin, xmax = xmax,
+      ymin = ymin, ymax = ymax
+    ),
+    fill = "white"
+  ) + 
+  geom_point(
+    data = janno_final %>% dplyr::filter(!is.na(region_id)),
+    aes(x = Date_BC_AD_Median_Derived, y = -100),
+    shape = "|",
+    size = 3
+  )
+  
+render_plot(p3, "plots/presentation/central_europe_example_p3.png")
