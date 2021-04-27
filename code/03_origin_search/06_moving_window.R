@@ -76,7 +76,9 @@ origin_grid_modified <- origin_grid_modified %>%
 # moving average
 std <- function(x) sd(x)/sqrt(length(x))
 
+moving_window_window_width <- 400
 moving_window_step_resolution <- 50
+
 future::plan(future::multisession)
 moving_origin_grid <- furrr::future_map_dfr(
   unique(origin_grid_modified$region_id),
@@ -86,8 +88,8 @@ moving_origin_grid <- furrr::future_map_dfr(
     age_median_origin_per_region <- origin_grid_median_modified %>%
       dplyr::filter(region_id == region)
     purrr::map2_df(
-      seq(-8000, 1500, moving_window_step_resolution),
-      seq(-7500, 2000, moving_window_step_resolution),
+      seq(-8000, 2000 - moving_window_window_width, moving_window_step_resolution),
+      seq(-8000 + moving_window_window_width, 2000, moving_window_step_resolution),
       function(start, end) {
         io <- dplyr::filter(
           origin_per_region,
