@@ -24,7 +24,7 @@ janno_spatial <- janno_mds %>%
 
 region_vector <- janno_spatial %>% 
   sf::st_intersects(mobility_regions, sparse = FALSE) %>%
-  tibble::as_tibble() %>%
+  as.data.frame() %>%
   magrittr::set_names(as.character(mobility_regions$region_id)) %>%
   dplyr::mutate(id = seq_len(nrow(.))) %>%
   tidyr::pivot_longer(setdiff(everything(), one_of("id")), names_to = "region") %>%
@@ -32,7 +32,8 @@ region_vector <- janno_spatial %>%
   dplyr::summarise(
     region_id = if (any(value)) { region[value] } else { NA_character_ }
   ) %$%
-  as.character(region_id)
+  factor(region_id, levels = levels(mobility_regions$region_id))
+  
 
 janno_final <- janno_spatial %>%
   dplyr::mutate(
