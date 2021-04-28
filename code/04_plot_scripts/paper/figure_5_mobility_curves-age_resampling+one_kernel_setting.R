@@ -17,27 +17,23 @@ load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
 
+filter_region <- function(x, r = c(
+  "Britain and Ireland",
+  "Central Europe",
+  "Western Pontic Steppe",
+  "Iberia",
+  "Italy, Sardinia, Adria",
+  "Eastern Balkan",
+  "Eastern Mediterranean"
+)) {
+  dplyr::filter(x, region_id %in% r)
+}
+
 #### mobility estimator curves ####
-
-moving_origin_grid$region_id <- factor(
-  moving_origin_grid$region_id, 
-  c(
-    "Britain and Ireland",
-    "Central Europe",
-    "Iberia",
-    "Eastern Balkan"
-  )
-)
-
 p_estimator <- ggplot() +
-  facet_wrap(~factor(region_id, levels = c(
-    "Britain and Ireland",
-    "Central Europe",
-    "Iberia",
-    "Eastern Balkan"
-  ))) +
+  facet_wrap(~region_id) +
   geom_rect(
-    data = no_data_windows,
+    data = no_data_windows %>% filter_region,
     mapping = aes(
       ymax = Inf,
       ymin = -Inf,
@@ -47,7 +43,7 @@ p_estimator <- ggplot() +
     fill = "lightgrey"
   ) +
   geom_ribbon(
-    data = moving_origin_grid,
+    data = moving_origin_grid %>% filter_region,
     mapping = aes(
       x = z,
       ymin = undirected_mean_spatial_distance - 2*sd_spatial_distance,
@@ -57,7 +53,7 @@ p_estimator <- ggplot() +
     alpha = 0.3
   ) +
   geom_ribbon(
-    data = moving_origin_grid,
+    data = moving_origin_grid %>% filter_region,
     mapping = aes(
       x = z,
       ymin = undirected_mean_spatial_distance - 2*std_spatial_distance,
@@ -66,7 +62,7 @@ p_estimator <- ggplot() +
     fill = "lightgrey",
   ) +
   geom_line(
-    data = moving_origin_grid,
+    data = moving_origin_grid %>% filter_region,
     mapping = aes(x = z, y = undirected_mean_spatial_distance),
     size = 0.4
   ) +
@@ -79,7 +75,7 @@ p_estimator <- ggplot() +
     fill = "white"
   ) +
   geom_point(
-    data = origin_grid_median_modified,
+    data = origin_grid_median_modified %>% filter_region,
     mapping = aes(
       x = search_z, y = spatial_distance, color = angle_deg
     ),
@@ -88,7 +84,7 @@ p_estimator <- ggplot() +
     shape = 4
   ) +
   geom_point(
-    data = janno_final %>% dplyr::filter(!is.na(region_id)),
+    data = janno_final %>% dplyr::filter(!is.na(region_id)) %>% filter_region,
     aes(x = Date_BC_AD_Median_Derived, y = -100),
     shape = "|"
   ) +
@@ -167,14 +163,14 @@ p_map <- ggplot() +
     fill = "white", colour = "black", size = 0.4
   ) +
   geom_sf(
-    data = mobility_maps %>% dplyr::filter(angle_deg_cut == "W"),
+    data = mobility_maps %>% dplyr::filter(angle_deg_cut == "W") %>% filter_region,
     color = "black",
     size = 0.7,
     fill = "grey",
     alpha = 0.3
   ) +
   geom_point(
-    data = mobility_maps_center,
+    data = mobility_maps_center %>% filter_region,
     mapping = aes(
       x = x, 
       y = y,
