@@ -1,9 +1,12 @@
 # region shapes
 region_id_shapes <- c(
-  "Iberia" = 0,
-  "Britain and Ireland"  = 1,
-  "Central Europe" = 2,
-  "Eastern Balkan" = 5
+  "Britain and Ireland" = 0,
+  "Central Europe" = 1,
+  "Western Pontic Steppe" = 2,
+  "Iberia" = 5,
+  "Italy, Sardinia, Adria" = 6,
+  "Eastern Balkan" = 13,
+  "Eastern Mediterranean" = 10
 )
 
 save(region_id_shapes, file = "data/plot_reference_data/region_id_shapes.RData")
