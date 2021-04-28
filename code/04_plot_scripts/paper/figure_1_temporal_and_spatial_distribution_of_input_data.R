@@ -21,12 +21,6 @@ p_map <- ggplot() +
     fill = "white", colour = "darkgrey", size = 0.4
   ) +
   geom_sf(
-    data = mobility_regions,
-    colour = "black", size = 0.5,
-    fill = "grey",
-    alpha = 0.2
-  ) +
-  geom_sf(
     data = research_area,
     fill = NA, colour = "black", size = 0.8, linetype = "dashed"
   ) +
@@ -35,8 +29,14 @@ p_map <- ggplot() +
     aes(x = x, y = y, color = Date_BC_AD_Median_Derived, shape = region_id),
     size = 1.5,
     alpha = 1,
-    width = 50000,
-    height = 50000
+    width = 60000,
+    height = 60000
+  ) +
+  geom_sf_label(
+    data = mobility_regions,
+    aes(label = region_id),
+    colour = "black", size = 4,
+    alpha = 0.6
   ) +
   theme_bw() +
   coord_sf(
