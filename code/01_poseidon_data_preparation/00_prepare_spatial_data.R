@@ -73,8 +73,8 @@ mobility_region_names <- c(
   "Central Europe",
   "Western Pontic Steppe",
   "Iberia",
-  "Italy, Sardinia, Adria",
-  "Eastern Balkan",
+  "Italy",
+  "Southeastern Europe",
   "Eastern Mediterranean"
 )
 mobility_regions$region_id <- factor(
