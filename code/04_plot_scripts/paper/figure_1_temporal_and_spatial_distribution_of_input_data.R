@@ -22,7 +22,9 @@ p_map <- ggplot() +
   ) +
   geom_sf(
     data = mobility_regions,
-    fill = NA, colour = "black", size = 0.5
+    colour = "black", size = 0.5,
+    fill = "grey",
+    alpha = 0.2
   ) +
   geom_sf(
     data = research_area,

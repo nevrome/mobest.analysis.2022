@@ -21,17 +21,20 @@ load("data/plot_reference_data/region_id_shapes.RData")
 
 moving_origin_grid$region_id <- factor(
   moving_origin_grid$region_id, 
-  
+  c(
+    "Britain and Ireland",
+    "Central Europe",
+    "Iberia",
+    "Eastern Balkan"
+  )
 )
 
 p_estimator <- ggplot() +
   facet_wrap(~factor(region_id, levels = c(
-    "Southeastern Britain",
+    "Britain and Ireland",
     "Central Europe",
-    "Western Pontic steppe",
-    "Northeastern Iberia",
-    "Pannonian Basin",
-    "Southern Levant"
+    "Iberia",
+    "Eastern Balkan"
   ))) +
   geom_rect(
     data = no_data_windows,
@@ -109,6 +112,7 @@ p_estimator <- ggplot() +
   ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(
+    xlim = c(-7400, 1400),
     ylim = c(-100, max(origin_grid_median_modified$spatial_distance, na.rm = T))
   )
 
@@ -117,9 +121,6 @@ p_estimator <- ggplot() +
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
-
-origin_grid %>%
-  dplyr::filter(!is.na(region_id))
 
 mobility_maps <- origin_grid_modified %>% 
   dplyr::select(region_id, search_z_cut, angle_deg_cut, spatial_distance) %>%
@@ -166,10 +167,11 @@ p_map <- ggplot() +
     fill = "white", colour = "black", size = 0.4
   ) +
   geom_sf(
-    data = mobility_maps,
+    data = mobility_maps %>% dplyr::filter(angle_deg_cut == "W"),
     color = "black",
     size = 0.7,
-    fill = "white"
+    fill = "grey",
+    alpha = 0.3
   ) +
   geom_point(
     data = mobility_maps_center,

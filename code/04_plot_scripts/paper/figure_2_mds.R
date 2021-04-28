@@ -31,15 +31,15 @@ p <- ggplot() +
     fill = "black",
     color = "black",
     shape = 21,
-    grid_x = 24,
-    grid_y = 27
+    grid_x = 23,
+    grid_y = 23
   ) +
   ggpointgrid::geom_pointgrid(
     data = region_age_group_mean,
     aes(x = mean_C1, y = mean_C2, color = z, shape = region_id),
     size = 2,
-    grid_x = 24,
-    grid_y = 27,
+    grid_x = 23,
+    grid_y = 23,
     stroke = 1
   ) +
   scale_shape_manual(
@@ -47,7 +47,7 @@ p <- ggplot() +
     na.value = 3
   ) +
   age_colors_gradient +
-  coord_fixed(xlim = c(-0.05, 0.08), ylim = c(-0.1, 0.065)) +
+  coord_fixed(xlim = c(-0.05, 0.08), ylim = c(-0.095, 0.06)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   theme_bw() +
@@ -71,7 +71,7 @@ ggsave(
   device = "jpeg",
   scale = 0.7,
   dpi = 300,
-  width = 200, height = 300, units = "mm",
+  width = 220, height = 300, units = "mm",
   limitsize = F
 )
 
