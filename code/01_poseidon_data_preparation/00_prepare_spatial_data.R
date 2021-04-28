@@ -69,15 +69,13 @@ mobility_regions <- sf::st_read(
   "data_tracked/mobility_regions/mobility_regions.gpkg", quiet = TRUE
 )
 mobility_region_names <- c(
+  "Iberia",
+  "Britain and Ireland",
   "Central Europe",
-  "Pannonian Basin",
-  "Southeastern Britain",
-  "Northeastern Iberia",
-  "Western Pontic steppe",
-  "Southern Levant"
+  "Eastern Balkan"
 )
 mobility_regions$region_id <- factor(
-  mobility_region_names, levels = mobility_region_names
+  mobility_regions$region_id, levels = mobility_region_names
 )
 save(mobility_regions, file = "data/spatial/mobility_regions.RData")
 
