@@ -17,101 +17,6 @@ load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
 
-filter_region <- function(x, r = c(
-  "Britain and Ireland",
-  "Central Europe",
-  "Western Pontic Steppe",
-  "Iberia",
-  "Italy, Sardinia, Adria",
-  "Eastern Balkan",
-  "Eastern Mediterranean"
-)) {
-  dplyr::filter(x, region_id %in% r)
-}
-
-#### mobility estimator curves ####
-p_estimator <- ggplot() +
-  facet_wrap(~region_id) +
-  geom_rect(
-    data = no_data_windows %>% filter_region,
-    mapping = aes(
-      ymax = Inf,
-      ymin = -Inf,
-      xmin = min_date_not_covered,
-      xmax = max_date_not_covered
-    ),
-    fill = "lightgrey"
-  ) +
-  geom_ribbon(
-    data = moving_origin_grid %>% filter_region,
-    mapping = aes(
-      x = z,
-      ymin = undirected_mean_spatial_distance - 2*sd_spatial_distance,
-      ymax = undirected_mean_spatial_distance + 2*sd_spatial_distance
-    ),
-    fill = "lightgrey",
-    alpha = 0.3
-  ) +
-  geom_ribbon(
-    data = moving_origin_grid %>% filter_region,
-    mapping = aes(
-      x = z,
-      ymin = undirected_mean_spatial_distance - 2*std_spatial_distance,
-      ymax = undirected_mean_spatial_distance + 2*std_spatial_distance
-    ),
-    fill = "lightgrey",
-  ) +
-  geom_line(
-    data = moving_origin_grid %>% filter_region,
-    mapping = aes(x = z, y = undirected_mean_spatial_distance),
-    size = 0.4
-  ) +
-  geom_rect(
-    data = tibble::tibble(xmin = -Inf, ymin = -Inf, ymax = 0, xmax = Inf),
-    mapping = aes(
-      xmin = xmin, xmax = xmax,
-      ymin = ymin, ymax = ymax
-    ),
-    fill = "white"
-  ) +
-  geom_point(
-    data = origin_grid_median_modified %>% filter_region,
-    mapping = aes(
-      x = search_z, y = spatial_distance, color = angle_deg
-    ),
-    alpha = 1,
-    size = 1.5,
-    shape = 4
-  ) +
-  geom_point(
-    data = janno_final %>% dplyr::filter(!is.na(region_id)) %>% filter_region,
-    aes(x = Date_BC_AD_Median_Derived, y = -100),
-    shape = "|"
-  ) +
-  geom_vline(
-    data = data.frame(
-      x = c(-5000, -3000, -1000, 1000)
-    ),
-    aes(xintercept = x),
-    linetype = "dotted"
-  ) +
-  theme_bw() +
-  theme(
-    legend.position = "bottom",
-  ) +
-  xlab("time in years calBC/calAD") +
-  ylab("spatial distance to \"link point\" (undirected mean) [km]") +
-  scale_color_gradientn(
-    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
-    na.value = NA,
-    guide = F
-  ) +
-  scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
-  coord_cartesian(
-    xlim = c(-7400, 1400),
-    ylim = c(-100, max(origin_grid_median_modified$spatial_distance, na.rm = T))
-  )
-
 #### map series ####
 
 ex <- raster::extent(research_area)
@@ -243,15 +148,10 @@ p_legend <- tibble::tibble(
 
 p_double_legend <- cowplot::plot_grid(p_legend, p_arrows_legend, ncol = 2, rel_widths = c(0.7, 0.5))
 
-plot_bottom <- cowplot::plot_grid(p_map, p_double_legend, ncol = 2, rel_widths = c(0.8, 0.2))
-
-p <- cowplot::plot_grid(
-  p_estimator, plot_bottom, nrow = 2, rel_heights = c(1, 0.44), labels = c("A", "B"),
-  label_y = c(1, 1.1)
-)
+p <- cowplot::plot_grid(p_map, p_double_legend, ncol = 2, rel_widths = c(0.8, 0.2))
 
 ggsave(
-  paste0("plots/figure_5_mobility_curves-age_resampling+one_kernel_setting.png"),
+  paste0("plots/figure_sup_12_mean_direction_map_matrix.png"),
   plot = p,
   device = "png",
   scale = 0.5,
