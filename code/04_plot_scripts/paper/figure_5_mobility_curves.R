@@ -19,7 +19,7 @@ load("data/plot_reference_data/region_id_shapes.RData")
 
 #### mobility estimator curves ####
 p_estimator <- ggplot() +
-  lemon::facet_rep_wrap(~region_id, ncol = 1, repeat.tick.labels = T) +
+  lemon::facet_rep_wrap(~region_id, ncol = 2, repeat.tick.labels = T) +
   geom_rect(
     data = no_data_windows,
     mapping = aes(
@@ -128,17 +128,17 @@ p_legend <- tibble::tibble(
 p <- cowplot::ggdraw(p_estimator) +
   cowplot::draw_plot(
     p_legend,
-    x = 0.2, y = 0.83, 
-    width = 0.2, height = 0.2
+    x = 0.65, y = 0.05, 
+    width = 0.22, height = 0.22
   )
 
 ggsave(
   paste0("plots/figure_5_mobility_curves.png"),
   plot = p,
   device = "png",
-  scale = 0.5,
+  scale = 0.7,
   dpi = 300,
-  width = 300, height = 720, units = "mm",
+  width = 400, height = 300, units = "mm",
   limitsize = F
 )
 
