@@ -5,17 +5,13 @@ library(ggplot2)
 
 # curves
 load("data/poseidon_data/janno_final.RData")
-load("data/origin_search/origin_grid_median_modified.RData")
 load("data/origin_search/origin_grid_modified.RData")
-load("data/origin_search/moving_origin_grid.RData")
-load("data/origin_search/no_data_windows.RData")
 
 # maps
 load("data/spatial/mobility_regions.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
-load("data/plot_reference_data/region_id_shapes.RData")
 
 #### map series ####
 
@@ -25,7 +21,7 @@ ylimit <- c(ex[3], ex[4])
 
 mobility_maps <- origin_grid_modified %>% 
   dplyr::select(region_id, search_z_cut, angle_deg_cut, spatial_distance) %>%
-  dplyr::filter(search_z_cut %in% c(-5000, -3000, -1000, 1000)) %>%
+  dplyr::filter(search_z_cut %in% seq(-6000, 1000, 1000)) %>%
   tidyr::complete(region_id, search_z_cut) %>%
   dplyr::group_by(region_id, search_z_cut, angle_deg_cut) %>%
   dplyr::summarise(mean_distance = mean(spatial_distance, na.rm = T), .groups = "drop") %>%
@@ -35,9 +31,13 @@ mobility_maps <- origin_grid_modified %>%
   ) %>% sf::st_as_sf() %>%
   dplyr::mutate(
     z_named = dplyr::recode_factor(as.character(search_z_cut), !!!list(
-      "-5000" = "5250-4750 calBC", 
-      "-3000" = "3250-2750 calBC", 
+      "-6000" = "6250-5750 calBC", 
+      "-5000" = "5250-4750 calBC",
+      "-4000" = "4250-3750 calBC",
+      "-3000" = "3250-2750 calBC",
+      "-2000" = "2250-1750 calBC",
       "-1000" = "1250-750 calBC",
+      "0" = "250 calBC - 250 calAD",
       "1000"  = "750-1250 calAD"
     ))
   )
@@ -65,17 +65,10 @@ mobility_maps_center <- mobility_maps %>%
 p_map <- ggplot() +
   geom_sf(
     data = extended_area,
-    fill = "white", colour = "black", size = 0.4
-  ) +
-  geom_sf(
-    data = mobility_maps %>% dplyr::filter(angle_deg_cut == "W") %>% filter_region,
-    color = "black",
-    size = 0.7,
-    fill = "grey",
-    alpha = 0.3
+    fill = "white", colour = "darkgrey", size = 0.4
   ) +
   geom_point(
-    data = mobility_maps_center %>% filter_region,
+    data = mobility_maps_center,
     mapping = aes(
       x = x, 
       y = y,
@@ -85,13 +78,13 @@ p_map <- ggplot() +
   ) +
   scale_size_continuous(
     range = c(0.1, 5), 
-    name = "mean\nspatial\ndistance\n[km]",
-    breaks = round(diff(range(mobility_maps_center$mean_distance, na.rm = T))/5, -2)*(1:5),
-    guide = guide_legend(ncol = 1, label.position = "right")
+    name = "mean spatial distance [km]",
+    breaks = round(diff(range(mobility_maps_center$mean_distance, na.rm = T))/5, -2)*(1:5)
   ) +
-  facet_grid(cols = dplyr::vars(z_named)) +
+  facet_wrap(~z_named) +
   theme_bw() +
   theme(
+    legend.position = "bottom",
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     axis.title = element_blank(),
@@ -110,9 +103,6 @@ p_map <- ggplot() +
     ),
     guide = F
   )
-
-p_arrows_legend <- cowplot::get_legend(p_map)
-p_map <- p_map + theme(legend.position = "none")
 
 #### direction legend ####
 
@@ -146,9 +136,13 @@ p_legend <- tibble::tibble(
 
 #### compile plots ####
 
-p_double_legend <- cowplot::plot_grid(p_legend, p_arrows_legend, ncol = 2, rel_widths = c(0.7, 0.5))
+p <- cowplot::ggdraw(p_map) +
+  cowplot::draw_plot(
+    p_legend,
+    x = 0.7, y = 0.1, 
+    width = 0.25, height = 0.25
+  )
 
-p <- cowplot::plot_grid(p_map, p_double_legend, ncol = 2, rel_widths = c(0.8, 0.2))
 
 ggsave(
   paste0("plots/figure_sup_12_mean_direction_map_matrix.png"),
@@ -156,7 +150,7 @@ ggsave(
   device = "png",
   scale = 0.5,
   dpi = 300,
-  width = 700, height = 400, units = "mm",
+  width = 360, height = 300, units = "mm",
   limitsize = F
 )
 
