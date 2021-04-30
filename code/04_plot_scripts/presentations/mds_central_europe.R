@@ -4,15 +4,35 @@ library(ggplot2)
 load("data/poseidon_data/janno_final.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 
+`%=NA=%` <- function(a, b) {
+  c <- a == b
+  c <- ifelse(is.na(c), FALSE, c)
+}
+
+janno_mod <- janno_final %>% 
+  dplyr::arrange(Date_BC_AD_Median_Derived) %>%
+  dplyr::mutate(
+    central_europe = region_id %=NA=% "Central Europe"
+  )
+
 p <- ggplot() +
   geom_point(
-    data = janno_final,
+    data = janno_mod %>% dplyr::filter(!central_europe),
+    aes(
+      x = C1, y = C2
+    ),
+    color = "darkgrey",
+    size = 2,
+    shape = 3
+  ) +
+  geom_point(
+    data = janno_mod %>% dplyr::filter(central_europe),
     aes(
       x = C1, y = C2, 
       color = Date_BC_AD_Median_Derived
     ),
-    size = 2,
-    shape = 3
+    size = 3,
+    shape = 16
   ) +
   age_colors_gradient +
   coord_fixed(xlim = c(-0.05, 0.08), ylim = c(-0.095, 0.06)) +
@@ -33,7 +53,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  paste0("plots/presentation/simple_mds.jpeg"),
+  paste0("plots/presentation/mds_central_europe.jpeg"),
   plot = p,
   device = "jpeg",
   scale = 0.7,
