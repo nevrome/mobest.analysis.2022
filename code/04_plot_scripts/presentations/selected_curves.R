@@ -59,8 +59,8 @@ ggsave(
   filename = "plots/presentation/windrose_legend.png",
   plot = p_legend,
   device = "png",
-  scale = 0.4,
-  dpi = 500,
+  scale = 0.15,
+  dpi = 300,
   width = 300, height = 300, units = "mm",
   limitsize = F
 )
