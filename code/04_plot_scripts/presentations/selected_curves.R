@@ -55,6 +55,16 @@ p_legend <- tibble::tibble(
     axis.text.x = element_text(size = 10)
   )
 
+ggsave(
+  filename = "plots/presentation/windrose_legend.png",
+  plot = p_legend,
+  device = "png",
+  scale = 0.4,
+  dpi = 500,
+  width = 300, height = 300, units = "mm",
+  limitsize = F
+)
+
 #### prepare and render plot ####
 p0 <- ggplot() +
   theme_bw() +
