@@ -93,6 +93,35 @@ p0 <- ggplot() +
     ylim = c(-30, max(origin_grid_median_modified$spatial_distance, na.rm = T))
   )
 
+p05 <- p0 + 
+  geom_point(
+    data = origin_grid_median_modified,
+    mapping = aes(
+      x = search_z, y = spatial_distance, color = angle_deg
+    ),
+    alpha = 1,
+    size = 3,
+    shape = NA
+  ) +
+  geom_rect(
+    data = tibble::tibble(xmin = -Inf, ymin = -Inf, ymax = 0, xmax = Inf),
+    mapping = aes(
+      xmin = xmin, xmax = xmax,
+      ymin = ymin, ymax = ymax
+    ),
+    fill = "white"
+  )
+
+ggsave(
+  file = "plots/presentation/central_europe_example_p05.png",
+  plot = p05,
+  device = "png",
+  scale = 0.35,
+  dpi = 500,
+  width = 850, height = 400, units = "mm",
+  limitsize = F
+)
+
 p1 <- p0 + 
   geom_point(
     data = origin_grid_median_modified,
