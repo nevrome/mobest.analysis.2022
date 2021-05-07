@@ -36,7 +36,7 @@ p_map <- ggplot() +
     data = mobility_regions,
     aes(label = region_id),
     colour = "black", size = 4,
-    alpha = 0.6
+    alpha = 0.3
   ) +
   theme_bw() +
   coord_sf(
