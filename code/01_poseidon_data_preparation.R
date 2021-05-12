@@ -11,7 +11,7 @@ local_script("./code/01_poseidon_data_preparation/02_poseidon_extract.sh")
 cluster_up("data/poseidon_data/poseidon_extracted")
 cluster_qsub_script("code/01_poseidon_data_preparation/03_mds_plink.sh")
 # wait until cluster run ready
-cluster_down("data/poseidon_data/mds/poseidon_extracted.pruned.mds")
+cluster_down("data/poseidon_data/mds")
 
 source("./code/01_poseidon_data_preparation/04_prepare_final_dataset.R")
 

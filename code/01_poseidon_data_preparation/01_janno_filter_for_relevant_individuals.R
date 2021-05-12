@@ -65,7 +65,9 @@ janno_QC <- janno_QC %>% dplyr::filter(
 # Multiple samples from the same individual as well as biologically related individuals are not removed: This should not be an issue for this analysis
 # Coverage and damage are not too relevant here as filter criteria
 
-janno_filtered_final <- janno_QC
+janno_filtered_final <- janno_pre_mds <- janno_QC
+
+save(janno_pre_mds, file = "data/poseidon_data/janno_pre_mds.R")
 
 # export for QGIS: check every now and then if the new data justifies different region definition
 janno_filtered_final %>% 
