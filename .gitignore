@@ -56,3 +56,5 @@ schemata/*.png
 # rendered stuff
 *.pdf
 *.html
+
+*.log
