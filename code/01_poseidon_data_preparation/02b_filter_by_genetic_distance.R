@@ -63,12 +63,39 @@ distances <- genetic_distances %>%
 #     aes(x = spatial_distance, y = genetic_distance, col = ..count..),
 #   )
 
-distances %>% dplyr::filter(
-    genetic_distance < 0.2
-  ) %>% dplyr::group_by(
-    
-  )
+small_genetic_distances <- distances %>% 
+  dplyr::filter(genetic_distance < 0.2)
 
+genetic_identicals_groups <- small_genetic_distances %>% 
+  dplyr::select(IID1, IID2) %>%
+  igraph::graph_from_data_frame() %>%
+  igraph::components() %$%
+  membership %>%
+  as.list() %>%
+  data.frame() %>%
+  t %>%
+  tibble::as_tibble(rownames = "id") %>%
+  setNames(c("id", "group"))
 
-mean(distances$genetic_distance) - 3*sd(distances$genetic_distance)
+identical_groups <- genetic_identicals_groups %>%
+  dplyr::group_by(group) %>%
+  dplyr::mutate(
+    n = dplyr::n()
+  ) %>%
+  dplyr::filter(
+    n > 1
+  ) %>%
+  dplyr::ungroup()
+
+# this should be done on SNP count!!
+group_representatives <- identical_groups %>%
+  dplyr::group_by(group) %>%
+  dplyr::filter(
+    dplyr::row_number() == 1
+  ) %>%
+  dplyr::ungroup() %$% 
+  id
+
+duplicates_to_remove <- setdiff(identical_groups$id, group_representatives)
+
 
