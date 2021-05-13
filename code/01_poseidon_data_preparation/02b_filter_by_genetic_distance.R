@@ -14,11 +14,13 @@ dist_labels <- readr::read_tsv(
 
 colnames(dist_values) <- dist_labels$X2
 rownames(dist_values) <- dist_labels$X2
+dist_matrix <- dist_values %>% as.matrix()
+dist_matrix[lower.tri(dist_matrix)] <- NA
 
-genetic_distances <- dist_values %>%
-  as.matrix() %>%
+genetic_distances <- dist_matrix %>%
   reshape2::melt() %>%
-  setNames(c("IID1", "IID2", "genetic_distance"))
+  setNames(c("IID1", "IID2", "genetic_distance")) %>%
+  dplyr::filter(!is.na(genetic_distance))
 
 load("data/poseidon_data/janno_pre_mds.R")
 
@@ -45,17 +47,28 @@ distances <- genetic_distances %>%
     by = c("IID1", "IID2")
   )
 
-distances %>% ggplot() +
-  geom_hex(
-    aes(x = spatial_distance, y = genetic_distance)
+# distances %>%
+#   ggplot() +
+#   geom_hex(
+#     aes(x = spatial_distance, y = genetic_distance, col = ..count..),
+#   )
+
+# distances %>%
+#   dplyr::filter(
+#     genetic_distance > 0.3,
+#     genetic_distance < 0.33
+#   ) %>%
+#   ggplot() +
+#   geom_hex(
+#     aes(x = spatial_distance, y = genetic_distance, col = ..count..),
+#   )
+
+distances %>% dplyr::filter(
+    genetic_distance < 0.2
+  ) %>% dplyr::group_by(
+    
   )
 
-schu <- distances %>% dplyr::filter(
-  # spatial_distance < 100,
-  # temporal_distance < 100
-  spatial_distance == 0,
-  temporal_distance  == 0
-)
 
-
+mean(distances$genetic_distance) - 3*sd(distances$genetic_distance)
 
