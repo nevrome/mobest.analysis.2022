@@ -41,28 +41,14 @@ spatiotemporal_distances <- janno_pre_mds %$%
       as.vector()
   )
 
+# merge to distance table
 distances <- genetic_distances %>% 
   dplyr::left_join(
     spatiotemporal_distances,
     by = c("IID1", "IID2")
   )
 
-# distances %>%
-#   ggplot() +
-#   geom_hex(
-#     aes(x = spatial_distance, y = genetic_distance, col = ..count..),
-#   )
-
-# distances %>%
-#   dplyr::filter(
-#     genetic_distance > 0.3,
-#     genetic_distance < 0.33
-#   ) %>%
-#   ggplot() +
-#   geom_hex(
-#     aes(x = spatial_distance, y = genetic_distance, col = ..count..),
-#   )
-
+# filter by genetic distance to identify identicals
 small_genetic_distances <- distances %>% 
   dplyr::filter(genetic_distance < 0.2)
 
@@ -74,7 +60,7 @@ genetic_identicals_groups <- small_genetic_distances %>%
   as.list() %>%
   data.frame() %>%
   t %>%
-  tibble::as_tibble(rownames = "id") %>%
+  tibble::as_tibble(rownames = "id", .name_repair = "universal") %>%
   setNames(c("id", "group"))
 
 identical_groups <- genetic_identicals_groups %>%
@@ -87,9 +73,14 @@ identical_groups <- genetic_identicals_groups %>%
   ) %>%
   dplyr::ungroup()
 
-# this should be done on SNP count!!
 group_representatives <- identical_groups %>%
+  dplyr::left_join(
+    janno_pre_mds, by = c("id" = "Individual_ID")
+  ) %>%
   dplyr::group_by(group) %>%
+  dplyr::filter(
+    Nr_autosomal_SNPs == max(Nr_autosomal_SNPs)
+  ) %>%
   dplyr::filter(
     dplyr::row_number() == 1
   ) %>%
@@ -98,4 +89,17 @@ group_representatives <- identical_groups %>%
 
 duplicates_to_remove <- setdiff(identical_groups$id, group_representatives)
 
+# remove identicals
+`%nin%` <- Negate(`%in%`)
+janno_without_identicals <- janno_pre_mds %>%
+  dplyr::filter(Individual_ID %nin% duplicates_to_remove)
 
+# write ind_list for extraction
+tibble::tibble(
+  ind = paste0("<", sort(janno_without_identicals$Individual_ID), ">")
+) %>% 
+  readr::write_delim(
+    file = "code/01_poseidon_data_preparation/ind_list.txt",
+    delim = " ",
+    col_names = FALSE
+  )

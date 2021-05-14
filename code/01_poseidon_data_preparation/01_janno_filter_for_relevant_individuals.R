@@ -85,11 +85,10 @@ janno_filtered_final %>%
 
 # store ind list for poseidon extraction
 tibble::tibble(
-  #pop = sapply(janno_filtered_final$Group_Name, function(x) { x[[1]] }),
   ind = paste0("<", sort(janno_filtered_final$Individual_ID), ">")
 ) %>% 
   readr::write_delim(
-    file = "code/01_poseidon_data_preparation/ind_list.txt",
+    file = "data/poseidon_data/identical_filter/pre_identicals_filter_ind_list.txt",
     delim = " ",
     col_names = FALSE
   )
