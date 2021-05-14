@@ -41,15 +41,10 @@ spatiotemporal_distances <- janno_pre_mds %$%
       as.vector()
   )
 
-genetic_spatiotemporal_distances <- genetic_distances %>% 
+distances <- genetic_distances %>% 
   dplyr::left_join(
     spatiotemporal_distances,
     by = c("IID1", "IID2")
-  )
-
-distances <- genetic_spatiotemporal_distances %>%
-  dplyr::mutate(
-    string_distance = stringdist::stringdist(IID1, IID2, method = "lv")
   )
 
 # distances %>%
@@ -57,12 +52,6 @@ distances <- genetic_spatiotemporal_distances %>%
 #   geom_hex(
 #     aes(x = spatial_distance, y = genetic_distance, col = ..count..),
 #   )
-
-distances %>%
-  ggplot() +
-  geom_hex(
-    aes(x = string_distance, y = genetic_distance, col = ..count..)
-  )
 
 # distances %>%
 #   dplyr::filter(
