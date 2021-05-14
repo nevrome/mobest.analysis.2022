@@ -10,7 +10,7 @@ local_script("./code/01_poseidon_data_preparation/02_pre_identicals_filter_posei
 cluster_up("data/poseidon_data/poseidon_extracted_pre_identicals_filter")
 cluster_qsub_script("code/01_poseidon_data_preparation/03_distance_plink.sh")
 # wait until cluster run ready
-cluster_down("data/poseidon_data/poseidon_extracted_pre_identicals_filter")
+cluster_down("data/poseidon_data/identical_filter")
 source("code/01_poseidon_data_preparation/04_filter_by_genetic_distance.R")
 
 local_script("./code/01_poseidon_data_preparation/05_poseidon_extract.sh")
