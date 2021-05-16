@@ -32,7 +32,7 @@ cluster_run <- function(command) {
   ))
 }
 
-cluster_up <- function(path) {
+cluster_up_one <- function(path) {
   if (dir.exists(path)) { 
     scp <- "scp -r"
     to_copy <- file.path(basepath, dirname(path))
@@ -48,7 +48,12 @@ cluster_up <- function(path) {
   ))
 }
 
-cluster_down <- function(path) {
+cluster_up <- function(...) {
+  paths <- list(...)
+  Map(cluster_up_one, paths)
+}
+
+cluster_down_one <- function(path) {
   if (dir.exists(path)) {
     scp <- "scp -r"
     to_copy <- dirname(path)
@@ -64,3 +69,8 @@ cluster_down <- function(path) {
   ))
 }
 
+cluster_down <- function(...) {
+  paths <- list(...)
+  print(paths)
+  Map(cluster_down_one, paths)
+}
