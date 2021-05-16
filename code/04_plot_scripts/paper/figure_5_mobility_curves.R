@@ -34,8 +34,8 @@ p_estimator <- ggplot() +
     data = moving_origin_grid,
     mapping = aes(
       x = z,
-      ymin = undirected_mean_spatial_distance - 2*sd_spatial_distance,
-      ymax = undirected_mean_spatial_distance + 2*sd_spatial_distance
+      ymin = undirected_mean_spatial_distance_upper_quartile - 2*sd_spatial_distance,
+      ymax = undirected_mean_spatial_distance_upper_quartile + 2*sd_spatial_distance
     ),
     fill = "lightgrey",
     alpha = 0.3
@@ -44,14 +44,14 @@ p_estimator <- ggplot() +
     data = moving_origin_grid,
     mapping = aes(
       x = z,
-      ymin = undirected_mean_spatial_distance - 2*std_spatial_distance,
-      ymax = undirected_mean_spatial_distance + 2*std_spatial_distance
+      ymin = undirected_mean_spatial_distance_upper_quartile - 2*se_spatial_distance,
+      ymax = undirected_mean_spatial_distance_upper_quartile + 2*se_spatial_distance
     ),
     fill = "lightgrey",
   ) +
   geom_line(
     data = moving_origin_grid,
-    mapping = aes(x = z, y = undirected_mean_spatial_distance),
+    mapping = aes(x = z, y = undirected_mean_spatial_distance_upper_quartile),
     size = 0.4
   ) +
   geom_rect(
@@ -133,7 +133,7 @@ p <- cowplot::ggdraw(p_estimator) +
   )
 
 ggsave(
-  paste0("plots/figure_5_mobility_curves.png"),
+  paste0("plots/figure_5_mobility_curves2.png"),
   plot = p,
   device = "png",
   scale = 0.7,
