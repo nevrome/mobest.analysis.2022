@@ -34,8 +34,8 @@ p_estimator <- ggplot() +
     data = moving_origin_grid,
     mapping = aes(
       x = z,
-      ymin = undirected_mean_spatial_distance_upper_quartile - 2*sd_spatial_distance,
-      ymax = undirected_mean_spatial_distance_upper_quartile + 2*sd_spatial_distance
+      ymin = undirected_mean_spatial_distance - 2*sd_spatial_distance,
+      ymax = undirected_mean_spatial_distance + 2*sd_spatial_distance
     ),
     fill = "lightgrey",
     alpha = 0.3
@@ -44,10 +44,16 @@ p_estimator <- ggplot() +
     data = moving_origin_grid,
     mapping = aes(
       x = z,
-      ymin = undirected_mean_spatial_distance_upper_quartile - 2*se_spatial_distance,
-      ymax = undirected_mean_spatial_distance_upper_quartile + 2*se_spatial_distance
+      ymin = undirected_mean_spatial_distance - 2*se_spatial_distance,
+      ymax = undirected_mean_spatial_distance + 2*se_spatial_distance
     ),
     fill = "lightgrey",
+  ) +
+  geom_line(
+    data = moving_origin_grid,
+    mapping = aes(x = z, y = undirected_mean_spatial_distance),
+    size = 0.4,
+    colour = "darkgrey"
   ) +
   geom_line(
     data = moving_origin_grid,
