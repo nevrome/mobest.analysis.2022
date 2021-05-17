@@ -8,24 +8,45 @@ load("data/origin_search/janno_search.RData")
 load("data/origin_search/closest_points_examples.RData")
 load("data/origin_search/distance_grid_examples.RData")
 
-p <- ggplot() +
+current_ind <- "Stuttgart_published.DG"
+current_ind <- "RISE434.SG"
+current_ind <- "3DT26.SG"
+current_ind <- "SI-40.SG"
+
+ggplot() +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(
-    data = distance_grid_examples %>% dplyr::filter(Individual_ID == "3DT26.SG"),
+    data = distance_grid_examples %>% 
+      dplyr::filter(Individual_ID == current_ind),
     mapping = aes(x = x, y = y, fill = gen_dist),
   ) +
   scale_fill_viridis_c(option = "mako", direction = -1) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
   geom_point(
-    data = janno_search %>% dplyr::filter(Individual_ID == "3DT26.SG"),
+    data = janno_search %>% 
+      dplyr::filter(Individual_ID == current_ind),
     mapping = aes(x = x, y = y),
     colour = "red",
     size = 5
   ) +
   geom_point(
-    data = closest_points_examples %>% dplyr::filter(Individual_ID == "3DT26.SG"),
+    data = closest_points_examples %>% 
+      dplyr::filter(Individual_ID == current_ind),
     mapping = aes(x = x, y = y),
-    colour = "orange",
+    colour = "red",
+    shape = 16,
+    size = 1,
+    alpha = 0.7
+  ) +
+  geom_point(
+    data = closest_points_examples %>% 
+      dplyr::filter(Individual_ID == current_ind) %>%
+      dplyr::summarise(
+        x = mean(x),
+        y = mean(y)
+      ),
+    mapping = aes(x = x, y = y),
+    colour = "red",
     shape = "✖",
     size = 7,
     alpha = 0.7

@@ -65,27 +65,27 @@ interpol_grid_specific <- mobest::run_model_grid(model_grid)
 #### relatedness grid ####
 
 grid_list <- interpol_grid_specific %>% 
-  dplyr::select(independent_table_id, dependent_var_id, x, y, z, mean, id) %>%
+  dplyr::select(independent_table_id, dependent_var_id, x, y, z, mean, sd, id) %>%
   tidyr::pivot_wider(
-    id_cols = c("id", "x", "y", "z", "independent_table_id"), names_from = "dependent_var_id", values_from = "mean"
+    id_cols = c("id", "x", "y", "z", "independent_table_id"), 
+    names_from = "dependent_var_id", 
+    values_from = c("mean", "sd")
   ) %>%
   dplyr::left_join(
     janno_search %>% dplyr::select(Individual_ID, Date_BC_AD_Median_Derived, C1, C2), 
-    by = c("z" = "Date_BC_AD_Median_Derived"),
-    suffix = c("_grid", "_search")
+    by = c("z" = "Date_BC_AD_Median_Derived")
   )
 
 distance_grid_multi_resampling <- grid_list %>% 
   dplyr::mutate(
-    gen_dist = sqrt((C1_grid - C1_search)^2 + (C2_grid - C2_search)^2)
-  ) %>%
-  dplyr::group_by(independent_table_id, Individual_ID) %>%
-  dplyr::mutate(
-    min_gen_dist = gen_dist == min(gen_dist)
+    gen_dist = sqrt((mean_C1 - C1)^2 + (mean_C2 - C2)^2)
   ) %>%
   dplyr::ungroup()
 
-closest_points_examples <- distance_grid_multi_resampling %>% dplyr::filter(min_gen_dist)
+closest_points_examples <- distance_grid_multi_resampling %>% 
+  dplyr::group_by(independent_table_id, Individual_ID) %>%
+  dplyr::filter(gen_dist <= quantile(gen_dist, prob = 0.05)) %>%
+  dplyr::ungroup()
 
 distance_grid_examples <- distance_grid_multi_resampling %>%
   dplyr::group_by(id, Individual_ID) %>%
@@ -95,4 +95,3 @@ distance_grid_examples <- distance_grid_multi_resampling %>%
 save(janno_search, file = "data/origin_search/janno_search.RData")
 save(closest_points_examples, file = "data/origin_search/closest_points_examples.RData")
 save(distance_grid_examples, file = "data/origin_search/distance_grid_examples.RData")
-
