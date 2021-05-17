@@ -28,11 +28,11 @@ model_grid <- mobest::create_model_grid(
     C2 = janno_final$C2
   ),
   kernel = mobest::create_kernset_multi(
-    d = list(c(500000, 500000, 800)), 
+    d = list(c(600000, 600000, 900)), 
     g = 0.06, 
     on_residuals = T, 
     auto = F,
-    it = "ds500_dt800_g006"
+    it = "ds600_dt900_g006"
   ),
   prediction_grid = list(
     scs100_tl50 = mobest::prediction_grid_for_spatiotemporal_area(
