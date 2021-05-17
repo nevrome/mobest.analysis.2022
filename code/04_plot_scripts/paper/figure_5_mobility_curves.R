@@ -60,6 +60,12 @@ p_estimator <- ggplot() +
     mapping = aes(x = z, y = undirected_mean_spatial_distance_upper_quartile),
     size = 0.4
   ) +
+  geom_line(
+    data = moving_origin_grid,
+    mapping = aes(x = z, y = undirected_mean_spatial_distance_above_threshold),
+    size = 0.4,
+    color = "red"
+  ) +
   geom_rect(
     data = tibble::tibble(xmin = -Inf, ymin = -Inf, ymax = 0, xmax = Inf),
     mapping = aes(
@@ -139,7 +145,7 @@ p <- cowplot::ggdraw(p_estimator) +
   )
 
 ggsave(
-  paste0("plots/figure_5_mobility_curves2.png"),
+  paste0("plots/figure_5_mobility_curves3.png"),
   plot = p,
   device = "png",
   scale = 0.7,

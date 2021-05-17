@@ -99,6 +99,10 @@ moving_origin_grid <- furrr::future_map_dfr(
           io,
           spatial_distance >= quantile(spatial_distance, probs = 0.75)
         )
+        io_above_distance_threshold <- dplyr::filter(
+          io,
+          spatial_distance >= 500
+        )
         age_median_io <- dplyr::filter(
           age_median_origin_per_region,
           search_z >= start,
@@ -108,8 +112,12 @@ moving_origin_grid <- furrr::future_map_dfr(
           tibble::tibble(
             z = mean(c(start, end)),
             region_id = region,
-            undirected_mean_spatial_distance = mean(io$spatial_distance),
-            undirected_mean_spatial_distance_upper_quartile = mean(io_upper_quartile$spatial_distance),
+            undirected_mean_spatial_distance = 
+              mean(io$spatial_distance),
+            undirected_mean_spatial_distance_upper_quartile = 
+              mean(io_upper_quartile$spatial_distance),
+            undirected_mean_spatial_distance_above_threshold = 
+              mean(io_above_distance_threshold$spatial_distance),
             directed_mean_spatial_distance = sqrt(
               mean(io$search_x - io$origin_x)^2 +
                 mean(io$search_y - io$origin_y)^2
@@ -117,6 +125,10 @@ moving_origin_grid <- furrr::future_map_dfr(
             directed_mean_spatial_distance_upper_quartile = sqrt(
               mean(io_upper_quartile$search_x - io_upper_quartile$origin_x)^2 +
                 mean(io_upper_quartile$search_y - io_upper_quartile$origin_y)^2
+            ) / 1000,
+            directed_mean_spatial_distance_above_threshold = sqrt(
+              mean(io_above_distance_threshold$search_x - io_above_distance_threshold$origin_x)^2 +
+                mean(io_above_distance_threshold$search_y - io_above_distance_threshold$origin_y)^2
             ) / 1000,
             mean_angle_deg = mobest::vec2deg(
               c(mean(io$origin_x - io$search_x), mean(io$origin_y - io$search_y))
