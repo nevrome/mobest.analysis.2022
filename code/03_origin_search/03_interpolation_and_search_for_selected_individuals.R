@@ -84,7 +84,11 @@ distance_grid_multi_resampling <- grid_list %>%
 
 closest_points_examples <- distance_grid_multi_resampling %>% 
   dplyr::group_by(independent_table_id, Individual_ID) %>%
-  dplyr::filter(gen_dist <= quantile(gen_dist, prob = 0.05)) %>%
+  dplyr::filter(gen_dist <= quantile(gen_dist, prob = 0.10)) %>%
+  dplyr::filter(
+    sd_C1 <= quantile(sd_C1, prob = 0.50),
+    sd_C2 <= quantile(sd_C2, prob = 0.50)
+  ) %>%
   dplyr::ungroup()
 
 distance_grid_examples <- distance_grid_multi_resampling %>%
