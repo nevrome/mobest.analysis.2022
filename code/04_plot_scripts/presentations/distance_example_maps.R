@@ -31,22 +31,9 @@ ggplot() +
   ) +
   geom_point(
     data = closest_points_examples %>% 
-      dplyr::filter(Individual_ID == current_ind),
-    mapping = aes(x = x, y = y),
-    colour = "red",
-    shape = 16,
-    size = 1,
-    alpha = 0.7
-  ) +
-  geom_point(
-    data = closest_points_examples %>% 
       dplyr::filter(Individual_ID == current_ind) %>%
-      dplyr::summarise(
-        x = mean(x),
-        y = mean(y)
-      ),
     mapping = aes(x = x, y = y),
-    colour = "red",
+    colour = "orange",
     shape = "✖",
     size = 7,
     alpha = 0.7
