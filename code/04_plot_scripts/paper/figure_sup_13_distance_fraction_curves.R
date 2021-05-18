@@ -31,8 +31,10 @@ p_curves <- moving_origin_grid_modified %>%
     aes(x = Date_BC_AD_Median_Derived, y = -0.04),
     shape = "|"
   ) +
+  xlab("time in years calBC/calAD") +
+  ylab("Distance class fractions") +
   scale_fill_grey(
-    name = "Distance fractions",
+    name = "Distance classes",
     labels = c(
       "Distances smaller then 500km",
       "Distances between 500 and 1000km",
