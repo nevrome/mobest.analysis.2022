@@ -8,37 +8,7 @@ load("data/origin_search/origin_grid_median.RData")
 load("data/spatial/epsg3035.RData")
 load("data/spatial/mobility_regions.RData")
 
-#### prepare main table ####
-
-# age median data
-origin_grid_median_modified <- origin_grid_median %>% 
-  dplyr::mutate(
-    spatial_distance = spatial_distance/1000
-  ) %>%
-  dplyr::left_join(
-    janno_final %>% dplyr::select(Individual_ID, region_id),
-    by = c("search_id" = "Individual_ID")
-  ) %>%
-  dplyr::filter(!is.na(region_id))
-
-origin_region_ids <- origin_grid_median_modified %>%
-  sf::st_as_sf(
-    coords = c("origin_x", "origin_y"),
-    crs = epsg3035
-  ) %>%
-  sf::st_intersects(
-    ., mobility_regions
-  ) %>%
-  purrr::map_int(
-    function(x) {
-      if (length(x) > 0) {
-        x
-      } else {
-        NA
-      }
-    }
-  )
-origin_grid_median_modified$origin_region_id <- mobility_regions$region_id[origin_region_ids]
+#### prepare output data ####
 
 # age resampling data
 origin_grid_modified <- origin_grid %>% 
@@ -69,10 +39,27 @@ cut_angle <- function(x) {
 origin_grid_modified <- origin_grid_modified %>%
   dplyr::mutate(
     search_z_cut = age_groups_limits[cut(search_z, age_groups_limits, labels = F)] + 250,
-    angle_deg_cut = cut_angle(angle_deg)
   )
 
-# moving average
+# means for search points across age resampling
+origin_grid_mean <- origin_grid_modified %>%
+  dplyr::group_by(
+    search_id
+  ) %>%
+  dplyr::summarise(
+    undirected_mean_spatial_distance = mean(spatial_distance),
+    directed_mean_spatial_distance = sqrt(
+      mean(search_x - origin_x)^2 +
+        mean(search_y - origin_y)^2
+    ) / 1000,
+    mean_angle_deg = mobest::vec2deg(
+      c(mean(origin_x - search_x), mean(origin_y - search_y))
+    ),
+    mean_angle_deg_cut = cut_angle(angle_deg),
+    .groups = "drop"
+  )
+
+# moving window
 se <- function(x) sd(x)/sqrt(length(x))
 
 moving_window_window_width <- 400
@@ -80,16 +67,17 @@ moving_window_step_resolution <- 50
 
 future::plan(future::multisession)
 moving_origin_grid <- furrr::future_map_dfr(
+  # loop through all regions
   unique(origin_grid_modified$region_id),
   function(region) {
     origin_per_region <- origin_grid_modified %>%
       dplyr::filter(region_id == region)
-    age_median_origin_per_region <- origin_grid_median_modified %>%
-      dplyr::filter(region_id == region)
     purrr::map2_df(
+      # define moving windows and loop through them
       seq(-8000, 2000 - moving_window_window_width, moving_window_step_resolution),
       seq(-8000 + moving_window_window_width, 2000, moving_window_step_resolution),
       function(start, end) {
+        # prepare window data subsets
         io <- dplyr::filter(
           origin_per_region,
           search_z >= start,
@@ -99,15 +87,12 @@ moving_origin_grid <- furrr::future_map_dfr(
           io,
           spatial_distance >= quantile(spatial_distance, probs = 0.75)
         )
-        io_above_distance_threshold <- dplyr::filter(
-          io,
-          spatial_distance >= 500
-        )
-        age_median_io <- dplyr::filter(
-          age_median_origin_per_region,
-          search_z >= start,
-          search_z < end
-        )
+        io_run_grouped <- io %>% 
+          dplyr::group_by(search_id) %>%
+          dplyr::summarise(
+            mean_spatial_distance = mean(spatial_distance),
+            groups = "drop"
+          )
         if (nrow(io) > 0) {
           tibble::tibble(
             z = mean(c(start, end)),
@@ -116,8 +101,6 @@ moving_origin_grid <- furrr::future_map_dfr(
               mean(io$spatial_distance),
             undirected_mean_spatial_distance_upper_quartile = 
               mean(io_upper_quartile$spatial_distance),
-            undirected_mean_spatial_distance_above_threshold = 
-              mean(io_above_distance_threshold$spatial_distance),
             directed_mean_spatial_distance = sqrt(
               mean(io$search_x - io$origin_x)^2 +
                 mean(io$search_y - io$origin_y)^2
@@ -126,20 +109,13 @@ moving_origin_grid <- furrr::future_map_dfr(
               mean(io_upper_quartile$search_x - io_upper_quartile$origin_x)^2 +
                 mean(io_upper_quartile$search_y - io_upper_quartile$origin_y)^2
             ) / 1000,
-            directed_mean_spatial_distance_above_threshold = sqrt(
-              mean(io_above_distance_threshold$search_x - io_above_distance_threshold$origin_x)^2 +
-                mean(io_above_distance_threshold$search_y - io_above_distance_threshold$origin_y)^2
-            ) / 1000,
-            mean_angle_deg = mobest::vec2deg(
-              c(mean(io$origin_x - io$search_x), mean(io$origin_y - io$search_y))
-            ),
-            se_spatial_distance = if (nrow(age_median_io) >= 3) {
-              se(age_median_io$spatial_distance)
+            se_spatial_distance = if (nrow(io_run_grouped) >= 3) {
+              se(io_run_grouped$mean_spatial_distance)
             } else {
               Inf
             },
-            sd_spatial_distance = if (nrow(age_median_io) >= 3) {
-              sd(age_median_io$spatial_distance)
+            sd_spatial_distance = if (nrow(io_run_grouped) >= 3) {
+              sd(io_run_grouped$mean_spatial_distance)
             } else {
               Inf
             }
@@ -180,7 +156,7 @@ no_data_windows <- moving_origin_grid %>%
 
 #### save output ####
 
-save(origin_grid_median_modified, file = "data/origin_search/origin_grid_median_modified.RData")
 save(origin_grid_modified, file = "data/origin_search/origin_grid_modified.RData")
+save(origin_grid_mean, file = "data/origin_search/origin_grid_mean")
 save(moving_origin_grid, file = "data/origin_search/moving_origin_grid.RData")
 save(no_data_windows, file = "data/origin_search/no_data_windows.RData")
