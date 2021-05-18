@@ -166,16 +166,3 @@ save(origin_grid_modified, file = "data/origin_search/origin_grid_modified.RData
 save(origin_grid_mean, file = "data/origin_search/origin_grid_mean")
 save(moving_origin_grid, file = "data/origin_search/moving_origin_grid.RData")
 save(no_data_windows, file = "data/origin_search/no_data_windows.RData")
-
-library(ggplot2)
-moving_origin_grid %>%
-  dplyr::filter(region_id == "Central Europe") %>%
-  tidyr::pivot_longer(
-    cols = tidyselect::starts_with("fraction"),
-    names_to = "fraction_type",
-    values_to = "number"
-  ) %>%
-  ggplot() +
-  geom_area(
-    aes(x = z, y = number, fill = fraction_type)
-  )
