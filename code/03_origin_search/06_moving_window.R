@@ -123,7 +123,8 @@ moving_origin_grid <- furrr::future_map_dfr(
             },
             fraction_smaller_500 = sum(io$spatial_distance < 500) / nrow(io),
             fraction_bigger_500 = sum(io$spatial_distance >= 500 & io$spatial_distance < 1000) / nrow(io),
-            fraction_bigger_1000 = sum(io$spatial_distance >= 1000) / nrow(io)
+            fraction_bigger_1000 = sum(io$spatial_distance >= 1000 & io$spatial_distance < 2000) / nrow(io),
+            fraction_bigger_2000 = sum(io$spatial_distance >= 2000) / nrow(io)
           )
         } else {
           tibble::tibble(
@@ -136,7 +137,8 @@ moving_origin_grid <- furrr::future_map_dfr(
             sd_spatial_distance = Inf,
             fraction_smaller_500 = NA,
             fraction_bigger_500 = NA,
-            fraction_bigger_1000 = NA
+            fraction_bigger_1000 = NA,
+            fraction_bigger_2000 = NA
           )
         }
       }
