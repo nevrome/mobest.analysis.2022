@@ -96,7 +96,7 @@ p_estimator <- ggplot() +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(
     xlim = c(-7400, 1400),
-    ylim = c(-100, max(origin_grid_median_modified$spatial_distance, na.rm = T))
+    ylim = c(-100, max(origin_grid_mean$undirected_mean_spatial_distance, na.rm = T))
   )
 
 #### direction legend ####
