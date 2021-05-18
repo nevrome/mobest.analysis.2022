@@ -128,11 +128,17 @@ origin_grid_median <- mobest::search_spatial_origin(
   rearview_distance = 0
 )
 
-# origin_grid_median <- origin_grid_median %>%
-#   dplyr::left_join(
-#     janno_final %>% dplyr::select(Individual_ID, region_id),
-#     by = c("search_id" = "Individual_ID")
-#   )
+#### add region information ####
+
+origin_grid_median <- origin_grid_median %>% 
+  dplyr::mutate(
+    spatial_distance = spatial_distance/1000
+  ) %>%
+  dplyr::left_join(
+    janno_final %>% dplyr::select(Individual_ID, region_id),
+    by = c("search_id" = "Individual_ID")
+  ) %>%
+  dplyr::filter(!is.na(region_id))
 
 # library(ggplot2)
 # origin_grid %>%
@@ -143,6 +149,25 @@ origin_grid_median <- mobest::search_spatial_origin(
 #   geom_point() +
 #   facet_wrap(~region_id) +
 #   scale_color_viridis_c()
+
+origin_region_ids <- origin_grid_median %>%
+  sf::st_as_sf(
+    coords = c("origin_x", "origin_y"),
+    crs = epsg3035
+  ) %>%
+  sf::st_intersects(
+    ., mobility_regions
+  ) %>%
+  purrr::map_int(
+    function(x) {
+      if (length(x) > 0) {
+        x
+      } else {
+        NA
+      }
+    }
+  )
+origin_grid_median$origin_region_id <- mobility_regions$region_id[origin_region_ids]
 
 #### mobility proxy ####
 save(origin_grid_median, file = "data/origin_search/origin_grid_median.RData")
