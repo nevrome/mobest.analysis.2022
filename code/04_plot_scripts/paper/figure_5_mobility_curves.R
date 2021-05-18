@@ -60,12 +60,6 @@ p_estimator <- ggplot() +
     mapping = aes(x = z, y = undirected_mean_spatial_distance_upper_quartile),
     size = 0.4
   ) +
-  geom_line(
-    data = moving_origin_grid,
-    mapping = aes(x = z, y = undirected_mean_spatial_distance_above_threshold),
-    size = 0.4,
-    color = "red"
-  ) +
   geom_rect(
     data = tibble::tibble(xmin = -Inf, ymin = -Inf, ymax = 0, xmax = Inf),
     mapping = aes(
