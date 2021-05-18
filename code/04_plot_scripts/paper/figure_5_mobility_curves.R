@@ -5,7 +5,7 @@ library(ggplot2)
 
 # curves
 load("data/poseidon_data/janno_final.RData")
-load("data/origin_search/origin_grid_median_modified.RData")
+load("data/origin_search/origin_grid_mean.RData")
 load("data/origin_search/origin_grid_modified.RData")
 load("data/origin_search/moving_origin_grid.RData")
 load("data/origin_search/no_data_windows.RData")
@@ -69,9 +69,9 @@ p_estimator <- ggplot() +
     fill = "white"
   ) +
   geom_point(
-    data = origin_grid_median_modified,
+    data = origin_grid_mean,
     mapping = aes(
-      x = search_z, y = spatial_distance, color = angle_deg
+      x = mean_search_z, y = undirected_mean_spatial_distance, color = mean_angle_deg
     ),
     alpha = 1,
     size = 1.5,
@@ -139,7 +139,7 @@ p <- cowplot::ggdraw(p_estimator) +
   )
 
 ggsave(
-  paste0("plots/figure_5_mobility_curves3.png"),
+  paste0("plots/figure_5_mobility_curves.png"),
   plot = p,
   device = "png",
   scale = 0.7,
