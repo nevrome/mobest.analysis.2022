@@ -1,5 +1,5 @@
 default_kernel <- mobest::create_kernset_multi(
-  d = list(c(600000, 600000, 900)), 
+  d = list(c(500000, 500000, 800)), 
   g = 0.06, 
   on_residuals = T, 
   auto = F,
