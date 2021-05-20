@@ -118,12 +118,12 @@ p4 <- p0 +
     size = 0.4,
     colour = "darkgrey"
   ) +
-  geom_line(
-    data = moving_origin_grid,
-    mapping = aes(x = z, y = undirected_mean_spatial_distance_upper_quartile),
-    size = 0.4,
-    color = "red"
-  ) +
+  # geom_line(
+  #   data = moving_origin_grid,
+  #   mapping = aes(x = z, y = undirected_mean_spatial_distance_upper_quartile),
+  #   size = 0.4,
+  #   color = "red"
+  # ) +
   geom_point(
     data = origin_grid_mean,
     mapping = aes(
