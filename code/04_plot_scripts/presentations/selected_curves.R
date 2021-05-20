@@ -5,7 +5,7 @@ library(ggplot2)
 
 # curves
 load("data/poseidon_data/janno_final.RData")
-load("data/origin_search/origin_grid_median_modified.RData")
+load("data/origin_search/origin_grid_mean.RData")
 load("data/origin_search/moving_origin_grid.RData")
 load("data/origin_search/mean_origin.RData")
 load("data/origin_search/no_data_windows.RData")
@@ -19,9 +19,9 @@ load("data/plot_reference_data/region_id_shapes.RData")
 
 # filter for central europe
 
-rois <- c("Southeastern Europe", "Britain and Ireland", "Italy")
+rois <- c("Eastern Balkan", "Britain and Ireland", "Italy, Sardinia, Adria")
 janno_final %<>% dplyr::filter(region_id %in% rois)
-origin_grid_median_modified %<>% dplyr::filter(region_id %in% rois)
+origin_grid_mean %<>% dplyr::filter(region_id %in% rois)
 moving_origin_grid %<>% dplyr::filter(region_id %in% rois)
 mean_origin %<>% dplyr::filter(region_id %in% rois)
 no_data_windows %<>% dplyr::filter(region_id %in% rois)
@@ -78,7 +78,7 @@ p0 <- ggplot() +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(
     xlim = c(-7000, 1000),
-    ylim = c(-30, max(origin_grid_median_modified$spatial_distance, na.rm = T))
+    ylim = c(-30, max(origin_grid_mean$undirected_mean_spatial_distance, na.rm = T))
   )
 
 p4 <- p0 + 
@@ -107,20 +107,27 @@ p4 <- p0 +
     data = moving_origin_grid,
     mapping = aes(
       x = z,
-      ymin = undirected_mean_spatial_distance - 2*std_spatial_distance,
-      ymax = undirected_mean_spatial_distance + 2*std_spatial_distance
+      ymin = undirected_mean_spatial_distance - 2*se_spatial_distance,
+      ymax = undirected_mean_spatial_distance + 2*se_spatial_distance
     ),
     fill = "lightgrey",
   ) +
   geom_line(
     data = moving_origin_grid,
     mapping = aes(x = z, y = undirected_mean_spatial_distance),
-    size = 0.4
-  ) + 
+    size = 0.4,
+    colour = "darkgrey"
+  ) +
+  geom_line(
+    data = moving_origin_grid,
+    mapping = aes(x = z, y = undirected_mean_spatial_distance_upper_quartile),
+    size = 0.4,
+    color = "red"
+  ) +
   geom_point(
-    data = origin_grid_median_modified,
+    data = origin_grid_mean,
     mapping = aes(
-      x = search_z, y = spatial_distance, color = angle_deg
+      x = mean_search_z, y = undirected_mean_spatial_distance, color = mean_angle_deg
     ),
     alpha = 1,
     size = 2,
