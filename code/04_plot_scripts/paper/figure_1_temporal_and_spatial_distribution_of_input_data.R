@@ -10,10 +10,6 @@ load("data/plot_reference_data/region_id_fill.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 load("data/spatial/mobility_regions.RData")
 
-janno_final <- janno_final %>% dplyr::arrange(
-  Date_BC_AD_Median_Derived
-)
-
 ex <- raster::extent(research_area)
 xlimit <- c(ex[1], ex[2])
 ylimit <- c(ex[3], ex[4])
@@ -66,7 +62,7 @@ p_map <- ggplot() +
   guides(
     color = guide_colorbar(title = "Time", barwidth = 20, barheight = 1.5),
     shape = guide_legend(
-      title = "Region", nrow = 3, ncol = 4, byrow = F,
+      title = "Region", nrow = 3, ncol = 3, byrow = T,
       override.aes = aes(size = 3)
     )
   )

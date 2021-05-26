@@ -49,5 +49,8 @@ janno_final <- janno_spatial %>%
   sf::st_drop_geometry()
 
 # finalize data
+janno_final <- janno_final %>% dplyr::arrange(
+  Date_BC_AD_Median_Derived
+)
 
 save(janno_final, file = "data/poseidon_data/janno_final.RData")

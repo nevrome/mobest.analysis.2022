@@ -62,7 +62,10 @@ p <- ggplot() +
   ) +
   guides(
     color = guide_colorbar(title = "Time", barwidth = 20, barheight = 1.5),
-    shape = guide_legend(title = "Region", nrow = 3, ncol = 4, byrow = F)
+    shape = guide_legend(
+      title = "Region", nrow = 3, ncol = 3, byrow = T,
+      override.aes = aes(size = 3)
+    )
   )
 
 ggsave(
