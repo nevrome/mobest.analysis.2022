@@ -150,6 +150,9 @@ origin_grid_median <- origin_grid_median %>%
 #   facet_wrap(~region_id) +
 #   scale_color_viridis_c()
 
+load("data/spatial/epsg3035.RData")
+load("data/spatial/mobility_regions.RData")
+
 origin_region_ids <- origin_grid_median %>%
   sf::st_as_sf(
     coords = c("origin_x", "origin_y"),
