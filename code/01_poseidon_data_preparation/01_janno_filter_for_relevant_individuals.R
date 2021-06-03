@@ -3,7 +3,8 @@ library(magrittr)
 load("data/spatial/epsg3035.RData")
 load("data/spatial/research_area.RData")
 
-janno_raw <- poseidonR::read_janno("data/poseidon_data/poseidon_full/")
+#janno_raw <- poseidonR::read_janno("data/poseidon_data/poseidon_full/")
+janno_raw <- poseidonR::read_janno("~/agora/published_data/")
 
 # lacking spatial info filter
 janno_raw_spatial_positions <- janno_raw %>%
@@ -59,10 +60,10 @@ janno_QC <- janno_QC %>% dplyr::filter(Genetic_Sex != "U")
 # Indicated as contaminated: Individuals which are indicated as potentially contaminated
 # in their ID should be removed
 janno_QC <- janno_QC %>% dplyr::filter(
-  !grepl("cont|excluded", x = Individual_ID, ignore.case = T)
+  !grepl("cont|excluded", x = Individual_ID, ignore.case = T) &
+    !grepl("cont|excluded", x = Group_Name, ignore.case = T)
 )
 
-# Multiple samples from the same individual as well as biologically related individuals are not removed: This should not be an issue for this analysis
 # Coverage and damage are not too relevant here as filter criteria
 
 janno_filtered_final <- janno_pre_mds <- janno_QC
