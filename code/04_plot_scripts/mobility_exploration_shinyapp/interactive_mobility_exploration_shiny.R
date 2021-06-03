@@ -2,15 +2,32 @@ library(ggplot2)
 library(Cairo)   # For nicer ggplot2 output when deployed on Linux
 library(shiny)
 library(tidyverse)
+library(sf)
 
-setwd("/home/schmid/agora/mobest.analysis.2020/")
+# file.copy(
+#   from = c(
+#     "data/poseidon_data/janno_final.RData",
+#     "data/origin_search/origin_grid_mean.RData",
+#     "data/origin_search/origin_grid_modified.RData",
+#     "data/spatial/extended_area.RData",
+#     "data/spatial/epsg3035.RData"
+#   ),
+#   to = c(
+#     "code/04_plot_scripts/mobility_exploration_shinyapp/janno_final.RData",
+#     "code/04_plot_scripts/mobility_exploration_shinyapp/origin_grid_mean.RData",
+#     "code/04_plot_scripts/mobility_exploration_shinyapp/origin_grid_modified.RData",
+#     "code/04_plot_scripts/mobility_exploration_shinyapp/extended_area.RData",
+#     "code/04_plot_scripts/mobility_exploration_shinyapp/epsg3035.RData"
+#   )
+# )
 
 # origin search
-load("data/poseidon_data/janno_final.RData")
-load("data/origin_search/origin_grid_mean.RData")
-load("data/origin_search/origin_grid_modified.RData")
-load("data/spatial/extended_area.RData")
-load("data/spatial/epsg3035.RData")
+load("janno_final.RData")
+load("origin_grid_mean.RData")
+load("origin_grid_modified.RData")
+load("extended_area.RData")
+load("epsg3035.RData")
+
 
 origin_grid_mean_infodense <- origin_grid_mean |>
   dplyr::left_join(
@@ -110,14 +127,14 @@ server <- function(input, output) {
         crs = sf::st_crs(epsg3035)
       ) + 
       geom_point(
-        data = mod_data,
-        aes(x = x, y = y),
-        color = "red"
-      ) +
-      geom_point(
         data = all_data,
         aes(x = origin_x, y = origin_y),
         color = "orange"
+      ) +
+      geom_point(
+        data = mod_data,
+        aes(x = x, y = y),
+        color = "red"
       )
   })
 }
