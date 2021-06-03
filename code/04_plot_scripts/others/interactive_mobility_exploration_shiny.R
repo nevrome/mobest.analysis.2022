@@ -1,27 +1,36 @@
 library(ggplot2)
 library(Cairo)   # For nicer ggplot2 output when deployed on Linux
 library(shiny)
+library(tidyverse)
+
+setwd("/home/schmid/agora/mobest.analysis.2020/")
 
 # origin search
 load("data/poseidon_data/janno_final.RData")
 load("data/origin_search/origin_grid_mean.RData")
+load("data/origin_search/origin_grid_modified.RData")
+load("data/spatial/extended_area.RData")
+load("data/spatial/epsg3035.RData")
 
-origin_grid_mean_infodense <- origin_grid_mean %>%
+origin_grid_mean_infodense <- origin_grid_mean |>
   dplyr::left_join(
-    janno_final %>% dplyr::select(-region_id),
+    janno_final |> dplyr::select(-region_id),
     by = c("search_id" = "Individual_ID")
-  ) %>%
+  ) |>
   dplyr::mutate(
     Pop = sapply(Group_Name, \(x) x[[1]]),
     Pup = sapply(Publication_Status, \(x) x[[1]])
-  ) %>%
-  dplyr::select(-Date_BC_AD_Prob) %>%
-  dplyr::mutate(
-    across(
-      where(is.list), 
-      function(x) { paste0(x, sep = ",") }
-    )
+  ) |>
+  dplyr::select(-Date_BC_AD_Prob) |>
+  dplyr::select_if(
+    tidyselect:::where(\(x) !is.list(x))
   )
+  # dplyr::mutate(
+  #   across(
+  #     where(is.list), 
+  #     function(x) { paste0(x, sep = ",") }
+  #   )
+  # )
 
 
 ui <- fluidPage(
@@ -35,6 +44,10 @@ ui <- fluidPage(
             id = "plot1_brush"
           )
        )
+    ),
+    column(
+      width = 6,
+      plotOutput("plot2", height = 800)
     )
   ),
   fluidRow(
@@ -79,6 +92,33 @@ server <- function(input, output) {
   
   output$brush_info <- DT::renderDataTable({
     DT::datatable(brushedPoints(origin_grid_mean_infodense, input$plot1_brush))
+  })
+  
+  output$plot2 <- renderPlot({
+    selected_samples <- brushedPoints(origin_grid_mean_infodense, input$plot1_brush)$search_id
+    all_data <- origin_grid_modified |> 
+      dplyr::filter(search_id %in% selected_samples)
+    mod_data <- origin_grid_mean_infodense |> 
+      dplyr::filter(search_id %in% selected_samples)
+    ggplot() +
+      geom_sf(
+        data = extended_area,
+        fill = "white", colour = "darkgrey", size = 0.4
+      ) +
+      coord_sf(
+        expand = FALSE,
+        crs = sf::st_crs(epsg3035)
+      ) + 
+      geom_point(
+        data = mod_data,
+        aes(x = x, y = y),
+        color = "red"
+      ) +
+      geom_point(
+        data = all_data,
+        aes(x = origin_x, y = origin_y),
+        color = "orange"
+      )
   })
 }
 
