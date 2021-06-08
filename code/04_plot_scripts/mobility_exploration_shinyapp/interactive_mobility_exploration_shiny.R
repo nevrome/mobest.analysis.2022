@@ -18,7 +18,8 @@ library(sf)
 #     "code/04_plot_scripts/mobility_exploration_shinyapp/origin_grid_modified.RData",
 #     "code/04_plot_scripts/mobility_exploration_shinyapp/extended_area.RData",
 #     "code/04_plot_scripts/mobility_exploration_shinyapp/epsg3035.RData"
-#   )
+#   ),
+#   overwrite = T
 # )
 
 # origin search
@@ -126,10 +127,12 @@ server <- function(input, output) {
         expand = FALSE,
         crs = sf::st_crs(epsg3035)
       ) + 
-      geom_point(
+      geom_jitter(
         data = all_data,
         aes(x = origin_x, y = origin_y),
-        color = "orange"
+        color = "orange",
+        alpha = 0.2,
+        width = 50000, height = 50000
       ) +
       geom_point(
         data = mod_data,
