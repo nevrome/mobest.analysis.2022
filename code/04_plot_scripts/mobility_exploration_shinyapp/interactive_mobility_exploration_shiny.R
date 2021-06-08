@@ -3,6 +3,7 @@ library(Cairo)   # For nicer ggplot2 output when deployed on Linux
 library(shiny)
 library(tidyverse)
 library(sf)
+library(magrittr)
 
 # file.copy(
 #   from = c(
@@ -30,16 +31,17 @@ load("extended_area.RData")
 load("epsg3035.RData")
 
 
-origin_grid_mean_infodense <- origin_grid_mean |>
+origin_grid_mean_infodense <- origin_grid_mean %>%
   dplyr::left_join(
-    janno_final |> dplyr::select(-region_id),
+    janno_final %>% dplyr::select(-region_id),
     by = c("search_id" = "Individual_ID")
-  ) |>
-  dplyr::mutate(
-    Pop = sapply(Group_Name, \(x) x[[1]]),
-    Pup = sapply(Publication_Status, \(x) x[[1]])
-  ) |>
-  dplyr::select(-Date_BC_AD_Prob) |>
+  ) %>%
+  tibble::add_column(
+    Pop = sapply(.$Group_Name, \(x) x[[1]]),
+    Pup = sapply(.$Publication_Status, \(x) x[[1]]),
+    .after = "search_id"
+  ) %>%
+  dplyr::select(-Date_BC_AD_Prob) %>%
   dplyr::select_if(
     tidyselect:::where(\(x) !is.list(x))
   )
@@ -114,9 +116,9 @@ server <- function(input, output) {
   
   output$plot2 <- renderPlot({
     selected_samples <- brushedPoints(origin_grid_mean_infodense, input$plot1_brush)$search_id
-    all_data <- origin_grid_modified |> 
+    all_data <- origin_grid_modified %>% 
       dplyr::filter(search_id %in% selected_samples)
-    mod_data <- origin_grid_mean_infodense |> 
+    mod_data <- origin_grid_mean_infodense %>% 
       dplyr::filter(search_id %in% selected_samples)
     ggplot() +
       geom_sf(
