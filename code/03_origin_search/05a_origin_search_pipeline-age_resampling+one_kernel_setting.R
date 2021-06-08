@@ -11,7 +11,7 @@ age_resampling_run <- as.numeric(args[1])
 #### data ####
 
 load("data/poseidon_data/janno_final.RData")
-load("data/spatial/area.RData")
+load("data/spatial/search_area.RData")
 load("data/origin_search/default_kernel.RData")
 
 #### prepare model grid ####
@@ -31,7 +31,7 @@ model_grid <- mobest::create_model_grid(
   kernel = default_kernel,
   prediction_grid = list(
     scs100_tl50 = mobest::prediction_grid_for_spatiotemporal_area(
-      area,
+      search_area,
       spatial_cell_size = 100000,
       temporal_layers = seq(-7500, 1500, 50)
     )
