@@ -3,7 +3,6 @@ library(magrittr)
 #### data ####
 
 load("data/poseidon_data/janno_final.RData")
-load("data/spatial/area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/origin_search/default_kernel.RData")
 

@@ -3,7 +3,7 @@ library(magrittr)
 #### data ####
 
 load("data/poseidon_data/janno_final.RData")
-load("data/spatial/area.RData")
+load("data/origin_search/search_area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/origin_search/default_kernel.RData")
 
@@ -51,7 +51,7 @@ model_grid <- mobest::create_model_grid(
   kernel = default_kernel,
   prediction_grid = list(
     scs100_tlspecific = mobest::prediction_grid_for_spatiotemporal_area(
-      area,
+      search_area,
       spatial_cell_size = 50000,
       temporal_layers = janno_search$z
     )

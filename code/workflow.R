@@ -44,8 +44,9 @@ source("code/02_parameter_estimation/crossvalidation/modify_crossvalidation_resu
 
 #### 03_origin_search #####
 
-source("code/03_origin_search/00_default_kernel_settings.R")
+source("code/03_origin_search/00_interpolation_and_origin_search_settings.R")
 cluster_up("data/origin_search/default_kernel.RData")
+cluster_up("data/origin_search/search_area.RData")
 
 source("code/03_origin_search/01_interpolation_for_selected_timeslices.R")
 source("code/03_origin_search/02_interpolation_at_specific_places_median_age+one_kernel_setting.R")

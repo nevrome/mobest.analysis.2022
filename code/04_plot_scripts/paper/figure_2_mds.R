@@ -47,7 +47,7 @@ p <- ggplot() +
     na.value = 3
   ) +
   age_colors_gradient +
-  coord_fixed(xlim = c(-0.05, 0.08), ylim = c(-0.095, 0.06)) +
+  # coord_fixed(xlim = c(-0.05, 0.08), ylim = c(-0.095, 0.06)) +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   theme_bw() +
