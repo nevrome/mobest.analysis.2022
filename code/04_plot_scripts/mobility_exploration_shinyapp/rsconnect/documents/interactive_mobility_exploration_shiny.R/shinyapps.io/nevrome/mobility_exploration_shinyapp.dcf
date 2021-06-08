@@ -5,9 +5,9 @@ account: nevrome
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4222718
-bundleId: 4672819
+bundleId: 4692490
 url: https://nevrome.shinyapps.io/mobility_exploration_shinyapp/
-when: 1622721673.90912
-lastSyncTime: 1622721673.90914
+when: 1623163065.8296
+lastSyncTime: 1623163065.82962
 asMultiple: FALSE
 asStatic: FALSE
