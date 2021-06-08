@@ -3,7 +3,7 @@ library(magrittr)
 #### data ####
 
 load("data/poseidon_data/janno_final.RData")
-load("data/origin_search/search_area.RData")
+load("data/spatial/search_area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/origin_search/default_kernel.RData")
 
@@ -29,7 +29,7 @@ janno_search <- janno_final %>%
   dplyr::arrange(Individual_ID)
 
 #### prepare model grid ####
-nr_of_resampling_runs <- 10
+nr_of_resampling_runs <- 5
 
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
@@ -52,7 +52,7 @@ model_grid <- mobest::create_model_grid(
   prediction_grid = list(
     scs100_tlspecific = mobest::prediction_grid_for_spatiotemporal_area(
       search_area,
-      spatial_cell_size = 50000,
+      spatial_cell_size = 30000,
       temporal_layers = janno_search$z
     )
   )

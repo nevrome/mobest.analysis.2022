@@ -3,7 +3,7 @@ library(magrittr)
 #### data ####
 
 load("data/poseidon_data/janno_final.RData")
-load("data/origin_search/search_area.RData")
+load("data/spatial/search_area.RData")
 load("data/origin_search/default_kernel.RData")
 
 #### prepare model grid ####
