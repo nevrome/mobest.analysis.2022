@@ -104,7 +104,7 @@ server <- function(input, output) {
       xlab("time in years calBC/calAD") +
       ylab("spatial distance to \"link point\" (undirected mean) [km]") +
       scale_color_gradientn(
-        colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
+        colours = c("#F5793A", "#85C0F9", "#A95AA1", "#33a02c", "#F5793A"),
         na.value = NA,
         guide = F
       ) +

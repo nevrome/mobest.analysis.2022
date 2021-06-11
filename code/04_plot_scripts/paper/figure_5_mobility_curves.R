@@ -17,6 +17,10 @@ load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
 
+no_data_windows$region_id <- factor(
+  no_data_windows$region_id, levels = levels(mobility_regions$region_id)
+)
+
 #### mobility estimator curves ####
 p_estimator <- ggplot() +
   lemon::facet_rep_wrap(~region_id, ncol = 2, repeat.tick.labels = T) +
@@ -89,7 +93,7 @@ p_estimator <- ggplot() +
   xlab("time in years calBC/calAD") +
   ylab("spatial distance to \"link point\" (undirected mean) [km]") +
   scale_color_gradientn(
-    colours = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"),
+    colours = c("#F5793A", "#85C0F9", "#A95AA1", "#33a02c", "#F5793A"),
     na.value = NA,
     guide = F
   ) +
@@ -102,20 +106,25 @@ p_estimator <- ggplot() +
 #### direction legend ####
 
 p_legend <- tibble::tibble(
-  ID = letters[1:8],
-  angle_start = seq(0, 325, 45),
-  angle_stop = seq(45, 360, 45)
+  ID = 1:360,
+  angle_start = 0:359,
+  angle_stop = 1:360
 ) %>%
   ggplot() + 
   geom_rect(
     aes(xmin = 3, xmax = 4, ymin = angle_start, ymax = angle_stop, fill = ID)
   ) +
-  scale_fill_manual(
-    values = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
-    guide = FALSE
+  scale_fill_gradientn(
+    colours = c("#F5793A", "#85C0F9", "#A95AA1", "#33a02c", "#F5793A"),
+    na.value = NA,
+    guide = F
   ) +
+  # scale_fill_manual(
+  #   values = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
+  #   guide = FALSE
+  # ) +
   coord_polar(theta = "y") +
-  xlim(2, 4.5) +
+  xlim(2.0, 4.1) +
   scale_y_continuous(
     breaks = c(0, 45, 90, 135, 180, 225, 270, 315),
     labels = c("N", "NE", "E", "SE", "S", "SW", "W", "NW")
@@ -134,8 +143,8 @@ p_legend <- tibble::tibble(
 p <- cowplot::ggdraw(p_estimator) +
   cowplot::draw_plot(
     p_legend,
-    x = 0.65, y = 0.05, 
-    width = 0.22, height = 0.22
+    x = 0.65, y = 0.005, 
+    width = 0.22, height = 0.27
   )
 
 ggsave(
