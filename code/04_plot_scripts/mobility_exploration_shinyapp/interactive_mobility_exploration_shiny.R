@@ -30,7 +30,6 @@ load("origin_grid_modified.RData")
 load("extended_area.RData")
 load("epsg3035.RData")
 
-
 origin_grid_mean_infodense <- origin_grid_mean %>%
   dplyr::left_join(
     janno_final %>% dplyr::select(-region_id),
@@ -56,18 +55,24 @@ origin_grid_mean_infodense <- origin_grid_mean %>%
 ui <- fluidPage(
   fluidRow(
     column(
-      width = 6,
-      plotOutput("plot1", height = 800,
+      width = 12,
+      plotOutput("plot1", height = 400,
           # Equivalent to: click = clickOpts(id = "plot_click")
           click = "plot1_click",
           brush = brushOpts(
             id = "plot1_brush"
           )
        )
-    ),
+    )
+  ),
+  fluidRow(
     column(
       width = 6,
       plotOutput("plot2", height = 800)
+    ),
+    column(
+      width = 6,
+      plotOutput("plot3", height = 800)
     )
   ),
   fluidRow(
@@ -81,7 +86,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   output$plot1 <- renderPlot({
     ggplot() +
-      lemon::facet_rep_wrap(~region_id, ncol = 2, repeat.tick.labels = T) +
+      lemon::facet_rep_wrap(~region_id, nrow = 2, repeat.tick.labels = T) +
       geom_point(
         data = origin_grid_mean_infodense,
         mapping = aes(
@@ -141,6 +146,24 @@ server <- function(input, output) {
         aes(x = x, y = y),
         color = "red"
       )
+  })
+  
+  output$plot3 <- renderPlot({
+    selected_samples <- brushedPoints(origin_grid_mean_infodense, input$plot1_brush)$search_id
+    mod_data <- origin_grid_mean_infodense %>% 
+      dplyr::filter(search_id %in% selected_samples)
+    ggplot() +
+      geom_point(
+        data = origin_grid_mean_infodense,
+        aes(x = C1, y = C2),
+        color = "grey"
+      ) +
+      geom_point(
+        data = mod_data,
+        aes(x = C1, y = C2),
+        color = "red"
+      ) +
+      coord_fixed()
   })
 }
 
