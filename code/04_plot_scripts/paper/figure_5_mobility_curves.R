@@ -34,16 +34,16 @@ p_estimator <- ggplot() +
     ),
     fill = "lightgrey"
   ) +
-  geom_ribbon(
-    data = moving_origin_grid,
-    mapping = aes(
-      x = z,
-      ymin = undirected_mean_spatial_distance - 2*sd_spatial_distance,
-      ymax = undirected_mean_spatial_distance + 2*sd_spatial_distance
-    ),
-    fill = "lightgrey",
-    alpha = 0.3
-  ) +
+  # geom_ribbon(
+  #   data = moving_origin_grid,
+  #   mapping = aes(
+  #     x = z,
+  #     ymin = undirected_mean_spatial_distance - 2*sd_spatial_distance,
+  #     ymax = undirected_mean_spatial_distance + 2*sd_spatial_distance
+  #   ),
+  #   fill = "lightgrey",
+  #   alpha = 0.3
+  # ) +
   geom_ribbon(
     data = moving_origin_grid,
     mapping = aes(
@@ -63,6 +63,18 @@ p_estimator <- ggplot() +
     data = moving_origin_grid,
     mapping = aes(x = z, y = undirected_mean_spatial_distance_upper_quartile),
     size = 0.4
+  ) +
+  geom_errorbar(
+    data = origin_grid_mean,
+    mapping = aes(
+      x = mean_search_z, 
+      ymax = undirected_mean_spatial_distance + undirected_2std_spatial_distance,
+      ymin = undirected_mean_spatial_distance - undirected_2std_spatial_distance,
+      color = mean_angle_deg
+    ),
+    alpha = 1,
+    size = 0.1,
+    width = 50
   ) +
   geom_rect(
     data = tibble::tibble(xmin = -Inf, ymin = -Inf, ymax = 0, xmax = Inf),
@@ -143,8 +155,8 @@ p_legend <- tibble::tibble(
 p <- cowplot::ggdraw(p_estimator) +
   cowplot::draw_plot(
     p_legend,
-    x = 0.65, y = 0.005, 
-    width = 0.22, height = 0.27
+    x = 0.06, y = 0.76, 
+    width = 0.18, height = 0.20
   )
 
 ggsave(
@@ -153,7 +165,7 @@ ggsave(
   device = "png",
   scale = 0.7,
   dpi = 300,
-  width = 400, height = 300, units = "mm",
+  width = 450, height = 300, units = "mm",
   limitsize = F
 )
 

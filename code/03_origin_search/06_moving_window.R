@@ -50,6 +50,7 @@ origin_grid_mean <- origin_grid_modified %>%
     mean_search_z = mean(search_z),
     region_id = dplyr::first(region_id),
     undirected_mean_spatial_distance = mean(spatial_distance),
+    undirected_2std_spatial_distance = sd(spatial_distance),
     directed_mean_spatial_distance = sqrt(
       mean(search_x - origin_x)^2 +
         mean(search_y - origin_y)^2
@@ -59,6 +60,8 @@ origin_grid_mean <- origin_grid_modified %>%
     ),
     mean_angle_deg_cut = cut_angle(mean_angle_deg),
     .groups = "drop"
+  ) %>% dplyr::arrange(
+    undirected_mean_spatial_distance
   )
 
 # moving window
