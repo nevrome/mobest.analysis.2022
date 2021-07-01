@@ -64,6 +64,18 @@ p_estimator <- ggplot() +
     mapping = aes(x = z, y = undirected_mean_spatial_distance_upper_quartile),
     size = 0.4
   ) +
+  geom_errorbarh(
+    data = origin_grid_mean,
+    mapping = aes(
+      y = undirected_mean_spatial_distance, 
+      xmax = mean_search_z + sd_search_z,
+      xmin = mean_search_z - sd_search_z,
+      color = mean_angle_deg
+    ),
+    alpha = 1,
+    size = 0.13,
+    height = 40
+  ) +
   geom_errorbar(
     data = origin_grid_mean,
     mapping = aes(
@@ -73,8 +85,8 @@ p_estimator <- ggplot() +
       color = mean_angle_deg
     ),
     alpha = 1,
-    size = 0.1,
-    width = 50
+    size = 0.13,
+    width = 40
   ) +
   geom_rect(
     data = tibble::tibble(xmin = -Inf, ymin = -Inf, ymax = 0, xmax = Inf),
@@ -90,7 +102,7 @@ p_estimator <- ggplot() +
       x = mean_search_z, y = undirected_mean_spatial_distance, color = mean_angle_deg
     ),
     alpha = 1,
-    size = 1.5,
+    size = 1.8,
     shape = 4
   ) +
   geom_point(
@@ -124,7 +136,7 @@ p_legend <- tibble::tibble(
 ) %>%
   ggplot() + 
   geom_rect(
-    aes(xmin = 3, xmax = 4, ymin = angle_start, ymax = angle_stop, fill = ID)
+    aes(xmin = 2.8, xmax = 3.8, ymin = angle_start, ymax = angle_stop, fill = ID)
   ) +
   scale_fill_gradientn(
     colours = c("#F5793A", "#85C0F9", "#A95AA1", "#33a02c", "#F5793A"),
@@ -165,7 +177,7 @@ ggsave(
   device = "png",
   scale = 0.7,
   dpi = 300,
-  width = 450, height = 300, units = "mm",
+  width = 430, height = 300, units = "mm",
   limitsize = F
 )
 

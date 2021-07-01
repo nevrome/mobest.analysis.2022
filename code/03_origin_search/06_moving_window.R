@@ -48,6 +48,7 @@ origin_grid_mean <- origin_grid_modified %>%
   ) %>%
   dplyr::summarise(
     mean_search_z = mean(search_z),
+    sd_search_z = sd(search_z),
     region_id = dplyr::first(region_id),
     undirected_mean_spatial_distance = mean(spatial_distance),
     undirected_2std_spatial_distance = sd(spatial_distance),
