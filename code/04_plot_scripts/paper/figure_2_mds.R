@@ -32,14 +32,14 @@ p <- ggplot() +
     color = "black",
     shape = 21,
     grid_x = 23,
-    grid_y = 27
+    grid_y = 26
   ) +
   ggpointgrid::geom_pointgrid(
     data = region_age_group_mean,
     aes(x = mean_C1, y = mean_C2, color = z, shape = region_id),
     size = 2,
     grid_x = 23,
-    grid_y = 27,
+    grid_y = 26,
     stroke = 1
   ) +
   scale_shape_manual(
@@ -47,7 +47,7 @@ p <- ggplot() +
     na.value = 3
   ) +
   age_colors_gradient +
-  # coord_fixed(xlim = c(-0.05, 0.08), ylim = c(-0.095, 0.06)) +
+  coord_fixed() +
   scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   theme_bw() +
@@ -58,13 +58,13 @@ p <- ggplot() +
     legend.title = element_text(size = 13),
     legend.spacing.y = unit(0.2, 'cm'),
     legend.key.height = unit(0.4, 'cm'),
-    legend.text = element_text(size = 9),
+    legend.text = element_text(size = 10),
   ) +
   guides(
     color = guide_colorbar(title = "Time", barwidth = 20, barheight = 1.5),
     shape = guide_legend(
       title = "Region", nrow = 3, ncol = 3, byrow = T,
-      override.aes = aes(size = 3)
+      override.aes = aes(size = 3, stroke = 1)
     )
   )
 

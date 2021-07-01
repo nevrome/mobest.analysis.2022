@@ -31,12 +31,6 @@ p_map <- ggplot() +
     width = 60000,
     height = 60000
   ) +
-  # geom_sf_label(
-  #   data = mobility_regions,
-  #   aes(label = region_id),
-  #   colour = "black", size = 4,
-  #   alpha = 0.3
-  # ) +
   theme_bw() +
   coord_sf(
     expand = FALSE,
@@ -62,7 +56,7 @@ p_map <- ggplot() +
     color = guide_colorbar(title = "Time", barwidth = 20, barheight = 1.5),
     shape = guide_legend(
       title = "Region", nrow = 3, ncol = 3, byrow = T,
-      override.aes = aes(size = 3)
+      override.aes = aes(size = 3, stroke = 1)
     )
   )
 
