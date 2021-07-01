@@ -41,7 +41,12 @@ p <- ggplot() +
   ) +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(
-    data = distance_grid_examples,
+    data = distance_grid_examples %>%
+      dplyr::group_by(Individual_ID, x, y, z) %>%
+      dplyr::summarise(
+        gen_dist = mean(gen_dist),
+        .groups = "drop"
+      ),
     mapping = aes(x = x, y = y, fill = gen_dist),
   ) +
   scale_fill_viridis_c(option = "mako", direction = -1) +
@@ -56,9 +61,8 @@ p <- ggplot() +
     data = closest_points_examples,
     mapping = aes(x = x, y = y),
     colour = "orange",
-    shape = "✖",
-    size = 7,
-    alpha = 0.7
+    size = 4,
+    shape = "✖"
   ) +
   geom_text(
     data = data.frame(

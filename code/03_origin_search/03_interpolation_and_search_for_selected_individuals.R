@@ -29,7 +29,7 @@ janno_search <- janno_final %>%
   dplyr::arrange(Individual_ID)
 
 #### prepare model grid ####
-nr_of_resampling_runs <- 5
+nr_of_resampling_runs <- 10
 
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
