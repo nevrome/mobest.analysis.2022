@@ -6,7 +6,6 @@ load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
-load("data/plot_reference_data/region_id_fill.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 load("data/spatial/mobility_regions.RData")
 
@@ -99,9 +98,11 @@ p_space_time <- ggplot(
 p_tempdist <- janno_final %>%
   ggplot() +
   geom_histogram(
-    aes(x = Date_BC_AD_Median_Derived),
-    fill = "grey",
+    aes(x = Date_BC_AD_Median_Derived, fill = !is.na(region_id)),
     breaks = seq(-8000, 2000, 200)
+  ) +
+  scale_fill_manual(
+    values = c("TRUE" = "black", "FALSE" = "grey")
   ) +
   theme_bw() +
   xlab("time in years calBC/AD") +
@@ -116,9 +117,6 @@ p_tempdist <- janno_final %>%
     plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
   ) +
   coord_flip(xlim = c(-7800, 1800)) +
-  # scale_fill_manual(
-  #   values = region_id_colors
-  # ) +
   scale_x_continuous(breaks = seq(-8000, 2000, 1000)) +
   scale_y_continuous(breaks = c(0, 100, 200))
 

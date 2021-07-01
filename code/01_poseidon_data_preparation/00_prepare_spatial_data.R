@@ -77,11 +77,11 @@ mobility_regions <- sf::st_read(
 )
 mobility_region_levels <- c(
   "Britain and Ireland",
-  "Western Pontic Steppe",
   "Central Europe",
   "Southeastern Europe",
-  "Italy",
-  "Iberia"
+  "Western Pontic Steppe",
+  "Iberia",
+  "Italy"
 )
 mobility_regions$region_id <- factor(
   mobility_regions$region_id, levels = mobility_region_levels
