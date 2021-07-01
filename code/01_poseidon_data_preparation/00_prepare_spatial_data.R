@@ -81,7 +81,6 @@ mobility_region_levels <- c(
   "Central Europe",
   "Southeastern Europe",
   "Italy",
-  "Eastern Mediterranean",
   "Iberia"
 )
 mobility_regions$region_id <- factor(
