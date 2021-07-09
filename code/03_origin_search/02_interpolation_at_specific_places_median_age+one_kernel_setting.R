@@ -6,7 +6,15 @@ load("data/poseidon_data/janno_final.RData")
 load("data/spatial/epsg3035.RData")
 load("data/origin_search/default_kernel.RData")
 
-# individual point
+# individual points
+
+Rome <- sf::st_as_sf(
+  tibble::tibble(lon = 12.50, lat = 41.90),
+  coords = c("lon", "lat"),
+  crs = 4326,
+  remove = FALSE
+) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
+
 Budapest <- sf::st_as_sf(
   tibble::tibble(lon = 19.05, lat = 47.50),
   coords = c("lon", "lat"),
@@ -35,8 +43,8 @@ Jerusalem <- sf::st_as_sf(
   remove = FALSE
 ) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
 
-Dnipro <- sf::st_as_sf(
-  tibble::tibble(lon = 35.05, lat = 48.46),
+Riga <- sf::st_as_sf(
+  tibble::tibble(lon = 24.11, lat = 56.95),
   coords = c("lon", "lat"),
   crs = 4326,
   remove = FALSE
@@ -61,20 +69,24 @@ model_grid <- mobest::create_model_grid(
   kernel = default_kernel,
   prediction_grid = mobest::create_spatpos_multi(
     x = list(
-      rep(Barcelona[1], n_time_points),
       rep(London[1], n_time_points),
-      rep(Jerusalem[1], n_time_points),
-      rep(Dnipro[1], n_time_points)
+      rep(Riga[1], n_time_points),
+      rep(Rome[1], n_time_points),
+      rep(Budapest[1], n_time_points),
+      rep(Barcelona[1], n_time_points),
+      rep(Jerusalem[1], n_time_points)
     ), 
     y = list(
-      rep(Barcelona[2], n_time_points),
       rep(London[2], n_time_points),
-      rep(Jerusalem[2], n_time_points),
-      rep(Dnipro[2], n_time_points)
+      rep(Riga[2], n_time_points),
+      rep(Rome[2], n_time_points),
+      rep(Budapest[2], n_time_points),
+      rep(Barcelona[2], n_time_points),
+      rep(Jerusalem[2], n_time_points)
     ),
-    z = rep(list(time_points), 4),
+    z = rep(list(time_points), 6),
     id = 1:n_time_points,
-    it = c("Barcelona", "London", "Jerusalem", "Dnipro")
+    it = c("London", "Riga", "Rome", "Budapest", "Barcelona", "Jerusalem")
   )
 )
 

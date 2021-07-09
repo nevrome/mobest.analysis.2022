@@ -12,7 +12,7 @@ poi_timeseries <- interpol_grid_examples %>%
   )
 
 p <- ggplot() +
-  facet_wrap(~pred_grid_id) +
+  facet_wrap(~pred_grid_id, nrow = 3) +
   geom_point(
     data = janno_final,
     aes(x = C1, y = C2),
@@ -21,7 +21,8 @@ p <- ggplot() +
   geom_path(
     data = poi_timeseries,
     aes(x = mean_C1, y = mean_C2),
-    size = 0.8
+    size = 0.8,
+    color = "lightgrey"
   ) +
   geom_errorbar(
     data = poi_timeseries,
@@ -53,22 +54,22 @@ p <- ggplot() +
   age_colors_gradient +
   theme_bw() +
   theme(
-    legend.position = "bottom",
-    axis.title = element_blank()
+    legend.position = "right"
   ) +
-  coord_fixed(xlim = c(-0.05, 0.08), ylim = c(-0.1, 0.065)) +
-  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
+  coord_fixed() +
+  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.04)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   guides(
-    color = guide_legend(title = "Prediction time", nrow = 2, byrow = T)
+    color = guide_legend(title = "Prediction time", ncol = 1)
   )
+  
 
 ggsave(
   "plots/figure_sup_11_timepillars.jpeg",
   plot = p,
   device = "jpeg",
-  scale = 0.6,
+  scale = 0.7,
   dpi = 300,
-  width = 220, height = 300, units = "mm",
+  width = 240, height = 300, units = "mm",
   limitsize = F
 )
