@@ -29,7 +29,7 @@ moving_origin_grid_modified <- moving_origin_grid %>%
     )
   )
 
-p_curves <- moving_origin_grid_modified %>%
+p <- moving_origin_grid_modified %>%
   ggplot() +
   lemon::facet_rep_wrap(~region_id, ncol = 2, repeat.tick.labels = T) +
   geom_ribbon(
@@ -54,25 +54,16 @@ p_curves <- moving_origin_grid_modified %>%
       "Distances smaller then 500km",
       "Distances between 500 and 1000km",
       "Distances between 1000 and 2000km",
-      "Distances bigger then 2000km"
+      "Distances bigger than 2000km"
     ),
     start = 0.7,
     end = 0.1
   ) +
   theme_bw() +
-  theme(legend.position = "none") +
+  theme(legend.position = "bottom") +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(
     xlim = c(-7400, 1400)
-  )
-
-p_legend <- cowplot::get_legend((p_curves + theme(legend.position = "right")))
-
-p <- cowplot::ggdraw(p_curves) +
-  cowplot::draw_plot(
-    p_legend,
-    x = 0.65, y = 0.05, 
-    width = 0.22, height = 0.22
   )
 
 ggsave(
@@ -81,6 +72,6 @@ ggsave(
   device = "png",
   scale = 0.7,
   dpi = 300,
-  width = 400, height = 300, units = "mm",
+  width = 400, height = 350, units = "mm",
   limitsize = F
 )
