@@ -57,7 +57,7 @@ p <- ggplot() +
     legend.position = "right"
   ) +
   coord_fixed() +
-  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.04)) +
+  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.04), expand = c(0,0)) +
   scale_x_continuous(breaks = seq(-0.08, 0.1, 0.04)) +
   guides(
     color = guide_legend(title = "Prediction time", ncol = 1)
@@ -70,6 +70,6 @@ ggsave(
   device = "jpeg",
   scale = 0.7,
   dpi = 300,
-  width = 240, height = 300, units = "mm",
+  width = 255, height = 300, units = "mm",
   limitsize = F
 )
