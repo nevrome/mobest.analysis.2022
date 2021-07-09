@@ -80,8 +80,8 @@ p_estimator <- ggplot() +
     data = origin_grid_mean,
     mapping = aes(
       x = mean_search_z, 
-      ymax = undirected_mean_spatial_distance + undirected_2std_spatial_distance,
-      ymin = undirected_mean_spatial_distance - undirected_2std_spatial_distance,
+      ymax = undirected_mean_spatial_distance + undirected_sd_spatial_distance,
+      ymin = undirected_mean_spatial_distance - undirected_sd_spatial_distance,
       color = mean_angle_deg
     ),
     alpha = 1,

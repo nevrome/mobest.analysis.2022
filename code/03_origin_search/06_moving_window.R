@@ -51,7 +51,7 @@ origin_grid_mean <- origin_grid_modified %>%
     sd_search_z = sd(search_z),
     region_id = dplyr::first(region_id),
     undirected_mean_spatial_distance = mean(spatial_distance),
-    undirected_2std_spatial_distance = sd(spatial_distance),
+    undirected_sd_spatial_distance = sd(spatial_distance),
     directed_mean_spatial_distance = sqrt(
       mean(search_x - origin_x)^2 +
         mean(search_y - origin_y)^2
