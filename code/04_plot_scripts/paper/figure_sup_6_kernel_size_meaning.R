@@ -1,19 +1,15 @@
 library(magrittr)
 library(ggplot2)
 
-kernel_theta <- function(distance, d) { exp(-(distance^2) / d) }
+kernel_theta <- Vectorize(function(distance, d) { exp(-(distance^2) / d) })
 
 kernel_theta_data <- expand.grid(
   dist_p1_p2 = seq(0, 2000, 1),
-  d = c(100, 500, 1000, 2000)^2
-)
-
-kernel_theta_data$k <- sapply(
-  1:nrow(kernel_theta_data), function(i, kernel_theta_data) {
-    kernel_theta(kernel_theta_data$dist_p1_p2[i], kernel_theta_data$d[i])
-  },
-  kernel_theta_data
-)
+  d          = c(100, 500, 1000, 2000)^2
+) %>%
+  dplyr::mutate(
+    k = kernel_theta(dist_p1_p2, d)
+  )
 
 kernel_theta_data$d_label <- as.factor(kernel_theta_data$d)
 levels(kernel_theta_data$d_label) <- c(
