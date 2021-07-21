@@ -4,7 +4,6 @@ library(magrittr)
 
 load("data/poseidon_data/janno_final.RData")
 load("data/origin_search/age_resampling+one_kernel_setting/origin_grid.RData")
-load("data/origin_search/origin_grid_median.RData")
 load("data/spatial/epsg3035.RData")
 load("data/spatial/mobility_regions.RData")
 

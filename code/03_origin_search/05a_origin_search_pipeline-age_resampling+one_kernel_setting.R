@@ -13,6 +13,7 @@ age_resampling_run <- as.numeric(args[1])
 load("data/poseidon_data/janno_final.RData")
 load("data/spatial/search_area.RData")
 load("data/origin_search/default_kernel.RData")
+load("data/origin_search/retrospection_distance.RData")
 
 #### prepare model grid ####
 
@@ -33,7 +34,7 @@ model_grid <- mobest::create_model_grid(
     scs100_tl50 = mobest::prediction_grid_for_spatiotemporal_area(
       search_area,
       spatial_cell_size = 100000,
-      temporal_layers = seq(-7500, 1500, 50)
+      temporal_layers = seq(-8000, 1000, 50)
     )
   )
 )
@@ -49,7 +50,7 @@ janno_search <- janno_final %>%
     search_z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })
   ) %>% dplyr::filter(
     !is.na(region_id),
-    search_z >= -7500 &
+    search_z >= -7300 &
       search_z <= 1500
     )
 
@@ -66,7 +67,7 @@ origin_grid <- mobest::search_spatial_origin(
     C2 = janno_search$C2
   ),
   interpol_grid = interpol_grid,
-  rearview_distance = 0
+  rearview_distance = retrospection_distance
 )
 
 origin_grid$age_resampling_run <- age_resampling_run
