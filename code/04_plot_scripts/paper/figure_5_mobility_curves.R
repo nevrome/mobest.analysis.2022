@@ -59,11 +59,11 @@ p_estimator <- ggplot() +
     size = 0.4,
     colour = "darkgrey"
   ) +
-  geom_line(
-    data = moving_origin_grid,
-    mapping = aes(x = z, y = undirected_mean_spatial_distance_upper_quartile),
-    size = 0.4
-  ) +
+  # geom_line(
+  #   data = moving_origin_grid,
+  #   mapping = aes(x = z, y = undirected_mean_spatial_distance_upper_quartile),
+  #   size = 0.4
+  # ) +
   geom_errorbarh(
     data = origin_grid_mean,
     mapping = aes(
@@ -104,6 +104,38 @@ p_estimator <- ggplot() +
     alpha = 1,
     size = 1.8,
     shape = 4
+  ) +
+  ggrepel::geom_label_repel(
+    data = {
+      lookup <- tibble::tribble(
+        ~search_id, ~label_name,
+        "RISE434.SG", "RISE434", 
+        "Stuttgart_published.DG", "Stuttgart", 
+        "3DT26.SG", "3DRIF-26", 
+        "N22.SG", "N22",
+        "I15940", "I15940",
+        "I3719_published", "I3719",
+        "ILK001", "ILK001",
+        "ILK002", "ILK002",
+        "ILK003", "ILK003",
+        "I2352", "I2352",
+        "ATP3.SG", "ATP3",
+        "I8205", "I8205" 
+      )
+      origin_grid_mean %>% dplyr::filter(
+        search_id %in% c(lookup$search_id)
+      ) %>% dplyr::left_join(lookup)
+    },
+    mapping = aes(
+      x = mean_search_z, y = undirected_mean_spatial_distance, label = label_name
+    ),
+    ylim = c(3000, 3500),
+    segment.size      = 0.3,
+    segment.curvature = 0.3,
+    segment.square    = FALSE,
+    arrow = arrow(length = unit(0.015, "npc")),
+    point.padding = 1,
+    size = 3
   ) +
   geom_point(
     data = janno_final %>% dplyr::filter(!is.na(region_id)),
@@ -172,7 +204,7 @@ p <- cowplot::ggdraw(p_estimator) +
   )
 
 ggsave(
-  paste0("plots/figure_5_mobility_curves.png"),
+  paste0("plots/figure_5_mobility_curves2.png"),
   plot = p,
   device = "png",
   scale = 0.7,
