@@ -6,7 +6,7 @@
 #$ -j y #join error and standard output in one file, no error file will be written
 #$ -o ~/log #standard output file or directory (joined with error because of -j y)
 #$ -q archgen.q #queue
-#$ -pe make 4 #needs X CPU cores
+#$ -pe smp 4 #needs X CPU cores
 #$ -l h_vmem=20G #request XGb of memory
 #$ -V # load personal profile
 #$ -t 1-100 # array job length

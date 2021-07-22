@@ -6,7 +6,7 @@
 #$ -j y #join error and standard output in one file, no error file will be written
 #$ -o mobest_qsub_output #standard output file or directory (joined with error because of -j y)
 #$ -q archgen.q #queue
-#$ -pe make 10 #needs 8 CPU cores
+#$ -pe smp 10 #needs 8 CPU cores
 #$ -l h_vmem=40G #request 4Gb of memory
 #$ -V # load personal profile
 
