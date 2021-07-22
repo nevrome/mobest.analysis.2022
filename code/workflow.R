@@ -46,12 +46,13 @@ source("code/02_parameter_estimation/crossvalidation/modify_crossvalidation_resu
 
 source("code/03_origin_search/00_interpolation_and_origin_search_settings.R")
 cluster_up("data/origin_search/default_kernel.RData")
+cluster_up("data/origin_search/retrospection_distance.RData")
 
 source("code/03_origin_search/01_interpolation_for_selected_timeslices.R")
 source("code/03_origin_search/02_interpolation_at_specific_places_median_age+one_kernel_setting.R")
 source("code/03_origin_search/03_interpolation_and_search_for_selected_individuals.R")
 
-source("code/03_origin_search/04_origin_search_pipeline-median_age+one_kernel_setting.R")
+#source("code/03_origin_search/04_origin_search_pipeline-median_age+one_kernel_setting.R")
 
 cluster_qsub_script("code/03_origin_search/sge_origin_search.sh")
 cluster_down("data/origin_search/age_resampling+one_kernel_setting")

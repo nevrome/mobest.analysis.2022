@@ -6,6 +6,7 @@ load("data/poseidon_data/janno_final.RData")
 load("data/spatial/search_area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/origin_search/default_kernel.RData")
+load("data/origin_search/retrospection_distance.RData")
 
 #### select individuals ####
 
@@ -53,7 +54,7 @@ model_grid <- mobest::create_model_grid(
     scs100_tlspecific = mobest::prediction_grid_for_spatiotemporal_area(
       search_area,
       spatial_cell_size = 30000,
-      temporal_layers = janno_search$z
+      temporal_layers = janno_search$z - retrospection_distance
     )
   )
 )
@@ -72,8 +73,13 @@ grid_list <- interpol_grid_specific %>%
     values_from = c("mean", "sd")
   ) %>%
   dplyr::left_join(
-    janno_search %>% dplyr::select(Individual_ID, Date_BC_AD_Median_Derived, C1, C2), 
-    by = c("z" = "Date_BC_AD_Median_Derived")
+    janno_search %>% dplyr::select(
+      Individual_ID, Date_BC_AD_Median_Derived, C1, C2
+    ) %>% 
+      dplyr::mutate(
+        z = Date_BC_AD_Median_Derived - retrospection_distance
+      ), 
+    by = "z"
   )
 
 distance_grid_multi_resampling <- grid_list %>% 
