@@ -129,7 +129,11 @@ p_estimator <- ggplot() +
         "I5367", "I5367",
         "VK546.SG", "VK546",
         "XN191", "XN191",
-        "XN206", "XN206"
+        "XN206", "XN206",
+        "I5411", "I5411",
+        "I4917", "I4917",
+        "I4665_published", "I4665",
+        "RISE1159.SG", "RISE1159"
       )
       origin_grid_mean %>% dplyr::filter(
         search_id %in% c(lookup$search_id)
