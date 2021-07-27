@@ -129,7 +129,7 @@ p_estimator <- ggplot() +
     mapping = aes(
       x = mean_search_z, y = directed_mean_spatial_distance, label = label_name
     ),
-    ylim = c(3000, 3500),
+    ylim = c(2500, 3000),
     segment.size      = 0.3,
     segment.curvature = 0.3,
     segment.square    = FALSE,
@@ -144,10 +144,10 @@ p_estimator <- ggplot() +
   ) +
   theme_bw() +
   theme(
-    legend.position = "bottom",
+    legend.position = "bottom"
   ) +
-  xlab("time in years calBC/calAD") +
-  ylab("spatial distance to \"link point\" (directed mean) [km]") +
+  xlab("time [years calBC/calAD]") +
+  ylab("spatial distance to \"origin point\" (directed mean) [km]") +
   scale_color_gradientn(
     colours = c("#F5793A", "#85C0F9", "#A95AA1", "#33a02c", "#F5793A"),
     na.value = NA,
@@ -156,7 +156,7 @@ p_estimator <- ggplot() +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(
     xlim = c(-7400, 1400),
-    ylim = c(-100, max(origin_grid_mean$directed_mean_spatial_distance, na.rm = T))
+    ylim = c(-100, 3000) #max(origin_grid_mean$directed_mean_spatial_distance, na.rm = T))
   )
 
 #### direction legend ####
@@ -204,7 +204,7 @@ p <- cowplot::ggdraw(p_estimator) +
   )
 
 ggsave(
-  paste0("plots/figure_5_mobility_curves4.png"),
+  paste0("plots/figure_5_mobility_curves5.png"),
   plot = p,
   device = "png",
   scale = 0.7,
