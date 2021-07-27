@@ -38,8 +38,8 @@ p_estimator <- ggplot() +
   #   data = moving_origin_grid,
   #   mapping = aes(
   #     x = z,
-  #     ymin = undirected_mean_spatial_distance - 2*sd_spatial_distance,
-  #     ymax = undirected_mean_spatial_distance + 2*sd_spatial_distance
+  #     ymin = directed_mean_spatial_distance - 2*sd_spatial_distance,
+  #     ymax = directed_mean_spatial_distance + 2*sd_spatial_distance
   #   ),
   #   fill = "lightgrey",
   #   alpha = 0.3
@@ -48,26 +48,26 @@ p_estimator <- ggplot() +
     data = moving_origin_grid,
     mapping = aes(
       x = z,
-      ymin = undirected_mean_spatial_distance - 2*se_spatial_distance,
-      ymax = undirected_mean_spatial_distance + 2*se_spatial_distance
+      ymin = directed_mean_spatial_distance - 2*se_spatial_distance,
+      ymax = directed_mean_spatial_distance + 2*se_spatial_distance
     ),
     fill = "lightgrey",
   ) +
   geom_line(
     data = moving_origin_grid,
-    mapping = aes(x = z, y = undirected_mean_spatial_distance),
+    mapping = aes(x = z, y = directed_mean_spatial_distance),
     size = 0.4,
     colour = "darkgrey"
   ) +
   # geom_line(
   #   data = moving_origin_grid,
-  #   mapping = aes(x = z, y = undirected_mean_spatial_distance_upper_quartile),
+  #   mapping = aes(x = z, y = directed_mean_spatial_distance_upper_quartile),
   #   size = 0.4
   # ) +
   geom_errorbarh(
     data = origin_grid_mean,
     mapping = aes(
-      y = undirected_mean_spatial_distance, 
+      y = directed_mean_spatial_distance, 
       xmax = mean_search_z + sd_search_z,
       xmin = mean_search_z - sd_search_z,
       color = mean_angle_deg
@@ -80,8 +80,8 @@ p_estimator <- ggplot() +
     data = origin_grid_mean,
     mapping = aes(
       x = mean_search_z, 
-      ymax = undirected_mean_spatial_distance + undirected_sd_spatial_distance,
-      ymin = undirected_mean_spatial_distance - undirected_sd_spatial_distance,
+      ymax = directed_mean_spatial_distance + undirected_sd_spatial_distance,
+      ymin = directed_mean_spatial_distance - undirected_sd_spatial_distance,
       color = mean_angle_deg
     ),
     alpha = 1,
@@ -99,7 +99,7 @@ p_estimator <- ggplot() +
   geom_point(
     data = origin_grid_mean,
     mapping = aes(
-      x = mean_search_z, y = undirected_mean_spatial_distance, color = mean_angle_deg
+      x = mean_search_z, y = directed_mean_spatial_distance, color = mean_angle_deg
     ),
     alpha = 1,
     size = 1.8,
@@ -127,7 +127,7 @@ p_estimator <- ggplot() +
       ) %>% dplyr::left_join(lookup)
     },
     mapping = aes(
-      x = mean_search_z, y = undirected_mean_spatial_distance, label = label_name
+      x = mean_search_z, y = directed_mean_spatial_distance, label = label_name
     ),
     ylim = c(3000, 3500),
     segment.size      = 0.3,
@@ -147,7 +147,7 @@ p_estimator <- ggplot() +
     legend.position = "bottom",
   ) +
   xlab("time in years calBC/calAD") +
-  ylab("spatial distance to \"link point\" (undirected mean) [km]") +
+  ylab("spatial distance to \"link point\" (directed mean) [km]") +
   scale_color_gradientn(
     colours = c("#F5793A", "#85C0F9", "#A95AA1", "#33a02c", "#F5793A"),
     na.value = NA,
@@ -156,7 +156,7 @@ p_estimator <- ggplot() +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(
     xlim = c(-7400, 1400),
-    ylim = c(-100, max(origin_grid_mean$undirected_mean_spatial_distance, na.rm = T))
+    ylim = c(-100, max(origin_grid_mean$directed_mean_spatial_distance, na.rm = T))
   )
 
 #### direction legend ####
@@ -204,7 +204,7 @@ p <- cowplot::ggdraw(p_estimator) +
   )
 
 ggsave(
-  paste0("plots/figure_5_mobility_curves2.png"),
+  paste0("plots/figure_5_mobility_curves4.png"),
   plot = p,
   device = "png",
   scale = 0.7,
