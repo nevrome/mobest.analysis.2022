@@ -120,7 +120,16 @@ p_estimator <- ggplot() +
         "ILK003", "ILK003",
         "I2352", "I2352",
         "ATP3.SG", "ATP3",
-        "I8205", "I8205" 
+        "I8205", "I8205",
+        "MJ-14.SG", "MJ-14",
+        "scy009.SG", "scy009",
+        "R68.SG", "R68.SG",
+        "R67.SG", "R67.SG",
+        "I2637", "I2637",
+        "I5367", "I5367",
+        "VK546.SG", "VK546",
+        "XN191", "XN191",
+        "XN206", "XN206"
       )
       origin_grid_mean %>% dplyr::filter(
         search_id %in% c(lookup$search_id)
@@ -129,13 +138,15 @@ p_estimator <- ggplot() +
     mapping = aes(
       x = mean_search_z, y = directed_mean_spatial_distance, label = label_name
     ),
-    ylim = c(2500, 3000),
+    ylim = c(2500, NA),
     segment.size      = 0.3,
     segment.curvature = 0.3,
     segment.square    = FALSE,
     arrow = arrow(length = unit(0.015, "npc")),
+    min.segment.length = unit(0.015, "npc"),
     point.padding = 1,
-    size = 3
+    size = 3,
+    alpha = 0.6
   ) +
   geom_point(
     data = janno_final %>% dplyr::filter(!is.na(region_id)),

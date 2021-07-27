@@ -90,7 +90,7 @@ server <- function(input, output) {
       geom_point(
         data = origin_grid_mean_infodense,
         mapping = aes(
-          x = mean_search_z, y = undirected_mean_spatial_distance, color = mean_angle_deg,
+          x = mean_search_z, y = directed_mean_spatial_distance, color = mean_angle_deg,
           label1 = search_id, label2 = Pop, label3 = Pup
         ),
         alpha = 1,
@@ -111,7 +111,7 @@ server <- function(input, output) {
       scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
       coord_cartesian(
         xlim = c(-7400, 1400),
-        ylim = c(-100, max(origin_grid_mean_infodense$undirected_mean_spatial_distance, na.rm = T))
+        ylim = c(-100, max(origin_grid_mean_infodense$directed_mean_spatial_distance, na.rm = T))
       )
   })
   
