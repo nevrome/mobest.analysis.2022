@@ -1,6 +1,6 @@
 #### kernel size ####
 
-spatial_kernel_size_km <- 700
+spatial_kernel_size_km <- 500
 temporal_kernel_size_years <- 800
 nugget <- 0.06
 

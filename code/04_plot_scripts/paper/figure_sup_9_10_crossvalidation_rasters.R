@@ -13,7 +13,7 @@ interpol_comparison_group <- interpol_comparison %>%
 
 dependent_vars <- interpol_comparison_group$dependent_var
 
-minicg <- interpol_comparison_group %>% 
+minicg <- interpol_comparison_group %>%
   dplyr::group_by(dependent_var) %>%
   dplyr::filter(
     mean_squared_difference %in% (mean_squared_difference %>% sort %>% unique %>% head(20))
@@ -87,13 +87,13 @@ max(bests$ds) %>% sqrt()
 min(bests$dt) %>% sqrt()
 max(bests$dt) %>% sqrt()
 
-f <- Vectorize(function(x) {
-  if (x < 1) return(x/1e10)
-  sqrt(x)
-})
-
 min_point <- mean_interpol_comparison_group %>% 
   dplyr::filter(mean_mean_squared_difference == min(mean_mean_squared_difference)) %>%
+  magrittr::extract(1,)
+
+opt_point <- mean_interpol_comparison_group %>%
+  dplyr::filter(cut_mean_mean_squared_difference == "[0,0.05]") %>%
+  dplyr::arrange(ds, dt) %>%
   magrittr::extract(1,)
 
 p2 <- mean_interpol_comparison_group %>%
@@ -118,6 +118,19 @@ p2 <- mean_interpol_comparison_group %>%
     label = latex2exp::TeX(paste0("$\\sqrt{\\theta_s}$ = ", min_point$ds, " | \\sqrt{$\\theta_t}$ = ", min_point$dt)),
     parse = TRUE,
     color = "red",
+    size = 4
+  ) +
+  geom_point(
+    data = opt_point,
+    aes(x = ds, y = dt), 
+    color = "blue", pch = 4, size = 5
+  ) +
+  annotate(
+    "text",
+    x = opt_point$ds + 500, y = opt_point$dt,
+    label = latex2exp::TeX(paste0("$\\sqrt{\\theta_s}$ = ", opt_point$ds, " | \\sqrt{$\\theta_t}$ = ", opt_point$dt)),
+    parse = TRUE,
+    color = "blue",
     size = 4
   ) +
   scale_fill_viridis_d(direction = -1) +
