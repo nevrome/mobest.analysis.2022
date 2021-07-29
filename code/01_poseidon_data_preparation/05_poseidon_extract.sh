@@ -4,7 +4,7 @@ rm -r data/poseidon_data/poseidon_extracted
 
 trident forge \
   --forgeFile code/01_poseidon_data_preparation/ind_list.txt \
-  -d data/poseidon_data/poseidon_extracted_pre_identicals_filter \
+  -d data/poseidon_data/poseidon_full \
   -n poseidon_extracted \
   -o data/poseidon_data/poseidon_extracted
 
