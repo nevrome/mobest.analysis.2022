@@ -119,8 +119,9 @@ p_estimator <- ggplot() +
         "ILK002", "ILK002",
         "ILK003", "ILK003",
         "I2352", "I2352",
-        "ATP3.SG", "ATP3",
-        "I8205", "I8205",
+        # "ATP3.SG", "ATP3", wrong date?
+        "I8208", "I8208",
+        "I3983", "I3983",
         "MJ-14.SG", "MJ-14",
         "scy009.SG", "scy009",
         "R68.SG", "R68.SG",
@@ -131,9 +132,19 @@ p_estimator <- ggplot() +
         "XN191", "XN191",
         "XN206", "XN206",
         "I5411", "I5411",
-        "I4917", "I4917",
-        "I4665_published", "I4665",
-        "RISE1159.SG", "RISE1159"
+        "RISE1159.SG", "RISE1159",
+        "I3948", "I3948",
+        "I2534", "I2534",
+        "I2787", "I2787",
+        "I2741", "I2741",
+        "I2163", "I2163",
+        "DA191.SG", "DA191",
+        "DA194.SG", "DA194",
+        "HUN001.merged", "HUN001",
+        "I10899_published", "I10899",
+        "CB13.SG", "CB13",
+        "I0462", "I0462",
+        "I8344", "I8344"
       )
       origin_grid_mean %>% dplyr::filter(
         search_id %in% c(lookup$search_id)
@@ -219,7 +230,7 @@ p <- cowplot::ggdraw(p_estimator) +
   )
 
 ggsave(
-  paste0("plots/figure_5_mobility_curves5.png"),
+  paste0("plots/figure_5_mobility_curves6.png"),
   plot = p,
   device = "png",
   scale = 0.7,
