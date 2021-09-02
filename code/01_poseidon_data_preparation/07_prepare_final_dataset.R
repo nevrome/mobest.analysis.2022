@@ -3,19 +3,45 @@ library(magrittr)
 load("data/spatial/mobility_regions.RData")
 load("data/spatial/epsg3035.RData")
 
+# function to read plink mds files
+read_mds <- function(x) {
+  readr::read_fwf(
+    file = x, 
+    col_positions = readr::fwf_empty(
+      x,
+      skip = 1,
+      col_names = c("FID", "IID", "SOL", "C1", "C2", "C3"),
+      n = 1000
+    ),
+    trim_ws = T,
+    col_types = "ccdddd_",
+    skip = 1
+  )
+}
+
 # read active data
 janno <- poseidonR::read_janno("data/poseidon_data/poseidon_extracted/poseidon_extracted.janno")
-mds <- readr::read_delim("data/poseidon_data/mds/poseidon_extracted.pruned.mds", " ", trim_ws = T) %>%
-  dplyr::select(IID, C1, C2)
+mds2 <- read_mds("data/poseidon_data/mds/mds2.mds") %>% 
+  dplyr::transmute(
+    Individual_ID = IID,
+    C1 = C1,
+    C2 = C2
+  )
+mds3 <- read_mds("data/poseidon_data/mds/mds3.mds") %>% 
+  dplyr::transmute(
+    Individual_ID = IID,
+    mds3_C1 = C1,
+    mds3_C2 = C2,
+    mds3_C3 = C3
+  )
 
 # run age processing
 janno_age <- janno %>% poseidonR::process_age()
 
 # merge mds info into dataset
 janno_mds <- janno_age %>% 
-  dplyr::left_join(
-    mds, by = c("Individual_ID" = "IID")
-  )
+  dplyr::left_join(mds2) %>%
+  dplyr::left_join(mds3)
 
 # add spatial and temporal grouping and coordinates
 janno_spatial <- janno_mds %>%
@@ -34,7 +60,6 @@ region_vector <- janno_spatial %>%
   ) %$%
   factor(region_id, levels = levels(mobility_regions$region_id))
   
-
 janno_final <- janno_spatial %>%
   dplyr::mutate(
     region_id = region_vector,
