@@ -21,7 +21,10 @@ plink --bfile ../poseidon_extracted/poseidon_extracted --exclude ../../../code/0
 plink --bfile poseidon_extracted.pruned --genome --out poseidon_extracted.pruned
 
 # create mds table
-plink --bfile poseidon_extracted.pruned --cluster --mds-plot 2 --read-genome poseidon_extracted.pruned.genome --out poseidon_extracted.pruned
+plink --bfile poseidon_extracted.pruned --cluster --mds-plot 2 --read-genome poseidon_extracted.pruned.genome --out mds2
+
+# create mds table
+plink --bfile poseidon_extracted.pruned --cluster --mds-plot 3 --read-genome poseidon_extracted.pruned.genome --out mds3
 
 date
 
