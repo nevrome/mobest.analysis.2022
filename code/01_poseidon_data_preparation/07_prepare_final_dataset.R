@@ -11,7 +11,7 @@ read_mds <- function(x) {
       x,
       skip = 1,
       col_names = c("FID", "IID", "SOL", "C1", "C2", "C3"),
-      n = 1000
+      n = 3000
     ),
     trim_ws = T,
     col_types = "ccdddd_",
