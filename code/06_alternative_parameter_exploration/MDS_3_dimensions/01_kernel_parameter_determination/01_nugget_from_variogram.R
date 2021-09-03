@@ -17,6 +17,24 @@ d_all <- mobest::calculate_pairwise_distances(
   )
 )
 
+###
+
+d <- function(a, b, c = 0) {
+  sqrt(a^2 + b^2 + c^2)
+}
+  
+gdist3 <- Map(d, d_all$C1_dist, d_all$C2_dist, d_all$C3_dist) %>% unlist()
+gdist2 <- Map(d, d_all$C1_dist, d_all$C2_dist) %>% unlist()
+spdist <- Map(d, d_all$geo_dist, d_all$time_dist) %>% unlist()
+
+cor(spdist, gdist3)
+
+ggplot(data.frame(x = spdist, y = gdist3)) +
+  geom_hex(aes(x = x, y = y)) +
+  scale_fill_viridis_c()
+
+###
+
 d_binned <- mobest::bin_pairwise_distances(d_all)
 
 d_all_long <- d_all %>% tidyr::pivot_longer(
@@ -90,3 +108,56 @@ ggsave(
   width = 300, height = 120, units = "mm",
   limitsize = F
 )
+
+###
+
+d_binned_long <- d_binned %>%
+  tidyr::pivot_longer(
+    cols = tidyselect::one_of(c("C1_dist", "C2_dist", "C3_dist", "C1_dist_resid", "C2_dist_resid", "C3_dist_resid")),
+    names_to = "distance_type", values_to = "distance_value"
+  ) %>%
+  dplyr::mutate(
+    detrended = ifelse(
+      grepl("resid", distance_type), 
+      "detrended (residuals)", "not detrended"
+    ),
+    distance_type = sub("_resid", "", distance_type),
+    distance_type = sub("_dist", "", distance_type),
+    distance_type = factor(distance_type, levels = c("C1", "C2", "C3"))
+  ) %>%
+  dplyr::mutate(
+    detrended = factor(detrended, levels = c("not detrended", "detrended (residuals)"))
+  )
+
+# plot loop
+ps <- lapply(
+  d_binned_long %>% 
+    dplyr::filter(detrended == "detrended (residuals)") %>%
+    dplyr::group_split(distance_type), 
+  
+  function(x) {
+    
+    ggplot(x) + 
+      geom_raster(
+        aes(
+          x = geo_dist_cut,
+          y = time_dist_cut,
+          fill = distance_value
+        )
+      ) +
+      facet_grid(cols = dplyr::vars(distance_type)) +
+      scale_fill_viridis_c(direction = -1) +
+      theme_bw() +
+      theme(
+        legend.position = "bottom",
+        legend.text = element_text(size = 7, angle = 45, hjust = 0.9)
+      ) +
+      guides(
+        fill = guide_colorbar(title = "distance:", barwidth = 6)
+      ) +
+      xlab("spatial distance: 100km bins") +
+      ylab("temporal distance: 100y bins")
+    
+  })
+
+cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 2)
