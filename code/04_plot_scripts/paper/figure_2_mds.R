@@ -3,7 +3,6 @@ library(ggplot2)
 
 load("data/poseidon_data/janno_final.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
-load("data/plot_reference_data/region_id_fill.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 
 # mean per region and time
