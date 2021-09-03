@@ -72,17 +72,16 @@ p_mds <- function(v1, v2, plot_order_dim, grid_x, grid_y) {
     )
 }
 
-p_C1C2 <- p_mds("mds3_C1", "mds3_C2", "mds3_C3", 20, 25) + theme(legend.position = "none")
+p_C1C2 <- p_mds("mds3_C1", "mds3_C2", "mds3_C3", 20, 25)
+p_legend <- cowplot::get_legend(p_C1C2)
+
+p_C1C2 <- p_C1C2 + theme(legend.position = "none")
 p_C1C3 <- p_mds("mds3_C1", "mds3_C3", "mds3_C2", 20, 10) + theme(legend.position = "none")
 p_C3C2 <- p_mds("mds3_C3", "mds3_C2", "mds3_C1", 10, 25) + theme(legend.position = "none") + scale_x_reverse()
 
-
-cowplot::plot_grid(p_C1C2, p_C3C2, p_C1C3, ncol = 2, nrow = 2, align = "h")
-
-
 total <- cowplot::plot_grid(
   cowplot::plot_grid(p_C1C2, p_C3C2, ncol = 2),
-  cowplot::plot_grid(p_C1C3, ncol = 2), 
+  cowplot::plot_grid(p_C1C3, p_legend, ncol = 2), 
   nrow = 2, rel_heights = c(1,0.635)
 )
 
