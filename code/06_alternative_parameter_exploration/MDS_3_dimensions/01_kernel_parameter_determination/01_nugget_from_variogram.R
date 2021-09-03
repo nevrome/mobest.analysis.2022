@@ -19,17 +19,21 @@ d_all <- mobest::calculate_pairwise_distances(
 
 ###
 
+geo_scaled <- d_all$geo_dist/max(d_all$geo_dist)
+time_scaled <- d_all$time_dist/max(d_all$time_dist)
+
 d <- function(a, b, c = 0) {
   sqrt(a^2 + b^2 + c^2)
 }
   
 gdist3 <- Map(d, d_all$C1_dist, d_all$C2_dist, d_all$C3_dist) %>% unlist()
 gdist2 <- Map(d, d_all$C1_dist, d_all$C2_dist) %>% unlist()
-spdist <- Map(d, d_all$geo_dist, d_all$time_dist) %>% unlist()
+spdist <- Map(d, geo_scaled, time_scaled) %>% unlist()
 
+cor(spdist, gdist2)
 cor(spdist, gdist3)
 
-ggplot(data.frame(x = spdist, y = gdist3)) +
+ggplot(data.frame(x = spdist, y = gdist2)) +
   geom_hex(aes(x = x, y = y)) +
   scale_fill_viridis_c()
 
