@@ -5,10 +5,10 @@ load("data/poseidon_data/janno_final.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 
-p_mds <- function(v1, v2, plot_order_dim) {
+p_mds <- function(v1, v2, plot_order_dim, plot_order_factor = 1) {
   ggplot() +
     geom_point(
-      data = janno_final %>% dplyr::arrange(.data[[plot_order_dim]]),
+      data = janno_final %>% dplyr::arrange(.data[[plot_order_dim]] * plot_order_factor),
       aes(
         x = .data[[v1]], y = .data[[v2]], 
         color = Date_BC_AD_Median_Derived,
@@ -46,7 +46,7 @@ p_C1C2 <- p_mds("mds3_C1", "mds3_C2", "mds3_C3")
 p_legend <- cowplot::get_legend(p_C1C2)
 
 p_C1C2 <- p_C1C2 + theme(legend.position = "none")
-p_C1C3 <- p_mds("mds3_C1", "mds3_C3", "mds3_C2") + theme(legend.position = "none")
+p_C1C3 <- p_mds("mds3_C1", "mds3_C3", "mds3_C2", -1) + theme(legend.position = "none")
 p_C3C2 <- p_mds("mds3_C3", "mds3_C2", "mds3_C1") + theme(legend.position = "none") + scale_x_reverse()
 
 total <- cowplot::plot_grid(
