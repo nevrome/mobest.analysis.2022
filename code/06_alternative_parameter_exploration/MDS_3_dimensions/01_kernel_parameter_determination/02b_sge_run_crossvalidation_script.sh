@@ -24,7 +24,7 @@ echo Index: ${i}
 # parameters
 ds_to_explore=($(seq 100 100 2000))
 dt_to_explore=($(seq 100 100 2000))
-g_to_explore=(0.06)
+g_to_explore=(0.1)
 
 jobs=$((${#g_to_explore[@]}*${#ds_to_explore[@]}*${#dt_to_explore[@]}))
 
