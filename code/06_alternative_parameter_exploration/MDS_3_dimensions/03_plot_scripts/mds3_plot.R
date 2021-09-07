@@ -1,20 +1,21 @@
 library(magrittr)
+library(ggplot2)
 
 load("data/poseidon_data/janno_final.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 
 # mean per region and time
-region_age_group_mean <- janno_final %>%
-  dplyr::filter(!is.na(region_id)) %>%
-  dplyr::group_by(region_id, age_group_id) %>%
-  dplyr::summarise(
-    mds3_C1 = mean(mds3_C1),
-    mds3_C2 = mean(mds3_C2),
-    mds3_C3 = mean(mds3_C3),
-    z = mean(Date_BC_AD_Median_Derived)
-  ) %>%
-  dplyr::ungroup()
+# region_age_group_mean <- janno_final %>%
+#   dplyr::filter(!is.na(region_id)) %>%
+#   dplyr::group_by(region_id, age_group_id) %>%
+#   dplyr::summarise(
+#     mds3_C1 = mean(mds3_C1),
+#     mds3_C2 = mean(mds3_C2),
+#     mds3_C3 = mean(mds3_C3),
+#     z = mean(Date_BC_AD_Median_Derived)
+#   ) %>%
+#   dplyr::ungroup()
 
 p_mds <- function(v1, v2, plot_order_dim, grid_x, grid_y) {
   ggplot() +
@@ -80,8 +81,8 @@ p_C1C3 <- p_mds("mds3_C1", "mds3_C3", "mds3_C2", 20, 10) + theme(legend.position
 p_C3C2 <- p_mds("mds3_C3", "mds3_C2", "mds3_C1", 10, 25) + theme(legend.position = "none") + scale_x_reverse()
 
 total <- cowplot::plot_grid(
-  cowplot::plot_grid(p_C1C2, p_C3C2, ncol = 2),
-  cowplot::plot_grid(p_C1C3, p_legend, ncol = 2), 
+  cowplot::plot_grid(p_C1C2, p_C3C2, ncol = 2, labels = c("A", "B")),
+  cowplot::plot_grid(p_C1C3, p_legend, ncol = 2, labels = c("C", NA)), 
   nrow = 2, rel_heights = c(1,0.635)
 )
 
@@ -95,4 +96,3 @@ ggsave(
   limitsize = F,
   bg = "white"
 )
-
