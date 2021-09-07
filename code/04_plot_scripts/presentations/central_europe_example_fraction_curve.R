@@ -52,7 +52,7 @@ p_curve <- moving_origin_grid_modified %>%
     fill = "white"
   ) + 
   geom_point(
-    data = janno_final %>% dplyr::filter(!is.na(region_id)),
+    data = janno_final %>% dplyr::filter(region_id != "Other region"),
     aes(x = Date_BC_AD_Median_Derived, y = -0.04),
     shape = "|",
     size = 3

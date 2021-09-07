@@ -50,7 +50,7 @@ janno_search <- janno_final %>%
   dplyr::mutate(
     search_z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[age_resampling_run] })
   ) %>% dplyr::filter(
-    !is.na(region_id),
+    region_id != "Other region",
     search_z >= -7300 &
       search_z <= 1500
     )

@@ -62,7 +62,7 @@ p_map <- ggplot() +
 
 # space time plot
 p_space_time <- ggplot(
-  data = janno_final %>% dplyr::filter(!is.na(region_id)),
+  data = janno_final %>% dplyr::filter(region_id != "Other region"),
   aes(
     x = region_id, y = Date_BC_AD_Median_Derived, 
     color = Date_BC_AD_Median_Derived, 
@@ -92,7 +92,7 @@ p_space_time <- ggplot(
 p_tempdist <- janno_final %>%
   ggplot() +
   geom_histogram(
-    aes(x = Date_BC_AD_Median_Derived, fill = !is.na(region_id)),
+    aes(x = Date_BC_AD_Median_Derived, fill = region_id != "Other region"),
     breaks = seq(-8000, 2000, 200)
   ) +
   scale_fill_manual(

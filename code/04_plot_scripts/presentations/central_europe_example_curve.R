@@ -141,7 +141,7 @@ p1 <- p0 +
     fill = "white"
   ) + 
   geom_point(
-    data = janno_final %>% dplyr::filter(!is.na(region_id)),
+    data = janno_final %>% dplyr::filter(region_id != "Other region"),
     aes(x = Date_BC_AD_Median_Derived, y = -100),
     shape = "|",
     size = 3
@@ -168,7 +168,7 @@ p2 <- p0 +
     fill = "white"
   ) + 
   geom_point(
-    data = janno_final %>% dplyr::filter(!is.na(region_id)),
+    data = janno_final %>% dplyr::filter(region_id != "Other region"),
     aes(x = Date_BC_AD_Median_Derived, y = -100),
     shape = "|",
     size = 3
@@ -206,7 +206,7 @@ p3 <- p1 +
     fill = "white"
   ) + 
   geom_point(
-    data = janno_final %>% dplyr::filter(!is.na(region_id)),
+    data = janno_final %>% dplyr::filter(region_id != "Other region"),
     aes(x = Date_BC_AD_Median_Derived, y = -100),
     shape = "|",
     size = 3
@@ -267,7 +267,7 @@ p4 <- p0 +
     fill = "white"
   ) + 
   geom_point(
-    data = janno_final %>% dplyr::filter(!is.na(region_id)),
+    data = janno_final %>% dplyr::filter(region_id != "Other region"),
     aes(x = Date_BC_AD_Median_Derived, y = -100),
     shape = "|",
     size = 3

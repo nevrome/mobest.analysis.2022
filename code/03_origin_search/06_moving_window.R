@@ -18,7 +18,7 @@ origin_grid_modified <- origin_grid %>%
     janno_final %>% dplyr::select(Individual_ID, region_id),
     by = c("search_id" = "Individual_ID")
   ) %>%
-  dplyr::filter(!is.na(region_id))
+  dplyr::filter(region_id != "Other region")
 
 # age and direction groups
 r <- range(origin_grid$search_z)

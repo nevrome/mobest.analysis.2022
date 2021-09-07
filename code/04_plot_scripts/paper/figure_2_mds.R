@@ -7,7 +7,7 @@ load("data/plot_reference_data/age_colors_gradient.RData")
 
 # mean per region and time
 region_age_group_mean <- janno_final %>%
-  dplyr::filter(!is.na(region_id)) %>%
+  dplyr::filter(region_id != "Other region") %>%
   dplyr::group_by(region_id, age_group_id) %>%
   dplyr::summarise(mean_C1 = mean(C1), mean_C2 = mean(C2), z = mean(Date_BC_AD_Median_Derived)) %>%
   dplyr::ungroup()

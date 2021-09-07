@@ -5,19 +5,7 @@ load("data/poseidon_data/janno_final.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 
-# mean per region and time
-# region_age_group_mean <- janno_final %>%
-#   dplyr::filter(!is.na(region_id)) %>%
-#   dplyr::group_by(region_id, age_group_id) %>%
-#   dplyr::summarise(
-#     mds3_C1 = mean(mds3_C1),
-#     mds3_C2 = mean(mds3_C2),
-#     mds3_C3 = mean(mds3_C3),
-#     z = mean(Date_BC_AD_Median_Derived)
-#   ) %>%
-#   dplyr::ungroup()
-
-p_mds <- function(v1, v2, plot_order_dim, grid_x, grid_y) {
+p_mds <- function(v1, v2, plot_order_dim) {
   ggplot() +
     geom_point(
       data = janno_final %>% dplyr::arrange(.data[[plot_order_dim]]),
@@ -28,27 +16,8 @@ p_mds <- function(v1, v2, plot_order_dim, grid_x, grid_y) {
       ),
       size = 2
     ) +
-    # ggpointgrid::geom_pointgrid(
-    #   data = region_age_group_mean,
-    #   aes(x = .data[[v1]], y = .data[[v2]]),
-    #   size = 5,
-    #   fill = "black",
-    #   color = "black",
-    #   shape = 21,
-    #   grid_x = grid_x,
-    #   grid_y = grid_y
-    # ) +
-    # ggpointgrid::geom_pointgrid(
-    #   data = region_age_group_mean,
-    #   aes(x = .data[[v1]], y = .data[[v2]], color = z, shape = region_id),
-    #   size = 2,
-    #   grid_x = grid_x,
-    #   grid_y = grid_y,
-    #   stroke = 1
-    # ) +
     scale_shape_manual(
-      values = region_id_shapes,
-      na.value = 3
+      values = region_id_shapes
     ) +
     age_colors_gradient +
     coord_fixed() +
@@ -73,12 +42,12 @@ p_mds <- function(v1, v2, plot_order_dim, grid_x, grid_y) {
     )
 }
 
-p_C1C2 <- p_mds("mds3_C1", "mds3_C2", "mds3_C3", 20, 25)
+p_C1C2 <- p_mds("mds3_C1", "mds3_C2", "mds3_C3")
 p_legend <- cowplot::get_legend(p_C1C2)
 
 p_C1C2 <- p_C1C2 + theme(legend.position = "none")
-p_C1C3 <- p_mds("mds3_C1", "mds3_C3", "mds3_C2", 20, 10) + theme(legend.position = "none")
-p_C3C2 <- p_mds("mds3_C3", "mds3_C2", "mds3_C1", 10, 25) + theme(legend.position = "none") + scale_x_reverse()
+p_C1C3 <- p_mds("mds3_C1", "mds3_C3", "mds3_C2") + theme(legend.position = "none")
+p_C3C2 <- p_mds("mds3_C3", "mds3_C2", "mds3_C1") + theme(legend.position = "none") + scale_x_reverse()
 
 total <- cowplot::plot_grid(
   cowplot::plot_grid(p_C1C2, p_C3C2, ncol = 2, labels = c("A", "B")),
@@ -87,7 +56,7 @@ total <- cowplot::plot_grid(
 )
 
 ggsave(
-  paste0("plots/figure_2_mds3.jpeg"),
+  paste0("plots/figure_sup_14_mds3.jpeg"),
   plot = total,
   device = "jpeg",
   scale = 0.9,

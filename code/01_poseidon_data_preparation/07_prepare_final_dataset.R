@@ -56,9 +56,9 @@ region_vector <- janno_spatial %>%
   tidyr::pivot_longer(setdiff(everything(), one_of("id")), names_to = "region") %>%
   dplyr::group_by(id) %>%
   dplyr::summarise(
-    region_id = if (any(value)) { region[value] } else { NA_character_ }
+    region_id = if (any(value)) { region[value] } else { "Other region" }
   ) %$%
-  factor(region_id, levels = levels(mobility_regions$region_id))
+  factor(region_id, levels = c(levels(mobility_regions$region_id), "Other region"))
   
 janno_final <- janno_spatial %>%
   dplyr::mutate(

@@ -5,7 +5,8 @@ region_id_shapes <- c(
   "Western Pontic Steppe" = 2,
   "Iberia" = 5,
   "Italy" = 1,
-  "Southeastern Europe" = 10
+  "Southeastern Europe" = 10,
+  "Other region" = 3
 )
 
 save(region_id_shapes, file = "data/plot_reference_data/region_id_shapes.RData")
