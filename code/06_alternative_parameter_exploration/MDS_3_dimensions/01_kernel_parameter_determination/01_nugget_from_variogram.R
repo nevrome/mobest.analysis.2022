@@ -28,14 +28,36 @@ d <- function(a, b, c = 0) {
   
 gdist3 <- Map(d, d_all$C1_dist, d_all$C2_dist, d_all$C3_dist) %>% unlist()
 gdist2 <- Map(d, d_all$C1_dist, d_all$C2_dist) %>% unlist()
-spdist <- Map(d, geo_scaled, time_scaled) %>% unlist()
+stdist <- Map(d, geo_scaled, time_scaled) %>% unlist()
 
-cor(spdist, gdist2)
-cor(spdist, gdist3)
+distances <- tibble::tibble(
+  stdist = stdist,
+  gdist2 = gdist2,
+  gdist3 = gdist3
+) %>%
+  tidyr::pivot_longer(cols = c("gdist2", "gdist3"), names_to = "genetic_distance_method", values_to = "gdist")
 
-ggplot(data.frame(x = spdist, y = gdist2)) +
-  geom_hex(aes(x = x, y = y)) +
-  scale_fill_viridis_c()
+r2s <- tibble::tibble(
+  genetic_distance_method = c("gdist2", "gdist3"),
+  r2 = c(cor(spdist, gdist2)^2, cor(spdist, gdist3)^2)
+)
+
+ggplot() +
+  geom_hex(
+    data = distances,
+    mapping = aes(x = stdist, y = gdist, col=..count..)
+  ) +
+  geom_text(
+    data = r2s,
+    mapping = aes(x = Inf, y = -Inf, label = paste("R2=", round(r2, 3))),
+    hjust = "inward", vjust = "inward"
+  ) +
+  facet_wrap(~genetic_distance_method) +
+  scale_color_gradient(low = "white", high = "black") +
+  scale_fill_gradient(low = "white", high = "black")
+  
+  
+  
 
 ###
 
