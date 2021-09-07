@@ -1,4 +1,4 @@
-# qsub code/02_parameter_estimation/crossvalidation/sge_parameter_exploration.sh
+# qsub code/06_alternative_parameter_exploration/MDS_3_dimensions/01_kernel_parameter_determination/02b_sge_run_crossvalidation_script.sh
 
 library(magrittr)
 
