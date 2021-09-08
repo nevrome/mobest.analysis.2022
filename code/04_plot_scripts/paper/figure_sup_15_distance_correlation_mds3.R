@@ -16,24 +16,47 @@ distances <- tibble::tibble(
   gdist2 = gdist2,
   gdist3 = gdist3
 ) %>%
-  tidyr::pivot_longer(cols = c("gdist2", "gdist3"), names_to = "genetic_distance_method", values_to = "gdist")
+  tidyr::pivot_longer(
+    cols = c("gdist2", "gdist3"), 
+    names_to = "genetic_distance_method", 
+    values_to = "gdist"
+  ) %>% 
+  dplyr::mutate(
+    genetic_distance_method = dplyr::recode(
+      genetic_distance_method,
+      "gdist2" = "C1 and C2",
+      "gdist3" = "C1, C2 and C3"
+    )
+  )
 
 r2s <- tibble::tibble(
-  genetic_distance_method = c("gdist2", "gdist3"),
+  genetic_distance_method = c("C1 and C2", "C1, C2 and C3"),
   r2 = c(cor(stdist, gdist2)^2, cor(stdist, gdist3)^2)
 )
 
-ggplot() +
+p <- ggplot() +
   geom_bin_2d(
     data = distances,
-    mapping = aes(x = stdist, y = gdist, z=..count..)
+    mapping = aes(x = stdist, y = gdist)
   ) +
-  geom_text(
+  geom_label(
     data = r2s,
-    mapping = aes(x = Inf, y = -Inf, label = paste("R2=", round(r2, 3))),
-    hjust = "inward", vjust = "inward"
+    mapping = aes(x = Inf, y = Inf, label = paste("R^2 ==", round(r2, 3))),
+    hjust = "inward", vjust = "inward", label.size = 0, fill = scales::alpha("white", .5),
+    parse = T
   ) +
   facet_wrap(~genetic_distance_method) +
-  scale_color_gradient(low = "grey90", high = "black") +
   scale_fill_gradient(low = "grey90", high = "black") +
-  theme_bw()
+  theme_bw() +
+  xlab("Euclidean distance in space and time (1km=1year)") +
+  ylab("Euclidean distance in genetic MDS space")
+
+ggsave(
+  "plots/figure_sup_15_distance_correlation_mds3.jpeg",
+  plot = p,
+  device = "jpeg",
+  scale = 0.6,
+  dpi = 300,
+  width = 300, height = 170, units = "mm",
+  limitsize = F
+)
