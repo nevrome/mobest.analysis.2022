@@ -3,13 +3,29 @@ library(ggplot2)
 
 load("data/parameter_exploration/crossvalidation/interpol_comparison.RData")
 
+interpol_comparison_with_CVdist <- interpol_comparison %>%
+  dplyr::filter(g == 6 & dependent_var != "C3_dist") %>%
+  tidyr::pivot_wider(
+    id_cols = c("id", "mixing_iteration", "ds", "dt", "g"),
+    names_from = "dependent_var",
+    values_from = "difference"
+  ) %>%
+  dplyr::mutate(
+    CVdist = sqrt(C1_dist^2 + C2_dist^2)
+  ) %>%
+  tidyr::pivot_longer(
+    cols = tidyselect::starts_with("C"),
+    names_to = "dependent_var",
+    values_to = "difference"
+  )
+
 # group difference by kernel and dependent_dist
-interpol_comparison_group <- interpol_comparison %>%
+interpol_comparison_group <- interpol_comparison_with_CVdist %>%
   dplyr::group_by(ds, dt, g, dependent_var) %>%
   dplyr::summarise(
     mean_squared_difference = mean(difference^2),
-  ) %>%
-  dplyr::ungroup()
+    .groups = "drop"
+  )
 
 dependent_vars <- interpol_comparison_group$dependent_var
 
@@ -24,7 +40,7 @@ icg <- interpol_comparison_group %>% dplyr::group_split(dependent_var)
 mg <- minicg %>% dplyr::group_split(dependent_var)
 
 # for each ancestry component
-ps1 <- lapply(1:2, function(i) {
+ps <- lapply(seq_along(icg), function(i) {
   icg[[i]] %>%
     ggplot() +
     geom_tile(
@@ -48,65 +64,12 @@ ps1 <- lapply(1:2, function(i) {
     scale_y_continuous(breaks = seq(0, 2000, 100))
 })
 
-p1 <- cowplot::plot_grid(plotlist = ps1, nrow = 1, ncol = 2)
-
-ggsave(
-  "plots/figure_sup_9_crossvalidation_rasters.jpeg",
-  plot = p1,
-  device = "jpeg",
-  scale = 0.8,
-  dpi = 300,
-  width = 350, height = 130, units = "mm",
-  limitsize = F
-)
-
-# merge ancestry components
-mean_interpol_comparison_group <- interpol_comparison_group %>% 
-  dplyr::group_by(dependent_var) %>%
-  dplyr::mutate(
-    mean_squared_difference = (mean_squared_difference - min(mean_squared_difference))/(max(mean_squared_difference) - min(mean_squared_difference))
-  ) %>%
-  dplyr::ungroup() %>%
-  dplyr::group_by(ds, dt, g) %>%
-  dplyr::summarise(
-    mean_mean_squared_difference = mean(mean_squared_difference)
-  ) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(
-    cut_mean_mean_squared_difference = cut(
-      mean_mean_squared_difference, 
-      breaks = c(seq(0, 0.2, 0.05), seq(0.3, 1, 0.1)),
-      include.lowest = T
-    )
-  )
-
-# get values
-bests <- mean_interpol_comparison_group %>% dplyr::arrange(mean_mean_squared_difference) %>% head(20)
-min(bests$ds) %>% sqrt()
-max(bests$ds) %>% sqrt()
-min(bests$dt) %>% sqrt()
-max(bests$dt) %>% sqrt()
-
-min_point <- mean_interpol_comparison_group %>% 
-  dplyr::filter(mean_mean_squared_difference == min(mean_mean_squared_difference)) %>%
+# add minimum point annotation
+min_point <- icg[[3]] %>% 
+  dplyr::filter(mean_squared_difference == min(mean_squared_difference)) %>%
   magrittr::extract(1,)
 
-opt_point <- mean_interpol_comparison_group %>%
-  dplyr::filter(cut_mean_mean_squared_difference == "[0,0.05]") %>%
-  dplyr::arrange(ds, dt) %>%
-  magrittr::extract(1,)
-
-p2 <- mean_interpol_comparison_group %>%
-  ggplot() +
-  geom_tile(
-    aes(x = ds, y = dt, fill = cut_mean_mean_squared_difference),
-    colour = "grey20"
-  ) +
-  # geom_point(
-  #   data = data.frame(ds = c(550, 1050), dt = c(550, 550)),
-  #   aes(x = ds, y = dt), 
-  #   color = "black", pch = 4, size = 3
-  # ) +
+ps[[3]] <- ps[[3]] +
   geom_point(
     data = min_point,
     aes(x = ds, y = dt), 
@@ -119,45 +82,17 @@ p2 <- mean_interpol_comparison_group %>%
     parse = TRUE,
     color = "red",
     size = 4
-  ) +
-  geom_point(
-    data = opt_point,
-    aes(x = ds, y = dt), 
-    color = "blue", pch = 4, size = 5
-  ) +
-  annotate(
-    "text",
-    x = opt_point$ds + 500, y = opt_point$dt,
-    label = latex2exp::TeX(paste0("$\\sqrt{\\theta_s}$ = ", opt_point$ds, " | \\sqrt{$\\theta_t}$ = ", opt_point$dt)),
-    parse = TRUE,
-    color = "blue",
-    size = 4
-  ) +
-  scale_fill_viridis_d(direction = -1) +
-  coord_fixed() +
-  theme_bw() +
-  theme(
-    legend.key.height = unit(1.5, "cm"),
-    axis.text = element_text(angle = 45, hjust = 1)
-  ) +
-  guides(
-    fill = guide_colorsteps(title = "Mean normalized difference")
-  ) +
-  xlab(latex2exp::TeX("$\\sqrt{\\theta_s}$")) +
-  ylab(latex2exp::TeX("$\\sqrt{\\theta_t}$")) +
-  scale_x_continuous(breaks = seq(0, 2000, 100)) +
-  scale_y_continuous(breaks = seq(0, 2000, 100))
-  # +
-  # scale_y_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_t}$"))) +
-  # scale_x_continuous(sec.axis = sec_axis(~f(.), name = latex2exp::TeX("$\\sqrt{\\theta_x}$")))
+  )
+
+p <- cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 2)
 
 ggsave(
-  "plots/figure_sup_10_crossvalidation_raster_merged.jpeg",
-  plot = p2,
+  "plots/figure_sup_9_crossvalidation_rasters.jpeg",
+  plot = p,
   device = "jpeg",
-  scale = 0.6,
+  scale = 0.8,
   dpi = 300,
-  width = 300, height = 200, units = "mm",
-  limitsize = F
+  width = 350, height = 300, units = "mm",
+  limitsize = F,
+  bg = "white"
 )
-
