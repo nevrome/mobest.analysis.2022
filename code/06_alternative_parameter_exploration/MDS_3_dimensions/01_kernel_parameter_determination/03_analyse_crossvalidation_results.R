@@ -11,4 +11,4 @@ interpol_comparison <- lapply(
   }
 ) %>% dplyr::bind_rows()
 
-#save(interpol_comparison, file = "data/parameter_exploration/crossvalidation/interpol_comparison.RData")
+save(interpol_comparison, file = "data/parameter_exploration/crossvalidation/interpol_comparison_mds3.RData")
