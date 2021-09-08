@@ -9,8 +9,8 @@
 #$ -pe smp 2 #needs X CPU cores
 #$ -l h_vmem=5G #request XGb of memory
 #$ -V # load personal profile
-#$ -t 1-400 # array job length
-#$ -tc 20 # number of concurrently running tasks in array
+#$ -t 1-800 # array job length
+#$ -tc 30 # number of concurrently running tasks in array
 
 
 date
@@ -24,7 +24,7 @@ echo Index: ${i}
 # parameters
 ds_to_explore=($(seq 100 100 2000))
 dt_to_explore=($(seq 100 100 2000))
-g_to_explore=(0.06)
+g_to_explore=(0.06 0.2)
 
 jobs=$((${#g_to_explore[@]}*${#ds_to_explore[@]}*${#dt_to_explore[@]}))
 

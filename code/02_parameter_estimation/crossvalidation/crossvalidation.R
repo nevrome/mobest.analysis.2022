@@ -21,7 +21,8 @@ interpol_comparison <- mobest::crossvalidate(
   ),
   dependent = mobest::create_obs(
     C1 = janno_final$C1,
-    C2 = janno_final$C2
+    C2 = janno_final$C2,
+    C3 = janno_final$C3
   ),
   kernel = mobest::create_kernset_cross(
     ds = ds_for_this_run*1000,
