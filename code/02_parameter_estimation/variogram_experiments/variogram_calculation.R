@@ -12,7 +12,8 @@ d_all <- mobest::calculate_pairwise_distances(
   ),
   dependent = mobest::create_obs(
     C1 = janno_final$C1,
-    C2 = janno_final$C2
+    C2 = janno_final$C2,
+    C3 = janno_final$C3
   )
 )
 
