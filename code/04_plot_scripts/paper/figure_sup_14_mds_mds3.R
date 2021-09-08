@@ -42,12 +42,12 @@ p_mds <- function(v1, v2, plot_order_dim, plot_order_factor = 1) {
     )
 }
 
-p_C1C2 <- p_mds("mds3_C1", "mds3_C2", "mds3_C3")
+p_C1C2 <- p_mds("C1", "C2", "C3")
 p_legend <- cowplot::get_legend(p_C1C2)
 
 p_C1C2 <- p_C1C2 + theme(legend.position = "none")
-p_C1C3 <- p_mds("mds3_C1", "mds3_C3", "mds3_C2", -1) + theme(legend.position = "none")
-p_C3C2 <- p_mds("mds3_C3", "mds3_C2", "mds3_C1") + theme(legend.position = "none") + scale_x_reverse()
+p_C1C3 <- p_mds("C1", "C3", "C2", -1) + theme(legend.position = "none")
+p_C3C2 <- p_mds("C3", "C2", "C1") + theme(legend.position = "none") + scale_x_reverse()
 
 total <- cowplot::plot_grid(
   cowplot::plot_grid(p_C1C2, p_C3C2, ncol = 2, labels = c("A", "B")),

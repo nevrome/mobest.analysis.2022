@@ -21,18 +21,12 @@ read_mds <- function(x) {
 
 # read active data
 janno <- poseidonR::read_janno("data/poseidon_data/poseidon_extracted/poseidon_extracted.janno")
-mds2 <- read_mds("data/poseidon_data/mds/mds2.mds") %>% 
+mds <- read_mds("data/poseidon_data/mds/mds.mds") %>% 
   dplyr::transmute(
     Individual_ID = IID,
     C1 = C1,
-    C2 = C2
-  )
-mds3 <- read_mds("data/poseidon_data/mds/mds3.mds") %>% 
-  dplyr::transmute(
-    Individual_ID = IID,
-    mds3_C1 = C1,
-    mds3_C2 = C2,
-    mds3_C3 = C3
+    C2 = C2,
+    C3 = C3
   )
 
 # run age processing
@@ -40,8 +34,7 @@ janno_age <- janno %>% poseidonR::process_age()
 
 # merge mds info into dataset
 janno_mds <- janno_age %>% 
-  dplyr::left_join(mds2) %>%
-  dplyr::left_join(mds3)
+  dplyr::left_join(mds)
 
 # add spatial and temporal grouping and coordinates
 janno_spatial <- janno_mds %>%

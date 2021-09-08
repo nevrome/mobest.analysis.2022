@@ -20,9 +20,11 @@ plink --bfile ../poseidon_extracted/poseidon_extracted --exclude ../../../code/0
 # generate general pairwise stats
 plink --bfile poseidon_extracted.pruned --genome --out poseidon_extracted.pruned
 
-# calculate mds
-plink --bfile poseidon_extracted.pruned --cluster --mds-plot 2 --read-genome poseidon_extracted.pruned.genome --out mds2
-plink --bfile poseidon_extracted.pruned --cluster --mds-plot 3 --read-genome poseidon_extracted.pruned.genome --out mds3
+# calculate mds 
+# (in the plink mds implementation there is no difference in the result for C1 and 
+# C2 with --mds-plot 2 or --mds-plot 3. So it's sufficient to call --mds-plot 3 once
+# and then select the desired dimensions later)
+plink --bfile poseidon_extracted.pruned --cluster --mds-plot 3 --read-genome poseidon_extracted.pruned.genome --out mds
 
 date
 
