@@ -1,13 +1,15 @@
-geo_scaled <- d_all$geo_dist/max(d_all$geo_dist)
-time_scaled <- d_all$time_dist/max(d_all$time_dist)
+library(magrittr)
+library(ggplot2)
+
+load("data/parameter_exploration/variogram/all_distances.RData")
 
 d <- function(a, b, c = 0) {
   sqrt(a^2 + b^2 + c^2)
 }
 
-gdist3 <- Map(d, d_all$C1_dist, d_all$C2_dist, d_all$C3_dist) %>% unlist()
+gdist3 <- d_all$obs_dist_total
 gdist2 <- Map(d, d_all$C1_dist, d_all$C2_dist) %>% unlist()
-stdist <- Map(d, geo_scaled, time_scaled) %>% unlist()
+stdist <- Map(d, d_all$geo_dist, d_all$time_dist) %>% unlist()
 
 distances <- tibble::tibble(
   stdist = stdist,
@@ -18,13 +20,13 @@ distances <- tibble::tibble(
 
 r2s <- tibble::tibble(
   genetic_distance_method = c("gdist2", "gdist3"),
-  r2 = c(cor(spdist, gdist2)^2, cor(spdist, gdist3)^2)
+  r2 = c(cor(stdist, gdist2)^2, cor(stdist, gdist3)^2)
 )
 
 ggplot() +
-  geom_hex(
+  geom_bin_2d(
     data = distances,
-    mapping = aes(x = stdist, y = gdist, col=..count..)
+    mapping = aes(x = stdist, y = gdist, z=..count..)
   ) +
   geom_text(
     data = r2s,
@@ -32,5 +34,6 @@ ggplot() +
     hjust = "inward", vjust = "inward"
   ) +
   facet_wrap(~genetic_distance_method) +
-  scale_color_gradient(low = "white", high = "black") +
-  scale_fill_gradient(low = "white", high = "black")
+  scale_color_gradient(low = "grey90", high = "black") +
+  scale_fill_gradient(low = "grey90", high = "black") +
+  theme_bw()
