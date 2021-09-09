@@ -31,27 +31,27 @@ kernel_theta_data <- expand.grid(
     k_cum = cumsum(k/sum(k))
   )
 
-# library(ggplot2)
-# kernel_theta_data %>%
-#   ggplot() +
-#   geom_line(
-#     aes(dist_p1_p2, k)
-#   ) +
-#   geom_line(
-#     aes(dist_p1_p2, k_cum)
-#   ) +
-#   geom_vline(
-#     xintercept = kernel_theta_data %>%
-#       dplyr::filter(k_cum > 0.682) %>%
-#       head(1) %$%
-#       dist_p1_p2
-#   ) +
-#   geom_vline(
-#     xintercept = kernel_theta_data %>%
-#       dplyr::filter(k < 0.5) %>%
-#       head(1) %$%
-#       dist_p1_p2
-#   )
+library(ggplot2)
+kernel_theta_data %>%
+  ggplot() +
+  geom_line(
+    aes(dist_p1_p2, k)
+  ) +
+  # geom_line(
+  #   aes(dist_p1_p2, k_cum)
+  # ) +
+  # geom_vline(
+  #   xintercept = kernel_theta_data %>%
+  #     dplyr::filter(k_cum > 0.682) %>%
+  #     head(1) %$%
+  #     dist_p1_p2
+  # ) +
+  geom_vline(
+    xintercept = kernel_theta_data %>%
+      dplyr::filter(k < 0.5) %>%
+      head(1) %$%
+      dist_p1_p2
+  )
 
 retrospection_distance <- kernel_theta_data %>%
   dplyr::filter(k < 0.5) %>%

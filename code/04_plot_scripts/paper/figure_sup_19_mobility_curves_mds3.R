@@ -171,7 +171,7 @@ p_estimator <- ggplot() +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(
     xlim = c(-7400, 1400),
-    ylim = c(-100, 3000) #max(origin_grid_mean$directed_mean_spatial_distance, na.rm = T))
+    ylim = c(-100, 3000)
   )
 
 #### direction legend ####
@@ -190,10 +190,6 @@ p_legend <- tibble::tibble(
     na.value = NA,
     guide = F
   ) +
-  # scale_fill_manual(
-  #   values = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
-  #   guide = FALSE
-  # ) +
   coord_polar(theta = "y") +
   xlim(2.0, 4.1) +
   scale_y_continuous(
@@ -219,7 +215,7 @@ p <- cowplot::ggdraw(p_estimator) +
   )
 
 ggsave(
-  paste0("plots/figure_sup_19_mobility_curves6.png"),
+  paste0("plots/figure_sup_19_mobility_curves.png"),
   plot = p,
   device = "png",
   scale = 0.7,
