@@ -12,8 +12,8 @@ age_resampling_run <- as.numeric(args[1])
 
 load("data/poseidon_data/janno_final.RData")
 load("data/spatial/search_area.RData")
-load("data/origin_search/default_kernel.RData")
-load("data/origin_search/retrospection_distance.RData")
+load("data/origin_search/default_kernel_mds3.RData")
+load("data/origin_search/retrospection_distance_mds3.RData")
 
 #### prepare model grid ####
 
@@ -77,5 +77,5 @@ origin_grid$age_resampling_run <- age_resampling_run
 #### mobility proxy ####
 
 save(origin_grid, file = paste0(
-  "data/origin_search/age_resampling+one_kernel_setting/run_", age_resampling_run, ".RData"
+  "data/origin_search/age_resampling+one_kernel_setting/mds3_run_", age_resampling_run, ".RData"
 ))

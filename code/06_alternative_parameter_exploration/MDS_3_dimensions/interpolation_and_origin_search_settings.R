@@ -24,7 +24,7 @@ kernel_theta <- Vectorize(function(distance, d) { exp(-(distance^2) / d) })
 
 kernel_theta_data <- expand.grid(
   dist_p1_p2 = seq(0, 2000, 1),
-  d          = temporal_kernel_size_years^2
+  d = temporal_kernel_size_years^2
 ) %>%
   dplyr::mutate(
     k = kernel_theta(dist_p1_p2, d),
@@ -58,4 +58,4 @@ retrospection_distance <- kernel_theta_data %>%
   head(1) %$%
   dist_p1_p2
 
-save(retrospection_distance, file = "data/origin_search/retrospection_distance.RData")
+save(retrospection_distance, file = "data/origin_search/retrospection_distance_mds3.RData")
