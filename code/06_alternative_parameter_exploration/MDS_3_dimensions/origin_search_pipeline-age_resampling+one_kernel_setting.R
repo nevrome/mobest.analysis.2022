@@ -1,4 +1,4 @@
-# qsub code/03_origin_search/sge_origin_search.sh
+# qsub code/06_alternative_parameter_exploration/MDS_3_dimensions/sge_origin_search.sh
 
 library(magrittr)
 

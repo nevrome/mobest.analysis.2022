@@ -64,3 +64,6 @@ source("code/03_origin_search/06_moving_window.R")
 
 cluster_up("data/origin_search/default_kernel_mds3.RData")
 cluster_up("data/origin_search/retrospection_distance_mds3.RData")
+
+cluster_down("data/origin_search/age_resampling+one_kernel_setting")
+
