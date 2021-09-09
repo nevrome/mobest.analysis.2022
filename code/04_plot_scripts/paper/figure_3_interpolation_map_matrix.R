@@ -121,6 +121,6 @@ ggsave(
   scale = 0.5,
   dpi = 300,
   width = 770, height = 300, units = "mm",
-  limitsize = F
+  limitsize = F,
+  bg = "white"
 )
-

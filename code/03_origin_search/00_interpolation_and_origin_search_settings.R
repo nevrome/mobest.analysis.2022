@@ -1,7 +1,7 @@
 #### kernel size ####
 
-spatial_kernel_size_km <- 500
-temporal_kernel_size_years <- 800
+spatial_kernel_size_km <- 700
+temporal_kernel_size_years <- 900
 nugget <- 0.06
 
 default_kernel <- mobest::create_kernset_multi(
@@ -13,7 +13,7 @@ default_kernel <- mobest::create_kernset_multi(
   g = nugget, 
   on_residuals = T, 
   auto = F,
-  it = "ds700_dt800_g006"
+  it = "ds700_dt900_g006"
 )
 
 save(default_kernel, file = "data/origin_search/default_kernel.RData")
