@@ -4,7 +4,7 @@ library(magrittr)
 
 load("data/poseidon_data/janno_final.RData")
 load("data/spatial/extended_area.RData")
-load("data/origin_search/default_kernel.RData")
+load("data/origin_search/default_kernel_mds3.RData")
 
 #### prepare model grid ####
 
@@ -35,4 +35,4 @@ model_grid <- mobest::create_model_grid(
 
 interpol_grid <- mobest::run_model_grid(model_grid)
 
-save(interpol_grid, file = "data/gpr/interpol_grid_median_selected_timeslices.RData")
+save(interpol_grid, file = "data/gpr/interpol_grid_median_selected_timeslices_mds3.RData")

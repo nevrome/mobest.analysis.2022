@@ -1,7 +1,7 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/gpr/interpol_grid_median_selected_timeslices.RData")
+load("data/gpr/interpol_grid_median_selected_timeslices_mds3.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
@@ -159,12 +159,13 @@ legends <- cowplot::plot_grid(C1_legend, C2_legend, C3_legend, nrow = 3)
 p <- cowplot::plot_grid(plots, legends, nrow = 2, rel_heights = c(1, 0.3))
 
 ggsave(
-  "plots/figure_3_interpolation_map_matrix.jpeg",
+  "plots/figure_sup_18_interpolation_map_matrix_mds3.jpeg",
   plot = p,
   device = "jpeg",
   scale = 0.7,
   dpi = 300,
-  width = 550, height = 300, units = "mm",
-  limitsize = F
+  width = 450, height = 300, units = "mm",
+  limitsize = F,
+  bg = "white"
 )
 
