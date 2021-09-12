@@ -3,9 +3,7 @@ library(magrittr)
 #### data ####
 
 load("data/poseidon_data/janno_final.RData")
-load("data/origin_search/age_resampling+one_kernel_setting/origin_grid_mds3.RData")
-load("data/spatial/epsg3035.RData")
-load("data/spatial/mobility_regions.RData")
+load("data/origin_search/origin_grid_modified_mds3.RData")
 
 #### prepare output data ####
 
