@@ -37,15 +37,6 @@ kernel_theta_data %>%
   geom_line(
     aes(dist_p1_p2, k)
   ) +
-  # geom_line(
-  #   aes(dist_p1_p2, k_cum)
-  # ) +
-  # geom_vline(
-  #   xintercept = kernel_theta_data %>%
-  #     dplyr::filter(k_cum > 0.682) %>%
-  #     head(1) %$%
-  #     dist_p1_p2
-  # ) +
   geom_vline(
     xintercept = kernel_theta_data %>%
       dplyr::filter(k < 0.5) %>%
