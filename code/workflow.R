@@ -80,10 +80,12 @@ source("code/03_origin_search/05b_merge_runs.R")
 
 source("code/03_origin_search/06_moving_window.R")
 
-### 05
+### 06
 
 up("data/origin_search/default_kernel_mds3.RData")
 up("data/origin_search/retrospection_distance_mds3.RData")
 
 down("data/origin_search/age_resampling+one_kernel_setting")
+
+up("data/origin_search/retrospection_distance_retrovar.RData")
 

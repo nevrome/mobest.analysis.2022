@@ -1,4 +1,4 @@
-# qsub code/03_origin_search/05b_sge_origin_search.sh
+# qsub code/06_alternative_parameter_exploration/different_rearview_distances/02b_sge_origin_search.sh
 
 library(magrittr)
 
