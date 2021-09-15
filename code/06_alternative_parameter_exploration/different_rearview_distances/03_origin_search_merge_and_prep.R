@@ -54,10 +54,10 @@ purrr::walk2(
   
   #### save output ####
   origin_grid_derived_data <- list(
-    origin_grid_modified,
-    origin_grid_mean,
-    moving_origin_grid,
-    no_data_windows
+    origin_grid_modified = origin_grid_modified,
+    origin_grid_mean = origin_grid_mean,
+    moving_origin_grid = moving_origin_grid,
+    no_data_windows = no_data_windows
   )
   
   save(
