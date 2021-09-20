@@ -27,11 +27,11 @@ singularity <- function(x) { eva.cluster::run_cluster_singularity_script(
 bash("./code/01_poseidon_data_preparation/00_fetch_poseidon.sh")
 source("./code/01_poseidon_data_preparation/00_prepare_plot_reference_data.R")
 source("./code/01_poseidon_data_preparation/00_prepare_spatial_data.R")
-up("data/spatial")
+up("data/spatial/")
 
 source("./code/01_poseidon_data_preparation/01_janno_filter_for_relevant_individuals.R")
 bash("./code/01_poseidon_data_preparation/02_pre_identicals_filter_poseidon_extract.sh")
-up("data/poseidon_data/poseidon_extracted_pre_identicals_filter")
+up("data/poseidon_data/poseidon_extracted_pre_identicals_filter/")
 qsub("code/01_poseidon_data_preparation/03_distance_plink.sh")
 # wait until cluster run ready
 down("data/poseidon_data/identical_filter/plink.mdist",
