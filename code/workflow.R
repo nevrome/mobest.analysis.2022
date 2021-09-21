@@ -39,10 +39,10 @@ down("data/poseidon_data/identical_filter/plink.mdist",
 source("code/01_poseidon_data_preparation/04_filter_by_genetic_distance.R")
 
 bash("./code/01_poseidon_data_preparation/05_poseidon_extract.sh")
-up("data/poseidon_data/poseidon_extracted")
+up("data/poseidon_data/poseidon_extracted/")
 qsub("code/01_poseidon_data_preparation/06_mds_plink.sh")
 # wait until cluster run ready
-down("data/poseidon_data/mds")
+down("data/poseidon_data/mds/")
 
 source("./code/01_poseidon_data_preparation/07_prepare_final_dataset.R")
 
@@ -58,7 +58,7 @@ qsub("code/02_parameter_estimation/crossvalidation/sge_parameter_exploration.sh"
 # wait until cluster run ready
 down("data/parameter_exploration/mle/mlesep_out.RData")
 down("data/parameter_exploration/mle/mle_out.RData")
-down("data/parameter_exploration/crossvalidation")
+down("data/parameter_exploration/crossvalidation/")
 
 source("code/02_parameter_estimation/crossvalidation/modify_crossvalidation_results.R")
 
@@ -74,8 +74,8 @@ source("code/03_origin_search/03_interpolation_and_search_for_selected_individua
 
 #source("code/03_origin_search/04_origin_search_pipeline-median_age+one_kernel_setting.R")
 
-qsub("code/03_origin_search/sge_origin_search.sh")
-down("data/origin_search/age_resampling+one_kernel_setting")
+qsub("code/03_origin_search/05b_sge_origin_search.sh")
+down("data/origin_search/age_resampling+one_kernel_setting/")
 source("code/03_origin_search/05b_merge_runs.R")
 
 source("code/03_origin_search/06_moving_window.R")
@@ -85,7 +85,7 @@ source("code/03_origin_search/06_moving_window.R")
 up("data/origin_search/default_kernel_mds3.RData")
 up("data/origin_search/retrospection_distance_mds3.RData")
 
-down("data/origin_search/age_resampling+one_kernel_setting")
+down("data/origin_search/age_resampling+one_kernel_setting/")
 
 up("data/origin_search/retrospection_distance_retrovar.RData")
 
