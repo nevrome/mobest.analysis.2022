@@ -34,12 +34,12 @@ retrospection_distances <- c(
   high = retrospection_distance_high
 )
 
-library(ggplot2)
-kernel_theta_data %>%
-  ggplot() +
-  geom_line(
-    aes(dist_p1_p2, k)
-  ) +
-  geom_vline(xintercept = retrospection_distances)
+# library(ggplot2)
+# kernel_theta_data %>%
+#   ggplot() +
+#   geom_line(
+#     aes(dist_p1_p2, k)
+#   ) +
+#   geom_vline(xintercept = retrospection_distances)
 
 save(retrospection_distances, file = "data/origin_search/retrospection_distance_retrovar.RData")

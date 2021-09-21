@@ -62,7 +62,7 @@ down("data/parameter_exploration/crossvalidation/")
 
 source("code/02_parameter_estimation/crossvalidation/modify_crossvalidation_results.R")
 
-#### 03_origin_search #####
+#### 03_origin_search ####
 
 source("code/03_origin_search/00_interpolation_and_origin_search_settings.R")
 up("data/origin_search/default_kernel.RData")
@@ -80,12 +80,22 @@ source("code/03_origin_search/05b_merge_runs.R")
 
 source("code/03_origin_search/06_moving_window.R")
 
-### 06
+#### 06_alternative_parameter_exploration ####
 
+# mds3
+source("code/06_alternative_parameter_exploration/MDS_3_dimensions/01_interpolation_and_origin_search_settings.R")
 up("data/origin_search/default_kernel_mds3.RData")
 up("data/origin_search/retrospection_distance_mds3.RData")
 
-down("data/origin_search/age_resampling+one_kernel_setting/")
+source("code/06_alternative_parameter_exploration/MDS_3_dimensions/02_interpolation_for_selected_timeslices.R")
 
+qsub("code/06_alternative_parameter_exploration/MDS_3_dimensions/03b_sge_origin_search.sh")
+down("data/origin_search/age_resampling+one_kernel_setting/")
+source("code/06_alternative_parameter_exploration/MDS_3_dimensions/04_origin_search_merge_and_prep.R")
+
+# rearview distances
 up("data/origin_search/retrospection_distance_retrovar.RData")
 
+qsub("code/06_alternative_parameter_exploration/different_rearview_distances/02b_sge_origin_search.sh")
+down("data/origin_search/age_resampling+one_kernel_setting/")
+source("code/06_alternative_parameter_exploration/different_rearview_distances/03_origin_search_merge_and_prep.R")
