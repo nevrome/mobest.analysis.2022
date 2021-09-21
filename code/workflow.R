@@ -94,6 +94,7 @@ down("data/origin_search/age_resampling+one_kernel_setting/")
 source("code/06_alternative_parameter_exploration/MDS_3_dimensions/04_origin_search_merge_and_prep.R")
 
 # rearview distances
+source("code/06_alternative_parameter_exploration/different_rearview_distances/01_interpolation_and_origin_search_settings.R")
 up("data/origin_search/retrospection_distance_retrovar.RData")
 
 qsub("code/06_alternative_parameter_exploration/different_rearview_distances/02b_sge_origin_search.sh")
