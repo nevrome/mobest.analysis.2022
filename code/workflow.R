@@ -76,9 +76,7 @@ source("code/03_origin_search/03_interpolation_and_search_for_selected_individua
 
 qsub("code/03_origin_search/05b_sge_origin_search.sh")
 down("data/origin_search/age_resampling+one_kernel_setting/")
-source("code/03_origin_search/05b_merge_runs.R")
-
-source("code/03_origin_search/06_moving_window.R")
+source("code/03_origin_search/06_origin_search_merge_and_prep.R")
 
 #### 06_alternative_parameter_exploration ####
 
