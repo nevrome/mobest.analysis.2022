@@ -29,7 +29,8 @@ bottom_space <- d_all_long %>%
 bottom_space_grouped <- bottom_space %>%
   dplyr::group_by(geo_dist_cut, dist_type) %>%
   dplyr::summarise(
-    mean_dist_val = 0.5*mean(dist_val, na.rm = T)
+    mean_dist_val = 0.5*mean(dist_val, na.rm = T),
+    .groups = "drop"
   )
 
 left_time <- d_all_long %>%
@@ -50,7 +51,8 @@ left_time <- d_all_long %>%
 left_time_grouped <- left_time %>%
   dplyr::group_by(time_dist_cut, dist_type) %>%
   dplyr::summarise(
-    mean_dist_val = 0.5*mean(dist_val, na.rm = T)
+    mean_dist_val = 0.5*mean(dist_val, na.rm = T),
+    .groups = "drop"
   )
 
 p_space <- ggplot() + 

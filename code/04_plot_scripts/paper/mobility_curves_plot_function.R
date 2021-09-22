@@ -142,9 +142,7 @@ plot_curves <- function(
           "VIL010", "VIL010",
           "VIL011", "VIL011"
         )
-        origin_grid_mean %>% dplyr::filter(
-          search_id %in% c(lookup$search_id)
-        ) %>% dplyr::left_join(lookup)
+        origin_grid_mean %>% dplyr::right_join(lookup, by = "search_id")
       },
       mapping = aes(
         x = mean_search_z, y = directed_mean_spatial_distance, label = label_name

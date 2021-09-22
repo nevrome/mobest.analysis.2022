@@ -58,7 +58,7 @@ p <- ggplot() +
   coord_flip() +
   theme_bw() +
   guides(
-    color = F
+    color = "none"
   ) +
   xlab("ancestry component distance type") +
   ylab("log10 pairwise half mean squared normalized residual distance") +

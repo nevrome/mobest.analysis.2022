@@ -5,6 +5,7 @@ load("data/poseidon_data/janno_final.RData")
 load("data/parameter_exploration/crossvalidation/interpol_comparison.RData")
 
 sample_interpol_comparison <- interpol_comparison %>%
+  dplyr::filter(dependent_var %in% c("C1_dist", "C2_dist")) %>%
   dplyr::sample_n(100000)
 
 sample_interpol_comparison$difference[sample_interpol_comparison$dependent_var == "C1_dist"] %<>% 
