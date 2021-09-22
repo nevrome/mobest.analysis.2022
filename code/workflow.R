@@ -98,3 +98,40 @@ up("data/origin_search/retrospection_distance_retrovar.RData")
 qsub("code/06_alternative_parameter_exploration/different_rearview_distances/02b_sge_origin_search.sh")
 down("data/origin_search/age_resampling+one_kernel_setting/")
 source("code/06_alternative_parameter_exploration/different_rearview_distances/03_origin_search_merge_and_prep.R")
+
+#### render plots ####
+
+source("code/04_plot_scripts/paper/figure_1_temporal_and_spatial_distribution_of_input_data.R")
+source("code/04_plot_scripts/paper/figure_2_mds.R")
+source("code/04_plot_scripts/paper/figure_3_interpolation_map_matrix.R")
+source("code/04_plot_scripts/paper/figure_4_genetic_distance_example_maps.R")
+source("code/04_plot_scripts/paper/figure_5_mobility_curves.R")
+source("code/04_plot_scripts/paper/figure_sup_1_semivariogram.R")
+source("code/04_plot_scripts/paper/figure_sup_2_semivariogram_space_time.R")
+source("code/04_plot_scripts/paper/figure_sup_3_semivariogram_fitting.R")
+source("code/04_plot_scripts/paper/figure_sup_4_semivariogram_nugget.R")
+source("code/04_plot_scripts/paper/figure_sup_5_mle_anisotropic.R")
+source("code/04_plot_scripts/paper/figure_sup_6_kernel_size_meaning.R")
+source("code/04_plot_scripts/paper/figure_sup_7_mle_isotropic.R")
+source("code/04_plot_scripts/paper/figure_sup_8_crossvalidation_prediction_accuracy.R")
+source("code/04_plot_scripts/paper/figure_sup_9_crossvalidation_rasters.R")
+source("code/04_plot_scripts/paper/figure_sup_11_timepillars.R")
+source("code/04_plot_scripts/paper/figure_sup_12_mean_direction_windrose_matrix.R")
+source("code/04_plot_scripts/paper/figure_sup_13_distance_fraction_curves.R")
+source("code/04_plot_scripts/paper/figure_sup_14_mds_mds3.R")
+source("code/04_plot_scripts/paper/figure_sup_15_distance_correlation_mds3.R")
+source("code/04_plot_scripts/paper/figure_sup_16_semivariogram_nugget_mds3.R")
+source("code/04_plot_scripts/paper/figure_sup_17_crossvalidation_rasters_mds3.R")
+source("code/04_plot_scripts/paper/figure_sup_18_interpolation_map_matrix_mds3.R")
+source("code/04_plot_scripts/paper/figure_sup_19_mobility_curves_mds3.R")
+source("code/04_plot_scripts/paper/figure_sup_20_mobility_curves_retro_low.R")
+source("code/04_plot_scripts/paper/figure_sup_21_mobility_curves_retro_high.R")
+
+# purrr::walk(
+#   list.files("code/04_plot_scripts/paper", pattern = "\\.R", full.names = T),
+#   \(x) {
+#     message(x)
+#     source(x)
+#     rm(list = ls())
+#   }
+# )
