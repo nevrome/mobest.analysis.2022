@@ -10,7 +10,7 @@ load("data/poseidon_data/janno_final.RData")
 origin_grid <- lapply(
   list.files(
     "data/origin_search/age_resampling+one_kernel_setting", 
-    pattern = "run_[0-9]", 
+    pattern = "^run_[0-9]", 
     full.names = T
   ), function(x) {
     load(x)
