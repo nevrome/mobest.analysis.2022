@@ -2,6 +2,20 @@ library(magrittr)
 
 load("data/poseidon_data/janno_final.RData")
 load("data/spatial/area.RData")
+load("data/origin_search/retrospection_distance.RData")
+
+threed <- janno_final %>%
+  dplyr::transmute(
+    x = x/1000, 
+    y = y/1000,
+    z = Date_BC_AD_Median_Derived,
+    color = viridis::viridis(50)[
+      as.numeric(cut(janno_final$C1, breaks = 50))
+    ]
+  )
+
+roman <- which(janno_final$Individual_ID == "3DT26.SG")
+threed_roman <- threed[roman,]
 
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
@@ -24,24 +38,14 @@ model_grid <- mobest::create_model_grid(
   prediction_grid = list(
     scs100_tl50 = mobest::prediction_grid_for_spatiotemporal_area(
       area,
-      spatial_cell_size = 150000,
-      temporal_layers = seq(-8000, 2000, 200)
+      spatial_cell_size = 50000,
+      temporal_layers = threed_roman$z - retrospection_distance
     )
   )
 )
 
 interpol_grid <- mobest::run_model_grid(model_grid)
-
-threed <- janno_final %>%
-  dplyr::transmute(
-    x = x/1000, 
-    y = y/1000,
-    z = Date_BC_AD_Median_Derived,
-    color = viridis::viridis(50)[
-      as.numeric(cut(janno_final$C1, breaks = 50))
-    ]
-  )
-
+  
 threedinter <- interpol_grid %>%
   dplyr::mutate(
     order = findInterval(mean, sort(mean)),
@@ -64,11 +68,12 @@ threedinter <- interpol_grid %>%
   )
 
 # plot
-png(filename = "plots/presentation/3D_plot_gpr_C1.png", width = 22, height = 14, units = "cm", res = 300)
+png(filename = "plots/presentation/3D_plot_gpr_C1_example.png", width = 22, height = 14, units = "cm", res = 300)
 
 s <- scatterplot3d::scatterplot3d(
-  threed$x, threed$y, threed$z, color = threed$color,
-  pch = 18, cex.symbols = 1.6,
+  threedinter$x, threedinter$y, threedinter$z, color = ggplot2::alpha(threedinter$color, threedinter$alpha),
+  xlim = range(threed$x), ylim = range(threed$y),
+  lwd = 0.1, pch = 18, cex.symbols = 0.8,
   angle = 70,
   xlab = "x", ylab = "y", zlab = "time calBC/AD",
   col.axis = "grey",
@@ -76,10 +81,17 @@ s <- scatterplot3d::scatterplot3d(
   mar = c(2.7, 2.7, 0, 2)
 )
 
-cs <- s$xyz.convert(threedinter$x, threedinter$y, threedinter$z)
+cs <- s$xyz.convert(threed_roman$x, threed_roman$y, threed_roman$z)
 points(
-  cs$x, cs$y, lwd = 0.1, pch = 18, cex = 0.8,
-  col = ggplot2::alpha(threedinter$color, threedinter$alpha)
+  cs$x, cs$y,
+  col = "red",
+  pch = 18, cex = 3.5
+)
+
+points(
+  cs$x, cs$y,
+  col = threed_roman$color,
+  pch = 18, cex = 2.5
 )
 
 dev.off()
