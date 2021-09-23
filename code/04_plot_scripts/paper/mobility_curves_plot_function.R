@@ -193,7 +193,8 @@ plot_curves <- function(
     scale_fill_gradientn(
       colours = c("#F5793A", "#85C0F9", "#A95AA1", "#33a02c", "#F5793A"),
       na.value = NA,
-      guide = "none"
+      guide = "none",
+      limits = c(0,360)
     ) +
     # scale_fill_manual(
     #   values = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 

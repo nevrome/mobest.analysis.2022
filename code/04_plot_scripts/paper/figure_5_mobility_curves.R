@@ -2,7 +2,6 @@ source("code/04_plot_scripts/paper/mobility_curves_plot_function.R")
 
 load("data/poseidon_data/janno_final.RData")
 load("data/origin_search/origin_grid_mean.RData")
-load("data/origin_search/origin_grid_modified.RData")
 load("data/origin_search/moving_origin_grid.RData")
 load("data/origin_search/no_data_windows.RData")
 
