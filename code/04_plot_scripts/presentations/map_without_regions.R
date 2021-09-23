@@ -8,11 +8,11 @@ load("data/spatial/epsg3035.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 
-janno_final <- janno_final %>% dplyr::mutate(
-  year_of_publication = readr::parse_number(Publication_Status)
-) %>% dplyr::filter(
-  year_of_publication <= 2014
-)
+# janno_final <- janno_final %>% dplyr::mutate(
+#   year_of_publication = readr::parse_number(Publication_Status)
+# ) %>% dplyr::filter(
+#   year_of_publication <= 2014
+# )
 
 # map
 p_map <- ggplot() +
@@ -102,7 +102,7 @@ p_tempdist <- janno_final %>%
   #   values = region_id_colors
   # ) +
   scale_x_continuous(breaks = seq(-8000, 2000, 1000)) +
-  scale_y_continuous()
+  scale_y_continuous(breaks = c(0, 100, 200))
 
 # merge plots
 
@@ -113,12 +113,13 @@ right <- cowplot::plot_grid(
 p <- cowplot::plot_grid(p_map, right, nrow = 1, ncol = 2, rel_widths = c(1, 0.3), scale = 0.97)
 
 ggsave(
-  paste0("plots/presentation/map_without_regions_until_2015.jpeg"),
+  paste0("plots/presentation/map_without_regions.jpeg"),
   plot = p,
   device = "jpeg",
   scale = 0.6,
   dpi = 300,
   width = 600, height = 300, units = "mm",
-  limitsize = F
+  limitsize = F,
+  bg = "white"
 )
 
