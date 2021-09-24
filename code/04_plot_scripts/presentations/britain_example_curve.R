@@ -103,7 +103,7 @@ p_estimator <- ggplot() +
     arrow = arrow(length = unit(0.015, "npc")),
     min.segment.length = unit(0.015, "npc"),
     point.padding = 20,
-    size = 4,
+    size = 5,
     alpha = 1
   ) +
   geom_point(
@@ -113,7 +113,9 @@ p_estimator <- ggplot() +
   ) +
   theme_bw() +
   theme(
-    legend.position = "bottom"
+    legend.position = "bottom",
+    axis.text = element_text(size = 13),
+    axis.title = element_text(size = 13)
   ) +
   xlab("time [years calBC/calAD]") +
   ylab("spatial distance to \"origin point\" (directed mean) [km]") +

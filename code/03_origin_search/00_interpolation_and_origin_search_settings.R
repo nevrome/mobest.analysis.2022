@@ -1,3 +1,5 @@
+library(magrittr)
+
 #### kernel size ####
 
 spatial_kernel_size_km <- 500
