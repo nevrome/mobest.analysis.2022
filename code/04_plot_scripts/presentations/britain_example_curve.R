@@ -53,7 +53,7 @@ p_estimator <- ggplot() +
       color = mean_angle_deg
     ),
     alpha = 1,
-    size = 0.13,
+    size = 0.2,
     height = 40
   ) +
   geom_errorbar(
@@ -65,7 +65,7 @@ p_estimator <- ggplot() +
       color = mean_angle_deg
     ),
     alpha = 1,
-    size = 0.13,
+    size = 0.2,
     width = 40
   ) +
   geom_rect(
@@ -82,7 +82,7 @@ p_estimator <- ggplot() +
       x = mean_search_z, y = directed_mean_spatial_distance, color = mean_angle_deg
     ),
     alpha = 1,
-    size = 1.8,
+    size = 3,
     shape = 4
   ) +
   ggrepel::geom_label_repel(
@@ -102,9 +102,9 @@ p_estimator <- ggplot() +
     segment.square    = FALSE,
     arrow = arrow(length = unit(0.015, "npc")),
     min.segment.length = unit(0.015, "npc"),
-    point.padding = 1,
-    size = 3,
-    alpha = 0.6
+    point.padding = 20,
+    size = 4,
+    alpha = 1
   ) +
   geom_point(
     data = janno_final %>% dplyr::filter(region_id != "Other region"),
@@ -125,32 +125,27 @@ p_estimator <- ggplot() +
   ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(
-    xlim = c(-7400, 1400)#,
-    #ylim = c(-100, 3000) #max(origin_grid_mean$directed_mean_spatial_distance, na.rm = T))
+    xlim = c(-5000, 1000),
+    ylim = c(-30, max(origin_grid_mean$undirected_mean_spatial_distance, na.rm = T))
   )
 
 #### direction legend ####
 
 p_legend <- tibble::tibble(
-  ID = 1:360,
-  angle_start = 0:359,
-  angle_stop = 1:360
+  ID = letters[1:8],
+  angle_start = seq(0, 325, 45),
+  angle_stop = seq(45, 360, 45)
 ) %>%
   ggplot() + 
   geom_rect(
-    aes(xmin = 2.8, xmax = 3.8, ymin = angle_start, ymax = angle_stop, fill = ID)
+    aes(xmin = 3, xmax = 4, ymin = angle_start, ymax = angle_stop, fill = ID)
   ) +
-  scale_fill_gradientn(
-    colours = c("#F5793A", "#85C0F9", "#A95AA1", "#33a02c", "#F5793A"),
-    na.value = NA,
+  scale_fill_manual(
+    values = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
     guide = "none"
   ) +
-  # scale_fill_manual(
-  #   values = c("#F5793A", "#85C0F9", "#85C0F9", "#A95AA1", "#A95AA1", "#33a02c", "#33a02c", "#F5793A"), 
-  #   guide = "none"
-  # ) +
   coord_polar(theta = "y") +
-  xlim(2.0, 4.1) +
+  xlim(2, 4.5) +
   scale_y_continuous(
     breaks = c(0, 45, 90, 135, 180, 225, 270, 315),
     labels = c("N", "NE", "E", "SE", "S", "SW", "W", "NW")
@@ -160,7 +155,7 @@ p_legend <- tibble::tibble(
     panel.grid.minor = element_blank(),
     panel.grid.major = element_blank(),
     axis.text.y = element_blank(),
-    axis.text.x = element_text(size = 10, colour = "black")
+    axis.text.x = element_text(size = 10)
   )
 
 #### compile plots ####
@@ -168,8 +163,8 @@ p_legend <- tibble::tibble(
 p <- cowplot::ggdraw(p_estimator) +
   cowplot::draw_plot(
     p_legend,
-    x = 0.06, y = 0.76, 
-    width = 0.18, height = 0.20
+    x = -0.03, y = 0.55, 
+    width = 0.4, height = 0.4
   )
 
 ggsave(

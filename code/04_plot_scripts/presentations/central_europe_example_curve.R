@@ -7,22 +7,13 @@ library(ggplot2)
 load("data/poseidon_data/janno_final.RData")
 load("data/origin_search/origin_grid_mean.RData")
 load("data/origin_search/moving_origin_grid.RData")
-load("data/origin_search/mean_origin.RData")
 load("data/origin_search/no_data_windows.RData")
-
-# maps
-load("data/spatial/mobility_regions.RData")
-load("data/spatial/research_area.RData")
-load("data/spatial/extended_area.RData")
-load("data/spatial/epsg3035.RData")
-load("data/plot_reference_data/region_id_shapes.RData")
 
 # filter for central europe
 
 janno_final %<>% dplyr::filter(region_id == "Central Europe")
 origin_grid_mean %<>% dplyr::filter(region_id == "Central Europe")
 moving_origin_grid %<>% dplyr::filter(region_id == "Central Europe")
-mean_origin %<>% dplyr::filter(region_id == "Central Europe")
 no_data_windows %<>% dplyr::filter(region_id == "Central Europe")
 
 #### direction legend ####
