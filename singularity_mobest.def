@@ -1,0 +1,25 @@
+Bootstrap: docker
+From: rocker/geospatial:4.1
+
+%labels
+  Author clemens@nevrome.de
+  Version v1.0.0
+
+%files
+  .github_pat .github_pat
+
+%environment
+  PATH=$PATH:/additional_software
+
+%post
+  apt-get update
+  # install plink
+  apt-get install plink1.9
+  # install trident
+  mkdir additional_software
+  wget https://github.com/poseidon-framework/poseidon-hs/releases/latest/download/trident-Linux
+  chmod +x trident-Linux
+  mv trident-Linux /additional_software/trident
+  # install the mobest R package
+  R --slave -e 'remotes::install_github("nevrome/mobest", auth_token = readLines(".github_pat")[1], dependencies = TRUE)'
+
