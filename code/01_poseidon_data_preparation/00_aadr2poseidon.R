@@ -47,12 +47,12 @@ split_age_string <- function(x) {
   res$Date_Type[present_ids] <- "modern"
   c14_age_ids <- grep("±", x) # indizes of suspected radiocarbon dates
 
-  #### parse uncalibrated c14 dates ####
+  #### parse nice, full uncalibrated c14 dates ####
   # extract real, nice radiocarbon dates
   full_radiocarbon_dates <- stringr::str_extract_all(
     x[c14_age_ids], 
     paste0(
-      "[0-9]{1,5}(\\s+)*\u00B1(\\s+)*[0-9]{1,4}( BP)*,\\s{0,1}(", # pattern for age +/- std
+      "[0-9]{1,5}(\\s+)*\u00B1(\\s+)*[0-9]{1,4}( BP){0,1},\\s{0,1}(", # pattern for age +/- std
       paste(
         c( # patterns for labnrs
           "CNA4579.1.1",
@@ -70,7 +70,7 @@ split_age_string <- function(x) {
           "CIRCE-DSH-[0-9]*",
           "ISGS-A[0-9]*",
           "CEDAD-LTL[0-9]*A",
-          "[A-Za-z]{2,7}-*[0-9]*" # that's the normal pattern, the others are deviating from that
+          "[A-Za-z]{2,7}(\\s|-)[0-9]*" # that's the normal pattern, the others are deviating from that
         ),
         collapse = "|"
       ),
@@ -83,26 +83,40 @@ split_age_string <- function(x) {
   c14_age_ids_true <- c14_age_ids[full_radiocarbon_date_consumed]
 
   # split date and labnr
-  radiocarbon_split <- purrr::map(full_radiocarbon_dates[full_radiocarbon_date_consumed], function(y) {
-    stringr::str_split(y, c("\u00B1|( BP){0,1}, ")) %>% 
+  full_radiocarbon_split <- purrr::map(full_radiocarbon_dates[full_radiocarbon_date_consumed], function(y) {
+    #if (length(stringr::str_split(y, c("\u00B1|( BP){0,1}, "))[[1]])<3) {print(y)}
+    stringr::str_split(y, c("\u00B1|( BP){0,1},(\\s){0,1}")) %>% 
       purrr::transpose(c("uncal_age", "uncal_std", "labnr")) %>%
       purrr::map(unlist)
   }) %>% purrr::transpose()
 
   # write uncalibrated dates into the result table
-  res$Date_C14_Uncal_BP[c14_age_ids_true] <- radiocarbon_split$uncal_age
-  res$Date_C14_Uncal_BP_Err[c14_age_ids_true] <- radiocarbon_split$uncal_std
-  res$Date_C14_Labnr[c14_age_ids_true] <- radiocarbon_split$labnr
+  res$Date_C14_Uncal_BP[c14_age_ids_true] <- full_radiocarbon_split$uncal_age
+  res$Date_C14_Uncal_BP_Err[c14_age_ids_true] <- full_radiocarbon_split$uncal_std
+  res$Date_C14_Labnr[c14_age_ids_true] <- full_radiocarbon_split$labnr
   
-  #
+  #### parse unnamed radiocarbon dates ####
   c14_age_ids_false <- c14_age_ids[!full_radiocarbon_date_consumed]
-  x[c14_age_ids_false]
+  unnamed_radiocarbon_dates <- stringr::str_extract_all(
+    x[c14_age_ids_false], 
+    "[0-9]{1,5}(\\s+)*\u00B1(\\s+)*[0-9]{1,4}"
+  ) %>%
+    # if more than 2 dates are listed, then the first value is (usually?) not a real date
+    purrr::map(function(x) { if (length(x)>2) {x[-1]} else x })
   
-  
-  # indizes of real, nice radiocarbon dates
-  res$Date_Type[c14_age_ids_true] <- "C14"
+  unnamed_radiocarbon_split <- purrr::map(unnamed_radiocarbon_dates, function(y) {
+    stringr::str_split(y, c("\\s*\u00B1")) %>% 
+      purrr::transpose(c("uncal_age", "uncal_std")) %>%
+      purrr::map(unlist)
+  }) %>% purrr::transpose()
+
+  # write uncalibrated dates into the result table
+  res$Date_C14_Uncal_BP[c14_age_ids_false] <- unnamed_radiocarbon_split$uncal_age
+  res$Date_C14_Uncal_BP_Err[c14_age_ids_false] <- unnamed_radiocarbon_split$uncal_std
+
+  #### finally fill Date_Type column ####
+  res$Date_Type[!is.na(res$Date_C14_Uncal_BP)] <- "C14"
   res$Date_Type[is.na(res$Date_Type)] <- "contextual"
-  
   
   #### parse contextual (and simplified) ages ####
   
@@ -118,7 +132,7 @@ split_age_string <- function(x) {
       stop[i] <- NA
       next
     }
-    # age beyond calibration range, e.g. >45000
+    # age below calibration range, e.g. >45000
     if (grepl("^>", simple_age_split[[i]][1])) {
       start[i] <- -Inf
       stop[i] <- as.numeric(gsub(">", "", simple_age_split[[i]][1]))
