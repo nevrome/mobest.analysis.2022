@@ -1,23 +1,30 @@
 library(magrittr)
 
-aadr_raw <- readr::read_tsv("https://reichdata.hms.harvard.edu/pub/datasets/amh_repo/curated_releases/V50/V50.0/SHARE/public.dir/v50.0_1240K_public.anno", na = c("", ".."))
+system(
+  paste(
+    "wget",
+    "https://reichdata.hms.harvard.edu/pub/datasets/amh_repo/curated_releases/V50/V50.0/SHARE/public.dir/v50.0_1240K_public.tar",
+    "-O data/poseidon_data/aadrv50/tar_archive.tar"
+  )
+)
 
-aadr_age_string <- aadr_raw$`Full Date: One of two formats. (Format 1) 95.4% CI calibrated radiocarbon age (Conventional Radiocarbon Age BP, Lab number) e.g. 2624-2350 calBCE (3990±40 BP, Ua-35016). (Format 2) Archaeological context range, e.g. 2500-1700 BCE`
+aadr_raw <- readr::read_tsv("https://reichdata.hms.harvard.edu/pub/datasets/amh_repo/curated_releases/V50/V50.0/SHARE/public.dir/v50.0_1240K_public.anno", na = c("", ".."))
 
 aadr_minimal_janno <- aadr_raw %>%
   dplyr::select(
     Individual_ID = `Version ID`,
+    Group_Name = `Group ID`,
     Latitude = Lat.,
     Longitude = Long.,
-    Date_BP_Median_Derived = `Date mean in BP in years before 1950 CE [OxCal mu for a direct radiocarbon date, and average of range for a contextual date]`,
     Nr_autosomal_SNPs = `SNPs hit on autosomal targets`,
     Xcontam = `Xcontam ANGSD MOM point estimate (only if male and ≥200)`,
     Genetic_Sex = Sex,
-    ASSESSMENT
+    ASSESSMENT,
+    aadr_age_string = `Full Date: One of two formats. (Format 1) 95.4% CI calibrated radiocarbon age (Conventional Radiocarbon Age BP, Lab number) e.g. 2624-2350 calBCE (3990±40 BP, Ua-35016). (Format 2) Archaeological context range, e.g. 2500-1700 BCE`
+  ) %>% cbind(
+    split_age_string(.$aadr_age_string)
   ) %>%
-  dplyr::mutate(
-    Date_BC_AD_Median_Derived = -Date_BP_Median_Derived + 1950
-  )
+  poseidonR::as.janno()
 
 split_age_string <- function(x) {
   
