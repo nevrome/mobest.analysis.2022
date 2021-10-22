@@ -8,23 +8,28 @@ system(
   )
 )
 
-aadr_raw <- readr::read_tsv("https://reichdata.hms.harvard.edu/pub/datasets/amh_repo/curated_releases/V50/V50.0/SHARE/public.dir/v50.0_1240K_public.anno", na = c("", ".."))
+utils::untar("data/poseidon_data/aadrv50/tar_archive.tar", exdir = "data/poseidon_data/aadrv50")
 
-aadr_minimal_janno <- aadr_raw %>%
-  dplyr::select(
-    Individual_ID = `Version ID`,
-    Group_Name = `Group ID`,
-    Latitude = Lat.,
-    Longitude = Long.,
-    Nr_autosomal_SNPs = `SNPs hit on autosomal targets`,
-    Xcontam = `Xcontam ANGSD MOM point estimate (only if male and ≥200)`,
-    Genetic_Sex = Sex,
-    ASSESSMENT,
-    aadr_age_string = `Full Date: One of two formats. (Format 1) 95.4% CI calibrated radiocarbon age (Conventional Radiocarbon Age BP, Lab number) e.g. 2624-2350 calBCE (3990±40 BP, Ua-35016). (Format 2) Archaeological context range, e.g. 2500-1700 BCE`
-  ) %>% cbind(
-    split_age_string(.$aadr_age_string)
-  ) %>%
-  poseidonR::as.janno()
+writeLines(paste0(c(
+  "genotypename: v50.0_1240k_public.geno",
+  "snpname: v50.0_1240k_public.snp",
+  "indivname: v50.0_1240k_public.ind",
+  "outputformat: PACKEDPED",
+  "genotypeoutname: aadr_plink.bed",
+  "snpoutname: aadr_plink.bim",
+  "indivoutname: aadr_plink.fam"),
+  collapse = "\n"
+), "data/poseidon_data/aadrv50/convertf_parfile")
+
+system(
+  "convertf -p data/poseidon_data/aadrv50/convertf_parfile"
+)
+
+system(
+  "trident init --inFormat PLINK --snpSet 1240K --genoFile data/poseidon_data/aadrv50/aadr_plink.bed --snpFile data/poseidon_data/aadrv50/aadr_plink.bim --indFile data/poseidon_data/aadrv50/aadr_plink.fam -o data/poseidon_data/aadrv50/aadr_poseidon"
+)
+
+aadr_raw <- readr::read_tsv("data/poseidon_data/aadrv50/v50.0_1240k_public.anno", na = c("", ".."))
 
 split_age_string <- function(x) {
   
@@ -38,7 +43,6 @@ split_age_string <- function(x) {
   
   #### construct result table ####
   res <- tibble::tibble(
-    x = x,
     Date_C14_Labnr = rep(NA, length(x)),
     Date_C14_Uncal_BP = NA,
     Date_C14_Uncal_BP_Err = NA,
@@ -142,7 +146,7 @@ split_age_string <- function(x) {
     # age below calibration range, e.g. >45000
     if (grepl("^>", simple_age_split[[i]][1])) {
       start[i] <- -Inf
-      stop[i] <- as.numeric(gsub(">", "", simple_age_split[[i]][1]))
+      stop[i] <- as.numeric(gsub(">", "", -as.numeric(simple_age_split[[i]][1])))
       next
     }
     # no range: only one value e.g. 5000 BCE
@@ -188,4 +192,23 @@ split_age_string <- function(x) {
   return(res)
 }
 
-split_age_string(aadr_age_string) %>% View()
+aadr_minimal_janno <- aadr_raw %>%
+  dplyr::select(
+    Individual_ID = `Version ID`,
+    Group_Name = `Group ID`,
+    Latitude = Lat.,
+    Longitude = Long.,
+    Nr_autosomal_SNPs = `SNPs hit on autosomal targets`,
+    Xcontam = `Xcontam ANGSD MOM point estimate (only if male and ≥200)`,
+    Genetic_Sex = Sex,
+    ASSESSMENT,
+    aadr_age_string = `Full Date: One of two formats. (Format 1) 95.4% CI calibrated radiocarbon age (Conventional Radiocarbon Age BP, Lab number) e.g. 2624-2350 calBCE (3990±40 BP, Ua-35016). (Format 2) Archaeological context range, e.g. 2500-1700 BCE`
+  ) %>% cbind(
+    split_age_string(.$aadr_age_string)
+  ) %>%
+  poseidonR::as.janno()
+
+poseidonR::write_janno(aadr_minimal_janno, "data/poseidon_data/aadrv50/aadr_poseidon/aadr_poseidon.janno")
+
+poseidonR::read_janno("data/poseidon_data/aadrv50/aadr_poseidon/aadr_poseidon.janno")
+
