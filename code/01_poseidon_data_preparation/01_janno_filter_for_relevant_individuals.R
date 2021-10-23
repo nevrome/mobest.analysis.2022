@@ -2,11 +2,28 @@ library(magrittr)
 
 load("data/spatial/epsg3035.RData")
 load("data/spatial/research_area.RData")
+source("code/01_poseidon_data_preparation/00_aadr_age_string_parser.R")
 
-janno_raw <- poseidonR::read_janno("data/poseidon_data/poseidon_full/", validate = F)
+aadr_raw <- readr::read_tsv("data/poseidon_data/aadrv50/v50.0_1240k_public.anno", na = c("", ".."))
+
+aadr_minimal_janno <- aadr_raw %>%
+  dplyr::select(
+    Individual_ID = `Version ID`,
+    Group_Name = `Group ID`,
+    Latitude = Lat.,
+    Longitude = Long.,
+    Nr_autosomal_SNPs = `SNPs hit on autosomal targets`,
+    Xcontam = `Xcontam ANGSD MOM point estimate (only if male and ≥200)`,
+    Genetic_Sex = Sex,
+    ASSESSMENT,
+    aadr_age_string = `Full Date: One of two formats. (Format 1) 95.4% CI calibrated radiocarbon age (Conventional Radiocarbon Age BP, Lab number) e.g. 2624-2350 calBCE (3990±40 BP, Ua-35016). (Format 2) Archaeological context range, e.g. 2500-1700 BCE`
+  ) %>% cbind(
+    split_age_string(.$aadr_age_string)
+  ) %>%
+  poseidonR::as.janno()
 
 # lacking spatial info filter
-janno_raw_spatial_positions <- janno_raw %>%
+janno_raw_spatial_positions <- aadr_minimal_janno %>%
   dplyr::filter(
     !is.na(Latitude) & !is.na(Longitude)
   )
@@ -29,9 +46,9 @@ janno_spatial <- janno_age_filtered %>%
   sf::st_transform(epsg3035)
 
 # export for QGIS: Check if the research area is still adequate
-janno_spatial %>%
-  dplyr::select_if(is.list %>% Negate) %>%
-  sf::write_sf(dsn = "data/poseidon_data/janno_spatial_pre_filter.gpkg", driver = "GPKG")
+# janno_spatial %>%
+#   dplyr::select_if(is.list %>% Negate) %>%
+#   sf::write_sf(dsn = "data/poseidon_data/janno_spatial_pre_filter.gpkg", driver = "GPKG")
 
 janno_spatial_filtered <- janno_spatial %>%
   sf::st_intersection(
@@ -56,28 +73,26 @@ janno_QC <- janno_QC %>% dplyr::filter(
 )
 # Genetic_Sex: Individuals with unknown genetic sex should be removed
 janno_QC <- janno_QC %>% dplyr::filter(Genetic_Sex != "U")
-# Indicated as contaminated: Individuals which are indicated as potentially contaminated
-# in their ID should be removed
+# Individuals which are indicated as potentially borked
+# in the AADR dataset should be removed
 janno_QC <- janno_QC %>% dplyr::filter(
-  !grepl("cont|excluded", x = Individual_ID, ignore.case = T) &
-    !grepl("cont|excluded", x = Group_Name, ignore.case = T)
+  ASSESSMENT == "PASS"
 )
-
 # Coverage and damage are not too relevant here as filter criteria
 
 janno_filtered_final <- janno_pre_mds <- janno_QC
 
-save(janno_pre_mds, file = "data/poseidon_data/janno_pre_mds.R")
+save(janno_pre_mds, file = "data/poseidon_data/janno_pre_mds.RData")
 
 # export for QGIS: check every now and then if the new data justifies different region definition
-janno_filtered_final %>% 
-  sf::st_as_sf(
-    coords = c("Longitude", "Latitude"), 
-    crs = sf::st_crs(4326)
-  ) %>%
-  sf::st_transform(epsg3035) %>%
-  dplyr::select_if(is.list %>% Negate) %>%
-  sf::write_sf(dsn = "data/poseidon_data/janno_spatial_post_filter.gpkg", driver = "GPKG")
+# janno_filtered_final %>% 
+#   sf::st_as_sf(
+#     coords = c("Longitude", "Latitude"), 
+#     crs = sf::st_crs(4326)
+#   ) %>%
+#   sf::st_transform(epsg3035) %>%
+#   dplyr::select_if(is.list %>% Negate) %>%
+#   sf::write_sf(dsn = "data/poseidon_data/janno_spatial_post_filter.gpkg", driver = "GPKG")
 
 # library(ggplot2)
 # ggplot(janno_filtered_final) +
