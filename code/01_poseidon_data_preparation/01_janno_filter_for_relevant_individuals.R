@@ -4,6 +4,7 @@ load("data/spatial/epsg3035.RData")
 load("data/spatial/research_area.RData")
 source("code/01_poseidon_data_preparation/00_aadr_age_string_parser.R")
 
+# read aadr .anno file to transform it to a minimal .janno file
 aadr_raw <- readr::read_tsv("data/poseidon_data/aadrv50/v50.0_1240k_public.anno", na = c("", ".."))
 
 aadr_minimal_janno <- aadr_raw %>%
@@ -21,6 +22,9 @@ aadr_minimal_janno <- aadr_raw %>%
     split_age_string(.$aadr_age_string)
   ) %>%
   poseidonR::as.janno()
+
+# add this .janno file to the aadr poseidon package
+poseidonR::write_janno(aadr_minimal_janno, "data/poseidon_data/aadrv50/aadr_poseidon/aadr_poseidon.janno")
 
 # lacking spatial info filter
 janno_raw_spatial_positions <- aadr_minimal_janno %>%
