@@ -7,14 +7,12 @@ import Development.Shake.Command
 import Development.Shake.FilePath
 import Development.Shake.Util
 
-code :: FilePath -> FilePath
 code x = "code" </> x
-
-code01 :: FilePath -> FilePath
 code01 x = code "01_poseidon_data_preparation" </> x
-
-code04paper :: FilePath -> FilePath
-code04paper x = code "04_plot_scripts" </> "paper" </> x
+code04Paper x = code "04_plot_scripts" </> "paper" </> x
+_data x = "data" </> x
+dataSpatial x = _data "spatial" </> x
+dataPlotReferenceData x = _data "plot_reference_data" </> x
 
 main :: IO ()
 main = shakeArgs shakeOptions {
@@ -26,24 +24,25 @@ main = shakeArgs shakeOptions {
         ]
     
     "plots" </> "figure_1_temporal_and_spatial_distribution_of_input_data.jpeg" %> \out -> do
-        let script = code04paper "figure_1_temporal_and_spatial_distribution_of_input_data.R"
-            dataFiles = map ("data" </>) [
+        let script = code04Paper "figure_1_temporal_and_spatial_distribution_of_input_data.R"
+            dataFiles = [
                 --   "poseidon_data" </> "janno_final.RData"
-                "spatial" </> "research_area.RData"
-                , "spatial" </> "extended_area.RData"
-                , "spatial" </> "epsg3035.RData"
-                -- , "plot_reference_data" </> "region_id_shapes.RData"
-                -- , "plot_reference_data" </> "age_colors_gradient.RData"
-                -- , "spatial" </> "mobility_regions.RData"
+                  dataSpatial "research_area.RData"
+                , dataSpatial "extended_area.RData"
+                , dataSpatial "epsg3035.RData"
+                , dataSpatial "mobility_regions.RData"
+                , dataPlotReferenceData "region_id_shapes.RData"
+                , dataPlotReferenceData "age_colors_gradient.RData"
               ]
         need $ script : dataFiles
         cmd_ "Rscript" script
 
-    map ("data/spatial" </>) [
+    map dataSpatial [
           "research_area.RData"
         , "extended_area.RData"
         , "epsg3035.RData"
-        ] &%> \[a,b,c] -> do
+        , "mobility_regions.RData"
+        ] &%> \out -> do
         let script = code01 "00_prepare_spatial_data.R"
             dataFiles = map ("data_tracked" </>) [
                   "research_area/research_area.gpkg"
@@ -54,6 +53,14 @@ main = shakeArgs shakeOptions {
                 , "mobility_regions/mobility_regions.gpkg"
                 ]
         need $ script : dataFiles
+        cmd_ "Rscript" script
+
+    map dataPlotReferenceData [
+          "region_id_shapes.RData"
+        , "age_colors_gradient.RData"
+        ] &%> \out -> do
+        let script = code01 "00_prepare_plot_reference_data.R"
+        need [script]
         cmd_ "Rscript" script
 
         
