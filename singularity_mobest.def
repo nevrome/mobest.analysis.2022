@@ -12,14 +12,18 @@ From: rocker/geospatial:4.1
   PATH=$PATH:/additional_software
 
 %post
+  mkdir additional_software
   apt-get update
+  # install eigensoft
+  apt-get install -y eigensoft --no-install-recommends
   # install plink
   apt-get install plink1.9
   # install trident
-  mkdir additional_software
   wget https://github.com/poseidon-framework/poseidon-hs/releases/latest/download/trident-Linux
   chmod +x trident-Linux
   mv trident-Linux /additional_software/trident
   # install the mobest R package
   R --slave -e 'remotes::install_github("nevrome/mobest", auth_token = readLines(".github_pat")[1], dependencies = TRUE)'
+  # install all dependencies of the analysis repo
+  R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2020", auth_token = readLines(".github_pat")[1], dependencies = TRUE)'
 
