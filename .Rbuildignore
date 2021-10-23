@@ -1,0 +1,10 @@
+_build$
+^code$
+^data_tracked$
+^plots$
+^reports$
+^schemata$
+^stempdir$
+^tables$
+^.*\.Rproj$
+^\.Rproj\.user$
