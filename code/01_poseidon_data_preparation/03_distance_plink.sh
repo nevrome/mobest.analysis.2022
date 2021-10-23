@@ -15,10 +15,10 @@ date
 cd data/poseidon_data/identical_filter
 
 # pruning
-plink --bfile ../poseidon_extracted_pre_identicals_filter/poseidon_extracted_pre_identicals_filter --exclude ../../../code/01_poseidon_data_preparation/myrange.txt --range --maf --make-bed --out poseidon_extracted_pre_identicals_filter.pruned
+plink1.9 --bfile ../poseidon_extracted_pre_identicals_filter/poseidon_extracted_pre_identicals_filter --exclude ../../../code/01_poseidon_data_preparation/myrange.txt --range --maf --make-bed --out poseidon_extracted_pre_identicals_filter.pruned
 
 # pairwise distances
-plink --bfile poseidon_extracted_pre_identicals_filter.pruned --distance square 1-ibs
+plink1.9 --bfile poseidon_extracted_pre_identicals_filter.pruned --distance square 1-ibs
 
 date
 

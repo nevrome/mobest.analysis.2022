@@ -22,7 +22,7 @@ genetic_distances <- dist_matrix %>%
   setNames(c("IID1", "IID2", "genetic_distance")) %>%
   dplyr::filter(!is.na(genetic_distance))
 
-load("data/poseidon_data/janno_pre_mds.R")
+load("data/poseidon_data/janno_pre_mds.RData")
 
 spatiotemporal_distances <- janno_pre_mds %$%
   data.frame(
