@@ -65,3 +65,6 @@ stempdir/
 
 # password
 pw.txt
+
+# shake build
+_build/
