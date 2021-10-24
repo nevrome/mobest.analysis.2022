@@ -2,9 +2,9 @@ library(magrittr)
 
 #### kernel size ####
 
-spatial_kernel_size_km <- 500
+spatial_kernel_size_km <- 800
 temporal_kernel_size_years <- 900
-nugget <- 0.06
+nugget <- 0.07
 
 default_kernel <- mobest::create_kernset_multi(
   d = list(c(
@@ -15,7 +15,11 @@ default_kernel <- mobest::create_kernset_multi(
   g = nugget, 
   on_residuals = T, 
   auto = F,
-  it = "ds500_dt900_g006"
+  it = paste0(
+    "ds", spatial_kernel_size_km, 
+    "_dt", temporal_kernel_size_years, 
+    "_g", as.character(nugget) %>% gsub("\\.", "", .)
+  )
 )
 
 save(default_kernel, file = "data/origin_search/default_kernel.RData")
