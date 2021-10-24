@@ -14,7 +14,7 @@
 
 date 
 
-singularity exec --bind=/mnt/archgen/users/schmid ../singularity/images/nevrome_mobest/nevrome_mobest.sif Rscript code/06_alternative_parameter_exploration/MDS_3_dimensions/03a_origin_search_pipeline-age_resampling+one_kernel_setting.R ${SGE_TASK_ID}
+singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/06_alternative_parameter_exploration/MDS_3_dimensions/03a_origin_search_pipeline-age_resampling+one_kernel_setting.R ${SGE_TASK_ID}
 
 date
  
