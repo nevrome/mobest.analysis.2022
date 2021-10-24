@@ -4,7 +4,7 @@ library(ggplot2)
 load("data/parameter_exploration/crossvalidation/interpol_comparison.RData")
 
 interpol_comparison_with_CVdist <- interpol_comparison %>%
-  dplyr::filter(g == 2) %>%
+  dplyr::filter(g == max(g)) %>%
   tidyr::pivot_wider(
     id_cols = c("id", "mixing_iteration", "ds", "dt", "g"),
     names_from = "dependent_var",

@@ -2,8 +2,8 @@ library(magrittr)
 
 #### kernel size ####
 
-spatial_kernel_size_km <- 800
-temporal_kernel_size_years <- 900
+spatial_kernel_size_km <- 900
+temporal_kernel_size_years <- 800
 nugget <- 0.07
 
 default_kernel <- mobest::create_kernset_multi(
