@@ -23,6 +23,12 @@ dataPoseidonDataMDS x = dataPoseidonData "mds" </> x
 rscript = cmd_ "./singularity_mobest.sif Rscript"
 bashscript = cmd_ "./singularity_mobest.sif"
 
+process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
+process script (input, output) =
+      output &%> \out -> do
+        need $ script : input
+        rscript script
+
 main :: IO ()
 main = shakeArgs shakeOptions {
         shakeFiles = "_build", 
@@ -34,24 +40,40 @@ main = shakeArgs shakeOptions {
     
     -- #### poseidon data preparation #### --
 
-    -- 00_prepare_spatial_data.R
-    map dataSpatial [
+    code01 "00_prepare_spatial_data.R" `process`
+      ( map ("data_tracked" </>) [
+          "research_area/research_area.gpkg"
+        , "natural_earth_geodata/land_outline.RData"
+        , "natural_earth_geodata/rivers.RData"
+        , "natural_earth_geodata/lakes.RData"
+        , "research_area/research_area_search.gpkg"
+        , "mobility_regions/mobility_regions.gpkg"
+        ] ,
+      map dataSpatial [
           "research_area.RData"
         , "extended_area.RData"
         , "epsg3035.RData"
         , "mobility_regions.RData"
-        ] &%> \out -> do
-        let script = code01 "00_prepare_spatial_data.R"
-            dataFiles = map ("data_tracked" </>) [
-                  "research_area/research_area.gpkg"
-                , "natural_earth_geodata/land_outline.RData"
-                , "natural_earth_geodata/rivers.RData"
-                , "natural_earth_geodata/lakes.RData"
-                , "research_area/research_area_search.gpkg"
-                , "mobility_regions/mobility_regions.gpkg"
-                ]
-        need $ script : dataFiles
-        rscript script
+        ] )
+
+    -- -- 00_prepare_spatial_data.R
+    -- map dataSpatial [
+    --       "research_area.RData"
+    --     , "extended_area.RData"
+    --     , "epsg3035.RData"
+    --     , "mobility_regions.RData"
+    --     ] &%> \out -> do
+    --     let script = code01 "00_prepare_spatial_data.R"
+    --         dataFiles = map ("data_tracked" </>) [
+    --               "research_area/research_area.gpkg"
+    --             , "natural_earth_geodata/land_outline.RData"
+    --             , "natural_earth_geodata/rivers.RData"
+    --             , "natural_earth_geodata/lakes.RData"
+    --             , "research_area/research_area_search.gpkg"
+    --             , "mobility_regions/mobility_regions.gpkg"
+    --             ]
+    --     need $ script : dataFiles
+    --     rscript script
 
     -- 00_prepare_plot_reference_data.R
     map dataPlotReferenceData [
@@ -119,7 +141,7 @@ main = shakeArgs shakeOptions {
         bashscript script
 
     -- 04_filter_by_genetic_distance.R
-    code01 "pre_identicals_filter_ind_list.txt" %> \out -> do
+    code01 "ind_list.txt" %> \out -> do
         let script = code01 "04_filter_by_genetic_distance.R"
             dataFiles = [
                   dataPoseidonData "janno_pre_mds.RData"
@@ -130,7 +152,7 @@ main = shakeArgs shakeOptions {
         rscript script
 
     -- 05_poseidon_extract.sh
-    code01 "pre_identicals_filter_ind_list.txt" : map dataPoseidonDataPoseidonExtracted [
+    map dataPoseidonDataPoseidonExtracted [
           "POSEIDON.yml"
         , "poseidon_extracted.bed"
         , "poseidon_extracted.bim"
@@ -149,7 +171,7 @@ main = shakeArgs shakeOptions {
         bashscript script
 
     -- 06_mds_plink.sh
-    dataPoseidonDataMDS "mds.mds" &%> \out -> do
+    dataPoseidonDataMDS "mds.mds" %> \out -> do
         let script = code01 "06_mds_plink.sh"
             dataFiles = code01 "myrange.txt" : map dataPoseidonDataPoseidonExtracted [
                   "poseidon_extracted.bed"
@@ -160,7 +182,7 @@ main = shakeArgs shakeOptions {
         bashscript script
 
     -- 07_prepare_final_dataset.R
-    dataPoseidoData "janno_final.RData" %> \out -> do
+    dataPoseidonData "janno_final.RData" %> \out -> do
         let script = code01 "07_prepare_final_dataset.R"
             dataFiles = [
                   dataSpatial "epsg3035.RData"
@@ -178,7 +200,7 @@ main = shakeArgs shakeOptions {
         let script = code04Paper "figure_1_temporal_and_spatial_distribution_of_input_data.R"
             dataFiles = [
                 dataPoseidonData "janno_final.RData"
-                dataSpatial "research_area.RData"
+                , dataSpatial "research_area.RData"
                 , dataSpatial "extended_area.RData"
                 , dataSpatial "epsg3035.RData"
                 , dataSpatial "mobility_regions.RData"
