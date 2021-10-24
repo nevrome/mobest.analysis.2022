@@ -50,7 +50,7 @@ distances <- genetic_distances %>%
 
 # filter by genetic distance to identify identicals
 small_genetic_distances <- distances %>% 
-  dplyr::filter(genetic_distance < 0.25)
+  dplyr::filter(genetic_distance < 0.245)
 
 genetic_identicals_groups <- small_genetic_distances %>% 
   dplyr::select(IID1, IID2) %>%

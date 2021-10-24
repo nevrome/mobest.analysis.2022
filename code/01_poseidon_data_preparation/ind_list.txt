@@ -1903,6 +1903,7 @@
 <MIB072>
 <MIB075>
 <MIB077>
+<MIB078>
 <MIB079>
 <MIB082>
 <MIB083>
@@ -1952,6 +1953,7 @@
 <MonteCanelas337A.SG>
 <MonteGato104.SG>
 <Mor6.SG>
+<MotalaAA>
 <MS10614.SG>
 <MSR002>
 <MSR003>
@@ -2082,6 +2084,7 @@
 <ORC009>
 <OSS001>
 <OTTM_142>
+<OTTM_151ind1_d>
 <OTTM_151ind2>
 <OTTM_152>
 <OTTM_154>
@@ -2176,6 +2179,7 @@
 <Pr4.SG>
 <PRE001>
 <PRI001>
+<PRI005>
 <PRI006>
 <prs002-ALL_DATA.SG>
 <prs003-ALL_DATA.SG>
@@ -2582,6 +2586,7 @@
 <STR486.SG>
 <STR502b.SG>
 <STR535.SG>
+<Stuttgart_published.DG>
 <SUA001_d>
 <SUA002>
 <SUA003>
@@ -2625,6 +2630,7 @@
 <SZ43.SG>
 <SZ45.SG>
 <SZ5.SG>
+<SZ6>
 <SZ9>
 <Tamula1>
 <Tamula3>
