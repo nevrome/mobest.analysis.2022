@@ -62,7 +62,6 @@
 <AITI_119>
 <AITI_120>
 <AITI_2>
-<AITI_36>
 <AITI_40>
 <AITI_43>
 <AITI_50>
@@ -129,7 +128,6 @@
 <AMC014>
 <AMP_1_d>
 <ANI152>
-<ANI153>
 <ANI159-ANI181>
 <ANI160>
 <ANN1.SG>
@@ -175,8 +173,6 @@
 <ASH068>
 <ASH087>
 <ASH1.SG>
-<Ash129.SG>
-<Ash131.SG>
 <Ash133.SG>
 <ASH135>
 <Ash136.SG>
@@ -227,7 +223,6 @@
 <BNL008>
 <BNL009>
 <BNL010>
-<Bockstein_published_d>
 <BOL001.SG>
 <BOL002.SG>
 <BOL003.SG>
@@ -260,7 +255,6 @@
 <CAK534.SG>
 <CAK68.SG>
 <Canes.SG>
-<car004-ALL_DATA.SG>
 <CB13.SG>
 <CBT001>
 <CBT002>
@@ -335,7 +329,6 @@
 <CovaMoura364.SG>
 <CovaMoura9B.SG>
 <CRE20D.SG>
-<cth217.SG>
 <cth728.SG>
 <cth739.SG>
 <cth747.SG>
@@ -358,7 +351,6 @@
 <DA164.SG>
 <DA171.SG>
 <DA188.SG>
-<DA189.SG>
 <DA190.SG>
 <DA191.SG>
 <DA194.SG>
@@ -376,7 +368,6 @@
 <DA35.SG>
 <DolmenAnsiao96B.SG>
 <Donkalnis1>
-<Donkalnis4>
 <Donkalnis6>
 <Donkalnis7>
 <DRO001>
@@ -430,7 +421,6 @@
 <GNM1076.SG>
 <Gokhem2.SG>
 <Gokhem4.SG>
-<Gokhem5.SG>
 <GOL001.SG>
 <GRG003>
 <GRG008>
@@ -642,8 +632,6 @@
 <I0789.SG>
 <I0795>
 <I0797>
-<I0800>
-<I0802>
 <I0803>
 <I0804>
 <I0806>
@@ -818,7 +806,6 @@
 <I11538_published>
 <I1154>
 <I11541_published>
-<I11542_published>
 <I1155_published>
 <I11592>
 <I11599>
@@ -889,7 +876,6 @@
 <I1281>
 <I1282>
 <I1284>
-<I12855>
 <I12877>
 <I12878>
 <I12879>
@@ -996,7 +982,6 @@
 <I1670>
 <I1674>
 <I1699>
-<I1701_published>
 <I1705>
 <I1706>
 <I1710>
@@ -1052,13 +1037,11 @@
 <I1978>
 <I1979>
 <I1981>
-<I2005_published>
 <I2008_published>
 <I2016_published>
 <I2017_published>
 <I2020>
 <I2021_published>
-<I2022>
 <I2026_published>
 <I2029_published>
 <I2030_published>
@@ -1150,7 +1133,6 @@
 <I2457>
 <I2458>
 <I2459>
-<I2460>
 <I2461>
 <I2462>
 <I2463>
@@ -1176,7 +1158,6 @@
 <I2566>
 <I2567>
 <I2568>
-<I2569_published>
 <I2573>
 <I2574_published>
 <I2575_published>
@@ -1193,7 +1174,6 @@
 <I2610>
 <I2612>
 <I2618>
-<I2629_published>
 <I2630>
 <I2631>
 <I2633>
@@ -1282,7 +1262,6 @@
 <I3138>
 <I3141_published>
 <I3151_published>
-<I3209>
 <I3214>
 <I3238>
 <I3239>
@@ -1491,7 +1470,6 @@
 <I4655_published>
 <I4660>
 <I4665>
-<I4665_published>
 <I4666_published>
 <I4870>
 <I4871>
@@ -1524,7 +1502,6 @@
 <I4917>
 <I4918>
 <I4930>
-<I4936_published>
 <I4945>
 <I4946>
 <I4949_published>
@@ -1594,7 +1571,6 @@
 <I5523>
 <I5524>
 <I5525>
-<I5527>
 <I5529>
 <I5531>
 <I5655_published>
@@ -1603,7 +1579,6 @@
 <I5659>
 <I5660_published>
 <I5661_published>
-<I5663_published>
 <I5665>
 <I5666>
 <I5748>
@@ -1618,11 +1593,9 @@
 <I5835>
 <I5836>
 <I5838>
-<I5868_published>
 <I5869>
 <I5870>
 <I5872_published>
-<I5873_published>
 <I5875>
 <I5876>
 <I5878_published>
@@ -1649,7 +1622,6 @@
 <I6470>
 <I6472>
 <I6475>
-<I6476>
 <I6480>
 <I6490>
 <I6531>
@@ -1728,7 +1700,6 @@
 <I6788>
 <I6800>
 <I6923>
-<I6924>
 <I7002>
 <I7003>
 <I7040>
@@ -1816,7 +1787,6 @@
 <I7580>
 <I7587>
 <I7594>
-<I7595_published>
 <I7598>
 <I7600>
 <I7601>
@@ -1836,7 +1806,6 @@
 <I7644>
 <I7645>
 <I7646>
-<I7647>
 <I7670>
 <I7671>
 <I7672>
@@ -1846,10 +1815,8 @@
 <I7676>
 <I7679_published>
 <I7687>
-<I7688>
 <I7691>
 <I7692>
-<I7774_d>
 <I7796>
 <I7800>
 <I7805>
@@ -1860,13 +1827,10 @@
 <I8131>
 <I8134>
 <I8136>
-<I8140_published_d>
 <I8144>
 <I8145>
 <I8146>
-<I8148>
 <I8149>
-<I8153>
 <I8154>
 <I8156>
 <I8158>
@@ -1916,7 +1880,6 @@
 <I9130>
 <I9131>
 <IKI002>
-<IKI006>
 <IKI009>
 <IKI012>
 <IKI016>
@@ -2027,7 +1990,6 @@
 <kzb001.SG>
 <kzb002.SG>
 <kzb003.SG>
-<kzb004.SG>
 <kzb005.SG>
 <kzb006.SG>
 <kzb007.SG>
@@ -2326,10 +2288,8 @@
 <OBKR_66_d>
 <OBKR_67_d>
 <OBKR_73>
-<OBKR_76>
 <OBKR_80>
 <OBKR_81>
-<OBKR_84>
 <OBKR_86_d>
 <OBKR_93>
 <OBKR_95>
@@ -2462,8 +2422,6 @@
 <POST_1>
 <POST_12>
 <POST_131>
-<POST_16>
-<POST_2>
 <POST_32>
 <POST_35>
 <POST_35_d>
@@ -2676,7 +2634,6 @@
 <RISE1250.SG>
 <RISE1252.SG>
 <RISE1254.SG>
-<RISE1280.SG>
 <RISE1281.SG>
 <RISE139.SG>
 <RISE145.SG>
@@ -2803,7 +2760,6 @@
 <s19_X08_1.SG>
 <s19_X10_1.SG>
 <s19_X11_1.SG>
-<s19_X12_1.SG>
 <s19_X14_1.SG>
 <s19_X15_2.SG>
 <s19_X17_2.SG>
@@ -3031,7 +2987,6 @@
 <TV3831.SG>
 <Ukraine_N1.SG>
 <UNTA58_147>
-<UNTA58_149>
 <UNTA58_152>
 <UNTA58_153>
 <UNTA58_68Sk2>
@@ -3065,7 +3020,6 @@
 <vbj013.SG>
 <vbj014.minus.SG>
 <vbj014.SG>
-<vbj015.minus.SG>
 <vbj017.minus.SG>
 <vbj017.SG>
 <vbj018.minus.SG>
@@ -3132,7 +3086,6 @@
 <VK159.SG>
 <VK16.SG>
 <VK160.SG>
-<VK161.SG>
 <VK165.SG>
 <VK166.SG>
 <VK167.SG>
@@ -3328,7 +3281,6 @@
 <VK408.SG>
 <VK409.SG>
 <VK410.SG>
-<VK411.SG>
 <VK413.SG>
 <VK414.SG>
 <VK415.SG>
@@ -3348,7 +3300,6 @@
 <VK433.SG>
 <VK434.SG>
 <VK435.SG>
-<VK437.SG>
 <VK438.SG>
 <VK439.SG>
 <VK44.SG>
@@ -3546,7 +3497,6 @@
 <WEZ61.SG>
 <WEZ64.SG>
 <WEZ71.SG>
-<WEZ74.SG>
 <WEZ83.SG>
 <XN164>
 <XN165>
@@ -3565,7 +3515,6 @@
 <XN182>
 <XN183>
 <XN188>
-<XN191>
 <XN205>
 <XN206>
 <XN207>

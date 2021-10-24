@@ -69,7 +69,7 @@ janno_spatial_filtered_non_sf <- janno_spatial_filtered %>%
 
 # Nr_autosomal_SNPs: should be >= 20000 SNPs
 janno_QC <- janno_spatial_filtered_non_sf %>% dplyr::filter(
-  Nr_autosomal_SNPs >= 20000
+  Nr_autosomal_SNPs >= 25000
 )
 # Xcontam: if male, then should not be higher then 10%
 janno_QC <- janno_QC %>% dplyr::filter(
