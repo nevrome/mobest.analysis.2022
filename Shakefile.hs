@@ -7,9 +7,18 @@ import Development.Shake.FilePath
 import Development.Shake.Util
 import System.FilePath (takeExtension)
 
+-- #### settings #### --
+
+-- Path to the singularity image file
 -- required; create with "singularity_build_sif.sh"
 -- that's not part of the pipeline, because it requires sudo permissions
 singularityContainer = "singularity_mobest.sif"
+
+-- Path to bind into the singularity container
+-- https://sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html
+bindPath = "/mnt/archgen/users/schmid"
+
+-- #### set up file paths #### --
 
 code x = "code" </> x
 code01 x = code "01_poseidon_data_preparation" </> x
@@ -25,16 +34,20 @@ dataPoseidonDataIdenticalFilter x = dataPoseidonData "identical_filter" </> x
 dataPoseidonDataPoseidonExtracted x = dataPoseidonData "poseidon_extracted" </> x
 dataPoseidonDataMDS x = dataPoseidonData "mds" </> x
 
+-- #### helper functions #### --
+
 relevantRunCommand :: FilePath -> Action ()
 relevantRunCommand x
-  | takeExtension x == ".R" = cmd_ "./singularity_mobest.sif Rscript" x
-  | takeExtension x == ".sh" = cmd_ "./singularity_mobest.sif" x
+  | takeExtension x == ".R" = cmd_ ("singularity exec --bind=" ++ bindPath ++ " singularity_mobest.sif Rscript") x
+  | takeExtension x == ".sh" = cmd_ ("singularity exec --bind=" ++ bindPath ++ " singularity_mobest.sif") x
   
 process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 process script (input, output) =
       output &%> \out -> do
         need $ [script, singularityContainer] ++ input
         relevantRunCommand script
+
+-- #### pipeline #### --
 
 main :: IO ()
 main = shakeArgs shakeOptions {
