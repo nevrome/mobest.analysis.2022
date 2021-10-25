@@ -16,13 +16,15 @@ singularityContainer = "singularity_mobest.sif"
 
 -- Path to bind into the singularity container
 -- https://sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html
-bindPath = "--bind=" ++ "/mnt/archgen/users/schmid"
---bindPath = ""
+--bindPath = "--bind=" ++ "/mnt/archgen/users/schmid"
+bindPath = ""
 
 -- #### set up file paths #### --
 
 code x = "code" </> x
 code01 x = code "01_poseidon_data_preparation" </> x
+code02 x = code "02_parameter_estimation" </> x
+code03 x = code "03_origin_search" </> x
 code04Paper x = code "04_plot_scripts" </> "paper" </> x
 _data x = "data" </> x
 dataSpatial x = _data "spatial" </> x
@@ -34,6 +36,8 @@ dataPoseidonDataPoseidonExtractedPreIdenticalsFilter x = dataPoseidonData "posei
 dataPoseidonDataIdenticalFilter x = dataPoseidonData "identical_filter" </> x
 dataPoseidonDataPoseidonExtracted x = dataPoseidonData "poseidon_extracted" </> x
 dataPoseidonDataMDS x = dataPoseidonData "mds" </> x
+dataOriginSearch x = _data "origin_search" </> x
+dataGPR x = _data "gpr" </> x
 plots x = "plots" </> x
 
 -- #### helper functions #### --
@@ -42,6 +46,7 @@ relevantRunCommand :: FilePath -> Action ()
 relevantRunCommand x
   | takeExtension x == ".R" = cmd_ ("singularity exec " ++ bindPath ++ " singularity_mobest.sif Rscript") x
   | takeExtension x == ".sh" = cmd_ ("singularity exec " ++ bindPath ++ " singularity_mobest.sif") x
+  | takeExtension x == ".shq" = cmd_ ("singularity exec " ++ bindPath ++ "qsub ") x
   
 process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 process script (input, output) =
@@ -58,7 +63,8 @@ main = shakeArgs shakeOptions {
         } $ do
 
     want [ plots "figure_1_temporal_and_spatial_distribution_of_input_data.jpeg"
-         , plots "figure_2_mds.jpeg" 
+         , plots "figure_2_mds.jpeg"
+         , plots "figure_3_interpolation_map_matrix.jpeg"
          ]
     
     -- #### poseidon data preparation #### --
@@ -184,6 +190,49 @@ main = shakeArgs shakeOptions {
         ] ,
         [ dataPoseidonData "janno_final.RData" ] )
 
+    -- #### parameter estimation #### --
+    -- ...
+
+    -- #### origin search #### --
+
+    code03 "00_interpolation_and_origin_search_settings.R" `process`
+      ( [ ] ,
+        map dataOriginSearch [
+          "default_kernel.RData"
+        , "kernel_theta_data.RData"
+        , "retrospection_distance.RData"
+        ] )
+
+    code03 "01_interpolation_for_selected_timeslices.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataSpatial "extended_area.RData"
+        , dataOriginSearch "default_kernel.RData"
+        ] ,
+        [ dataGPR "interpol_grid_median_selected_timeslices.RData" ] )
+
+    code03 "02_interpolation_at_specific_places_median_age+one_kernel_setting.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataSpatial "epsg3035.RData"
+        , dataOriginSearch "default_kernel.RData"
+        ] ,
+        [ dataGPR "interpol_grid_examples.RData" ] )
+
+    code03 "03_interpolation_and_search_for_selected_individuals.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataSpatial "search_area.RData"
+        , dataSpatial "epsg3035.RData"
+        , dataOriginSearch "default_kernel.RData"
+        , dataOriginSearch "retrospection_distance.RData"
+        ] ,
+        map dataOriginSearch [
+          "janno_search.RData"
+        , "closest_points_examples.RData"
+        , "distance_grid_examples.RData"
+        ] )
+
+    -- until here everything runs without HPC support
+    -- ...
+
     -- #### plots #### --
 
     code04Paper "figure_1_temporal_and_spatial_distribution_of_input_data.R" `process`
@@ -194,12 +243,20 @@ main = shakeArgs shakeOptions {
         , dataSpatial "mobility_regions.RData"
         , dataPlotReferenceData "region_id_shapes.RData"
         , dataPlotReferenceData "age_colors_gradient.RData"
-      ] ,
-      [ plots "figure_1_temporal_and_spatial_distribution_of_input_data.jpeg" ] )
+        ] ,
+        [ plots "figure_1_temporal_and_spatial_distribution_of_input_data.jpeg" ] )
 
     code04Paper "figure_2_mds.R" `process`
       ( [ dataPoseidonData "janno_final.RData"
         , dataPlotReferenceData "region_id_shapes.RData"
         , dataPlotReferenceData "age_colors_gradient.RData"
-      ] ,
-      [ plots "figure_2_mds.jpeg" ] )
+        ] ,
+        [ plots "figure_2_mds.jpeg" ] )
+
+    code04Paper "figure_3_interpolation_map_matrix.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataSpatial "extended_area.RData"
+        , dataSpatial "epsg3035.RData"
+        , dataGPR "interpol_grid_median_selected_timeslices.RData"
+        ] ,
+        [ plots "figure_3_interpolation_map_matrix.jpeg" ] )
