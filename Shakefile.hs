@@ -34,6 +34,7 @@ dataPoseidonDataPoseidonExtractedPreIdenticalsFilter x = dataPoseidonData "posei
 dataPoseidonDataIdenticalFilter x = dataPoseidonData "identical_filter" </> x
 dataPoseidonDataPoseidonExtracted x = dataPoseidonData "poseidon_extracted" </> x
 dataPoseidonDataMDS x = dataPoseidonData "mds" </> x
+plots x = "plots" </> x
 
 -- #### helper functions #### --
 
@@ -56,8 +57,8 @@ main = shakeArgs shakeOptions {
         shakeProgress = progressSimple
         } $ do
 
-    want [
-           "plots" </> "figure_1_temporal_and_spatial_distribution_of_input_data.jpeg"
+    want [ plots "figure_1_temporal_and_spatial_distribution_of_input_data.jpeg"
+         , plots "figure_2_mds.jpeg" 
          ]
     
     -- #### poseidon data preparation #### --
@@ -194,4 +195,11 @@ main = shakeArgs shakeOptions {
         , dataPlotReferenceData "region_id_shapes.RData"
         , dataPlotReferenceData "age_colors_gradient.RData"
       ] ,
-      [ "plots" </> "figure_1_temporal_and_spatial_distribution_of_input_data.jpeg" ] )
+      [ plots "figure_1_temporal_and_spatial_distribution_of_input_data.jpeg" ] )
+
+    code04Paper "figure_2_mds.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataPlotReferenceData "region_id_shapes.RData"
+        , dataPlotReferenceData "age_colors_gradient.RData"
+      ] ,
+      [ plots "figure_2_mds.jpeg" ] )
