@@ -14,10 +14,14 @@ import System.FilePath (takeExtension)
 -- that's not part of the pipeline, because it requires sudo permissions
 singularityContainer = "singularity_mobest.sif"
 
--- Path to bind into the singularity container
+-- Path to mount into the singularity container
 -- https://sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html
---bindPath = "--bind=" ++ "/mnt/archgen/users/schmid"
-bindPath = ""
+bindPath = "" -- local
+--bindPath = "--bind=" ++ "/mnt/archgen/users/schmid" -- cluster
+
+-- Run everything through an interactive sge session
+qrsh = "" -- local
+--qrsh = "qrsh -b y -cwd -pe smp 8 -l h_vmem=16G" --cluster
 
 -- #### set up file paths #### --
 
@@ -44,10 +48,10 @@ plots x = "plots" </> x
 
 relevantRunCommand :: FilePath -> Action ()
 relevantRunCommand x
-  | takeExtension x == ".R" = cmd_ ("singularity exec " ++ bindPath ++ " singularity_mobest.sif Rscript") x
-  | takeExtension x == ".sh" = cmd_ ("singularity exec " ++ bindPath ++ " singularity_mobest.sif") x
-  | takeExtension x == ".shq" = cmd_ ("singularity exec " ++ bindPath ++ "qsub ") x
-  
+  | takeExtension x == ".R" = cmd_ (qrsh ++ " singularity exec " ++ bindPath ++ " singularity_mobest.sif Rscript") x
+  | takeExtension x == ".sh" = cmd_ (qrsh ++ " singularity exec " ++ bindPath ++ " singularity_mobest.sif") x
+  | takeExtension x == ".shq" = cmd_ x
+
 process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 process script (input, output) =
       output &%> \out -> do
