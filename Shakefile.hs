@@ -22,11 +22,11 @@ bindPath = "--bind=/mnt/archgen/users/schmid" -- cluster
 -- How to run normal commands:
 -- Run everything through an interactive sge session or just so
 --qrsh = "" -- local
-qrsh = "qrsh -b y -cwd -pe smp 8 -l h_vmem=16G" --cluster
+qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=16G -now n -V -N hedgehog" --cluster
 
 -- How to run SGE scripts
---qrsh_script = "./" -- local
-qrsh_script = "qrsh " -- cluster
+--qsub_script = "./" -- local
+qsub_script = "qsub -sync y -N cheesecake " -- cluster
 
 -- #### set up file paths #### --
 
@@ -58,7 +58,7 @@ relevantRunCommand :: FilePath -> Action ()
 relevantRunCommand x
   | takeExtension x == ".R" = cmd_ qrsh "singularity" "exec" bindPath "singularity_mobest.sif" "Rscript" x
   | takeExtension x == ".sh" = cmd_ qrsh "singularity" "exec" bindPath "singularity_mobest.sif" x
-  | takeExtension x == ".shq" = cmd_ $ qrsh_script ++ x
+  | takeExtension x == ".shq" = cmd_ $ qsub_script ++ x
 
 process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 process script (input, output) =
