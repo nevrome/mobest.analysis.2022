@@ -29,7 +29,7 @@ up("singularity_mobest.sif")
 
 #### 01_poseidon_data_preparation ####
 
-bash("./code/01_poseidon_data_preparation/00_fetch_aadr.sh")
+#bash("./code/01_poseidon_data_preparation/00_fetch_aadr.sh")
 source("./code/01_poseidon_data_preparation/00_prepare_plot_reference_data.R")
 source("./code/01_poseidon_data_preparation/00_prepare_spatial_data.R")
 source("./code/01_poseidon_data_preparation/01_janno_filter_for_relevant_individuals.R")
