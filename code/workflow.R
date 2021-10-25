@@ -24,7 +24,7 @@ singularity_qsub <- function(x) { eva.cluster::run_cluster_singularity_script(
 
 #### singularity container ####
 
-bash("./singularity_build_sif.sh")
+system("./singularity_build_sif.sh")
 up("singularity_mobest.sif")
 
 #### 01_poseidon_data_preparation ####

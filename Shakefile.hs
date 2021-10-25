@@ -7,6 +7,10 @@ import Development.Shake.FilePath
 import Development.Shake.Util
 import System.FilePath (takeExtension)
 
+-- required; create with "singularity_build_sif.sh"
+-- that's not part of the pipeline, because it requires sudo permissions
+singularityContainer = "singularity_mobest.sif"
+
 code x = "code" </> x
 code01 x = code "01_poseidon_data_preparation" </> x
 code04Paper x = code "04_plot_scripts" </> "paper" </> x
@@ -29,7 +33,7 @@ relevantRunCommand x
 process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 process script (input, output) =
       output &%> \out -> do
-        need $ script : input
+        need $ [script, singularityContainer] ++ input
         relevantRunCommand script
 
 main :: IO ()
@@ -67,19 +71,33 @@ main = shakeArgs shakeOptions {
         , "age_colors_gradient.RData"
         ] )
 
-    code01 "00_fetch_aadr.sh" `process`
+    code01 "00a_download_aadr.sh" `process`
       ( [] ,
-        dataPoseidonDataAADRv50 "v50.0_1240k_public.anno" : map dataPoseidonDataAADRv50AADRPoseidon [
+        map dataPoseidonDataAADRv50 [
+          "v50.0_1240k_public.anno"
+        , "aadr_eig.geno"
+        , "aadr_eig.snp"
+        , "aadr_eig.ind"
+        ] )
+
+    code01 "00b_convert_aadr_to_poseidon.sh" `process`
+      ( map dataPoseidonDataAADRv50 [
+          "aadr_eig.geno"
+        , "aadr_eig.snp"
+        , "aadr_eig.ind"
+        ] ,
+        map dataPoseidonDataAADRv50AADRPoseidon [
           "POSEIDON.yml"
-        , "aadr_plink.geno"
-        , "aadr_plink.snp"
-        , "aadr_plink.ind"
+        , "aadr_eig.geno"
+        , "aadr_eig.snp"
+        , "aadr_eig.ind"
         ] )
 
     code01 "01_janno_filter_for_relevant_individuals.R" `process`
       ( [ dataSpatial "epsg3035.RData"
         , dataSpatial "research_area.RData"
         , dataPoseidonDataAADRv50 "v50.0_1240k_public.anno"
+        , dataPoseidonDataAADRv50AADRPoseidon "POSEIDON.yml"
         , code01 "00_aadr_age_string_parser.R"
         ] ,
         [ code01 "pre_identicals_filter_ind_list.txt"
@@ -90,9 +108,10 @@ main = shakeArgs shakeOptions {
     code01 "02_pre_identicals_filter_poseidon_extract.sh" `process`
       ( map dataPoseidonDataAADRv50AADRPoseidon [
           "POSEIDON.yml"
-        , "aadr_plink.geno"
-        , "aadr_plink.snp"
-        , "aadr_plink.ind"
+        , "aadr_poseidon.janno"
+        , "aadr_eig.geno"
+        , "aadr_eig.snp"
+        , "aadr_eig.ind"
         ] ,
         map dataPoseidonDataPoseidonExtractedPreIdenticalsFilter [
           "poseidon_extracted_pre_identicals_filter.bed"
@@ -121,9 +140,9 @@ main = shakeArgs shakeOptions {
     code01 "05_poseidon_extract.sh" `process`
       ( code01 "pre_identicals_filter_ind_list.txt" : map dataPoseidonDataAADRv50AADRPoseidon [
           "POSEIDON.yml"
-        , "aadr_plink.geno"
-        , "aadr_plink.snp"
-        , "aadr_plink.ind"
+        , "aadr_eig.geno"
+        , "aadr_eig.snp"
+        , "aadr_eig.ind"
         , "aadr_poseidon.janno"
         ] ,
         map dataPoseidonDataPoseidonExtracted [
