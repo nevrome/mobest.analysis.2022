@@ -16,7 +16,8 @@ singularityContainer = "singularity_mobest.sif"
 
 -- Path to bind into the singularity container
 -- https://sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html
-bindPath = "/mnt/archgen/users/schmid"
+bindPath = "--bind=" ++ "/mnt/archgen/users/schmid"
+--bindPath = ""
 
 -- #### set up file paths #### --
 
@@ -38,8 +39,8 @@ dataPoseidonDataMDS x = dataPoseidonData "mds" </> x
 
 relevantRunCommand :: FilePath -> Action ()
 relevantRunCommand x
-  | takeExtension x == ".R" = cmd_ ("singularity exec --bind=" ++ bindPath ++ " singularity_mobest.sif Rscript") x
-  | takeExtension x == ".sh" = cmd_ ("singularity exec --bind=" ++ bindPath ++ " singularity_mobest.sif") x
+  | takeExtension x == ".R" = cmd_ ("singularity exec " ++ bindPath ++ " singularity_mobest.sif Rscript") x
+  | takeExtension x == ".sh" = cmd_ ("singularity exec " ++ bindPath ++ " singularity_mobest.sif") x
   
 process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 process script (input, output) =
