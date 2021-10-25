@@ -16,12 +16,17 @@ singularityContainer = "singularity_mobest.sif"
 
 -- Path to mount into the singularity container
 -- https://sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html
-bindPath = "" -- local
---bindPath = "--bind=" ++ "/mnt/archgen/users/schmid" -- cluster
+--bindPath = "" -- local
+bindPath = "--bind=" ++ "/mnt/archgen/users/schmid" -- cluster
 
--- Run everything through an interactive sge session
-qrsh = "" -- local
---qrsh = "qrsh -b y -cwd -pe smp 8 -l h_vmem=16G" --cluster
+-- How to run normal commands:
+-- Run everything through an interactive sge session or just so
+--qrsh = "" -- local
+qrsh = "qrsh -b y -cwd -pe smp 8 -l h_vmem=16G " --cluster
+
+-- How to run SGE scripts
+--qsub = "./" -- local
+qsub = "qsub " -- cluster
 
 -- #### set up file paths #### --
 
@@ -48,9 +53,9 @@ plots x = "plots" </> x
 
 relevantRunCommand :: FilePath -> Action ()
 relevantRunCommand x
-  | takeExtension x == ".R" = cmd_ (qrsh ++ " singularity exec " ++ bindPath ++ " singularity_mobest.sif Rscript") x
-  | takeExtension x == ".sh" = cmd_ (qrsh ++ " singularity exec " ++ bindPath ++ " singularity_mobest.sif") x
-  | takeExtension x == ".shq" = cmd_ x
+  | takeExtension x == ".R" = cmd_ (qrsh ++ "singularity exec " ++ bindPath ++ " singularity_mobest.sif Rscript") x
+  | takeExtension x == ".sh" = cmd_ (qrsh ++ "singularity exec " ++ bindPath ++ " singularity_mobest.sif") x
+  | takeExtension x == ".shq" = cmd_ $ qsub ++ x
 
 process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 process script (input, output) =
@@ -66,9 +71,12 @@ main = shakeArgs shakeOptions {
         shakeProgress = progressSimple
         } $ do
 
-    want [ plots "figure_1_temporal_and_spatial_distribution_of_input_data.jpeg"
-         , plots "figure_2_mds.jpeg"
-         , plots "figure_3_interpolation_map_matrix.jpeg"
+    want $ map plots [ 
+           "figure_1_temporal_and_spatial_distribution_of_input_data.jpeg"
+         , "figure_2_mds.jpeg"
+         , "figure_3_interpolation_map_matrix.jpeg"
+         , "figure_4_genetic_distance_example_maps.jpeg"
+         , "figure_sup_11_timepillars.jpeg"
          ]
     
     -- #### poseidon data preparation #### --
@@ -264,3 +272,22 @@ main = shakeArgs shakeOptions {
         , dataGPR "interpol_grid_median_selected_timeslices.RData"
         ] ,
         [ plots "figure_3_interpolation_map_matrix.jpeg" ] )
+
+    code04Paper "figure_4_genetic_distance_example_maps.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataSpatial "research_area.RData"
+        , dataSpatial "extended_area.RData"
+        , dataSpatial "epsg3035.RData"
+        ] ++ map dataOriginSearch [
+          "janno_search.RData"
+        , "closest_points_examples.RData"
+        , "distance_grid_examples.RData"
+        ],
+        [ plots "figure_4_genetic_distance_example_maps.jpeg" ] )
+
+    code04Paper "figure_sup_11_timepillars.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataPlotReferenceData "age_colors_gradient.RData"
+        , dataGPR "interpol_grid_examples.RData"
+        ] ,
+        [ plots "figure_sup_11_timepillars.jpeg" ] )
