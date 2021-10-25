@@ -17,22 +17,23 @@ singularityContainer = "singularity_mobest.sif"
 -- Path to mount into the singularity container
 -- https://sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html
 --bindPath = "" -- local
-bindPath = "--bind=" ++ "/mnt/archgen/users/schmid" -- cluster
+bindPath = "--bind=/mnt/archgen/users/schmid" -- cluster
 
 -- How to run normal commands:
 -- Run everything through an interactive sge session or just so
 --qrsh = "" -- local
-qrsh = "qrsh -b y -cwd -pe smp 8 -l h_vmem=16G " --cluster
+qrsh = "qrsh -b y -cwd -pe smp 8 -l h_vmem=16G" --cluster
 
 -- How to run SGE scripts
---qsub = "./" -- local
-qsub = "qsub " -- cluster
+--qrsh_script = "./" -- local
+qrsh_script = "qrsh " -- cluster
 
 -- #### set up file paths #### --
 
 code x = "code" </> x
 code01 x = code "01_poseidon_data_preparation" </> x
 code02 x = code "02_parameter_estimation" </> x
+code02Crossvalidation x = code02 "crossvalidation" </> x
 code03 x = code "03_origin_search" </> x
 code04Paper x = code "04_plot_scripts" </> "paper" </> x
 _data x = "data" </> x
@@ -45,6 +46,8 @@ dataPoseidonDataPoseidonExtractedPreIdenticalsFilter x = dataPoseidonData "posei
 dataPoseidonDataIdenticalFilter x = dataPoseidonData "identical_filter" </> x
 dataPoseidonDataPoseidonExtracted x = dataPoseidonData "poseidon_extracted" </> x
 dataPoseidonDataMDS x = dataPoseidonData "mds" </> x
+dataParameterExploration x = _data "parameter_exploration" </> x
+dataParameterExplorationCrossvalidation x = dataParameterExploration "crossvalidation" </> x
 dataOriginSearch x = _data "origin_search" </> x
 dataGPR x = _data "gpr" </> x
 plots x = "plots" </> x
@@ -53,9 +56,9 @@ plots x = "plots" </> x
 
 relevantRunCommand :: FilePath -> Action ()
 relevantRunCommand x
-  | takeExtension x == ".R" = cmd_ (qrsh ++ "singularity exec " ++ bindPath ++ " singularity_mobest.sif Rscript") x
-  | takeExtension x == ".sh" = cmd_ (qrsh ++ "singularity exec " ++ bindPath ++ " singularity_mobest.sif") x
-  | takeExtension x == ".shq" = cmd_ $ qsub ++ x
+  | takeExtension x == ".R" = cmd_ qrsh "singularity" "exec" bindPath "singularity_mobest.sif" "Rscript" x
+  | takeExtension x == ".sh" = cmd_ qrsh "singularity" "exec" bindPath "singularity_mobest.sif" x
+  | takeExtension x == ".shq" = cmd_ $ qrsh_script ++ x
 
 process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 process script (input, output) =
@@ -77,7 +80,8 @@ main = shakeArgs shakeOptions {
          , "figure_3_interpolation_map_matrix.jpeg"
          , "figure_4_genetic_distance_example_maps.jpeg"
          , "figure_sup_11_timepillars.jpeg"
-         ]
+         ] ++ 
+         [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ]
     
     -- #### poseidon data preparation #### --
 
@@ -203,7 +207,11 @@ main = shakeArgs shakeOptions {
         [ dataPoseidonData "janno_final.RData" ] )
 
     -- #### parameter estimation #### --
-    -- ...
+    
+    code02Crossvalidation "sge_parameter_exploration.shq" `process`
+      ( [ dataPoseidonData "janno_final.RData" 
+        ] , 
+        [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ] )
 
     -- #### origin search #### --
 
