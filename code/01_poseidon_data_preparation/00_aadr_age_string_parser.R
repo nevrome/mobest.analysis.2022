@@ -100,8 +100,11 @@ split_age_string <- function(x) {
   
   #### parse contextual (and simplified) ages ####
   
-  # split at space and minus
-  simple_age_split <- x %>% stringr::str_split("\\s-\\s|-|\\s+")
+  # remove parenthesis and split at space and minusś
+  simple_age_split <- x %>%
+    stringr::str_replace_all("\\(", "") %>%
+    stringr::str_replace_all("\\)", "") %>%
+    stringr::str_split("\\s*-\\s*|-|\\s+")
   
   # translate first elements of the vector to meaningful start and stop ages
   stop <- start <- rep(NA, length(simple_age_split))
@@ -115,7 +118,7 @@ split_age_string <- function(x) {
     # age below calibration range, e.g. >45000
     if (grepl("^>", simple_age_split[[i]][1])) {
       start[i] <- -Inf
-      stop[i] <- as.numeric(gsub(">", "", -as.numeric(simple_age_split[[i]][1])))
+      stop[i] <- -as.numeric(gsub(">", "", simple_age_split[[i]][1]))
       next
     }
     # no range: only one value e.g. 5000 BCE
