@@ -67,9 +67,9 @@ p <- moving_origin_grid_modified %>%
   )
 
 ggsave(
-  paste0("plots/figure_sup_13_distance_fraction_curves.png"),
+  paste0("plots/figure_sup_13_distance_fraction_curves.jpeg"),
   plot = p,
-  device = "png",
+  device = "jpeg",
   scale = 0.7,
   dpi = 300,
   width = 400, height = 350, units = "mm",

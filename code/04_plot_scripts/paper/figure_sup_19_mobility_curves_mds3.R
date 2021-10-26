@@ -14,9 +14,9 @@ p <- plot_curves(
 )
 
 ggsave(
-  paste0("plots/figure_sup_19_mobility_curves.png"),
+  paste0("plots/figure_sup_19_mobility_curves_mds3.jpeg"),
   plot = p,
-  device = "png",
+  device = "jpeg",
   scale = 0.7,
   dpi = 300,
   width = 430, height = 300, units = "mm",
