@@ -9,11 +9,14 @@ import System.FilePath (takeExtension)
 
 -- #### settings #### --
 
+data SettingsType = Local | Cluster
+
 data Settings = Settings {
+    setType :: SettingsType
   -- Path to the singularity image file
   -- required; create with "singularity_build_sif.sh"
   -- that's not part of the pipeline, because it requires sudo permissions
-    singularityContainer :: FilePath
+  , singularityContainer :: FilePath
   -- Path to mount into the singularity container
   -- https://sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html
   , bindPath :: String
@@ -25,14 +28,16 @@ data Settings = Settings {
 }
 
 localSettings = Settings {
-    singularityContainer = "singularity_mobest.sif"
+    setType = Local
+  , singularityContainer = "singularity_mobest.sif"
   , bindPath = ""
   , qrsh = ""
-  , qsubScript = "./"
+  , qsubScript = ""
 }
 
 mpiEVAClusterSettings = Settings {
-    singularityContainer = "singularity_mobest.sif"
+    setType = Cluster
+  , singularityContainer = "singularity_mobest.sif"
   , bindPath = "--bind=/mnt/archgen/users/schmid"
   , qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=16G -now n -V -N hedgehog"
   , qsubScript = "qsub -sync y -N cheesecake "
@@ -41,10 +46,13 @@ mpiEVAClusterSettings = Settings {
 -- #### helper functions #### --
 
 relevantRunCommand :: Settings -> FilePath -> Action ()
-relevantRunCommand (Settings singularityContainer bindPath qrsh qsubScript) x
+relevantRunCommand (Settings setType singularityContainer bindPath qrsh qsubScript) x
   | takeExtension x == ".R" = cmd_ qrsh "singularity" "exec" bindPath singularityContainer "Rscript" x
   | takeExtension x == ".sh" = cmd_ qrsh "singularity" "exec" bindPath singularityContainer x
-  | takeExtension x == ".shq" = cmd_ $ qsubScript ++ x
+  | takeExtension x == ".shq" = 
+    case setType of
+      Local -> error "Can not run cluster scripts locally."
+      Cluster -> cmd_ $ qsubScript ++ x
 
 process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 process script (input, output) =
