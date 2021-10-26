@@ -102,14 +102,28 @@ main = shakeArgs shakeOptions {
         , "figure_2_mds.jpeg"
         , "figure_3_interpolation_map_matrix.jpeg"
         , "figure_4_genetic_distance_example_maps.jpeg"
+        , "figure_5_mobility_curves.jpeg"
         , "figure_sup_1_semivariogram.jpeg"
         , "figure_sup_2_semivariogram_space_time.jpeg"
         , "figure_sup_3_semivariogram_fitting.jpeg"
         , "figure_sup_4_semivariogram_nugget.jpeg"
-        , "figure_sup_9_crossvalidation_rasters.R"
+        --, "figure_sup_5_mle_anisotropic.jpeg"
+        , "figure_sup_6_kernel_size_meaning.jpeg"
+        --, "figure_sup_7_mle_isotropic.jpeg"
+        , "figure_sup_8_crossvalidation_prediction_accuracy.jpeg"
+        , "figure_sup_9_crossvalidation_rasters.jpeg"
+        , "figure_sup_10_rearview_distance.jpeg"
         , "figure_sup_11_timepillars.jpeg"
+        , "figure_sup_12_direction_windrose_matrix.jpeg"
+        , "figure_sup_13_distance_fraction_curves.jpeg"
+        , "figure_sup_14_mds3.jpeg"
+        , "figure_sup_15_distance_correlation_mds3.jpeg"
         , "figure_sup_16_semivariogram_nugget_mds3.jpeg"
         , "figure_sup_17_crossvalidation_rasters_mds3.jpeg"
+        --, "figure_sup_18_interpolation_map_matrix_mds3.jpeg"
+        --, "figure_sup_19_mobility_curves_mds3.jpeg"
+        --, "figure_sup_20_mobility_curves_retro_low.jpeg"
+        --, "figure_sup_21_mobility_curves_retro_high.jpeg"
         ] ++ 
         [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ]
     
@@ -370,6 +384,16 @@ main = shakeArgs shakeOptions {
         ],
         [ plots "figure_4_genetic_distance_example_maps.jpeg" ] )
 
+    code04Paper "figure_5_mobility_curves.R" `process`
+      ( [ code04Paper "mobility_curves_plot_function.R"
+        , dataPoseidonData "janno_final.RData"
+        ] ++ map dataOriginSearch [
+          "origin_grid_mean.RData"
+        , "moving_origin_grid.RData"
+        , "no_data_windows.RData"
+        ],
+        [ plots "figure_5_mobility_curves.jpeg" ] )
+
     code04Paper "figure_sup_1_semivariogram.R" `process`
       ( [ dataParameterExplorationVariogram "binned_distances.RData" ] ,
         [ plots "figure_sup_1_semivariogram.jpeg" ] )
@@ -388,6 +412,16 @@ main = shakeArgs shakeOptions {
         , "estimated_nuggets.RData"
         ] ,
         [ plots "figure_sup_4_semivariogram_nugget.jpeg" ] )
+    
+    code04Paper "figure_sup_6_kernel_size_meaning.R" `process`
+      ( [ ] ,
+        [ plots "figure_sup_6_kernel_size_meaning.jpeg" ] )
+
+    code04Paper "figure_sup_8_crossvalidation_prediction_accuracy.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataParameterExplorationCrossvalidation "interpol_comparison.RData"
+        ] ,
+        [ plots "figure_sup_8_crossvalidation_prediction_accuracy.jpeg" ] )
 
     code04Paper "figure_sup_9_crossvalidation_rasters.R" `process`
       ( map dataParameterExplorationCrossvalidation [
@@ -396,12 +430,35 @@ main = shakeArgs shakeOptions {
         ] ,
         [ plots "figure_sup_9_crossvalidation_rasters.jpeg" ] )
 
+    code04Paper "figure_sup_10_rearview_distance.R" `process`
+      ( [ dataOriginSearch "kernel_theta_data.RData" ] ,
+        [ plots "figure_sup_10_rearview_distance.jpeg" ] )
+
     code04Paper "figure_sup_11_timepillars.R" `process`
       ( [ dataPoseidonData "janno_final.RData"
         , dataPlotReferenceData "age_colors_gradient.RData"
         , dataGPR "interpol_grid_examples.RData"
         ] ,
         [ plots "figure_sup_11_timepillars.jpeg" ] )
+
+    code04Paper "figure_sup_12_mean_direction_windrose_matrix.R" `process`
+      ( [ dataOriginSearch "origin_grid_modified.RData" ] ,
+        [ plots "figure_sup_12_direction_windrose_matrix.jpeg" ] )
+
+    code04Paper "figure_sup_13_distance_fraction_curves.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataOriginSearch "moving_origin_grid.RData" ] ,
+        [ plots "figure_sup_13_distance_fraction_curves.jpeg" ] )
+
+    code04Paper "figure_sup_14_mds_mds3.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataPlotReferenceData "region_id_shapes.RData"
+        , dataPlotReferenceData "age_colors_gradient.RData" ] ,
+        [ plots "figure_sup_14_mds3.jpeg" ] )
+
+    code04Paper "figure_sup_15_distance_correlation_mds3.R" `process`
+      ( [ dataParameterExplorationVariogram "all_distances.RData" ] ,
+        [ plots "figure_sup_15_distance_correlation_mds3.jpeg" ] )
 
     code04Paper "figure_sup_16_semivariogram_nugget_mds3.R" `process`
       ( map dataParameterExplorationVariogram [
