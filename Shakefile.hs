@@ -259,7 +259,8 @@ main = shakeArgs shakeOptions {
       )
     
     code02Crossvalidation "sge_parameter_exploration.shq" `process`
-      ( [ dataPoseidonData "janno_final.RData"
+      ( [ code02Crossvalidation "crossvalidation.R"
+        , dataPoseidonData "janno_final.RData"
         , dataParameterExplorationVariogram "nuggets.txt"
         ] , 
         [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ] )
@@ -310,7 +311,8 @@ main = shakeArgs shakeOptions {
         ] )
 
     code03 "05b_sge_origin_search.shq" `process`
-      ( [ dataPoseidonData "janno_final.RData"
+      ( [ code03 "05a_origin_search_pipeline-age_resampling+one_kernel_setting.R"
+        , dataPoseidonData "janno_final.RData"
         , dataSpatial "search_area.RData"
         , dataOriginSearch "default_kernel.RData"
         , dataOriginSearch "retrospection_distance.RData"
