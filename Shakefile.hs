@@ -56,8 +56,8 @@ relevantRunCommand (Settings setType singularityContainer bindPath qrsh qsubScri
 
 process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 process script (input, output) =
-      let settings = localSettings
-          --settings = mpiEVAClusterSettings
+      let --settings = localSettings
+          settings = mpiEVAClusterSettings
       in output &%> \out -> do
         need $ [script, singularityContainer settings] ++ input
         relevantRunCommand settings script
@@ -68,6 +68,7 @@ code x = "code" </> x
 code01 x = code "01_poseidon_data_preparation" </> x
 code02 x = code "02_parameter_estimation" </> x
 code02Crossvalidation x = code02 "crossvalidation" </> x
+code02Variogram x = code02 "variogram_experiments" </> x
 code03 x = code "03_origin_search" </> x
 code04Paper x = code "04_plot_scripts" </> "paper" </> x
 _data x = "data" </> x
@@ -81,6 +82,7 @@ dataPoseidonDataIdenticalFilter x = dataPoseidonData "identical_filter" </> x
 dataPoseidonDataPoseidonExtracted x = dataPoseidonData "poseidon_extracted" </> x
 dataPoseidonDataMDS x = dataPoseidonData "mds" </> x
 dataParameterExploration x = _data "parameter_exploration" </> x
+dataParameterExplorationVariogram x = dataParameterExploration "variogram" </> x
 dataParameterExplorationCrossvalidation x = dataParameterExploration "crossvalidation" </> x
 dataOriginSearch x = _data "origin_search" </> x
 dataGPR x = _data "gpr" </> x
@@ -95,13 +97,18 @@ main = shakeArgs shakeOptions {
         } $ do
 
     want $ map plots [ 
-           "figure_1_temporal_and_spatial_distribution_of_input_data.jpeg"
-         , "figure_2_mds.jpeg"
-         , "figure_3_interpolation_map_matrix.jpeg"
-         , "figure_4_genetic_distance_example_maps.jpeg"
-         , "figure_sup_11_timepillars.jpeg"
-         ] ++ 
-         [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ]
+          "figure_1_temporal_and_spatial_distribution_of_input_data.jpeg"
+        , "figure_2_mds.jpeg"
+        , "figure_3_interpolation_map_matrix.jpeg"
+        , "figure_4_genetic_distance_example_maps.jpeg"
+        , "figure_sup_1_semivariogram.jpeg"
+        , "figure_sup_2_semivariogram_space_time.jpeg"
+        , "figure_sup_3_semivariogram_fitting.jpeg"
+        , "figure_sup_4_semivariogram_nugget.jpeg"
+        , "figure_sup_11_timepillars.jpeg"
+        , "figure_sup_16_semivariogram_nugget_mds3.jpeg"
+        ] ++ 
+        [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ]
     
     -- #### poseidon data preparation #### --
 
@@ -227,6 +234,15 @@ main = shakeArgs shakeOptions {
         [ dataPoseidonData "janno_final.RData" ] )
 
     -- #### parameter estimation #### --
+
+    code02Variogram "variogram_calculation.R" `process`
+      ( [ dataPoseidonData "janno_final.RData" 
+        ] ,
+        map dataParameterExplorationVariogram [
+          "all_distances.RData"
+        , "binned_distances.RData"
+        ]
+      )
     
     code02Crossvalidation "sge_parameter_exploration.shq" `process`
       ( [ dataPoseidonData "janno_final.RData" 
@@ -313,9 +329,31 @@ main = shakeArgs shakeOptions {
         ],
         [ plots "figure_4_genetic_distance_example_maps.jpeg" ] )
 
+    code04Paper "figure_sup_1_semivariogram.R" `process`
+      ( [ dataParameterExplorationVariogram "binned_distances.RData" ] ,
+        [ plots "figure_sup_1_semivariogram.jpeg" ] )
+
+    code04Paper "figure_sup_2_semivariogram_space_time.R" `process`
+      ( [ dataParameterExplorationVariogram "all_distances.RData" ] ,
+        [ plots "figure_sup_2_semivariogram_space_time.jpeg" ] )
+
+    code04Paper "figure_sup_3_semivariogram_fitting.R" `process`
+      ( [ dataParameterExplorationVariogram "binned_distances.RData" ] ,
+        [ plots "figure_sup_3_semivariogram_fitting.jpeg" ] )
+
+    code04Paper "figure_sup_4_semivariogram_nugget.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataParameterExplorationVariogram "all_distances.RData" ] ,
+        [ plots "figure_sup_4_semivariogram_nugget.jpeg" ] )
+
     code04Paper "figure_sup_11_timepillars.R" `process`
       ( [ dataPoseidonData "janno_final.RData"
         , dataPlotReferenceData "age_colors_gradient.RData"
         , dataGPR "interpol_grid_examples.RData"
         ] ,
         [ plots "figure_sup_11_timepillars.jpeg" ] )
+
+    code04Paper "figure_sup_16_semivariogram_nugget_mds3.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataParameterExplorationVariogram "all_distances.RData" ] ,
+        [ plots "figure_sup_16_semivariogram_nugget_mds3.jpeg" ] )
