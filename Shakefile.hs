@@ -9,24 +9,50 @@ import System.FilePath (takeExtension)
 
 -- #### settings #### --
 
--- Path to the singularity image file
--- required; create with "singularity_build_sif.sh"
--- that's not part of the pipeline, because it requires sudo permissions
-singularityContainer = "singularity_mobest.sif"
+data Settings = Settings {
+  -- Path to the singularity image file
+  -- required; create with "singularity_build_sif.sh"
+  -- that's not part of the pipeline, because it requires sudo permissions
+    singularityContainer :: FilePath
+  -- Path to mount into the singularity container
+  -- https://sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html
+  , bindPath :: String
+  -- How to run normal commands
+  -- Run everything through an interactive sge session or just so 
+  , qrsh :: String
+  -- How to run SGE scripts
+  , qsubScript :: String
+}
 
--- Path to mount into the singularity container
--- https://sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html
---bindPath = "" -- local
-bindPath = "--bind=/mnt/archgen/users/schmid" -- cluster
+localSettings = Settings {
+    singularityContainer = "singularity_mobest.sif"
+  , bindPath = ""
+  , qrsh = ""
+  , qsubScript = "./"
+}
 
--- How to run normal commands:
--- Run everything through an interactive sge session or just so
---qrsh = "" -- local
-qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=16G -now n -V -N hedgehog" --cluster
+mpiEVAClusterSettings = Settings {
+    singularityContainer = "singularity_mobest.sif"
+  , bindPath = "--bind=/mnt/archgen/users/schmid"
+  , qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=16G -now n -V -N hedgehog"
+  , qsubScript = "qsub -sync y -N cheesecake "
+}
 
--- How to run SGE scripts
---qsub_script = "./" -- local
-qsub_script = "qsub -sync y -N cheesecake " -- cluster
+-- #### helper functions #### --
+
+relevantRunCommand :: Settings -> FilePath -> Action ()
+relevantRunCommand (Settings singularityContainer bindPath qrsh qsubScript) x
+  | takeExtension x == ".R" = cmd_ qrsh "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".sh" = cmd_ qrsh "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".shq" = cmd_ $ qsubScript ++ x
+
+process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
+process script (input, output) =
+      let settings = localSettings
+          --settings = mpiEVAClusterSettings
+      in output &%> \out -> do
+        need $ [script, singularityContainer settings] ++ input
+        relevantRunCommand settings script
 
 -- #### set up file paths #### --
 
@@ -51,20 +77,6 @@ dataParameterExplorationCrossvalidation x = dataParameterExploration "crossvalid
 dataOriginSearch x = _data "origin_search" </> x
 dataGPR x = _data "gpr" </> x
 plots x = "plots" </> x
-
--- #### helper functions #### --
-
-relevantRunCommand :: FilePath -> Action ()
-relevantRunCommand x
-  | takeExtension x == ".R" = cmd_ qrsh "singularity" "exec" bindPath "singularity_mobest.sif" "Rscript" x
-  | takeExtension x == ".sh" = cmd_ qrsh "singularity" "exec" bindPath "singularity_mobest.sif" x
-  | takeExtension x == ".shq" = cmd_ $ qsub_script ++ x
-
-process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
-process script (input, output) =
-      output &%> \out -> do
-        need $ [script, singularityContainer] ++ input
-        relevantRunCommand script
 
 -- #### pipeline #### --
 
