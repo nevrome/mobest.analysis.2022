@@ -274,7 +274,7 @@ main = shakeArgs shakeOptions {
     -- #### origin search #### --
 
     code03 "00_interpolation_and_origin_search_settings.R" `process`
-      ( [ ] ,
+      ( [ dataParameterExplorationCrossvalidation "best_kernel.RData" ] ,
         map dataOriginSearch [
           "default_kernel.RData"
         , "kernel_theta_data.RData"
@@ -307,9 +307,6 @@ main = shakeArgs shakeOptions {
         , "closest_points_examples.RData"
         , "distance_grid_examples.RData"
         ] )
-
-    -- until here everything runs without HPC support
-    -- ...
 
     -- #### plots #### --
 

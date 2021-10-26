@@ -1,7 +1,7 @@
 library(magrittr)
 
 # read and rbind all crossvalidation run output files
-interpol_comparison <- lapply(
+interpol_comparison_raw <- lapply(
   list.files(
     "data/parameter_exploration/crossvalidation", 
     pattern = "interpol_comparison_[0-9]+",
@@ -12,7 +12,11 @@ interpol_comparison <- lapply(
   }
 ) %>% dplyr::bind_rows()
 
-# interpol_comparison <- dplyr::slice_sample(interpol_comparison, n = 100000)
+# interpol_comparison <- dplyr::slice_sample(interpol_comparison_raw, n = 100000)
+
+# scale nugget correctly
+interpol_comparison <- interpol_comparison_raw %>%
+  dplyr::mutate(g = g/100)
 
 # calculate squared Euclidean distances
 interpol_comparison_with_CVdist <- interpol_comparison %>%
@@ -41,8 +45,10 @@ interpol_comparison_group <- interpol_comparison_with_CVdist %>%
 
 # find best kernel
 best_kernel <- interpol_comparison_group %>% 
-  dplyr::filter(dependent_var %in% c("CVdist2", "CVdist3")) %>% 
-  dplyr::group_split(dependent_var) %>%
+  dplyr::filter(
+    dependent_var == "CVdist2" & g == min(g) |
+      dependent_var == "CVdist3" & g == max(g)) %>% 
+  dplyr::group_split(dependent_var, g) %>%
   purrr::map(function(x) {
     x %>% 
       dplyr::filter(mean_squared_difference == min(mean_squared_difference)) %>%

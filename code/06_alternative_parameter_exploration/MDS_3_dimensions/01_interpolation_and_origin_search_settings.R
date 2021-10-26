@@ -1,10 +1,13 @@
 library(magrittr)
 
+load("data/parameter_exploration/crossvalidation/best_kernel.RData")
+best_kernel_mds2 <- best_kernel[[2]]
+
 #### kernel size ####
 
-spatial_kernel_size_km <- 300
-temporal_kernel_size_years <- 1000
-nugget <- 0.22
+spatial_kernel_size_km <- best_kernel_mds2$ds
+temporal_kernel_size_years <- best_kernel_mds2$dt
+nugget <- best_kernel_mds2$g
 
 default_kernel <- mobest::create_kernset_multi(
   d = list(c(
