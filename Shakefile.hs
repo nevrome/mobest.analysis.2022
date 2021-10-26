@@ -39,7 +39,7 @@ mpiEVAClusterSettings = Settings {
     setType = Cluster
   , singularityContainer = "singularity_mobest.sif"
   , bindPath = "--bind=/mnt/archgen/users/schmid"
-  , qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=48G -now n -V -N hedgehog"
+  , qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=16G -now n -V -N hedgehog"
   , qsubScript = "qsub -sync y -N cheesecake "
 }
 
@@ -235,7 +235,7 @@ main = shakeArgs shakeOptions {
 
     -- #### parameter estimation #### --
 
-    code02Variogram "variogram_calculation.R" `process`
+    code02Variogram "01_variogram_calculation.R" `process`
       ( [ dataPoseidonData "janno_final.RData" 
         ] ,
         map dataParameterExplorationVariogram [
@@ -243,9 +243,21 @@ main = shakeArgs shakeOptions {
         , "binned_distances.RData"
         ]
       )
+
+    code02Variogram "02_nugget_estimation.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataParameterExplorationVariogram "all_distances.RData"
+        ] ,
+        map dataParameterExplorationVariogram [
+          "lower_left_variogram.RData"
+        , "estimated_nuggets.RData"
+        , "nuggets.txt"
+        ]
+      )
     
     code02Crossvalidation "sge_parameter_exploration.shq" `process`
-      ( [ dataPoseidonData "janno_final.RData" 
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataParameterExplorationVariogram "nuggets.txt"
         ] , 
         [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ] )
 
@@ -342,8 +354,10 @@ main = shakeArgs shakeOptions {
         [ plots "figure_sup_3_semivariogram_fitting.jpeg" ] )
 
     code04Paper "figure_sup_4_semivariogram_nugget.R" `process`
-      ( [ dataPoseidonData "janno_final.RData"
-        , dataParameterExplorationVariogram "all_distances.RData" ] ,
+      ( map dataParameterExplorationVariogram [
+          "lower_left_variogram.RData"
+        , "estimated_nuggets.RData"
+        ] ,
         [ plots "figure_sup_4_semivariogram_nugget.jpeg" ] )
 
     code04Paper "figure_sup_11_timepillars.R" `process`
@@ -354,6 +368,8 @@ main = shakeArgs shakeOptions {
         [ plots "figure_sup_11_timepillars.jpeg" ] )
 
     code04Paper "figure_sup_16_semivariogram_nugget_mds3.R" `process`
-      ( [ dataPoseidonData "janno_final.RData"
-        , dataParameterExplorationVariogram "all_distances.RData" ] ,
+      ( map dataParameterExplorationVariogram [
+          "lower_left_variogram.RData"
+        , "estimated_nuggets.RData"
+        ] ,
         [ plots "figure_sup_16_semivariogram_nugget_mds3.jpeg" ] )

@@ -24,7 +24,8 @@ echo Index: ${i}
 # parameters
 ds_to_explore=($(seq 100 100 2000))
 dt_to_explore=($(seq 100 100 2000))
-g_to_explore=(0.07 0.22)
+#g_to_explore=(0.07 0.22)
+readarray g_to_explore < data/parameter_exploration/variogram/nuggets.txt
 
 jobs=$((${#g_to_explore[@]}*${#ds_to_explore[@]}*${#dt_to_explore[@]}))
 
