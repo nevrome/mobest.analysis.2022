@@ -39,7 +39,7 @@ mpiEVAClusterSettings = Settings {
     setType = Cluster
   , singularityContainer = "singularity_mobest.sif"
   , bindPath = "--bind=/mnt/archgen/users/schmid"
-  , qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=16G -now n -V -N hedgehog"
+  , qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=48G -now n -V -N hedgehog"
   , qsubScript = "qsub -sync y -N cheesecake "
 }
 
@@ -67,8 +67,8 @@ process script (input, output) =
 code x = "code" </> x
 code01 x = code "01_poseidon_data_preparation" </> x
 code02 x = code "02_parameter_estimation" </> x
-code02Crossvalidation x = code02 "crossvalidation" </> x
-code02Variogram x = code02 "variogram_experiments" </> x
+code02Variogram x = code02 "01_variogram_experiments" </> x
+code02Crossvalidation x = code02 "02_crossvalidation" </> x
 code03 x = code "03_origin_search" </> x
 code04Paper x = code "04_plot_scripts" </> "paper" </> x
 _data x = "data" </> x

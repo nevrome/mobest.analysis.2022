@@ -56,7 +56,7 @@ echo ds: ${current_ds}
 echo dt: ${current_dt}
 echo g: ${current_g}
 
-singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/crossvalidation/crossvalidation.R ${i} ${current_ds} ${current_dt} ${current_g}
+singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/02_crossvalidation/crossvalidation.R ${i} ${current_ds} ${current_dt} ${current_g}
 
 date
 
