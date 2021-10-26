@@ -1,43 +1,11 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/parameter_exploration/crossvalidation/interpol_comparison.RData")
-
-interpol_comparison_with_CVdist <- interpol_comparison %>%
-  dplyr::filter(g == max(g)) %>%
-  tidyr::pivot_wider(
-    id_cols = c("id", "mixing_iteration", "ds", "dt", "g"),
-    names_from = "dependent_var",
-    values_from = "difference"
-  ) %>%
-  dplyr::mutate(
-    CVdist = sqrt(C1_dist^2 + C2_dist^2 + C3_dist^2)
-  ) %>%
-  tidyr::pivot_longer(
-    cols = tidyselect::starts_with("C"),
-    names_to = "dependent_var",
-    values_to = "difference"
-  )
-
-# group difference by kernel and dependent_dist
-interpol_comparison_group <- interpol_comparison_with_CVdist %>%
-  dplyr::group_by(ds, dt, g, dependent_var) %>%
-  dplyr::summarise(
-    mean_squared_difference = mean(difference^2),
-    .groups = "drop"
-  )
-
-dependent_vars <- interpol_comparison_group$dependent_var
-
-minicg <- interpol_comparison_group %>%
-  dplyr::group_by(dependent_var) %>%
-  dplyr::filter(
-    mean_squared_difference %in% (mean_squared_difference %>% sort %>% unique %>% head(20))
-  ) %>% 
-  dplyr::ungroup()
+load("data/parameter_exploration/crossvalidation/interpol_comparison_group.RData")
+load("data/parameter_exploration/crossvalidation/best_kernel.RData")
 
 icg <- interpol_comparison_group %>% dplyr::group_split(dependent_var)
-mg <- minicg %>% dplyr::group_split(dependent_var)
+min_point <- best_kernel[[2]]
 
 # for each ancestry component
 ps <- lapply(seq_along(icg), function(i) {
@@ -63,11 +31,6 @@ ps <- lapply(seq_along(icg), function(i) {
     scale_x_continuous(breaks = seq(0, 2000, 100)) +
     scale_y_continuous(breaks = seq(0, 2000, 100))
 })
-
-# add minimum point annotation
-min_point <- icg[[4]] %>% 
-  dplyr::filter(mean_squared_difference == min(mean_squared_difference)) %>%
-  magrittr::extract(1,)
 
 ps[[4]] <- ps[[4]] +
   geom_point(
