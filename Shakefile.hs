@@ -105,8 +105,10 @@ main = shakeArgs shakeOptions {
         , "figure_sup_2_semivariogram_space_time.jpeg"
         , "figure_sup_3_semivariogram_fitting.jpeg"
         , "figure_sup_4_semivariogram_nugget.jpeg"
+        , "figure_sup_9_crossvalidation_rasters.R"
         , "figure_sup_11_timepillars.jpeg"
         , "figure_sup_16_semivariogram_nugget_mds3.jpeg"
+        , "figure_sup_17_crossvalidation_rasters_mds3.jpeg"
         ] ++ 
         [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ]
     
@@ -261,6 +263,14 @@ main = shakeArgs shakeOptions {
         ] , 
         [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ] )
 
+    code02Crossvalidation "modify_crossvalidation_results.R" `process`
+      ( [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ] ,
+        map dataParameterExplorationCrossvalidation [
+          "interpol_comparison.RData"
+        , "interpol_comparison_group.RData"
+        , "best_kernel.RData"
+        ] )
+
     -- #### origin search #### --
 
     code03 "00_interpolation_and_origin_search_settings.R" `process`
@@ -360,6 +370,13 @@ main = shakeArgs shakeOptions {
         ] ,
         [ plots "figure_sup_4_semivariogram_nugget.jpeg" ] )
 
+    code04Paper "figure_sup_9_crossvalidation_rasters.R" `process`
+      ( map dataParameterExplorationCrossvalidation [
+          "interpol_comparison_group.RData"
+        , "best_kernel.RData"
+        ] ,
+        [ plots "figure_sup_9_crossvalidation_rasters.jpeg" ] )
+
     code04Paper "figure_sup_11_timepillars.R" `process`
       ( [ dataPoseidonData "janno_final.RData"
         , dataPlotReferenceData "age_colors_gradient.RData"
@@ -373,3 +390,10 @@ main = shakeArgs shakeOptions {
         , "estimated_nuggets.RData"
         ] ,
         [ plots "figure_sup_16_semivariogram_nugget_mds3.jpeg" ] )
+
+    code04Paper "figure_sup_17_crossvalidation_rasters_mds3.R" `process`
+      ( map dataParameterExplorationCrossvalidation [
+          "interpol_comparison_group.RData"
+        , "best_kernel.RData"
+        ] ,
+        [ plots "figure_sup_17_crossvalidation_rasters_mds3.jpeg" ] )
