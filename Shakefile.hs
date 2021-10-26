@@ -85,6 +85,7 @@ dataParameterExploration x = _data "parameter_exploration" </> x
 dataParameterExplorationVariogram x = dataParameterExploration "variogram" </> x
 dataParameterExplorationCrossvalidation x = dataParameterExploration "crossvalidation" </> x
 dataOriginSearch x = _data "origin_search" </> x
+dataOriginSearchAROKS x = dataOriginSearch "age_resampling+one_kernel_setting" </> x
 dataGPR x = _data "gpr" </> x
 plots x = "plots" </> x
 
@@ -306,6 +307,25 @@ main = shakeArgs shakeOptions {
           "janno_search.RData"
         , "closest_points_examples.RData"
         , "distance_grid_examples.RData"
+        ] )
+
+    code03 "05b_sge_origin_search.shq" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataSpatial "search_area.RData"
+        , dataOriginSearch "default_kernel.RData"
+        , dataOriginSearch "retrospection_distance.RData"
+        ] ,
+        [ dataOriginSearchAROKS "run_1.RData" ] )
+
+    code03 "06_origin_search_merge_and_prep.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataOriginSearchAROKS "run_1.RData"
+        ] ,
+        map dataOriginSearch [
+          "origin_grid_modified.RData"
+        , "origin_grid_mean.RData"
+        , "moving_origin_grid.RData"
+        , "no_data_windows.RData"
         ] )
 
     -- #### plots #### --
