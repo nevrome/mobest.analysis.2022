@@ -38,7 +38,7 @@ p <- ggplot() +
   xlab("ancestry component distance type") +
   ylab("log10 pairwise half mean squared normalized residual distance") +
   scale_y_log10(labels = scales::comma) +
-  scale_x_discrete(limits = rev(levels(lower_left_variogram$dist_type)))
+  scale_x_discrete(limits = rev(unique(lower_left_variogram$dist_type)))
 
 ggsave(
   "plots/figure_sup_4_semivariogram_nugget.jpeg",

@@ -4,7 +4,9 @@ library(ggplot2)
 load("data/parameter_exploration/crossvalidation/interpol_comparison_group.RData")
 load("data/parameter_exploration/crossvalidation/best_kernel.RData")
 
-icg <- interpol_comparison_group %>% dplyr::group_split(dependent_var)
+icg <- interpol_comparison_group %>%
+  dplyr::filter(dependent_var != "CVdist2") %>%
+  dplyr::group_split(dependent_var)
 min_point <- best_kernel[[2]]
 
 # for each ancestry component
