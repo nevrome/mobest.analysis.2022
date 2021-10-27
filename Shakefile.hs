@@ -74,6 +74,8 @@ code02Crossvalidation x = code02 "02_crossvalidation" </> x
 code03 x = code "03_origin_search" </> x
 code04Paper x = code "04_plot_scripts" </> "paper" </> x
 code06MDS3 x = code "06_alternative_parameter_exploration" </> "MDS_3_dimensions" </> x
+code06Rearview x = code "06_alternative_parameter_exploration" </> "different_rearview_distances" </> x
+
 _data x = "data" </> x
 dataSpatial x = _data "spatial" </> x
 dataPlotReferenceData x = _data "plot_reference_data" </> x
@@ -90,14 +92,19 @@ dataParameterExplorationCrossvalidation x = dataParameterExploration "crossvalid
 dataOriginSearch x = _data "origin_search" </> x
 dataOriginSearchAROKS x = dataOriginSearch "age_resampling+one_kernel_setting" </> x
 dataGPR x = _data "gpr" </> x
+
 plots x = "plots" </> x
 
 -- #### pipeline #### --
 
 main :: IO ()
 main = shakeArgs shakeOptions {
-        shakeFiles = "_build", 
-        shakeProgress = progressSimple
+        --https://hackage.haskell.org/package/shake-0.19.6/docs/Development-Shake.html#g:5
+          shakeFiles = "_build"
+        , shakeProgress = progressSimple
+        , shakeColor = True
+        , shakeVerbosity = Verbose
+        , shakeThreads = 5
         } $ do
 
     want $ map plots [ 
@@ -125,8 +132,8 @@ main = shakeArgs shakeOptions {
         , "figure_sup_17_crossvalidation_rasters_mds3.jpeg"
         , "figure_sup_18_interpolation_map_matrix_mds3.jpeg"
         , "figure_sup_19_mobility_curves_mds3.jpeg"
-        --, "figure_sup_20_mobility_curves_retro_low.jpeg"
-        --, "figure_sup_21_mobility_curves_retro_high.jpeg"
+        , "figure_sup_20_mobility_curves_retro_low.jpeg"
+        , "figure_sup_21_mobility_curves_retro_high.jpeg"
         ] ++ 
         [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ]
     
@@ -383,6 +390,31 @@ main = shakeArgs shakeOptions {
         , "no_data_windows_mds3.RData"
         ] )
 
+    -- #### alternative parameter exploration: different rearview distances ####
+
+    code06Rearview "01_interpolation_and_origin_search_settings.R" `process`
+      ( [ dataOriginSearch "default_kernel.RData" ] ,
+        [ dataOriginSearch "retrospection_distance_retrovar.RData" ] )
+
+    code06Rearview "02b_sge_origin_search.shq" `process`
+      ( [ code06MDS3 "02a_origin_search_pipeline-age_resampling+one_kernel_setting.R"
+        , dataPoseidonData "janno_final.RData"
+        , dataSpatial "search_area.RData"
+        , dataOriginSearch "default_kernel.RData"
+        , dataOriginSearch "retrospection_distance_retrovar.RData"
+        ] ,
+        [ dataOriginSearchAROKS "retrovar_run_1.RData" ] )
+
+    code06Rearview "03_origin_search_merge_and_prep.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataOriginSearchAROKS "retrovar_run_1.RData"
+        , dataOriginSearch "retrospection_distance_retrovar.RData"
+        ] ,
+        map dataOriginSearch [
+          "origin_grid_derived_data_retro_low.RData"
+        , "origin_grid_derived_data_retro_high.RData"
+        ] )
+
     -- #### plots #### --
 
     code04Paper "figure_1_temporal_and_spatial_distribution_of_input_data.R" `process`
@@ -530,3 +562,17 @@ main = shakeArgs shakeOptions {
         , "no_data_windows_mds3.RData"
         ],
         [ plots "figure_sup_19_mobility_curves_mds3.jpeg" ] )
+
+    code04Paper "figure_sup_20_mobility_curves_retro_low.R" `process`
+      ( [ code04Paper "mobility_curves_plot_function.R"
+        , dataPoseidonData "janno_final.RData"
+        , dataOriginSearch "origin_grid_derived_data_retro_low.RData"
+        ],
+        [ plots "plots/figure_sup_20_mobility_curves_retro_low.jpeg" ] )
+
+    code04Paper "figure_sup_21_mobility_curves_retro_high.R" `process`
+      ( [ code04Paper "mobility_curves_plot_function.R"
+        , dataPoseidonData "janno_final.RData"
+        , dataOriginSearch "origin_grid_derived_data_retro_high.RData"
+        ],
+        [ plots "plots/figure_sup_21_mobility_curves_retro_high.jpeg" ] )
