@@ -12,6 +12,7 @@ Imports:
     igraph (>= 1.2.6),
     khroma (>= 1.7.0),
     latex2exp (>= 0.5.0),
+    lemon (>= 0.4.5),
     magrittr (>= 2.0.1),
     poseidonR (>= 0.4.1),
     purrr (>= 0.3.4),
