@@ -68,3 +68,4 @@ pw.txt
 
 # shake build
 _build/
+nohup.out

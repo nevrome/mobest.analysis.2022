@@ -74,6 +74,7 @@ code01 x = code "01_poseidon_data_preparation" </> x
 code02 x = code "02_parameter_estimation" </> x
 code02Variogram x = code02 "01_variogram_experiments" </> x
 code02Crossvalidation x = code02 "02_crossvalidation" </> x
+code02MLE x = code02 "03_laGP_maximum_likelihood_estimation" </> x
 code03 x = code "03_origin_search" </> x
 code04Paper x = code "04_plot_scripts" </> "paper" </> x
 code06MDS3 x = code "06_alternative_parameter_exploration" </> "MDS_3_dimensions" </> x
@@ -92,6 +93,7 @@ dataPoseidonDataMDS x = dataPoseidonData "mds" </> x
 dataParameterExploration x = _data "parameter_exploration" </> x
 dataParameterExplorationVariogram x = dataParameterExploration "variogram" </> x
 dataParameterExplorationCrossvalidation x = dataParameterExploration "crossvalidation" </> x
+dataParameterExplorationMLE x = dataParameterExploration "mle" </> x
 dataOriginSearch x = _data "origin_search" </> x
 dataOriginSearchAROKS x = dataOriginSearch "age_resampling+one_kernel_setting" </> x
 dataGPR x = _data "gpr" </> x
@@ -107,7 +109,7 @@ main = shakeArgs shakeOptions {
         , shakeProgress = progressSimple
         , shakeColor = True
         , shakeVerbosity = Verbose
-        , shakeThreads = 5
+        , shakeThreads = 10
         } $ do
 
     want $ map plots [ 
@@ -120,9 +122,9 @@ main = shakeArgs shakeOptions {
         , "figure_sup_2_semivariogram_space_time.jpeg"
         , "figure_sup_3_semivariogram_fitting.jpeg"
         , "figure_sup_4_semivariogram_nugget.jpeg"
-        --, "figure_sup_5_mle_anisotropic.jpeg"
+        , "figure_sup_5_mle_anisotropic.jpeg"
         , "figure_sup_6_kernel_size_meaning.jpeg"
-        --, "figure_sup_7_mle_isotropic.jpeg"
+        , "figure_sup_7_mle_isotropic.jpeg"
         , "figure_sup_8_crossvalidation_prediction_accuracy.jpeg"
         , "figure_sup_9_crossvalidation_rasters.jpeg"
         , "figure_sup_10_rearview_distance.jpeg"
@@ -299,6 +301,14 @@ main = shakeArgs shakeOptions {
     --     , "interpol_comparison_group.RData"
     --     , "best_kernel.RData"
     --     ] )
+
+    code02MLE "anisotropic_mle.Rq" `process`
+        ( [ dataPoseidonData "janno_final.RData" ] ,
+          [ dataParameterExplorationMLE "mlesep_out.RData" ] )
+
+    code02MLE "isotropic_mle.Rq" `process`
+        ( [ dataPoseidonData "janno_final.RData" ] ,
+          [ dataParameterExplorationMLE "mle_out.RData" ] )
 
     -- -- #### origin search #### --
 
@@ -487,6 +497,14 @@ main = shakeArgs shakeOptions {
         ] ,
         [ plots "figure_sup_4_semivariogram_nugget.jpeg" ] )
     
+    code04Paper "figure_sup_5_mle_anisotropic.R" `process`
+      ( [ dataParameterExplorationMLE "mlesep_out.RData" ] ,
+        [ plots "figure_sup_5_mle_anisotropic.jpeg" ] )
+
+    code04Paper "figure_sup_7_mle_isotropic.R" `process`
+      ( [ dataParameterExplorationMLE "mle_out.RData" ] ,
+        [ plots "figure_sup_7_mle_isotropic.jpeg" ] )
+
     code04Paper "figure_sup_6_kernel_size_meaning.R" `process`
       ( [ ] ,
         [ plots "figure_sup_6_kernel_size_meaning.jpeg" ] )
