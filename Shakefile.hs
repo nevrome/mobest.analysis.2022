@@ -21,8 +21,8 @@ data Settings = Settings {
   -- https://sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html
   , bindPath :: String
   -- How to run normal commands
-  -- Run everything through an interactive sge session or just so 
-  , qsubCommand :: String
+  , qsubSmallCommand :: String
+  , qsubMediumCommand :: String
   -- How to run SGE scripts
   , qsubScript :: String
 }
@@ -31,7 +31,8 @@ localSettings = Settings {
     setType = Local
   , singularityContainer = "singularity_mobest.sif"
   , bindPath = ""
-  , qsubCommand = ""
+  , qsubSmallCommand = ""
+  , qsubMediumCommand = ""
   , qsubScript = ""
 }
 
@@ -40,17 +41,19 @@ mpiEVAClusterSettings = Settings {
   , singularityContainer = "singularity_mobest.sif"
   , bindPath = "--bind=/mnt/archgen/users/schmid"
   --, qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 4 -l h_vmem=16G -now n -V -N hedgehog"
-  , qsubCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 4 -l h_vmem=16G -now n -V -j y -o ~/log -N hedgehog"
-  , qsubScript = "qsub -sync y -N cheesecake "
+  , qsubSmallCommand =  "qsub -sync y -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=15G -now n -V -j y -o ~/log -N small"
+  , qsubMediumCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 32 -l h_vmem=64G -now n -V -j y -o ~/log -N medium"
+  , qsubScript = "qsub -sync y -N large " -- trailing space is meaningful!
 }
 
 -- #### helper functions #### --
 
 relevantRunCommand :: Settings -> FilePath -> Action ()
-relevantRunCommand (Settings setType singularityContainer bindPath qsubCommand qsubScript) x
-  | takeExtension x == ".R" = cmd_ qsubCommand "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".sh" = cmd_ qsubCommand "singularity" "exec" bindPath singularityContainer x
-  | takeExtension x == ".shq" = 
+relevantRunCommand (Settings setType singularityContainer bindPath qsubSCommand qsubMCommand qsubScript) x
+  | takeExtension x == ".R"   = cmd_ qsubSCommand "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".Rq"  = cmd_ qsubMCommand "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".sh"  = cmd_ qsubSCommand "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".shq" =
     case setType of
       Local -> error "Can not run cluster scripts locally."
       Cluster -> cmd_ $ qsubScript ++ x
@@ -397,7 +400,7 @@ main = shakeArgs shakeOptions {
         [ dataOriginSearch "retrospection_distance_retrovar.RData" ] )
 
     code06Rearview "02b_sge_origin_search.shq" `process`
-      ( [ code06MDS3 "02a_origin_search_pipeline-age_resampling+one_kernel_setting.R"
+      ( [ code06Rearview "02a_origin_search_pipeline-age_resampling+one_kernel_setting.R"
         , dataPoseidonData "janno_final.RData"
         , dataSpatial "search_area.RData"
         , dataOriginSearch "default_kernel.RData"
@@ -568,11 +571,11 @@ main = shakeArgs shakeOptions {
         , dataPoseidonData "janno_final.RData"
         , dataOriginSearch "origin_grid_derived_data_retro_low.RData"
         ],
-        [ plots "plots/figure_sup_20_mobility_curves_retro_low.jpeg" ] )
+        [ plots "figure_sup_20_mobility_curves_retro_low.jpeg" ] )
 
     code04Paper "figure_sup_21_mobility_curves_retro_high.R" `process`
       ( [ code04Paper "mobility_curves_plot_function.R"
         , dataPoseidonData "janno_final.RData"
         , dataOriginSearch "origin_grid_derived_data_retro_high.RData"
         ],
-        [ plots "plots/figure_sup_21_mobility_curves_retro_high.jpeg" ] )
+        [ plots "figure_sup_21_mobility_curves_retro_high.jpeg" ] )
