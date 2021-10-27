@@ -1,6 +1,9 @@
 library(magrittr)
 library(ggplot2)
 
+load("data/parameter_exploration/variogram/lower_left_variogram.RData")
+load("data/parameter_exploration/variogram/estimated_nuggets.RData")
+
 lower_left_variogram %<>% dplyr::filter(dist_type %in% c("C3"))
 estimated_nuggets %<>% dplyr::filter(dist_type %in% c("C3"))
 
@@ -36,7 +39,7 @@ p <- ggplot() +
   xlab("") +
   ylab("log10 pairwise half mean squared normalized residual distance") +
   scale_y_log10(labels = scales::comma) +
-  scale_x_discrete(limits = rev(levels(lower_left$dist_type)))
+  scale_x_discrete(limits = rev(levels(lower_left_variogram$dist_type)))
 
 ggsave(
   "plots/figure_sup_16_semivariogram_nugget_mds3.jpeg",
