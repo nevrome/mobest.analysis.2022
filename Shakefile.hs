@@ -22,7 +22,7 @@ data Settings = Settings {
   , bindPath :: String
   -- How to run normal commands
   -- Run everything through an interactive sge session or just so 
-  , qrsh :: String
+  , qsubCommand :: String
   -- How to run SGE scripts
   , qsubScript :: String
 }
@@ -31,7 +31,7 @@ localSettings = Settings {
     setType = Local
   , singularityContainer = "singularity_mobest.sif"
   , bindPath = ""
-  , qrsh = ""
+  , qsubCommand = ""
   , qsubScript = ""
 }
 
@@ -39,16 +39,17 @@ mpiEVAClusterSettings = Settings {
     setType = Cluster
   , singularityContainer = "singularity_mobest.sif"
   , bindPath = "--bind=/mnt/archgen/users/schmid"
-  , qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=16G -now n -V -N hedgehog"
+  --, qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 4 -l h_vmem=16G -now n -V -N hedgehog"
+  , qsubCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 4 -l h_vmem=16G -now n -V -j y -o ~/log -N hedgehog"
   , qsubScript = "qsub -sync y -N cheesecake "
 }
 
 -- #### helper functions #### --
 
 relevantRunCommand :: Settings -> FilePath -> Action ()
-relevantRunCommand (Settings setType singularityContainer bindPath qrsh qsubScript) x
-  | takeExtension x == ".R" = cmd_ qrsh "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".sh" = cmd_ qrsh "singularity" "exec" bindPath singularityContainer x
+relevantRunCommand (Settings setType singularityContainer bindPath qsubCommand qsubScript) x
+  | takeExtension x == ".R" = cmd_ qsubCommand "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".sh" = cmd_ qsubCommand "singularity" "exec" bindPath singularityContainer x
   | takeExtension x == ".shq" = 
     case setType of
       Local -> error "Can not run cluster scripts locally."
