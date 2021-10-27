@@ -1,11 +1,10 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/gpr/interpol_grid_median_selected_timeslices_mds3.RData")
-load("data/spatial/research_area.RData")
+load("data/poseidon_data/janno_final.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
-load("data/poseidon_data/janno_final.RData")
+load("data/gpr/interpol_grid_median_selected_timeslices_mds3.RData")
 
 janno_final <- janno_final %>% 
   dplyr::mutate(
