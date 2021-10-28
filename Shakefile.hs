@@ -110,6 +110,7 @@ main = shakeArgs shakeOptions {
         , shakeColor = True
         , shakeVerbosity = Verbose
         , shakeThreads = 10
+        , shakeTimings = True
         } $ do
 
     want $ map plots [ 
@@ -142,165 +143,165 @@ main = shakeArgs shakeOptions {
         ] ++ 
         [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ]
     
-    -- -- #### poseidon data preparation #### --
+    -- #### poseidon data preparation #### --
 
-    -- code01 "00_prepare_spatial_data.R" `process`
-    --   ( map ("data_tracked" </>) [
-    --       "research_area/research_area.gpkg"
-    --     , "natural_earth_geodata/land_outline.RData"
-    --     , "natural_earth_geodata/rivers.RData"
-    --     , "natural_earth_geodata/lakes.RData"
-    --     , "research_area/research_area_search.gpkg"
-    --     , "mobility_regions/mobility_regions.gpkg"
-    --     ] ,
-    --     map dataSpatial [
-    --       "research_area.RData"
-    --     , "extended_area.RData"
-    --     , "epsg3035.RData"
-    --     , "mobility_regions.RData"
-    --     ] )
+    code01 "00_prepare_spatial_data.R" `process`
+      ( map ("data_tracked" </>) [
+          "research_area/research_area.gpkg"
+        , "natural_earth_geodata/land_outline.RData"
+        , "natural_earth_geodata/rivers.RData"
+        , "natural_earth_geodata/lakes.RData"
+        , "research_area/research_area_search.gpkg"
+        , "mobility_regions/mobility_regions.gpkg"
+        ] ,
+        map dataSpatial [
+          "research_area.RData"
+        , "extended_area.RData"
+        , "epsg3035.RData"
+        , "mobility_regions.RData"
+        ] )
 
-    -- code01 "00_prepare_plot_reference_data.R" `process`
-    --   ( [] ,
-    --     map dataPlotReferenceData [
-    --       "region_id_shapes.RData"
-    --     , "age_colors_gradient.RData"
-    --     ] )
+    code01 "00_prepare_plot_reference_data.R" `process`
+      ( [] ,
+        map dataPlotReferenceData [
+          "region_id_shapes.RData"
+        , "age_colors_gradient.RData"
+        ] )
 
-    -- code01 "00a_download_aadr.sh" `process`
-    --   ( [] ,
-    --     map dataPoseidonDataAADRv50 [
-    --       "v50.0_1240k_public.anno"
-    --     , "aadr_eig.geno"
-    --     , "aadr_eig.snp"
-    --     , "aadr_eig.ind"
-    --     ] )
+    code01 "00a_download_aadr.sh" `process`
+      ( [] ,
+        map dataPoseidonDataAADRv50 [
+          "v50.0_1240k_public.anno"
+        , "aadr_eig.geno"
+        , "aadr_eig.snp"
+        , "aadr_eig.ind"
+        ] )
 
-    -- code01 "00b_convert_aadr_to_poseidon.sh" `process`
-    --   ( map dataPoseidonDataAADRv50 [
-    --       "aadr_eig.geno"
-    --     , "aadr_eig.snp"
-    --     , "aadr_eig.ind"
-    --     ] ,
-    --     map dataPoseidonDataAADRv50AADRPoseidon [
-    --       "POSEIDON.yml"
-    --     , "aadr_eig.geno"
-    --     , "aadr_eig.snp"
-    --     , "aadr_eig.ind"
-    --     ] )
+    code01 "00b_convert_aadr_to_poseidon.sh" `process`
+      ( map dataPoseidonDataAADRv50 [
+          "aadr_eig.geno"
+        , "aadr_eig.snp"
+        , "aadr_eig.ind"
+        ] ,
+        map dataPoseidonDataAADRv50AADRPoseidon [
+          "POSEIDON.yml"
+        , "aadr_eig.geno"
+        , "aadr_eig.snp"
+        , "aadr_eig.ind"
+        ] )
 
-    -- code01 "01_janno_filter_for_relevant_individuals.R" `process`
-    --   ( [ dataSpatial "epsg3035.RData"
-    --     , dataSpatial "research_area.RData"
-    --     , dataPoseidonDataAADRv50 "v50.0_1240k_public.anno"
-    --     , dataPoseidonDataAADRv50AADRPoseidon "POSEIDON.yml"
-    --     , code01 "00_aadr_age_string_parser.R"
-    --     ] ,
-    --     [ code01 "pre_identicals_filter_ind_list.txt"
-    --     , dataPoseidonData "janno_pre_mds.RData"
-    --     , dataPoseidonDataAADRv50AADRPoseidon "aadr_poseidon.janno"
-    --     ] )
+    code01 "01_janno_filter_for_relevant_individuals.R" `process`
+      ( [ dataSpatial "epsg3035.RData"
+        , dataSpatial "research_area.RData"
+        , dataPoseidonDataAADRv50 "v50.0_1240k_public.anno"
+        , dataPoseidonDataAADRv50AADRPoseidon "POSEIDON.yml"
+        , code01 "00_aadr_age_string_parser.R"
+        ] ,
+        [ code01 "pre_identicals_filter_ind_list.txt"
+        , dataPoseidonData "janno_pre_mds.RData"
+        , dataPoseidonDataAADRv50AADRPoseidon "aadr_poseidon.janno"
+        ] )
 
-    -- code01 "02_pre_identicals_filter_poseidon_extract.sh" `process`
-    --   ( map dataPoseidonDataAADRv50AADRPoseidon [
-    --       "POSEIDON.yml"
-    --     , "aadr_poseidon.janno"
-    --     , "aadr_eig.geno"
-    --     , "aadr_eig.snp"
-    --     , "aadr_eig.ind"
-    --     ] ,
-    --     map dataPoseidonDataPoseidonExtractedPreIdenticalsFilter [
-    --       "poseidon_extracted_pre_identicals_filter.bed"
-    --     , "poseidon_extracted_pre_identicals_filter.bim"
-    --     , "poseidon_extracted_pre_identicals_filter.fam"
-    --     ] )
+    code01 "02_pre_identicals_filter_poseidon_extract.sh" `process`
+      ( map dataPoseidonDataAADRv50AADRPoseidon [
+          "POSEIDON.yml"
+        , "aadr_poseidon.janno"
+        , "aadr_eig.geno"
+        , "aadr_eig.snp"
+        , "aadr_eig.ind"
+        ] ,
+        map dataPoseidonDataPoseidonExtractedPreIdenticalsFilter [
+          "poseidon_extracted_pre_identicals_filter.bed"
+        , "poseidon_extracted_pre_identicals_filter.bim"
+        , "poseidon_extracted_pre_identicals_filter.fam"
+        ] )
 
-    -- code01 "03_distance_plink.sh" `process`
-    --   ( code01 "myrange.txt" : map dataPoseidonDataPoseidonExtractedPreIdenticalsFilter [
-    --       "poseidon_extracted_pre_identicals_filter.bed"
-    --     , "poseidon_extracted_pre_identicals_filter.bim"
-    --     , "poseidon_extracted_pre_identicals_filter.fam"
-    --     ] ,
-    --     map dataPoseidonDataIdenticalFilter [
-    --         "plink.mdist"
-    --       , "plink.mdist.id"
-    --     ] )
+    code01 "03_distance_plink.sh" `process`
+      ( code01 "myrange.txt" : map dataPoseidonDataPoseidonExtractedPreIdenticalsFilter [
+          "poseidon_extracted_pre_identicals_filter.bed"
+        , "poseidon_extracted_pre_identicals_filter.bim"
+        , "poseidon_extracted_pre_identicals_filter.fam"
+        ] ,
+        map dataPoseidonDataIdenticalFilter [
+            "plink.mdist"
+          , "plink.mdist.id"
+        ] )
 
-    -- code01 "04_filter_by_genetic_distance.R" `process`
-    --   ( [ dataPoseidonData "janno_pre_mds.RData"
-    --     , dataPoseidonDataIdenticalFilter "plink.mdist"
-    --     , dataPoseidonDataIdenticalFilter "plink.mdist.id"
-    --     ] ,
-    --     [ code01 "ind_list.txt" ] )
+    code01 "04_filter_by_genetic_distance.R" `process`
+      ( [ dataPoseidonData "janno_pre_mds.RData"
+        , dataPoseidonDataIdenticalFilter "plink.mdist"
+        , dataPoseidonDataIdenticalFilter "plink.mdist.id"
+        ] ,
+        [ code01 "ind_list.txt" ] )
 
-    -- code01 "05_poseidon_extract.sh" `process`
-    --   ( code01 "pre_identicals_filter_ind_list.txt" : map dataPoseidonDataAADRv50AADRPoseidon [
-    --       "POSEIDON.yml"
-    --     , "aadr_eig.geno"
-    --     , "aadr_eig.snp"
-    --     , "aadr_eig.ind"
-    --     , "aadr_poseidon.janno"
-    --     ] ,
-    --     map dataPoseidonDataPoseidonExtracted [
-    --       "POSEIDON.yml"
-    --     , "poseidon_extracted.bed"
-    --     , "poseidon_extracted.bim"
-    --     , "poseidon_extracted.fam"
-    --     , "poseidon_extracted.janno"
-    --     ] )
+    code01 "05_poseidon_extract.sh" `process`
+      ( code01 "pre_identicals_filter_ind_list.txt" : map dataPoseidonDataAADRv50AADRPoseidon [
+          "POSEIDON.yml"
+        , "aadr_eig.geno"
+        , "aadr_eig.snp"
+        , "aadr_eig.ind"
+        , "aadr_poseidon.janno"
+        ] ,
+        map dataPoseidonDataPoseidonExtracted [
+          "POSEIDON.yml"
+        , "poseidon_extracted.bed"
+        , "poseidon_extracted.bim"
+        , "poseidon_extracted.fam"
+        , "poseidon_extracted.janno"
+        ] )
 
-    -- code01 "06_mds_plink.sh" `process`
-    --   ( code01 "myrange.txt" : map dataPoseidonDataPoseidonExtracted [
-    --       "poseidon_extracted.bed"
-    --     , "poseidon_extracted.bim"
-    --     , "poseidon_extracted.fam"
-    --     ] ,
-    --     [ dataPoseidonDataMDS "mds.mds" ] )
+    code01 "06_mds_plink.sh" `process`
+      ( code01 "myrange.txt" : map dataPoseidonDataPoseidonExtracted [
+          "poseidon_extracted.bed"
+        , "poseidon_extracted.bim"
+        , "poseidon_extracted.fam"
+        ] ,
+        [ dataPoseidonDataMDS "mds.mds" ] )
 
-    -- code01 "07_prepare_final_dataset.R" `process`
-    --   ( [ dataSpatial "epsg3035.RData"
-    --     , dataSpatial "mobility_regions.RData"
-    --     , dataPoseidonDataPoseidonExtracted "poseidon_extracted.janno"
-    --     , dataPoseidonDataMDS "mds.mds"
-    --     ] ,
-    --     [ dataPoseidonData "janno_final.RData" ] )
+    code01 "07_prepare_final_dataset.R" `process`
+      ( [ dataSpatial "epsg3035.RData"
+        , dataSpatial "mobility_regions.RData"
+        , dataPoseidonDataPoseidonExtracted "poseidon_extracted.janno"
+        , dataPoseidonDataMDS "mds.mds"
+        ] ,
+        [ dataPoseidonData "janno_final.RData" ] )
 
-    -- -- #### parameter estimation #### --
+    -- #### parameter estimation #### --
 
-    -- code02Variogram "01_variogram_calculation.R" `process`
-    --   ( [ dataPoseidonData "janno_final.RData" 
-    --     ] ,
-    --     map dataParameterExplorationVariogram [
-    --       "all_distances.RData"
-    --     , "binned_distances.RData"
-    --     ]
-    --   )
+    code02Variogram "01_variogram_calculation.R" `process`
+      ( [ dataPoseidonData "janno_final.RData" 
+        ] ,
+        map dataParameterExplorationVariogram [
+          "all_distances.RData"
+        , "binned_distances.RData"
+        ]
+      )
 
-    -- code02Variogram "02_nugget_estimation.R" `process`
-    --   ( [ dataPoseidonData "janno_final.RData"
-    --     , dataParameterExplorationVariogram "all_distances.RData"
-    --     ] ,
-    --     map dataParameterExplorationVariogram [
-    --       "lower_left_variogram.RData"
-    --     , "estimated_nuggets.RData"
-    --     , "nuggets.txt"
-    --     ]
-    --   )
+    code02Variogram "02_nugget_estimation.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataParameterExplorationVariogram "all_distances.RData"
+        ] ,
+        map dataParameterExplorationVariogram [
+          "lower_left_variogram.RData"
+        , "estimated_nuggets.RData"
+        , "nuggets.txt"
+        ]
+      )
     
-    -- code02Crossvalidation "sge_parameter_exploration.shq" `process`
-    --   ( [ code02Crossvalidation "crossvalidation.R"
-    --     , dataPoseidonData "janno_final.RData"
-    --     , dataParameterExplorationVariogram "nuggets.txt"
-    --     ] , 
-    --     [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ] )
+    code02Crossvalidation "sge_parameter_exploration.shq" `process`
+      ( [ code02Crossvalidation "crossvalidation.R"
+        , dataPoseidonData "janno_final.RData"
+        , dataParameterExplorationVariogram "nuggets.txt"
+        ] , 
+        [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ] )
 
-    -- code02Crossvalidation "modify_crossvalidation_results.R" `process`
-    --   ( [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ] ,
-    --     map dataParameterExplorationCrossvalidation [
-    --       "interpol_comparison.RData"
-    --     , "interpol_comparison_group.RData"
-    --     , "best_kernel.RData"
-    --     ] )
+    code02Crossvalidation "modify_crossvalidation_results.R" `process`
+      ( [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ] ,
+        map dataParameterExplorationCrossvalidation [
+          "interpol_comparison.RData"
+        , "interpol_comparison_group.RData"
+        , "best_kernel.RData"
+        ] )
 
     code02MLE "anisotropic_mle.Rq" `process`
         ( [ dataPoseidonData "janno_final.RData" ] ,
@@ -312,62 +313,62 @@ main = shakeArgs shakeOptions {
           ] ,
           [ dataParameterExplorationMLE "mle_out.RData" ] )
 
-    -- -- #### origin search #### --
+    -- #### origin search #### --
 
-    -- code03 "00_interpolation_and_origin_search_settings.R" `process`
-    --   ( [ dataParameterExplorationCrossvalidation "best_kernel.RData" ] ,
-    --     map dataOriginSearch [
-    --       "default_kernel.RData"
-    --     , "kernel_theta_data.RData"
-    --     , "retrospection_distance.RData"
-    --     ] )
+    code03 "00_interpolation_and_origin_search_settings.R" `process`
+      ( [ dataParameterExplorationCrossvalidation "best_kernel.RData" ] ,
+        map dataOriginSearch [
+          "default_kernel.RData"
+        , "kernel_theta_data.RData"
+        , "retrospection_distance.RData"
+        ] )
 
-    -- code03 "01_interpolation_for_selected_timeslices.R" `process`
-    --   ( [ dataPoseidonData "janno_final.RData"
-    --     , dataSpatial "extended_area.RData"
-    --     , dataOriginSearch "default_kernel.RData"
-    --     ] ,
-    --     [ dataGPR "interpol_grid_median_selected_timeslices.RData" ] )
+    code03 "01_interpolation_for_selected_timeslices.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataSpatial "extended_area.RData"
+        , dataOriginSearch "default_kernel.RData"
+        ] ,
+        [ dataGPR "interpol_grid_median_selected_timeslices.RData" ] )
 
-    -- code03 "02_interpolation_at_specific_places_median_age+one_kernel_setting.R" `process`
-    --   ( [ dataPoseidonData "janno_final.RData"
-    --     , dataSpatial "epsg3035.RData"
-    --     , dataOriginSearch "default_kernel.RData"
-    --     ] ,
-    --     [ dataGPR "interpol_grid_examples.RData" ] )
+    code03 "02_interpolation_at_specific_places_median_age+one_kernel_setting.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataSpatial "epsg3035.RData"
+        , dataOriginSearch "default_kernel.RData"
+        ] ,
+        [ dataGPR "interpol_grid_examples.RData" ] )
 
-    -- code03 "03_interpolation_and_search_for_selected_individuals.R" `process`
-    --   ( [ dataPoseidonData "janno_final.RData"
-    --     , dataSpatial "search_area.RData"
-    --     , dataSpatial "epsg3035.RData"
-    --     , dataOriginSearch "default_kernel.RData"
-    --     , dataOriginSearch "retrospection_distance.RData"
-    --     ] ,
-    --     map dataOriginSearch [
-    --       "janno_search.RData"
-    --     , "closest_points_examples.RData"
-    --     , "distance_grid_examples.RData"
-    --     ] )
+    code03 "03_interpolation_and_search_for_selected_individuals.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataSpatial "search_area.RData"
+        , dataSpatial "epsg3035.RData"
+        , dataOriginSearch "default_kernel.RData"
+        , dataOriginSearch "retrospection_distance.RData"
+        ] ,
+        map dataOriginSearch [
+          "janno_search.RData"
+        , "closest_points_examples.RData"
+        , "distance_grid_examples.RData"
+        ] )
 
-    -- code03 "05b_sge_origin_search.shq" `process`
-    --   ( [ code03 "05a_origin_search_pipeline-age_resampling+one_kernel_setting.R"
-    --     , dataPoseidonData "janno_final.RData"
-    --     , dataSpatial "search_area.RData"
-    --     , dataOriginSearch "default_kernel.RData"
-    --     , dataOriginSearch "retrospection_distance.RData"
-    --     ] ,
-    --     [ dataOriginSearchAROKS "run_1.RData" ] )
+    code03 "05b_sge_origin_search.shq" `process`
+      ( [ code03 "05a_origin_search_pipeline-age_resampling+one_kernel_setting.R"
+        , dataPoseidonData "janno_final.RData"
+        , dataSpatial "search_area.RData"
+        , dataOriginSearch "default_kernel.RData"
+        , dataOriginSearch "retrospection_distance.RData"
+        ] ,
+        [ dataOriginSearchAROKS "run_1.RData" ] )
 
-    -- code03 "06_origin_search_merge_and_prep.R" `process`
-    --   ( [ dataPoseidonData "janno_final.RData"
-    --     , dataOriginSearchAROKS "run_1.RData"
-    --     ] ,
-    --     map dataOriginSearch [
-    --       "origin_grid_modified.RData"
-    --     , "origin_grid_mean.RData"
-    --     , "moving_origin_grid.RData"
-    --     , "no_data_windows.RData"
-    --     ] )
+    code03 "06_origin_search_merge_and_prep.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataOriginSearchAROKS "run_1.RData"
+        ] ,
+        map dataOriginSearch [
+          "origin_grid_modified.RData"
+        , "origin_grid_mean.RData"
+        , "moving_origin_grid.RData"
+        , "no_data_windows.RData"
+        ] )
 
     -- #### alternative parameter exploration: MDS3 ####
 
