@@ -33,11 +33,12 @@ p_theta <- mlesep_out_theta %>%
     labeller = label_parsed
   ) +
   geom_jitter(
-    aes(x = ancestry_component, y = value, color = ancestry_component),
-    size = 0.01,
-    height = 0
+    aes(x = ancestry_component, y = value, fill = ancestry_component),
+    size = 2,
+    height = 0,
+    shape = 21
   ) +
-  guides(color = F) +
+  guides(fill = "none") +
   theme_bw() +
   xlab("ancestry component") +
   ylab(latex2exp::TeX("estimated $\\sqrt{\\theta_\\cdots}$"))# +
@@ -54,11 +55,12 @@ p_nugget <- mlesep_out_nugget %>%
     labeller = label_parsed
   ) +
   geom_jitter(
-    aes(x = ancestry_component, y = value, color = ancestry_component),
-    size = 0.01,
-    height = 0
+    aes(x = ancestry_component, y = value, fill = ancestry_component),
+    size = 2,
+    height = 0,
+    shape = 21
   ) +
-  guides(color = F) +
+  guides(fill = "none") +
   theme_bw() +
   xlab(" ") +
   ylab(latex2exp::TeX("estimated $\\eta$"))
