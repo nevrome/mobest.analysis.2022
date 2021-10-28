@@ -11,20 +11,20 @@ p <- ggplot(dplyr::filter(d_binned, geo_dist_cut == 450)) +
     mapping = aes(x = time_dist_cut, y = C1_dist_resid)
   ) +
   stat_function(
-    fun = function(r) {var_model(0.15, 100000, 0.0003, r)}, 
+    fun = function(r) {var_model(0.10, 100000, 0.0003, r)}, 
     mapping = aes(color = "A"),
     linetype = "dashed", 
     size = 0.9
   ) + 
   stat_function(
-    fun = function(r) {var_model(15, 1000000, 0.0003, r)}, 
+    fun = function(r) {var_model(10, 1000000, 0.0003, r)}, 
     mapping = aes(color = "B"),
     linetype = "dashed", 
     size = 1.2
   ) +
   scale_colour_manual("Models", values = c("red", "blue"), labels = list(
-    latex2exp::TeX("$Cov_0 = 0.15, \\rho = 100000$"),
-    latex2exp::TeX("$Cov_0 =   15, \\rho = 1000000$")
+    latex2exp::TeX("$Cov_0 = 0.10, \\rho = 100000$"),
+    latex2exp::TeX("$Cov_0 = 10, \\rho = 1000000$")
   )) +
   theme_bw() +
   xlab("temporal distance: 100y bins") +
