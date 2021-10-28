@@ -41,8 +41,8 @@ mpiEVAClusterSettings = Settings {
   , singularityContainer = "singularity_mobest.sif"
   , bindPath = "--bind=/mnt/archgen/users/schmid"
   --, qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 4 -l h_vmem=16G -now n -V -N hedgehog"
-  , qsubSmallCommand =  "qsub -sync y -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=15G -now n -V -j y -o ~/log -N small"
-  , qsubMediumCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 32 -l h_vmem=64G -now n -V -j y -o ~/log -N medium"
+  , qsubSmallCommand =  "qsub -sync y -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=16G -now n -V -j y -o ~/log -N small"
+  , qsubMediumCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=32G -now n -V -j y -o ~/log -N medium"
   , qsubScript = "qsub -sync y -N large " -- trailing space is meaningful!
 }
 
@@ -307,7 +307,9 @@ main = shakeArgs shakeOptions {
           [ dataParameterExplorationMLE "mlesep_out.RData" ] )
 
     code02MLE "isotropic_mle.Rq" `process`
-        ( [ dataPoseidonData "janno_final.RData" ] ,
+        ( [ dataPoseidonData "janno_final.RData"
+          , dataParameterExplorationVariogram "nuggets.txt"
+          ] ,
           [ dataParameterExplorationMLE "mle_out.RData" ] )
 
     -- -- #### origin search #### --

@@ -1,9 +1,9 @@
-# ../singularity/sge_nevrome_mobest.sh 16 50 code/02_parameter_estimation/laGP_maximum_likelihood_estimation/isotropic_mle.R
-
 library(magrittr)
 library(laGP)
 
 load("data/poseidon_data/janno_final.RData")
+load("data/parameter_exploration/variogram/estimated_nuggets.RData")
+nugget_derived <- as.numeric(readLines("data/parameter_exploration/variogram/nuggets.txt")[1])
 
 mle_out <- mobest::laGP_mle_sequence_isotropic_fixed_g(
   independent = mobest::create_spatpos(
@@ -16,9 +16,9 @@ mle_out <- mobest::laGP_mle_sequence_isotropic_fixed_g(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
-  iterations = 50,
-  g = 0.06,
-  space_time_scaling_factor_sequence = c(seq(0.1, 0.9, 0.1), 1, seq(2, 10, 1))
+  iterations = 3,
+  g = nugget_derived,
+  space_time_scaling_factor_sequence = seq(0.1, 2.0, 0.1)
 )
 
 save(mle_out, file = "data/parameter_exploration/mle/mle_out.RData")

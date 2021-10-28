@@ -1,13 +1,7 @@
-# ../singularity/sge_nevrome_mobest.sh 16 50 code/02_parameter_estimation/laGP_maximum_likelihood_estimation/anisotropic_mle.R
-
 library(magrittr)
 library(laGP)
 
-#### data ####
-
 load("data/poseidon_data/janno_final.RData")
-
-#### approximation with mleGPsep (anisotropic) ####
 
 mleGPsep_out <- mobest::laGP_mle_anisotropic(
   independent = mobest::create_spatpos(
@@ -20,10 +14,8 @@ mleGPsep_out <- mobest::laGP_mle_anisotropic(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
-  iterations = 50
+  iterations = 3
 )
-
-#### approximation with jmleGPsep (anisotropic) ####
 
 jmleGPsep_out <- mobest::laGP_jmle_anisotropic(
   independent = mobest::create_spatpos(
@@ -36,10 +28,8 @@ jmleGPsep_out <- mobest::laGP_jmle_anisotropic(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
-  iterations = 50
+  iterations = 3
 )
-
-#### merge result ####
 
 mlesep_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
   tidyr::pivot_longer(cols = c("dx", "dy", "dt", "g"), names_to = "parameter", values_to = "value") %>% 
@@ -50,3 +40,4 @@ mlesep_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
   )
 
 save(mlesep_out, file = "data/parameter_exploration/mle/mlesep_out.RData")
+
