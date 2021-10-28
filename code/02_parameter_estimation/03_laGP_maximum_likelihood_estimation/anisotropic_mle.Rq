@@ -14,7 +14,7 @@ mleGPsep_out <- mobest::laGP_mle_anisotropic(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
-  iterations = 3
+  iterations = 5
 )
 
 jmleGPsep_out <- mobest::laGP_jmle_anisotropic(
@@ -28,7 +28,7 @@ jmleGPsep_out <- mobest::laGP_jmle_anisotropic(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
-  iterations = 3
+  iterations = 5
 )
 
 mlesep_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%

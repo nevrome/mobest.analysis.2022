@@ -16,7 +16,7 @@ mle_out <- mobest::laGP_mle_sequence_isotropic_fixed_g(
     C1 = janno_final$C1,
     C2 = janno_final$C2
   ),
-  iterations = 3,
+  iterations = 5,
   g = nugget_derived,
   space_time_scaling_factor_sequence = seq(0.1, 2.0, 0.1)
 )
