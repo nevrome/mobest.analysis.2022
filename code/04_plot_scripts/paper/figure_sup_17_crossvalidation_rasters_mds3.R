@@ -49,7 +49,7 @@ ps[[4]] <- ps[[4]] +
     size = 4
   )
 
-p <- cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 2)
+p <- cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 2, labels = "AUTO")
 
 ggsave(
   "plots/figure_sup_17_crossvalidation_rasters_mds3.jpeg",
