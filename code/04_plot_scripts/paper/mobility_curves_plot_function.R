@@ -118,7 +118,8 @@ plot_curves <- function(
           "scy009.SG", "scy009",
           "R68.SG", "R68",
           "R67.SG", "R67",
-          "I2637", "I2637",
+          "I6747_all.SG", "I6747",
+          "I5383", "I5383",
           "I5367", "I5367",
           "VK546.SG", "VK546",
           #"XN191", "XN191",
@@ -147,12 +148,12 @@ plot_curves <- function(
       mapping = aes(
         x = mean_search_z, y = directed_mean_spatial_distance, label = label_name
       ),
-      ylim = c(2500, NA),
-      segment.size      = 0.3,
+      ylim = c(2650, 2650),
+      segment.size      = 0.4,
       segment.curvature = 0.3,
       segment.square    = FALSE,
-      arrow = arrow(length = unit(0.015, "npc")),
-      min.segment.length = unit(0.015, "npc"),
+      arrow = arrow(length = unit(0.02, "npc")),
+      min.segment.length = unit(0.02, "npc"),
       point.padding = 1,
       size = 3,
       alpha = 0.6
