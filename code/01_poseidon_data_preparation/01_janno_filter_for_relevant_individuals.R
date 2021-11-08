@@ -17,6 +17,7 @@ aadr_minimal_janno <- aadr_raw %>%
     Xcontam = `Xcontam ANGSD MOM point estimate (only if male and ≥200)`,
     Genetic_Sex = Sex,
     ASSESSMENT,
+    Publication_Status = Publication,
     aadr_age_string = `Full Date: One of two formats. (Format 1) 95.4% CI calibrated radiocarbon age (Conventional Radiocarbon Age BP, Lab number) e.g. 2624-2350 calBCE (3990±40 BP, Ua-35016). (Format 2) Archaeological context range, e.g. 2500-1700 BCE`
   ) %>% cbind(
     split_age_string(.$aadr_age_string)
@@ -25,6 +26,7 @@ aadr_minimal_janno <- aadr_raw %>%
 
 # add this .janno file to the aadr poseidon package
 poseidonR::write_janno(aadr_minimal_janno, "data/poseidon_data/aadrv50/aadr_poseidon/aadr_poseidon.janno")
+write("jannoFile: aadr_poseidon.janno", file = "data/poseidon_data/aadrv50/aadr_poseidon/POSEIDON.yml", append=TRUE)
 
 # lacking spatial info filter
 janno_raw_spatial_positions <- aadr_minimal_janno %>%
