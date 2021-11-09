@@ -125,7 +125,7 @@ plot_curves <- function(
           #"XN191", "XN191",
           "XN206", "XN206",
           "I5411", "I5411",
-          #"RISE1159.SG", "RISE1159",
+          "RISE1163.SG", "RISE1163",
           "I3948", "I3948",
           "I2534", "I2534",
           "I2787", "I2787",
@@ -141,7 +141,9 @@ plot_curves <- function(
           "R2.SG", "R2",
           "I11443", "I11443",
           "VIL010", "VIL010",
-          "VIL011", "VIL011"
+          "VIL011", "VIL011",
+          "AED1108.SG", "AED1108",
+          "WEZ35.SG", "WEZ35"
         )
         origin_grid_mean %>% dplyr::right_join(lookup, by = "search_id")
       },
