@@ -12,6 +12,53 @@ plot_curves <- function(
     no_data_windows$region_id, levels = levels(janno_final$region_id)
   )
   
+  lookup <- tibble::tribble(
+    ~search_id, ~label_name,
+    "RISE434.SG", "RISE434", 
+    "Stuttgart_published.DG", "Stuttgart", 
+    "3DT26.SG", "3DRIF-26", 
+    "N22.SG", "N22",
+    "I15940_published", "I15940",
+    "I3719_published", "I3719",
+    "ILK001", "ILK001",
+    "ILK002", "ILK002",
+    "ILK003", "ILK003",
+    "I2352", "I2352",
+    # "ATP3.SG", "ATP3", wrong date?
+    "I8208", "I8208",
+    "I3983", "I3983",
+    "MJ-14.SG", "MJ-14",
+    "scy009.SG", "scy009",
+    "R68.SG", "R68",
+    "R67.SG", "R67",
+    "I6747_all.SG", "I6747",
+    "I5383", "I5383",
+    "I5367", "I5367",
+    "VK546.SG", "VK546",
+    #"XN191", "XN191",
+    "XN206", "XN206",
+    "I5411", "I5411",
+    "RISE1163.SG", "RISE1163",
+    "I3948", "I3948",
+    "I2534", "I2534",
+    "I2787", "I2787",
+    "I2741", "I2741",
+    "I2163", "I2163",
+    "DA191.SG", "DA191",
+    "DA194.SG", "DA194",
+    "HUN001", "HUN001",
+    #"I10899_published", "I10899",
+    "CB13.SG", "CB13",
+    "I0462", "I0462",
+    "I8344", "I8344",
+    "R2.SG", "R2",
+    "I11443", "I11443",
+    "VIL010", "VIL010",
+    "VIL011", "VIL011",
+    "AED1108.SG", "AED1108",
+    "WEZ35.SG", "WEZ35"
+  ) %>% dplyr::left_join(origin_grid_mean, by = "search_id")
+  
   #### mobility estimator curves ####
 
   p_estimator <- ggplot() +
@@ -98,59 +145,13 @@ plot_curves <- function(
       shape = 4
     ) +
     ggrepel::geom_label_repel(
-      data = {
-        lookup <- tibble::tribble(
-          ~search_id, ~label_name,
-          "RISE434.SG", "RISE434", 
-          "Stuttgart_published.DG", "Stuttgart", 
-          "3DT26.SG", "3DRIF-26", 
-          "N22.SG", "N22",
-          "I15940_published", "I15940",
-          "I3719_published", "I3719",
-          "ILK001", "ILK001",
-          "ILK002", "ILK002",
-          "ILK003", "ILK003",
-          "I2352", "I2352",
-          # "ATP3.SG", "ATP3", wrong date?
-          "I8208", "I8208",
-          "I3983", "I3983",
-          "MJ-14.SG", "MJ-14",
-          "scy009.SG", "scy009",
-          "R68.SG", "R68",
-          "R67.SG", "R67",
-          "I6747_all.SG", "I6747",
-          "I5383", "I5383",
-          "I5367", "I5367",
-          "VK546.SG", "VK546",
-          #"XN191", "XN191",
-          "XN206", "XN206",
-          "I5411", "I5411",
-          "RISE1163.SG", "RISE1163",
-          "I3948", "I3948",
-          "I2534", "I2534",
-          "I2787", "I2787",
-          "I2741", "I2741",
-          "I2163", "I2163",
-          "DA191.SG", "DA191",
-          "DA194.SG", "DA194",
-          "HUN001", "HUN001",
-          #"I10899_published", "I10899",
-          "CB13.SG", "CB13",
-          "I0462", "I0462",
-          "I8344", "I8344",
-          "R2.SG", "R2",
-          "I11443", "I11443",
-          "VIL010", "VIL010",
-          "VIL011", "VIL011",
-          "AED1108.SG", "AED1108",
-          "WEZ35.SG", "WEZ35"
-        )
-        origin_grid_mean %>% dplyr::right_join(lookup, by = "search_id")
-      },
+      data = lookup,
       mapping = aes(
         x = mean_search_z, y = directed_mean_spatial_distance, label = label_name
       ),
-      ylim = c(2650, 2650),
+      # nudge_y + direction manage the fixed position of the labels
+      nudge_y = 2900 - lookup$directed_mean_spatial_distance,
+      direction = "x",
       segment.size      = 0.4,
       segment.curvature = 0.3,
       segment.square    = FALSE,
@@ -158,7 +159,7 @@ plot_curves <- function(
       min.segment.length = unit(0.02, "npc"),
       point.padding = 1,
       size = 3,
-      alpha = 0.6
+      alpha = 0.35
     ) +
     geom_point(
       data = janno_final %>% dplyr::filter(region_id != "Other region"),
