@@ -23,8 +23,6 @@ plot_curves <- function(
     "ILK001", "ILK001",
     "ILK002", "ILK002",
     "ILK003", "ILK003",
-    "I2352", "I2352",
-    # "ATP3.SG", "ATP3", wrong date?
     "I8208", "I8208",
     "I3983", "I3983",
     "MJ-14.SG", "MJ-14",
@@ -35,19 +33,17 @@ plot_curves <- function(
     "I5383", "I5383",
     "I5367", "I5367",
     "VK546.SG", "VK546",
-    #"XN191", "XN191",
     "XN206", "XN206",
-    "I5411", "I5411",
+    "M95.SG", "M95",
     "RISE1163.SG", "RISE1163",
     "I3948", "I3948",
     "I2534", "I2534",
+    "I4971", "I4971",
     "I2787", "I2787",
     "I2741", "I2741",
     "I2163", "I2163",
-    "DA191.SG", "DA191",
-    "DA194.SG", "DA194",
+    "DA197.SG", "DA197",
     "HUN001", "HUN001",
-    #"I10899_published", "I10899",
     "CB13.SG", "CB13",
     "I0462", "I0462",
     "I8344", "I8344",
@@ -56,7 +52,8 @@ plot_curves <- function(
     "VIL010", "VIL010",
     "VIL011", "VIL011",
     "AED1108.SG", "AED1108",
-    "WEZ35.SG", "WEZ35"
+    "WEZ35.SG", "WEZ35",
+    "I4175", "I4175"
   ) %>% dplyr::left_join(origin_grid_mean, by = "search_id")
   
   #### mobility estimator curves ####
