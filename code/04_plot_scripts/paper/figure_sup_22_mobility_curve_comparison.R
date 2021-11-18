@@ -17,7 +17,11 @@ high_retro <- origin_grid_derived_data$origin_grid_mean %>% get_mean_points("Hig
 
 comb <- dplyr::bind_rows(mds3, low_retro, high_retro) %>%
   dplyr::left_join(mds2 %>% dplyr::select(search_id, spacedist = directed_mean_spatial_distance)) %>%
-  dplyr::mutate(diff_to_mds2 = directed_mean_spatial_distance - spacedist)
+  dplyr::mutate(diff_to_mds2 = directed_mean_spatial_distance - spacedist) %>%
+  # order by divergence, to highlight stronger colours in plot
+  dplyr::group_by(run, region_id) %>%
+  dplyr::arrange(abs(diff_to_mds2), .by_group = TRUE) %>%
+  dplyr::ungroup()
 
 library(ggplot2)
 
@@ -32,7 +36,7 @@ p <- ggplot() +
     size = 1.7,
     shape = 21,
     colour = "black",
-    stroke = 0.1
+    stroke = 0.15
   ) +
   theme_bw() +
   theme(
@@ -44,9 +48,9 @@ p <- ggplot() +
   ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 2000)) +
   scale_fill_gradient2(
-    low = "#4dac26",
+    low = "#0571b0",
     mid = "white",
-    high = "#d01c8b"
+    high = "#ca0020"
   ) +
   guides(
     fill = guide_colorbar(title = "Divergence from default [km]    ", barwidth = 20, barheight = 1.5),
