@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --resolver lts-18.0 script --package shake,filepath
+-- stack --resolver lts-18.17 script --package shake,filepath
 
 import Development.Shake
 import Development.Shake.Command
@@ -600,3 +600,12 @@ main = shakeArgs shakeOptions {
         , dataOriginSearch "origin_grid_derived_data_retro_high.RData"
         ],
         [ plots "figure_sup_21_mobility_curves_retro_high.jpeg" ] )
+
+    code04Paper "figure_sup_22_mobility_curve_comparison.R" `process`
+      ( map dataOriginSearch [  
+          "origin_grid_derived_data_retro_high.RData"
+        , "origin_grid_derived_data_retro_low.RData"
+        , "origin_grid_mean_mds3.RData"
+        , "origin_grid_mean.RData"
+        ],
+        [ plots "figure_sup_22_mobility_curve_comparison.jpeg" ] )
