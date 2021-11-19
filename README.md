@@ -9,7 +9,7 @@ The files at the URL above will generate the results as found in the publication
 ### Authors of this repository:
 
 - Clemens Schmid [![ORCiD](https://img.shields.io/badge/ORCiD-0000--0003--3448--5715-green.svg)](http://orcid.org/0000-0003-3448-5715)
-- Stephan Schiffels [![ORCiD](https://img.shields.io/badge/ORCiD-0000-0002-1017-9150-green.svg)](http://orcid.org/0000-0002-1017-9150)
+- Stephan Schiffels [![ORCiD](https://img.shields.io/badge/ORCiD-0000--0002--1017--9150-green.svg)](http://orcid.org/0000-0002-1017-9150)
 
 ### Published in:
 
