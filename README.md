@@ -22,7 +22,7 @@ This repository contains the following top level directories:
 - `code`: The R and shell scripts necessary to reproduce the analysis and create the figures. They are organised in subdirectories for different domains and roughly ordered with a leading number.
 - `data`: The scaffold of a directory structure to hold the intermediate data output of the scripts. The actual data is too big to be uploaded here and therefore not part of the repository.
 - `data_tracked`: Small input data files manually created for this analysis.
-- `tables` & `plots`: Readily rendered versions of tables and plots for the publication.
+- `tables` & `plots`: Readily rendered versions of tables and plots for the publication. Figure and table numbers might deviate from the numbers in the paper.
 
 The `DESCRIPTION` and the `.Rbuildignore` file are defining this repository as an R package. This mechanism is only used for R package dependency management, so that all necessary packages can be installed automatically (e.g. with `remotes::install_github("nevrome/mobest.analysis.2020")`). The `.Rproj` config file defines an RStudio project, only for convenient opening this repository in the [RStudio IDE](https://www.rstudio.com/products/rstudio/).
 
