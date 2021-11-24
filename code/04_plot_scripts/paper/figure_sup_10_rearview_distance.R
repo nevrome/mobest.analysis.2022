@@ -15,7 +15,7 @@ get_dist <- function(x, ktd) {
 settings <- dplyr::bind_rows(
     tibble::tibble(
       run = "2D MDS",
-      title = c("low-retro", "default", "high-retro"),
+      title = c("high-retro", "default", "low-retro"),
       k = c(0.25, 0.5, 0.75),
       kernel_width = purrr::map_dbl(k, get_dist, ktd_mds2),
       label = latex2exp::TeX(
