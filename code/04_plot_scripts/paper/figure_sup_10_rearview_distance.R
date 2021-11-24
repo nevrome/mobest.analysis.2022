@@ -15,21 +15,25 @@ get_dist <- function(x, ktd) {
 settings <- dplyr::bind_rows(
     tibble::tibble(
       run = "2D MDS",
+      title = c("low-retro", "default", "high-retro"),
       k = c(0.25, 0.5, 0.75),
       kernel_width = purrr::map_dbl(k, get_dist, ktd_mds2),
       label = latex2exp::TeX(
-        paste0("K = ", k, ",$\\sqrt{\\theta}$ = ", kernel_width)
+        paste0("$\\overset{K = ", k, ",\\,\\sqrt{\\theta} = ", kernel_width, "}{", title ,"}$")
       )
     ),
     tibble::tibble(
       run = "3D MDS",
+      title = "3D\\,MDS",
       k = c(0.5),
       kernel_width = purrr::map_dbl(k, get_dist, ktd_mds3),
       label = latex2exp::TeX(
-        paste0("K = ", k, ",$\\sqrt{\\theta}$ = ", kernel_width)
+        paste0("$\\overset{K = ", k, ",\\,\\sqrt{\\theta} = ", kernel_width, "}{", title ,"}$")
       )
     )
   )
+
+set.seed(127)
 
 p <- ggplot() +
   geom_line(
