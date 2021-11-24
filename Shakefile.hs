@@ -526,7 +526,10 @@ main = shakeArgs shakeOptions {
         [ plots "figure_sup_9_crossvalidation_rasters.jpeg" ] )
 
     code04Paper "figure_sup_10_rearview_distance.R" `process`
-      ( [ dataOriginSearch "kernel_theta_data.RData" ] ,
+      ( map dataOriginSearch [ 
+          "kernel_theta_data.RData"
+        , "kernel_theta_data_mds3.RData"
+        ] ,
         [ plots "figure_sup_10_rearview_distance.jpeg" ] )
 
     code04Paper "figure_sup_11_timepillars.R" `process`
