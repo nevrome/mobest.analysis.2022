@@ -11,6 +11,7 @@ aadr_minimal_janno <- aadr_raw %>%
   dplyr::select(
     Individual_ID = `Version ID`,
     Group_Name = `Group ID`,
+    Country = Country,
     Latitude = Lat.,
     Longitude = Long.,
     Nr_autosomal_SNPs = `SNPs hit on autosomal targets`,

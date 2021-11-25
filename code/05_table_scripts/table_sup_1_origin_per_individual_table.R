@@ -19,8 +19,6 @@ origins <- origin_grid_modified %>%
     search_id
   ) %>%
   dplyr::summarise(
-    C1 = dplyr::first(search_C1),
-    C2 = dplyr::first(search_C2),
     origin_centroid_x = mean(origin_x),
     origin_centroid_y = mean(origin_y),
     origin_z = mean(origin_z),
@@ -40,7 +38,17 @@ origins <- origin_grid_modified %>%
   )
 
 origins_with_janno <- origins %>% dplyr::full_join(
-  janno_final %>% dplyr::select(Individual_ID, Group_Name, Country, x, y, Date_BC_AD_Median_Derived),
+  janno_final %>% dplyr::select(
+    Individual_ID, 
+    Group_Name, 
+    Country, 
+    x, 
+    y, 
+    Date_BC_AD_Median_Derived, 
+    C1,
+    C2,
+    C3
+  ),
   by = c("search_id" = "Individual_ID")
 ) %>%
   dplyr::mutate(
@@ -58,6 +66,7 @@ origin_table <- origins_with_janno %>%
     Search_z = Date_BC_AD_Median_Derived,
     Search_C1 = C1,
     Search_C2 = C2,
+    Search_C3 = C3,
     Origin_x = origin_centroid_x,
     Origin_y = origin_centroid_y,
     Origin_z = origin_z,
@@ -85,6 +94,7 @@ origin_table <- origins_with_janno %>%
 
 origin_table %>%
   readr::write_csv(
-    "tables/table_sup_1_origin_search_table.csv"
+    "tables/table_sup_1_origin_search_table.csv",
+    na = ""
   )
 
