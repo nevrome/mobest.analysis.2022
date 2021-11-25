@@ -79,12 +79,16 @@ origin_table <- origins_with_janno %>%
   ) %>%
   dplyr::mutate(
     dplyr::across(
-      c(Search_C1, Search_C2, Origin_C1, Origin_C2), 
+      c(Search_C1, Search_C2, Search_C3, Origin_C1, Origin_C2), 
       function(x) { round(x, 4) }
     ),
     dplyr::across(
       c(Search_x, Search_y, Origin_x, Origin_y), 
       function(x) { round(x, -3) }
+    ),
+    dplyr::across(
+      c(Origin_z), 
+      function(x) { round(x, -1) }
     ),
     dplyr::across(
       c(Undirected_mean_spatial_distance, Directed_mean_spatial_distance, Mean_angle), 
