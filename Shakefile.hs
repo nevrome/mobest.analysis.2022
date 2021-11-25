@@ -77,6 +77,7 @@ code02Crossvalidation x = code02 "02_crossvalidation" </> x
 code02MLE x = code02 "03_laGP_maximum_likelihood_estimation" </> x
 code03 x = code "03_origin_search" </> x
 code04Paper x = code "04_plot_scripts" </> "paper" </> x
+code05 x = code "05_table_scripts" </> x
 code06MDS3 x = code "06_alternative_parameter_exploration" </> "MDS_3_dimensions" </> x
 code06Rearview x = code "06_alternative_parameter_exploration" </> "different_rearview_distances" </> x
 
@@ -98,6 +99,7 @@ dataOriginSearch x = _data "origin_search" </> x
 dataOriginSearchAROKS x = dataOriginSearch "age_resampling+one_kernel_setting" </> x
 dataGPR x = _data "gpr" </> x
 
+tables x = "tables" </> x
 plots x = "plots" </> x
 
 -- #### pipeline #### --
@@ -430,6 +432,14 @@ main = shakeArgs shakeOptions {
           "origin_grid_derived_data_retro_low.RData"
         , "origin_grid_derived_data_retro_high.RData"
         ] )
+
+    -- #### tables #### --
+
+      code05 "table_sup_1_origin_per_individual_table.R" `process`
+      ( [ dataPoseidonData "janno_final.RData"
+        , dataOriginSearch "origin_grid_modified.RData"
+        ] ,
+        [ tables "table_sup_1_origin_search_table.csv" ] )
 
     -- #### plots #### --
 

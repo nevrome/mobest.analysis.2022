@@ -50,7 +50,7 @@ origins_with_janno <- origins %>% dplyr::left_join(
 origin_table <- origins_with_janno %>%
   dplyr::transmute(
     Individual_ID = search_id,
-    Population_Name = Group_Name,
+    Group_Name = Group_Name,
     Country = Country,
     Region = region_id,
     Search_x = x,
@@ -65,7 +65,7 @@ origin_table <- origins_with_janno %>%
     Undirected_mean_spatial_distance = undirected_mean_spatial_distance,
     Directed_mean_spatial_distance = directed_mean_spatial_distance,
     Mean_angle = mean_angle_deg,
-    Mean_wind_direction = mean_angle_deg_cut
+    Mean_cardinal_direction = mean_angle_deg_cut
   ) %>%
   dplyr::mutate(
     dplyr::across(
@@ -84,6 +84,6 @@ origin_table <- origins_with_janno %>%
 
 origin_table %>%
   readr::write_csv(
-    "tables/origin_search_table.csv"
+    "tables/table_sup_1_origin_search_table.csv"
   )
 
