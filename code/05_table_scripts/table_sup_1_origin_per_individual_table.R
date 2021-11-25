@@ -23,7 +23,7 @@ origins <- origin_grid_modified %>%
     C2 = dplyr::first(search_C2),
     origin_centroid_x = mean(origin_x),
     origin_centroid_y = mean(origin_y),
-    origin_z = dplyr::first(origin_z),
+    origin_z = mean(origin_z),
     origin_C1 = mean(origin_mean_C1),
     origin_C2 = mean(origin_mean_C2),
     region_id = dplyr::first(region_id),
@@ -39,7 +39,7 @@ origins <- origin_grid_modified %>%
     .groups = "drop"
   )
 
-origins_with_janno <- origins %>% dplyr::left_join(
+origins_with_janno <- origins %>% dplyr::full_join(
   janno_final %>% dplyr::select(Individual_ID, Group_Name, Country, x, y, Date_BC_AD_Median_Derived),
   by = c("search_id" = "Individual_ID")
 ) %>%
@@ -55,11 +55,12 @@ origin_table <- origins_with_janno %>%
     Region = region_id,
     Search_x = x,
     Search_y = y,
+    Search_z = Date_BC_AD_Median_Derived,
     Search_C1 = C1,
     Search_C2 = C2,
     Origin_x = origin_centroid_x,
     Origin_y = origin_centroid_y,
-    Origin_z = Date_BC_AD_Median_Derived,
+    Origin_z = origin_z,
     Origin_C1 = origin_C1,
     Origin_C2 = origin_C2,
     Undirected_mean_spatial_distance = undirected_mean_spatial_distance,
