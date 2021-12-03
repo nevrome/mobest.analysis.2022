@@ -144,7 +144,9 @@ main = shakeArgs shakeOptions {
         , "figure_sup_21_mobility_curves_retro_high.jpeg"
         , "figure_sup_22_mobility_curve_comparison.jpeg"
         ] ++ 
-        [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ]
+        [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" 
+        , tables "table_sup_1_origin_search_table.csv"
+        ]
     
     -- #### poseidon data preparation #### --
 
@@ -379,6 +381,7 @@ main = shakeArgs shakeOptions {
       ( [ dataParameterExplorationCrossvalidation "best_kernel.RData" ] ,
         map dataOriginSearch [
           "default_kernel_mds3.RData"
+        , "kernel_theta_data_mds3.RData"
         , "retrospection_distance_mds3.RData"
         ] )
 
