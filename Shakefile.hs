@@ -164,6 +164,7 @@ main = shakeArgs shakeOptions {
         , "extended_area.RData"
         , "epsg3035.RData"
         , "mobility_regions.RData"
+        , "search_area.RData"
         ] )
 
     code01 "00_prepare_plot_reference_data.R" `process`
