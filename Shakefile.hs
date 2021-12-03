@@ -142,6 +142,7 @@ main = shakeArgs shakeOptions {
         , "figure_sup_19_mobility_curves_mds3.jpeg"
         , "figure_sup_20_mobility_curves_retro_low.jpeg"
         , "figure_sup_21_mobility_curves_retro_high.jpeg"
+        , "figure_sup_22_mobility_curve_comparison.jpeg"
         ] ++ 
         [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" ]
     
