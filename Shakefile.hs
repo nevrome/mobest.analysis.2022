@@ -436,11 +436,11 @@ main = shakeArgs shakeOptions {
 
     -- #### tables #### --
 
-      code05 "table_sup_1_origin_per_individual_table.R" `process`
+    code05 "table_sup_1_origin_per_individual_table.R" `process`
       ( [ dataPoseidonData "janno_final.RData"
-        , dataOriginSearch "origin_grid_modified.RData"
-        ] ,
-        [ tables "table_sup_1_origin_search_table.csv" ] )
+      , dataOriginSearch "origin_grid_modified.RData"
+      ] ,
+      [ tables "table_sup_1_origin_search_table.csv" ] )
 
     -- #### plots #### --
 
