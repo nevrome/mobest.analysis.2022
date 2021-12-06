@@ -212,7 +212,7 @@ main = shakeArgs shakeOptions {
         ] )
 
     code01 "02_pre_identicals_filter_poseidon_extract.sh" `process`
-      ( map dataPoseidonDataAADRv50AADRPoseidon [
+      ( code01 "pre_identicals_filter_ind_list.txt" : map dataPoseidonDataAADRv50AADRPoseidon [
           "POSEIDON.yml"
         , "aadr_poseidon.janno"
         , "aadr_eig.geno"
@@ -244,7 +244,7 @@ main = shakeArgs shakeOptions {
         [ code01 "ind_list.txt" ] )
 
     code01 "05_poseidon_extract.sh" `process`
-      ( code01 "pre_identicals_filter_ind_list.txt" : map dataPoseidonDataAADRv50AADRPoseidon [
+      ( code01 "ind_list.txt" : map dataPoseidonDataAADRv50AADRPoseidon [
           "POSEIDON.yml"
         , "aadr_eig.geno"
         , "aadr_eig.snp"
