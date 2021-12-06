@@ -202,7 +202,7 @@ main = shakeArgs shakeOptions {
       ( [ dataSpatial "epsg3035.RData"
         , dataSpatial "research_area.RData"
         , dataPoseidonDataAADRv50 "v50.0_1240k_public.anno"
-        , dataPoseidonDataAADRv50AADRPoseidon "POSEIDON.yml"
+        , dataPoseidonDataAADRv50AADRPoseidon "aadr_eig.geno"
         , code01 "00_aadr_age_string_parser.R"
         ] ,
         [ code01 "pre_identicals_filter_ind_list.txt"
