@@ -191,8 +191,9 @@ main = shakeArgs shakeOptions {
         , "aadr_eig.ind"
         ] ,
         map dataPoseidonDataAADRv50AADRPoseidon [
-          "POSEIDON.yml"
-        , "aadr_eig.geno"
+          -- "POSEIDON.yml" This file is modified in 01_janno_filter_for_relevant_individuals
+          --                so it must be ommitted here to prevent rebuilding
+          "aadr_eig.geno"
         , "aadr_eig.snp"
         , "aadr_eig.ind"
         ] )
@@ -206,6 +207,7 @@ main = shakeArgs shakeOptions {
         ] ,
         [ code01 "pre_identicals_filter_ind_list.txt"
         , dataPoseidonData "janno_pre_mds.RData"
+        , dataPoseidonDataAADRv50AADRPoseidon "POSEIDON.yml" -- Not created, but modified here
         , dataPoseidonDataAADRv50AADRPoseidon "aadr_poseidon.janno"
         ] )
 
