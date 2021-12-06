@@ -112,7 +112,7 @@ main = shakeArgs shakeOptions {
         , shakeColor = True
         , shakeVerbosity = Verbose
         , shakeThreads = 10
-        , shakeTimings = True,
+        , shakeTimings = True
         , shakeChange = ChangeDigest
         } $ do
 
