@@ -25,9 +25,25 @@ aadr_minimal_janno <- aadr_raw %>%
   ) %>%
   poseidonR::as.janno()
 
-# add this .janno file to the aadr poseidon package
-poseidonR::write_janno(aadr_minimal_janno, "data/poseidon_data/aadrv50/aadr_poseidon/aadr_poseidon.janno")
-write("jannoFile: aadr_poseidon.janno", file = "data/poseidon_data/aadrv50/aadr_poseidon/POSEIDON.yml", append=TRUE)
+# create a minimal aadr poseidon package by adding a .janno and a POSEIDON.yml file
+poseidonR::write_janno(aadr_minimal_janno, "data/poseidon_data/aadrv50/aadr_poseidon.janno")
+writeLines(
+  c("poseidonVersion: 2.4.0"
+  , "title: aadr_poseidon"
+  , "contributor:"
+  , "  - name: John Doe"
+  , "    email: john@doe.net"
+  , "packageVersion: 0.1.0"
+  , "genotypeData:"
+  , "  format: EIGENSTRAT"
+  , "  genoFile: aadr_plink.geno"
+  , "  snpFile: aadr_plink.snp"
+  , "  indFile: aadr_plink.ind"
+  , "  snpSet: 1240K"
+  , "jannoFile: aadr_poseidon.janno"
+  ),
+  con = "data/poseidon_data/aadrv50/POSEIDON.yml"
+)
 
 # lacking spatial info filter
 janno_raw_spatial_positions <- aadr_minimal_janno %>%

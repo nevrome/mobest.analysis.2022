@@ -86,7 +86,6 @@ dataSpatial x = _data "spatial" </> x
 dataPlotReferenceData x = _data "plot_reference_data" </> x
 dataPoseidonData x = _data "poseidon_data" </> x
 dataPoseidonDataAADRv50 x = dataPoseidonData "aadrv50" </> x
-dataPoseidonDataAADRv50AADRPoseidon x = dataPoseidonDataAADRv50 "aadr_poseidon" </> x
 dataPoseidonDataPoseidonExtractedPreIdenticalsFilter x = dataPoseidonData "poseidon_extracted_pre_identicals_filter" </> x
 dataPoseidonDataIdenticalFilter x = dataPoseidonData "identical_filter" </> x
 dataPoseidonDataPoseidonExtracted x = dataPoseidonData "poseidon_extracted" </> x
@@ -175,7 +174,7 @@ main = shakeArgs shakeOptions {
         , "age_colors_gradient.RData"
         ] )
 
-    code01 "00a_download_aadr.sh" `process`
+    code01 "00_download_aadr.sh" `process`
       ( [] ,
         map dataPoseidonDataAADRv50 [
           "v50.0_1240k_public.anno"
@@ -184,35 +183,23 @@ main = shakeArgs shakeOptions {
         , "aadr_eig.ind"
         ] )
 
-    code01 "00b_convert_aadr_to_poseidon.sh" `process`
-      ( map dataPoseidonDataAADRv50 [
-          "aadr_eig.geno"
-        , "aadr_eig.snp"
-        , "aadr_eig.ind"
-        ] ,
-        map dataPoseidonDataAADRv50AADRPoseidon [
-          -- "POSEIDON.yml" This file is modified in 01_janno_filter_for_relevant_individuals
-          --                so it must be ommitted here to prevent rebuilding
-          "aadr_eig.geno"
-        , "aadr_eig.snp"
-        , "aadr_eig.ind"
-        ] )
-
     code01 "01_janno_filter_for_relevant_individuals.R" `process`
       ( [ dataSpatial "epsg3035.RData"
         , dataSpatial "research_area.RData"
         , dataPoseidonDataAADRv50 "v50.0_1240k_public.anno"
-        , dataPoseidonDataAADRv50AADRPoseidon "aadr_eig.geno"
+        , dataPoseidonDataAADRv50 "aadr_eig.geno"
+        , dataPoseidonDataAADRv50 "aadr_eig.geno"
+        , dataPoseidonDataAADRv50 "aadr_eig.geno"
         , code01 "00_aadr_age_string_parser.R"
         ] ,
         [ code01 "pre_identicals_filter_ind_list.txt"
         , dataPoseidonData "janno_pre_mds.RData"
-        , dataPoseidonDataAADRv50AADRPoseidon "POSEIDON.yml" -- Not created, but modified here
-        , dataPoseidonDataAADRv50AADRPoseidon "aadr_poseidon.janno"
+        , dataPoseidonDataAADRv50 "aadr_poseidon.janno"
+        , dataPoseidonDataAADRv50 "POSEIDON.yml"
         ] )
 
     code01 "02_pre_identicals_filter_poseidon_extract.sh" `process`
-      ( code01 "pre_identicals_filter_ind_list.txt" : map dataPoseidonDataAADRv50AADRPoseidon [
+      ( code01 "pre_identicals_filter_ind_list.txt" : map dataPoseidonDataAADRv50 [
           "POSEIDON.yml"
         , "aadr_poseidon.janno"
         , "aadr_eig.geno"
@@ -232,8 +219,8 @@ main = shakeArgs shakeOptions {
         , "poseidon_extracted_pre_identicals_filter.fam"
         ] ,
         map dataPoseidonDataIdenticalFilter [
-            "plink.mdist"
-          , "plink.mdist.id"
+          "plink.mdist"
+        , "plink.mdist.id"
         ] )
 
     code01 "04_filter_by_genetic_distance.R" `process`
@@ -244,7 +231,7 @@ main = shakeArgs shakeOptions {
         [ code01 "ind_list.txt" ] )
 
     code01 "05_poseidon_extract.sh" `process`
-      ( code01 "ind_list.txt" : map dataPoseidonDataAADRv50AADRPoseidon [
+      ( code01 "ind_list.txt" : map dataPoseidonDataAADRv50 [
           "POSEIDON.yml"
         , "aadr_eig.geno"
         , "aadr_eig.snp"
