@@ -59,7 +59,7 @@ plot_curves <- function(
     "LON003", "LON003",
     "I7807", "I7807",
     "R850.SG", "R850"
-  ) %>% dplyr::left_join(origin_grid_mean, by = "search_id")
+  ) %>% dplyr::inner_join(origin_grid_mean, by = "search_id")
   
   #### mobility estimator curves ####
 
