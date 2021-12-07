@@ -6,14 +6,17 @@ load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 source("code/04_plot_scripts/paper/individuals_to_highlight.R")
 
-lookup <- individuals %>% dplyr::inner_join(janno_final, by = c("search_id" = "Individual_ID"))
-lookup_top    <- lookup %>% dplyr::filter(C2 > -0.01)
-lookup_left   <- lookup_top %>% dplyr::filter(C1 < mean(C1))
-lookup_right  <- lookup_top %>% dplyr::filter(C1 >= mean(C1))
-lookup_bottom <- lookup %>% dplyr::filter(C2 <= -0.01)
+lookup <- individuals %>% 
+  dplyr::inner_join(janno_final, by = c("search_id" = "Individual_ID"))
+lookup_top          <- lookup %>% dplyr::filter(C2 > -0.015)
+lookup_left         <- lookup_top %>% dplyr::filter(C1 < mean(C1))
+lookup_right        <- lookup_top %>% dplyr::filter(C1 >= mean(C1))
+lookup_right_top    <- lookup_right %>% dplyr::filter(C2 > 0.015)
+lookup_right_bottom <- lookup_right %>% dplyr::filter(C2 <= 0.015)
+lookup_bottom       <- lookup %>% dplyr::filter(C2 <= -0.015)
 
 # normal mds plot
-ggplot() +
+p <- ggplot() +
   geom_point(
     data = janno_final,
     aes(
@@ -23,13 +26,39 @@ ggplot() +
     ),
     size = 2
   ) +
+  geom_point(
+    data = lookup,
+    aes(x = C1, y = C2),
+    size = 4, shape = 21, fill = "white", alpha = 0.7, stroke = 0
+  ) +
+  geom_point(
+    data = lookup,
+    aes(x = C1, y = C2, shape = region_id),
+    size = 2, colour = "black"
+  ) +
   ggrepel::geom_text_repel(
-    data = lookup_right,
+    data = lookup_right_top,
     mapping = aes(
       x = C1, y = C2, label = label_name
     ),
     force_pull = 0,
-    nudge_x = 0.06 - lookup_right$C1,
+    nudge_y = 0.08 - lookup_right_top$C2,
+    direction = "x",
+    segment.size = 0.3,
+    #segment.curvature = 0.3,
+    segment.square    = FALSE,
+    arrow = arrow(length = unit(0.005, "npc")),
+    min.segment.length = unit(0.02, "npc"),
+    point.padding = 0.5,
+    size = 3
+  ) +
+  ggrepel::geom_text_repel(
+    data = lookup_right_bottom,
+    mapping = aes(
+      x = C1, y = C2, label = label_name
+    ),
+    force_pull = 0,
+    nudge_x = 0.06 - lookup_right_bottom$C1,
     direction = "y",
     segment.size = 0.3,
     #segment.curvature = 0.3,
@@ -98,7 +127,7 @@ ggplot() +
   )
 
 ggsave(
-  paste0("plots/figure_2_mds.jpeg"),
+  paste0("plots/figure_sup_23_mds_with_highlighted_individuals.jpeg"),
   plot = p,
   device = "jpeg",
   scale = 0.7,
