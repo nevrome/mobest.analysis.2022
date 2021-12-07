@@ -13,23 +13,23 @@ data Settings = Settings {
   -- Path to the singularity image file
   -- required; create with "singularity_build_sif.sh"
   -- that's not part of the pipeline, because it requires sudo permissions
-  , singularityContainer :: FilePath
+    singularityContainer :: FilePath
   -- Path to mount into the singularity container
   -- https://sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html
   , bindPath :: String
   -- How to run normal commands
   , qsubSmallCommand :: String
+  , qsubLargeMemoryCommand :: String
   , qsubMediumCommand :: String
   -- How to run SGE scripts
   , qsubScript :: String
 }
 
 mpiEVAClusterSettings = Settings {
-    setType = Cluster
-  , singularityContainer   = "singularity_mobest.sif"
+    singularityContainer   = "singularity_mobest.sif"
   , bindPath               = "--bind=/mnt/archgen/users/schmid"
   , qsubSmallCommand       = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=20G -now n -V -j y -o ~/log -N small"
-  , qsubLargeMemoryCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=40G -now n -V -j y -o ~/log -N largeMemory"
+  , qsubLargeMemoryCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=40G -now n -V -j y -o ~/log -N lmemory"
   , qsubMediumCommand      = "qsub -sync y -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=32G -now n -V -j y -o ~/log -N medium"
   , qsubScript             = "qsub -sync y -N large " -- trailing space is meaningful!
 }
@@ -232,7 +232,7 @@ main = shakeArgs shakeOptions {
         , "poseidon_extracted.janno"
         ] )
 
-    code01 "06_mds_plink.sh" `process`
+    code01 "06_mds_plink.shlm" `process`
       ( code01 "myrange.txt" : map dataPoseidonDataPoseidonExtracted [
           "poseidon_extracted.bed"
         , "poseidon_extracted.bim"
