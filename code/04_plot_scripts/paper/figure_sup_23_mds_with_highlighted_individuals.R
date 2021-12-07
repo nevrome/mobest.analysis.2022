@@ -9,12 +9,12 @@ source("code/04_plot_scripts/paper/individuals_to_highlight.R")
 lookup <- individuals %>% 
   dplyr::inner_join(janno_final, by = c("search_id" = "Individual_ID"))
 
-lookup_top          <- lookup %>% dplyr::filter(C2 > -0.015)
+lookup_top          <- lookup %>% dplyr::filter(C2 > -0.01)
 lookup_left         <- lookup_top %>% dplyr::filter(C1 < mean(C1))
 lookup_right        <- lookup_top %>% dplyr::filter(C1 >= mean(C1))
 lookup_right_top    <- lookup_right %>% dplyr::filter(C2 > 0.015)
 lookup_right_bottom <- lookup_right %>% dplyr::filter(C2 <= 0.015)
-lookup_bottom       <- lookup %>% dplyr::filter(C2 <= -0.015)
+lookup_bottom       <- lookup %>% dplyr::filter(C2 <= -0.01)
 
 repel <- function(data, direction, nudge_y = 0, nudge_x = 0) {
   ggrepel::geom_text_repel(
@@ -45,14 +45,14 @@ p <- ggplot() +
   geom_point(
     data = lookup,
     aes(x = C1, y = C2),
-    size = 4, shape = 21, fill = "white", alpha = 0.7, stroke = 0
+    size = 4, shape = 21, fill = "white", alpha = 0.8, stroke = 0
   ) +
   geom_point(
     data = lookup,
     aes(x = C1, y = C2, shape = region_id),
     size = 2, colour = "black"
   ) +
-  repel(lookup_right_top, direction = "x", nudge_y = 0.08 - lookup_right_top$C2) +
+  repel(lookup_right_top, direction = "x", nudge_y = 0.06 - lookup_right_top$C2) +
   repel(lookup_right_bottom, direction = "y", nudge_x = 0.06 - lookup_right_bottom$C1) +
   repel(lookup_left, direction = "y", nudge_x = -0.082 - lookup_left$C1) +
   repel(lookup_bottom, direction = "x", nudge_y = -0.062 - lookup_bottom$C2) +
@@ -86,7 +86,7 @@ ggsave(
   paste0("plots/figure_sup_23_mds_with_highlighted_individuals.jpeg"),
   plot = p,
   device = "jpeg",
-  scale = 0.7,
+  scale = 1,
   dpi = 300,
   width = 220, height = 300, units = "mm",
   limitsize = F
