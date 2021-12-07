@@ -92,13 +92,14 @@ plots x = "plots" </> x
 main :: IO ()
 main = shakeArgs shakeOptions {
         --https://hackage.haskell.org/package/shake-0.19.6/docs/Development-Shake.html#g:5
-          shakeFiles = "_build"
-        , shakeProgress = progressSimple
-        , shakeColor = True
+          shakeFiles     = "_build"
+        , shakeThreads   = 10
+        , shakeChange    = ChangeDigest
+        , shakeProgress  = progressSimple
+        , shakeColor     = True
+        , shakeReport    = ["ShakeReport.html"]
         , shakeVerbosity = Verbose
-        , shakeThreads = 10
-        , shakeTimings = True
-        , shakeChange = ChangeDigest
+        , shakeTimings   = True
         } $ do
 
     want $ map plots [ 
