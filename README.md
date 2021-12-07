@@ -1,4 +1,4 @@
-## Research compendium for ‘Estimating human mobility in Holocene Western Eurasia with bulk ancient genomic data’
+## Research compendium for ‘Estimating human mobility in Holocene Western Eurasia with large-scale ancient genomic data’
 
 ### Compendium DOI:
 
@@ -13,7 +13,7 @@ The files at the URL above will generate the results as found in the publication
 
 ### Published in:
 
-**(in Review)**: Schmid C., Schiffels S., Estimating human mobility in Holocene Western Eurasia with bulk ancient genomic data
+**(in Review)**: Schmid C., Schiffels S., Estimating human mobility in Holocene Western Eurasia with large-scale ancient genomic data
 
 ### Overview of contents:
 
