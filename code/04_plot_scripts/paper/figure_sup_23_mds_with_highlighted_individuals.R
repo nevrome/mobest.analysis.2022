@@ -8,6 +8,7 @@ source("code/04_plot_scripts/paper/individuals_to_highlight.R")
 
 lookup <- individuals %>% 
   dplyr::inner_join(janno_final, by = c("search_id" = "Individual_ID"))
+
 lookup_top          <- lookup %>% dplyr::filter(C2 > -0.015)
 lookup_left         <- lookup_top %>% dplyr::filter(C1 < mean(C1))
 lookup_right        <- lookup_top %>% dplyr::filter(C1 >= mean(C1))
@@ -18,15 +19,12 @@ lookup_bottom       <- lookup %>% dplyr::filter(C2 <= -0.015)
 repel <- function(data, direction, nudge_y = 0, nudge_x = 0) {
   ggrepel::geom_text_repel(
     data = data,
-    mapping = aes(
-      x = C1, y = C2, label = label_name
-    ),
+    mapping = aes(x = C1, y = C2, label = label_name),
     force_pull = 0,
     nudge_y = nudge_y,
     nudge_x = nudge_x,
     direction = direction,
     segment.size = 0.3,
-    segment.square    = FALSE,
     arrow = arrow(length = unit(0.005, "npc")),
     min.segment.length = unit(0.02, "npc"),
     point.padding = 0.5,
@@ -34,7 +32,6 @@ repel <- function(data, direction, nudge_y = 0, nudge_x = 0) {
   )
 }
 
-# normal mds plot
 p <- ggplot() +
   geom_point(
     data = janno_final,
@@ -94,4 +91,3 @@ ggsave(
   width = 220, height = 300, units = "mm",
   limitsize = F
 )
-
