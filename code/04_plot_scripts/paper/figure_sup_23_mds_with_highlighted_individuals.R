@@ -15,6 +15,25 @@ lookup_right_top    <- lookup_right %>% dplyr::filter(C2 > 0.015)
 lookup_right_bottom <- lookup_right %>% dplyr::filter(C2 <= 0.015)
 lookup_bottom       <- lookup %>% dplyr::filter(C2 <= -0.015)
 
+repel <- function(data, direction, nudge_y = 0, nudge_x = 0) {
+  ggrepel::geom_text_repel(
+    data = data,
+    mapping = aes(
+      x = C1, y = C2, label = label_name
+    ),
+    force_pull = 0,
+    nudge_y = nudge_y,
+    nudge_x = nudge_x,
+    direction = direction,
+    segment.size = 0.3,
+    segment.square    = FALSE,
+    arrow = arrow(length = unit(0.005, "npc")),
+    min.segment.length = unit(0.02, "npc"),
+    point.padding = 0.5,
+    size = 3
+  )
+}
+
 # normal mds plot
 p <- ggplot() +
   geom_point(
@@ -36,70 +55,10 @@ p <- ggplot() +
     aes(x = C1, y = C2, shape = region_id),
     size = 2, colour = "black"
   ) +
-  ggrepel::geom_text_repel(
-    data = lookup_right_top,
-    mapping = aes(
-      x = C1, y = C2, label = label_name
-    ),
-    force_pull = 0,
-    nudge_y = 0.08 - lookup_right_top$C2,
-    direction = "x",
-    segment.size = 0.3,
-    #segment.curvature = 0.3,
-    segment.square    = FALSE,
-    arrow = arrow(length = unit(0.005, "npc")),
-    min.segment.length = unit(0.02, "npc"),
-    point.padding = 0.5,
-    size = 3
-  ) +
-  ggrepel::geom_text_repel(
-    data = lookup_right_bottom,
-    mapping = aes(
-      x = C1, y = C2, label = label_name
-    ),
-    force_pull = 0,
-    nudge_x = 0.06 - lookup_right_bottom$C1,
-    direction = "y",
-    segment.size = 0.3,
-    #segment.curvature = 0.3,
-    segment.square    = FALSE,
-    arrow = arrow(length = unit(0.005, "npc")),
-    min.segment.length = unit(0.02, "npc"),
-    point.padding = 0.5,
-    size = 3
-  ) +
-  ggrepel::geom_text_repel(
-    data = lookup_left,
-    mapping = aes(
-      x = C1, y = C2, label = label_name
-    ),
-    force_pull = 0,
-    nudge_x = -0.082 - lookup_left$C1,
-    direction = "y",
-    segment.size = 0.3,
-    #segment.curvature = 0.3,
-    segment.square    = FALSE,
-    arrow = arrow(length = unit(0.005, "npc")),
-    min.segment.length = unit(0.02, "npc"),
-    point.padding = 0.5,
-    size = 3
-  ) +
-  ggrepel::geom_text_repel(
-    data = lookup_bottom,
-    mapping = aes(
-      x = C1, y = C2, label = label_name
-    ),
-    force_pull = 0,
-    nudge_y = -0.062 - lookup_bottom$C2,
-    direction = "x",
-    segment.size = 0.3,
-    #segment.curvature = 0.3,
-    segment.square    = FALSE,
-    arrow = arrow(length = unit(0.005, "npc")),
-    min.segment.length = unit(0.02, "npc"),
-    point.padding = 0.5,
-    size = 3
-  ) +
+  repel(lookup_right_top, direction = "x", nudge_y = 0.08 - lookup_right_top$C2) +
+  repel(lookup_right_bottom, direction = "y", nudge_x = 0.06 - lookup_right_bottom$C1) +
+  repel(lookup_left, direction = "y", nudge_x = -0.082 - lookup_left$C1) +
+  repel(lookup_bottom, direction = "x", nudge_y = -0.062 - lookup_bottom$C2) +
   scale_shape_manual(
     values = region_id_shapes,
     na.value = 3
