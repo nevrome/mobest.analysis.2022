@@ -477,7 +477,8 @@ main = shakeArgs shakeOptions {
         [ plots "figure_4_genetic_distance_example_maps.jpeg" ] )
 
     code04Paper "figure_5_mobility_curves.R" `process`
-      ( [ code04Paper "mobility_curves_plot_function.R"
+      ( [ code04Paper "individuals_to_highlight.R"
+        , code04Paper "mobility_curves_plot_function.R"
         , dataPoseidonData "janno_final.RData"
         ] ++ map dataOriginSearch [
           "origin_grid_mean.RData"
@@ -586,7 +587,8 @@ main = shakeArgs shakeOptions {
         [ plots "figure_sup_18_interpolation_map_matrix_mds3.jpeg" ] )
 
     code04Paper "figure_sup_19_mobility_curves_mds3.R" `process`
-      ( [ code04Paper "mobility_curves_plot_function.R"
+      ( [ code04Paper "individuals_to_highlight.R"
+        , code04Paper "mobility_curves_plot_function.R"
         , dataPoseidonData "janno_final.RData"
         ] ++ map dataOriginSearch [
           "origin_grid_mean_mds3.RData"
@@ -596,14 +598,16 @@ main = shakeArgs shakeOptions {
         [ plots "figure_sup_19_mobility_curves_mds3.jpeg" ] )
 
     code04Paper "figure_sup_20_mobility_curves_retro_low.R" `process`
-      ( [ code04Paper "mobility_curves_plot_function.R"
+      ( [ code04Paper "individuals_to_highlight.R"
+        , code04Paper "mobility_curves_plot_function.R"
         , dataPoseidonData "janno_final.RData"
         , dataOriginSearch "origin_grid_derived_data_retro_low.RData"
         ],
         [ plots "figure_sup_20_mobility_curves_retro_low.jpeg" ] )
 
     code04Paper "figure_sup_21_mobility_curves_retro_high.R" `process`
-      ( [ code04Paper "mobility_curves_plot_function.R"
+      ( [ code04Paper "individuals_to_highlight.R"
+        , code04Paper "mobility_curves_plot_function.R"
         , dataPoseidonData "janno_final.RData"
         , dataOriginSearch "origin_grid_derived_data_retro_high.RData"
         ],
