@@ -129,6 +129,7 @@ main = shakeArgs shakeOptions {
         , "figure_sup_20_mobility_curves_retro_low.jpeg"
         , "figure_sup_21_mobility_curves_retro_high.jpeg"
         , "figure_sup_22_mobility_curve_comparison.jpeg"
+        , "figure_sup_23_mds_with_highlighted_individuals.jpeg"
         ] ++ 
         [ dataParameterExplorationCrossvalidation "interpol_comparison_1.RData" 
         , tables "table_sup_1_origin_search_table.csv"
@@ -607,3 +608,11 @@ main = shakeArgs shakeOptions {
         , "origin_grid_mean.RData"
         ],
         [ plots "figure_sup_22_mobility_curve_comparison.jpeg" ] )
+    
+    code04Paper "figure_sup_23_mds_with_highlighted_individuals.R" `process`
+      ( [ code04Paper "individuals_to_highlight.R"
+        , dataPoseidonData "janno_final.RData"
+        , dataPlotReferenceData "region_id_shapes.RData"
+        , dataPlotReferenceData "age_colors_gradient.RData"
+        ],
+        [ plots "figure_sup_23_mds_with_highlighted_individuals.jpeg" ] )
