@@ -1,5 +1,6 @@
 library(magrittr)
 library(ggplot2)
+
 source("code/04_plot_scripts/paper/individuals_to_highlight.R")
 
 plot_curves <- function(
