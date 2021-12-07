@@ -9,10 +9,7 @@ import System.FilePath (takeExtension)
 
 -- #### settings #### --
 
-data SettingsType = Local | Cluster
-
 data Settings = Settings {
-    setType :: SettingsType
   -- Path to the singularity image file
   -- required; create with "singularity_build_sif.sh"
   -- that's not part of the pipeline, because it requires sudo permissions
@@ -27,36 +24,25 @@ data Settings = Settings {
   , qsubScript :: String
 }
 
-localSettings = Settings {
-    setType = Local
-  , singularityContainer = "singularity_mobest.sif"
-  , bindPath = ""
-  , qsubSmallCommand = ""
-  , qsubMediumCommand = ""
-  , qsubScript = ""
-}
-
 mpiEVAClusterSettings = Settings {
     setType = Cluster
-  , singularityContainer = "singularity_mobest.sif"
-  , bindPath = "--bind=/mnt/archgen/users/schmid"
-  --, qrsh = "qrsh -b y -cwd -q archgen.q -pe smp 4 -l h_vmem=16G -now n -V -N hedgehog"
-  , qsubSmallCommand =  "qsub -sync y -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=20G -now n -V -j y -o ~/log -N small"
-  , qsubMediumCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=32G -now n -V -j y -o ~/log -N medium"
-  , qsubScript = "qsub -sync y -N large " -- trailing space is meaningful!
+  , singularityContainer   = "singularity_mobest.sif"
+  , bindPath               = "--bind=/mnt/archgen/users/schmid"
+  , qsubSmallCommand       = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=20G -now n -V -j y -o ~/log -N small"
+  , qsubLargeMemoryCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=40G -now n -V -j y -o ~/log -N largeMemory"
+  , qsubMediumCommand      = "qsub -sync y -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=32G -now n -V -j y -o ~/log -N medium"
+  , qsubScript             = "qsub -sync y -N large " -- trailing space is meaningful!
 }
 
 -- #### helper functions #### --
 
 relevantRunCommand :: Settings -> FilePath -> Action ()
-relevantRunCommand (Settings setType singularityContainer bindPath qsubSCommand qsubMCommand qsubScript) x
-  | takeExtension x == ".R"   = cmd_ qsubSCommand "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".Rq"  = cmd_ qsubMCommand "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".sh"  = cmd_ qsubSCommand "singularity" "exec" bindPath singularityContainer x
-  | takeExtension x == ".shq" =
-    case setType of
-      Local -> error "Can not run cluster scripts locally."
-      Cluster -> cmd_ $ qsubScript ++ x
+relevantRunCommand (Settings singularityContainer bindPath qsubSCommand qsubLMCommand qsubMCommand qsubScript) x
+  | takeExtension x == ".R"    = cmd_ qsubSCommand "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".Rq"   = cmd_ qsubMCommand "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".shlm" = cmd_ qsubLMCommand "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".sh"   = cmd_ qsubSCommand "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".shq"  = cmd_ $ qsubScript ++ x
 
 process :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 process script (input, output) =
