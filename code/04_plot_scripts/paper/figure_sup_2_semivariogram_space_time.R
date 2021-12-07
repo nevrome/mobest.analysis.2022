@@ -115,9 +115,9 @@ p_time <- ggplot(left_time) +
 p <- cowplot::plot_grid(p_space, p_time, nrow = 2, labels = c("A", "B"))
 
 ggsave(
-  "plots/figure_sup_2_semivariogram_space_time.jpeg",
+  "plots/figure_sup_2_semivariogram_space_time.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.4,
   dpi = 300,
   width = 500, height = 300, units = "mm",

@@ -12,9 +12,9 @@ p <- plot_curves(
 )
 
 ggsave(
-  paste0("plots/figure_sup_21_mobility_curves_retro_high.jpeg"),
+  paste0("plots/figure_sup_21_mobility_curves_retro_high.pdf"),
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.7,
   dpi = 300,
   width = 430, height = 300, units = "mm",

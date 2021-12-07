@@ -31,9 +31,9 @@ p <- ggplot(dplyr::filter(d_binned, geo_dist_cut == 450)) +
   ylab("half mean squared distance along C1")
 
 ggsave(
-  "plots/figure_sup_3_semivariogram_fitting.jpeg",
+  "plots/figure_sup_3_semivariogram_fitting.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.6,
   dpi = 300,
   width = 300, height = 130, units = "mm",

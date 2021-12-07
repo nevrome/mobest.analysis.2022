@@ -41,9 +41,9 @@ p <- ggplot() +
   scale_x_discrete(limits = rev(unique(lower_left_variogram$dist_type)))
 
 ggsave(
-  "plots/figure_sup_4_semivariogram_nugget.jpeg",
+  "plots/figure_sup_4_semivariogram_nugget.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.6,
   dpi = 300,
   width = 300, height = 120, units = "mm",

@@ -56,9 +56,9 @@ total <- cowplot::plot_grid(
 )
 
 ggsave(
-  paste0("plots/figure_sup_14_mds3.jpeg"),
+  paste0("plots/figure_sup_14_mds3.pdf"),
   plot = total,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.9,
   dpi = 300,
   width = 320, height = 300, units = "mm",

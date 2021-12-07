@@ -52,9 +52,9 @@ ps[[4]] <- ps[[4]] +
 p <- cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 2, labels = "AUTO")
 
 ggsave(
-  "plots/figure_sup_17_crossvalidation_rasters_mds3.jpeg",
+  "plots/figure_sup_17_crossvalidation_rasters_mds3.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.8,
   dpi = 300,
   width = 350, height = 300, units = "mm",

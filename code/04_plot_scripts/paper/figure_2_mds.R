@@ -72,9 +72,9 @@ p <- ggplot() +
   )
 
 ggsave(
-  paste0("plots/figure_2_mds.jpeg"),
+  paste0("plots/figure_2_mds.pdf"),
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.7,
   dpi = 300,
   width = 220, height = 300, units = "mm",

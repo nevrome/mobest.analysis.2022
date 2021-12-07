@@ -66,9 +66,9 @@ p <- ggplot() +
   
 
 ggsave(
-  "plots/figure_sup_11_timepillars.jpeg",
+  "plots/figure_sup_11_timepillars.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.7,
   dpi = 300,
   width = 255, height = 300, units = "mm",

@@ -68,9 +68,9 @@ p_nugget <- mlesep_out_nugget %>%
 p <- cowplot::plot_grid(p_theta, p_nugget, nrow = 1, rel_widths = c(0.75, 0.25))
 
 ggsave(
-  "plots/figure_sup_5_mle_anisotropic.jpeg",
+  "plots/figure_sup_5_mle_anisotropic.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.6,
   dpi = 300,
   width = 320, height = 200, units = "mm",

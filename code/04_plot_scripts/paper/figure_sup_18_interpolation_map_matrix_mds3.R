@@ -158,9 +158,9 @@ legends <- cowplot::plot_grid(C1_legend, C2_legend, C3_legend, nrow = 3)
 p <- cowplot::plot_grid(plots, legends, nrow = 2, rel_heights = c(1, 0.3))
 
 ggsave(
-  "plots/figure_sup_18_interpolation_map_matrix_mds3.jpeg",
+  "plots/figure_sup_18_interpolation_map_matrix_mds3.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.7,
   dpi = 300,
   width = 450, height = 300, units = "mm",

@@ -59,9 +59,9 @@ p <- ggplot() +
   ylab("spatial distance to \"origin point\" (directed mean) [km]") 
 
 ggsave(
-  paste0("plots/figure_sup_22_mobility_curve_comparison.jpeg"),
+  paste0("plots/figure_sup_22_mobility_curve_comparison.pdf"),
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.6,
   dpi = 300,
   width = 430, height = 390, units = "mm",

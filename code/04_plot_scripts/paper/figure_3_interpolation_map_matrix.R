@@ -114,9 +114,9 @@ legends <- cowplot::plot_grid(C1_legend, C2_legend, nrow = 1)
 p <- cowplot::plot_grid(plots, legends, nrow = 2, rel_heights = c(1, 0.15))
 
 ggsave(
-  "plots/figure_3_interpolation_map_matrix.jpeg",
+  "plots/figure_3_interpolation_map_matrix.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.5,
   dpi = 300,
   width = 770, height = 300, units = "mm",

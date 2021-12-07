@@ -46,9 +46,9 @@ p2 <- mle_mean_across_iterations %>%
 p <- cowplot::plot_grid(p1, p2, nrow = 2, align = "v", axis = "lr", rel_heights = c(0.9, 1))
 
 ggsave(
-  "plots/figure_sup_7_mle_isotropic.jpeg",
+  "plots/figure_sup_7_mle_isotropic.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.8,
   dpi = 300,
   width = 300, height = 150, units = "mm",

@@ -71,9 +71,9 @@ p <- ggplot() +
   ylab("Covariance K")
 
 ggsave(
-  "plots/figure_sup_10_rearview_distance.jpeg",
+  "plots/figure_sup_10_rearview_distance.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.7,
   dpi = 300,
   width = 300, height = 180, units = "mm",

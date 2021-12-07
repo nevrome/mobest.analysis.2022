@@ -31,9 +31,9 @@ p <- sample_interpol_comparison %>%
   ylab("Density curves")
 
 ggsave(
-  "plots/figure_sup_8_crossvalidation_prediction_accuracy.jpeg",
+  "plots/figure_sup_8_crossvalidation_prediction_accuracy.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.6,
   dpi = 300,
   width = 300, height = 100, units = "mm",

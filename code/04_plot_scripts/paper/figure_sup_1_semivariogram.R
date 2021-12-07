@@ -55,9 +55,9 @@ ps <- lapply(
 p <- cowplot::plot_grid(plotlist = ps, nrow = 1, ncol = 2)
 
 ggsave(
-  "plots/figure_sup_1_semivariogram.jpeg",
+  "plots/figure_sup_1_semivariogram.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.4,
   dpi = 300,
   width = 500, height = 300, units = "mm",

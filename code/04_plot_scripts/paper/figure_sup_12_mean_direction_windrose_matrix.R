@@ -71,9 +71,9 @@ p <- mobility_maps %>%
   )
   
 ggsave(
-  paste0("plots/figure_sup_12_direction_windrose_matrix.jpeg"),
+  paste0("plots/figure_sup_12_direction_windrose_matrix.pdf"),
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 1,
   dpi = 300,
   width = 240, height = 300, units = "mm",

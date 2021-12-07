@@ -83,9 +83,9 @@ p <- ggplot() +
   )
 
 ggsave(
-  paste0("plots/figure_sup_23_mds_with_highlighted_individuals.jpeg"),
+  paste0("plots/figure_sup_23_mds_with_highlighted_individuals.pdf"),
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 1,
   dpi = 300,
   width = 220, height = 300, units = "mm",

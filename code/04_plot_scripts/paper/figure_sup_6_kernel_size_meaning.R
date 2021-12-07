@@ -39,9 +39,9 @@ p <- kernel_theta_data %>%
   ylab("Covariance K")
 
 ggsave(
-  "plots/figure_sup_6_kernel_size_meaning.jpeg",
+  "plots/figure_sup_6_kernel_size_meaning.pdf",
   plot = p,
-  device = "jpeg",
+  device = "pdf",
   scale = 0.6,
   dpi = 300,
   width = 300, height = 150, units = "mm",
