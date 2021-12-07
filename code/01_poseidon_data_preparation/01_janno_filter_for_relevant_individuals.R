@@ -36,9 +36,9 @@ writeLines(
   , "packageVersion: 0.1.0"
   , "genotypeData:"
   , "  format: EIGENSTRAT"
-  , "  genoFile: aadr_plink.geno"
-  , "  snpFile: aadr_plink.snp"
-  , "  indFile: aadr_plink.ind"
+  , "  genoFile: aadr_eig.geno"
+  , "  snpFile: aadr_eig.snp"
+  , "  indFile: aadr_eig.ind"
   , "  snpSet: 1240K"
   , "jannoFile: aadr_poseidon.janno"
   ),
