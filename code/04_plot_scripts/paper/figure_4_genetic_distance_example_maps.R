@@ -62,7 +62,8 @@ p <- ggplot() +
     mapping = aes(x = x, y = y),
     colour = "orange",
     size = 4,
-    shape = "✖"
+    shape = 4,
+    stroke = 2
   ) +
   geom_text(
     data = data.frame(
