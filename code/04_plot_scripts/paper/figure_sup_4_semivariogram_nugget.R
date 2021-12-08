@@ -8,22 +8,26 @@ lower_left_variogram %<>% dplyr::filter(dist_type %in% c("C1", "C2"))
 estimated_nuggets %<>% dplyr::filter(dist_type %in% c("C1", "C2"))
 
 p <- ggplot() +
-  geom_jitter(
+  geom_violin(
     data = lower_left_variogram,
-    mapping = aes(x = dist_type, y = dist_val_adjusted, color = dist_type),
-    alpha = 0.5,
+    mapping = aes(x = dist_type, y = dist_val_adjusted, fill = dist_type),
     size = 0.5,
-    width = 0.4
-  ) + 
-  geom_point(
-    data = estimated_nuggets,
-    mapping = aes(x = dist_type, y = mean),
-    size = 2
+    width = 0.8
+  ) +
+  geom_boxplot(
+    data = lower_left_variogram,
+    mapping = aes(x = dist_type, y = dist_val_adjusted),
+    width = 0.1
   ) +
   geom_point(
     data = estimated_nuggets,
     mapping = aes(x = dist_type, y = mean),
-    size = 5, shape = "|"
+    size = 4, shape = 18
+  ) +
+  geom_point(
+    data = estimated_nuggets,
+    mapping = aes(x = dist_type, y = mean),
+    size = 6, shape = "|"
   ) +
   geom_text(
     data = estimated_nuggets,
@@ -32,9 +36,7 @@ p <- ggplot() +
   ) +
   coord_flip() +
   theme_bw() +
-  guides(
-    color = "none"
-  ) +
+  guides(fill = "none") +
   xlab("ancestry component distance type") +
   ylab("log10 pairwise half mean squared normalized residual distance") +
   scale_y_log10(labels = scales::comma) +
@@ -49,4 +51,3 @@ ggsave(
   width = 300, height = 120, units = "mm",
   limitsize = F
 )
-

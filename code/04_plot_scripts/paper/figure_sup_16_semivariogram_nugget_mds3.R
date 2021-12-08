@@ -8,23 +8,27 @@ lower_left_variogram %<>% dplyr::filter(dist_type %in% c("C3"))
 estimated_nuggets %<>% dplyr::filter(dist_type %in% c("C3"))
 
 p <- ggplot() +
-  geom_jitter(
+  geom_violin(
     data = lower_left_variogram,
-    mapping = aes(x = "C3", y = dist_val_adjusted),
-    alpha = 0.5,
+    mapping = aes(x = dist_type, y = dist_val_adjusted),
     size = 0.5,
-    width = 0.4,
-    color = "#7CAE00"
-  ) + 
-  geom_point(
-    data = estimated_nuggets,
-    mapping = aes(x = dist_type, y = mean),
-    size = 2
+    width = 0.8,
+    fill = "#7CAE00"
+  ) +
+  geom_boxplot(
+    data = lower_left_variogram,
+    mapping = aes(x = dist_type, y = dist_val_adjusted),
+    width = 0.1
   ) +
   geom_point(
     data = estimated_nuggets,
     mapping = aes(x = dist_type, y = mean),
-    size = 5, shape = "|"
+    size = 4, shape = 18
+  ) +
+  geom_point(
+    data = estimated_nuggets,
+    mapping = aes(x = dist_type, y = mean),
+    size = 6, shape = "|"
   ) +
   geom_text(
     data = estimated_nuggets,
@@ -33,12 +37,10 @@ p <- ggplot() +
   ) +
   coord_flip() +
   theme_bw() +
-  guides(
-    color = "none"
-  ) +
+  guides(fill = "none") +
   xlab("") +
   ylab("log10 pairwise half mean squared normalized residual distance") +
-  scale_y_log10(labels = scales::comma) +
+  scale_y_log10(labels = scales::comma, oob = scales::squish) +
   scale_x_discrete(limits = rev(unique(lower_left_variogram$dist_type)))
 
 ggsave(
