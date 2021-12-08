@@ -45,7 +45,8 @@ p <- ggplot() +
   geom_point(
     data = lookup,
     aes(x = C1, y = C2),
-    size = 4, shape = 21, fill = "white", alpha = 0.8, stroke = 0
+    size = 4, shape = 21, fill = "white", alpha = 0.8, 
+    colour = "white", stroke = 0
   ) +
   geom_point(
     data = lookup,
@@ -55,7 +56,7 @@ p <- ggplot() +
   repel(lookup_right_top, direction = "x", nudge_y = 0.06 - lookup_right_top$C2) +
   repel(lookup_right_bottom, direction = "y", nudge_x = 0.06 - lookup_right_bottom$C1) +
   repel(lookup_left, direction = "y", nudge_x = -0.082 - lookup_left$C1) +
-  repel(lookup_bottom, direction = "x", nudge_y = -0.062 - lookup_bottom$C2) +
+  repel(lookup_bottom, direction = "x", nudge_y = -0.064 - lookup_bottom$C2) +
   scale_shape_manual(
     values = region_id_shapes,
     na.value = 3
