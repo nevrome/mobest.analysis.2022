@@ -38,7 +38,7 @@ origins <- origin_grid_modified %>%
   )
 
 origins_with_janno <- origins %>% dplyr::full_join(
-  janno_final %>% dplyr::select(
+  janno_final %>% dplyr::transmute(
     Individual_ID, 
     Group_Name, 
     Country, 
@@ -47,7 +47,13 @@ origins_with_janno <- origins %>% dplyr::full_join(
     Date_BC_AD_Median_Derived, 
     C1,
     C2,
-    C3
+    C3,
+    Publication_Status_1 = purrr::map_chr(
+      Publication_Status, 
+      function(x){
+        gsub("\\(.*$", "", x[[1]])
+      }
+    )
   ),
   by = c("search_id" = "Individual_ID")
 ) %>%
@@ -61,6 +67,7 @@ origin_table <- origins_with_janno %>%
     Group_Name = Group_Name,
     Country = Country,
     Region = region_id,
+    Publication = Publication_Status_1,
     Search_x = x,
     Search_y = y,
     Search_z = Date_BC_AD_Median_Derived,
@@ -101,4 +108,3 @@ origin_table %>%
     "tables/table_sup_1_origin_search_table.csv",
     na = ""
   )
-
