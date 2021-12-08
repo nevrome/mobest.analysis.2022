@@ -51,7 +51,9 @@ origins_with_janno <- origins %>% dplyr::full_join(
     Publication_Status_1 = purrr::map_chr(
       Publication_Status, 
       function(x){
-        gsub("\\(.*$", "", x[[1]])
+        x[[1]] %>%
+          gsub("\\(.*$", "", .) %>%
+          trimws
       }
     )
   ),
