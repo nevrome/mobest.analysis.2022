@@ -36,7 +36,7 @@ p <- ggplot() +
     size = 1.7,
     shape = 21,
     colour = "black",
-    stroke = 0.15
+    stroke = 0.1
   ) +
   theme_bw() +
   theme(
