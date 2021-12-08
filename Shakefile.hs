@@ -44,7 +44,7 @@ relevantRunCommand (Settings singularityContainer bindPath qsubSCommand qsubLMCo
   | takeExtension x == ".sh"   = cmd_ qsubSCommand "singularity" "exec" bindPath singularityContainer x
   | takeExtension x == ".shq"  = cmd_ $ qsubScript ++ x
 
-infixl 8 %$
+infixl 3 %$
 (%$) :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 (%$) script (input, output) =
   let settings = mpiEVAClusterSettings
@@ -52,7 +52,7 @@ infixl 8 %$
     need $ [script, singularityContainer settings] ++ input
     relevantRunCommand settings script
 
-infixl 9 -->
+infixl 4 -->
 (-->) :: a -> b -> (a,b)
 (-->) x y = (x,y)
 
