@@ -14,8 +14,7 @@ ps <- lapply(seq_along(icg), function(i) {
   icg[[i]] %>%
     ggplot() +
     geom_tile(
-      aes(x = ds, y = dt, fill = mean_squared_difference),
-      colour = "grey20"
+      aes(x = ds, y = dt, fill = mean_squared_difference)
     ) +
     scale_fill_viridis_c(direction = -1) +
     facet_wrap(~dependent_var) +
