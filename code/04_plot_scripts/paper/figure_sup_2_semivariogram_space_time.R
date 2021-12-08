@@ -55,16 +55,14 @@ left_time_grouped <- left_time %>%
     .groups = "drop"
   )
 
-p_space <- ggplot() + 
-  geom_point(
+p_space <- ggplot() +
+  geom_bin_2d(
     data = bottom_space,
     mapping = aes(
       x = geo_dist,
-      y = dist_val,
-      col = dist_type
+      y = dist_val
     ),
-    size = 0.1,
-    alpha = 0.3
+    bins = 20
   ) +
   theme_bw() +
   geom_line(
@@ -75,26 +73,20 @@ p_space <- ggplot() +
     )
   ) +
   facet_wrap(~dist_type) +
-  theme(
-    legend.position = "bottom"
-  ) +
-  guides(
-    color = FALSE
-  ) + 
+  theme(legend.position = "right") +
+  scale_fill_gradient(low = "lightgrey", high = "red") +
   xlab("spatial distance in kilometres") +
   ylab("ancestry component distance      ")
   
 
 p_time <- ggplot(left_time) + 
-  geom_point(
+  geom_bin_2d(
     data = left_time,
     mapping = aes(
       x = time_dist,
-      y = dist_val,
-      col = dist_type
+      y = dist_val
     ),
-    size = 0.1,
-    alpha = 0.3
+    bins = 20
   ) +
   theme_bw() +
   geom_line(
@@ -105,9 +97,8 @@ p_time <- ggplot(left_time) +
     )
   ) +
   facet_wrap(~dist_type) +
-  guides(
-    color = FALSE
-  ) +
+  theme(legend.position = "right") +
+  scale_fill_gradient(low = "lightgrey", high = "red") +
   xlab("temporal distance in years") +
   ylab("ancestry component distance      ")
 
