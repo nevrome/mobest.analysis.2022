@@ -89,6 +89,7 @@ dataGPR x = _data "gpr" </> x
 
 tables x = "tables" </> x
 plots x = "plots" </> x
+plotsRenamed x = plots "renamed" </> x
 
 -- #### pipeline #### --
 
@@ -105,7 +106,7 @@ main = shakeArgs shakeOptions {
     , shakeTimings   = True
     } $ do
 
-  want $ map plots [ 
+  want $ map plotsRenamed [ 
       "Figure_01.pdf"
     , "Figure_02.pdf"
     , "Figure_03.pdf"
@@ -656,7 +657,8 @@ main = shakeArgs shakeOptions {
     , "figure_sup_23_mds_with_highlighted_individuals.pdf"
     ] ++ 
     [ code04Paper "renaming_lookup_table.csv" ] -->
-    [ "Figure_01.pdf"
+    map plotsRenamed [
+      "Figure_01.pdf"
     , "Figure_02.pdf"
     , "Figure_03.pdf"
     , "Figure_04.pdf"
