@@ -105,7 +105,11 @@ main = shakeArgs shakeOptions {
     , shakeTimings   = True
     } $ do
 
-  want $ map plots [ 
+  -- copy and rename figures when the pipeline went through successfully
+  runAfter $ do
+    relevantRunCommand mpiEVAClusterSettings $ plots "rename_plots.R"
+
+  want $ map plotsRenamed [ 
       "figure_1_temporal_and_spatial_distribution_of_input_data.pdf"
     , "figure_2_mds.pdf"
     , "figure_3_interpolation_map_matrix.pdf"
