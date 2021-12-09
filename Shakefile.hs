@@ -107,7 +107,8 @@ main = shakeArgs shakeOptions {
 
   -- copy and rename figures when the pipeline went through successfully
   runAfter $ do
-    relevantRunCommand mpiEVAClusterSettings $ plots "rename_plots.R"
+    need $ map code04Paper ["rename_plots.R", "renaming_lookup_table.csv"]
+    relevantRunCommand mpiEVAClusterSettings $ code04Paper "rename_plots.R"
 
   want $ map plotsRenamed [ 
       "figure_1_temporal_and_spatial_distribution_of_input_data.pdf"
