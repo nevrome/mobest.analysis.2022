@@ -1,9 +1,9 @@
 code_output,paper_names
-figure_1_temporal_and_spatial_distribution_of_input_data.pdf,Figure_01.pdf
-figure_2_mds.pdf,Figure_02.pdf
-figure_3_interpolation_map_matrix.pdf,Figure_03.pdf
-figure_4_genetic_distance_example_maps.pdf,Figure_04.pdf
-figure_5_mobility_curves.pdf,Figure_05.pdf
+figure_1_temporal_and_spatial_distribution_of_input_data.pdf,Figure_02.pdf
+figure_2_mds.pdf,Figure_03.pdf
+figure_3_interpolation_map_matrix.pdf,Figure_04.pdf
+figure_4_genetic_distance_example_maps.pdf,Figure_05.pdf
+figure_5_mobility_curves.pdf,Figure_06.pdf
 figure_sup_1_semivariogram.pdf,Supp_Figure_I.pdf
 figure_sup_2_semivariogram_space_time.pdf,Supp_Figure_II.pdf
 figure_sup_3_semivariogram_fitting.pdf,Supp_Figure_III.pdf
