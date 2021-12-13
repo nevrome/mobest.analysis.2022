@@ -4,7 +4,7 @@
 
 <http://dx.doi.org/...>
 
-The files at the URL above will generate the results as found in the publication. The files hosted at <https://github.com/nevrome/mobest.analysis.2020> are the development versions and may have changed since the paper was published.
+The files at the URL above will generate the results as found in the publication. The files hosted at <https://github.com/nevrome/mobest.analysis.2022> are the development versions and may have changed since the paper was published.
 
 ### Authors of this repository:
 
@@ -24,7 +24,7 @@ This repository contains the following top level directories:
 - `data_tracked`: Small input data files manually created for this analysis.
 - `tables` & `plots`: Readily rendered versions of tables and plots for the publication. Figure and table numbers might deviate from the numbers in the paper.
 
-The `DESCRIPTION` and the `.Rbuildignore` file are defining this repository as an R package. This mechanism is only used for R package dependency management, so that all necessary packages can be installed automatically (e.g. with `remotes::install_github("nevrome/mobest.analysis.2020")`). The `.Rproj` config file defines an RStudio project, only for convenient opening this repository in the [RStudio IDE](https://www.rstudio.com/products/rstudio/).
+The `DESCRIPTION` and the `.Rbuildignore` file are defining this repository as an R package. This mechanism is only used for R package dependency management, so that all necessary packages can be installed automatically (e.g. with `remotes::install_github("nevrome/mobest.analysis.2022")`). The `.Rproj` config file defines an RStudio project, only for convenient opening this repository in the [RStudio IDE](https://www.rstudio.com/products/rstudio/).
 
 The other additional files are part of a mechanism to simplify running and reproducing the code. `singularity_mobest.def` defines a [singularity](https://singularity.hpcng.org/) container that includes all (!) software necessary to run the code in this repository. It can be build with a script like `singularity_build_sif.sh`, which requires an empty directory for temporary data `stempdir`. To run arbitrary scripts through singularity and the SGE scheduler of the HPC at the MPI-EVA, we used the script `singularity_qsub.sh`.
 
@@ -54,4 +54,4 @@ So while me did our best to make this repository as accessible and reproducible 
 
 ### Licenses:
 
-[![Licence](https://img.shields.io/github/license/mashape/apistatus.svg)](http://choosealicense.com/licenses/mit/) year: 2021, copyright holder: Clemens Schmid
+[![Licence](https://img.shields.io/github/license/mashape/apistatus.svg)](http://choosealicense.com/licenses/mit/) year: 2022, copyright holder: Clemens Schmid

@@ -1,8 +1,8 @@
 pw <- readLines("pw.txt")
 u <- "clemens_schmid"
 h <- "daghead1.eva.mpg.de"
-lb <- "~/agora/mobest.analysis.2020"
-cb <- "/mnt/archgen/users/schmid/mobest.analysis.2020"
+lb <- "~/agora/mobest.analysis.2022"
+cb <- "/mnt/archgen/users/schmid/mobest.analysis.2022"
 
 up <- function(...) { eva.cluster::cluster_up(
     ..., user = u, host = h, pw = pw, local_base = lb, cluster_base = cb, equal_path = T
