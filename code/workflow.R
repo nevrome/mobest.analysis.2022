@@ -29,8 +29,10 @@ up("singularity_mobest.sif")
 
 #### download output of the pipeline ####
 
-down("data/")
 down("plots/")
+down("tables/")
+down("ShakeReport.html")
+down("data/")
 
 #### run all plotting scripts ####
 
