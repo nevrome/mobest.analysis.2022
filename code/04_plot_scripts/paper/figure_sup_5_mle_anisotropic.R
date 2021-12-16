@@ -41,7 +41,7 @@ p_theta <- mlesep_out_theta %>%
   guides(fill = "none") +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  xlab("ancestry component") +
+  xlab("") +
   ylab(latex2exp::TeX("estimated $\\sqrt{\\theta_\\cdots}$"))# +
   # scale_y_continuous(sec.axis = sec_axis(~.^2, name = latex2exp::TeX("estimated $\\theta_\\cdots$")))
 
@@ -64,7 +64,7 @@ p_nugget <- mlesep_out_nugget %>%
   guides(fill = "none") +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  xlab(" ") +
+  xlab("") +
   ylab(latex2exp::TeX("estimated $\\eta$"))
 
 p <- cowplot::plot_grid(p_theta, p_nugget, nrow = 1, rel_widths = c(0.71, 0.29))
