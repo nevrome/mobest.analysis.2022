@@ -5,7 +5,9 @@ load("data/parameter_exploration/crossvalidation/interpol_comparison_group.RData
 load("data/parameter_exploration/crossvalidation/best_kernel.RData")
 
 icg <- interpol_comparison_group %>%
-  dplyr::filter(!dependent_var %in% c("C3_dist", "CVdist3")) %>%
+  dplyr::filter(
+    !dependent_var %in% c("C3_dist", "CVdist3") & g == min(g)
+  ) %>%
   dplyr::group_split(dependent_var)
 min_point <- best_kernel[[1]]
 
