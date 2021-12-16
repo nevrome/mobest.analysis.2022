@@ -107,11 +107,11 @@ main = shakeArgs shakeOptions {
     } $ do
 
   want $ map plotsRenamed [ 
-      "Figure_01.pdf"
-    , "Figure_02.pdf"
+      "Figure_02.pdf"
     , "Figure_03.pdf"
     , "Figure_04.pdf"
     , "Figure_05.pdf"
+    , "Figure_06.pdf"
     , "Supp_Figure_I.pdf"
     , "Supp_Figure_II.pdf"
     , "Supp_Figure_III.pdf"
@@ -658,11 +658,11 @@ main = shakeArgs shakeOptions {
     ] ++ 
     [ code04Paper "renaming_lookup_table.csv" ] -->
     map plotsRenamed [
-      "Figure_01.pdf"
-    , "Figure_02.pdf"
+      "Figure_02.pdf"
     , "Figure_03.pdf"
     , "Figure_04.pdf"
     , "Figure_05.pdf"
+    , "Figure_06.pdf"
     , "Supp_Figure_I.pdf"
     , "Supp_Figure_II.pdf"
     , "Supp_Figure_III.pdf"
