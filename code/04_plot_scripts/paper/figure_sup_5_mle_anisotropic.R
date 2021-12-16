@@ -24,7 +24,7 @@ p_theta <- mlesep_out_theta %>%
   dplyr::filter(conv == 0) %>%
   ggplot() +
   facet_wrap(
-    mle_method~parameter,
+    ancestry_component~parameter,
     nrow = 2,
     ncol = 3,
     # rows = dplyr::vars(mle_method),
@@ -33,13 +33,14 @@ p_theta <- mlesep_out_theta %>%
     labeller = label_parsed
   ) +
   geom_jitter(
-    aes(x = ancestry_component, y = value, fill = ancestry_component),
+    aes(x = mle_method, y = value, fill = mle_method),
     size = 2,
     height = 0,
     shape = 21
   ) +
   guides(fill = "none") +
   theme_bw() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
   xlab("ancestry component") +
   ylab(latex2exp::TeX("estimated $\\sqrt{\\theta_\\cdots}$"))# +
   # scale_y_continuous(sec.axis = sec_axis(~.^2, name = latex2exp::TeX("estimated $\\theta_\\cdots$")))
@@ -49,23 +50,24 @@ p_nugget <- mlesep_out_nugget %>%
   dplyr::filter(conv == 0) %>%
   ggplot() +
   facet_wrap(
-    mle_method~parameter,
+    ancestry_component~parameter,
     nrow = 2,
     scales = "free_y",
     labeller = label_parsed
   ) +
   geom_jitter(
-    aes(x = ancestry_component, y = value, fill = ancestry_component),
+    aes(x = mle_method, y = value, fill = mle_method),
     size = 2,
     height = 0,
     shape = 21
   ) +
   guides(fill = "none") +
   theme_bw() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
   xlab(" ") +
   ylab(latex2exp::TeX("estimated $\\eta$"))
 
-p <- cowplot::plot_grid(p_theta, p_nugget, nrow = 1, rel_widths = c(0.75, 0.25))
+p <- cowplot::plot_grid(p_theta, p_nugget, nrow = 1, rel_widths = c(0.71, 0.29))
 
 ggsave(
   "plots/figure_sup_5_mle_anisotropic.pdf",
