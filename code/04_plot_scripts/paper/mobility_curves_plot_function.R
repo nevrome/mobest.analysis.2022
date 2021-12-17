@@ -68,8 +68,8 @@ plot_curves <- function(
         xmin = mean_search_z - sd_search_z,
         color = mean_angle_deg
       ),
-      alpha = 1,
-      size = 0.13,
+      alpha = 0.7,
+      size = 0.1,
       height = 40
     ) +
     geom_errorbar(
@@ -80,8 +80,8 @@ plot_curves <- function(
         ymin = directed_mean_spatial_distance - undirected_sd_spatial_distance,
         color = mean_angle_deg
       ),
-      alpha = 1,
-      size = 0.13,
+      alpha = 0.7,
+      size = 0.1,
       width = 40
     ) +
     geom_rect(
@@ -117,7 +117,8 @@ plot_curves <- function(
       point.padding = 1,
       label.padding = 0.3,
       size = 3,
-      alpha = 0.35
+      alpha = 0.35,
+      seed = 345
     ) +
     geom_point(
       data = janno_final %>% dplyr::filter(region_id != "Other region"),
