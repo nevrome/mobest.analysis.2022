@@ -35,18 +35,18 @@ The `Shakefile.hs` [Haskell](https://www.haskell.org/) [stack script](https://do
 This repository features a lot of the code and data necessary to reproduce the complete analysis of the paper. It also usually relies on relative paths and an architecture independent of a specific environment. There are a number of exceptions though, for which we can only provide partial solutions. So if you really want to rerun this analysis in its entirety you will have to apply some tweaks.
 
 - **Data**: This analysis depends on one major dataset of genotype data with (archaeological) context information: [The Allen Ancient DNA Resource](https://reich.hms.harvard.edu/allen-ancient-dna-resource-aadr-downloadable-genotypes-present-day-and-ancient-dna-data). For our analysis we worked with Version 50 of the dataset, for which we have reason to assume it will be permanently hosted on the website of the Reich Lab. We therefore refrained from copying the large dataset to a data repository. All other datasets necessary to run the analysis are available in the `data_tracked` directory.
-- **Software dependencies**: All necessary R packages and command line software tools are listed either in the `DESCRIPTION` or implicitly mentioned in the `singularity_mobest.def` file. The latter even manages a mechanism to download the software and create an independent and self-sufficient software environment (with `singularity build`). But as software develops rapidly, this will soon be downloading and installing software versions, which are not compatible any more with what we used here. That's why we pre-build a version of the singularity container (with singularity v3.6) [++++ CHECK ++++] and uploaded it here: ... [++++ CHECK ++++]. As long as singularity is available and sufficiently stable, this container should feature the exact software versions used to compile the paper.
+- **Software dependencies**: All necessary R packages and command line software tools are listed either in the `DESCRIPTION` or implicitly mentioned in the `singularity_mobest.def` file. The latter even manages a mechanism to download the software and create an independent and self-sufficient software environment (with `singularity build`). But as software develops rapidly, this will soon be downloading and installing software versions, which are not compatible any more with what we used here. That's why we pre-build a version of the singularity container (with singularity v3.6), which you can download [here](https://share.eva.mpg.de/index.php/s/BF7TqnJwkerAgYg) (upon publication, this image will become part of the long-term archive for this paper). As long as singularity is available and sufficiently stable, this container should feature the exact software versions used to compile the paper.
 - **High performance computing**: Some analysis and data transformation in this repository are computationally expensive. As of today, they can only be run in a high performance computing environment. The MPI-EVA provides such an environment for us, which we can access and manage with the scheduling software SGE v8.1.6. We therefore wrote wrapper scripts to submit our code specifically to this system and environment (see for example `singularity_qsub.sh`). If you want to run the respective scripts with whatever system/environment is available to you, then you would have to rewrite the respective wrapper scripts.
 - **Pipeline**: For our own convenience we structured the analysis in a shake build-script (`Shakefile.hs`). It lists all scripts, their input files and their expected output. Shake constructs a pull-based build-order from this to run the whole pipeline, including download, transformation, analysis and finally plotting of data. Theoretically, it might be the most reliable way to reproduce the complete analysis, but as it depends on stack and [stackage](https://www.stackage.org/) for its Haskell dependencies, it may not be long-term stable. It's also hard-wired for our HPC environment, so some additional changes are necessary in this `Settings` datatype:
 
 ```haskell
 mpiEVAClusterSettings = Settings {
-    setType = Cluster
-  , singularityContainer = "singularity_mobest.sif"
-  , bindPath = "--bind=/mnt/archgen/users/schmid"
-  , qsubSmallCommand =  "qsub -sync y -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=16G -now n -V -j y -o ~/log -N small"
-  , qsubMediumCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=32G -now n -V -j y -o ~/log -N medium"
-  , qsubScript = "qsub -sync y -N large "
+    singularityContainer   = "singularity_mobest.sif"
+  , bindPath               = "--bind=/mnt/archgen/users/schmid"
+  , qsubSmallCommand       = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=20G -now n -V -j y -o ~/log -N small"
+  , qsubLargeMemoryCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=40G -now n -V -j y -o ~/log -N lmemory"
+  , qsubMediumCommand      = "qsub -sync y -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=32G -now n -V -j y -o ~/log -N medium"
+  , qsubScript             = "qsub -sync y -N large "
 }
 ```
 
