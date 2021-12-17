@@ -1,4 +1,4 @@
-## Research compendium for ‘Estimating human mobility in Holocene Western Eurasia with large-scale ancient genomic data’
+## Research compendium for 'Estimating human mobility in Holocene Western Eurasia with large-scale ancient genomic data'
 
 ### Compendium DOI:
 
