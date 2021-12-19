@@ -13,7 +13,7 @@ down <- function(...) { eva.cluster::cluster_down(
 
 #### build and upload singularity container ####
 
-system("./singularity_build_sif.sh")
+# bash: ./singularity_build_sif.sh
 up("singularity_mobest.sif")
 
 #### download output of the shake pipeline ####
