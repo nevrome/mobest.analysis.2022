@@ -1,5 +1,11 @@
 ## Research compendium for 'Estimating human mobility in Holocene Western Eurasia with large-scale ancient genomic data'
 
+### Published in:
+
+**(in Review)**: Schmid C., Schiffels S., Estimating human mobility in Holocene Western Eurasia with large-scale ancient genomic data
+
+A preprint is available here: https://doi.org/10.1101/2021.12.20.473345
+
 ### Compendium DOI:
 
 <http://dx.doi.org/...> (to be added upon publication)
@@ -10,10 +16,6 @@ The files in this long-term archive will generate the results as found in the pu
 
 - Clemens Schmid [![ORCiD](https://img.shields.io/badge/ORCiD-0000--0003--3448--5715-green.svg)](http://orcid.org/0000-0003-3448-5715)
 - Stephan Schiffels [![ORCiD](https://img.shields.io/badge/ORCiD-0000--0002--1017--9150-green.svg)](http://orcid.org/0000-0002-1017-9150)
-
-### Published in:
-
-**(in Review)**: Schmid C., Schiffels S., Estimating human mobility in Holocene Western Eurasia with large-scale ancient genomic data
 
 ### Overview of contents:
 
