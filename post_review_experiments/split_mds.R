@@ -20,8 +20,10 @@ janno_with_phases <- janno_without_identicals %>%
     )
   )
 
-janno_with_phases %>%
-  dplyr::filter(Phase %in% c("Both Phases", "Phase II")) %>%
+janno_phaseII <- janno_with_phases %>%
+  dplyr::filter(Phase %in% c("Both Phases", "Phase II"))
+
+janno_phaseII %>%
   dplyr::transmute(
     ind = paste0("<", sort(Individual_ID), ">")
   ) %>% 
@@ -55,14 +57,14 @@ mds <- read_mds("post_review_experiments/data/phaseII_package/phaseII.pruned.mds
     -FID, -SOL
   )
 
-janno_mds <- janno_with_phases %>%
+janno_phaseII_mds <- janno_phaseII %>%
   dplyr::left_join(mds, by = c("Individual_ID" = "Poseidon_ID"))
 
 # add spatial and temporal grouping and coordinates
 load("data/spatial/mobility_regions.RData")
 load("data/spatial/epsg3035.RData")
 
-janno_spatial <- janno_mds %>%
+janno_spatial <- janno_phaseII_mds %>%
   sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = FALSE) %>%
   sf::st_transform(crs = epsg3035)
 
@@ -106,11 +108,11 @@ library(ggplot2)
 load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 
-p <- ggplot() +
+ggplot() +
   geom_point(
     data = janno_final,
     aes(
-      x = C1, y = C2, 
+      x = C1, y = C3, 
       color = Date_BC_AD_Median_Derived,
       shape = region_id,
       label = pop
@@ -123,8 +125,6 @@ p <- ggplot() +
   ) +
   age_colors_gradient +
   coord_fixed() +
-  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
-  scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
   theme_bw() +
   theme(
     legend.position = "bottom",
@@ -144,3 +144,65 @@ p <- ggplot() +
   )
 
 plotly::ggplotly(p)
+
+### umap
+
+# on distances
+# scaling of dimensions?
+# ems
+
+mds_umap_raw <- uwot::umap(
+  mds[2:3], n_neighbors = 15, min_dist = 0.1
+)
+mds_umap <- tibble::tibble(D1 = mds_umap_raw[,1], D2 = mds_umap_raw[,2])
+
+# mds_tsne_raw <- Rtsne::Rtsne(as.matrix(mds[2:10]))
+# mds_umap_tsne <- mds_umap %>%
+#   dplyr::mutate(
+#     T1 = mds_tsne_raw$Y[,1],
+#     T2 = mds_tsne_raw$Y[,2]
+#   )
+
+p <- janno_final %>%
+  dplyr::bind_cols(mds_umap) %>%
+  ggplot() +
+  geom_point(
+    aes(
+      x = D1, y = D2, 
+      color = Date_BC_AD_Median_Derived,
+      shape = region_id,
+      label = pop
+    ),
+    size = 2
+  ) +
+  scale_shape_manual(
+    values = region_id_shapes,
+    na.value = 3
+  ) +
+  age_colors_gradient +
+  coord_fixed() +
+  theme_bw() +
+  theme(
+    legend.position = "bottom",
+    legend.box = "vertical",
+    legend.background = element_blank(),
+    legend.title = element_text(size = 13),
+    legend.spacing.y = unit(0.2, 'cm'),
+    legend.key.height = unit(0.4, 'cm'),
+    legend.text = element_text(size = 10),
+  ) +
+  guides(
+    color = guide_colorbar(title = "Time", barwidth = 20, barheight = 1.5),
+    shape = guide_legend(
+      title = "Region", nrow = 3, ncol = 3, byrow = T,
+      override.aes = aes(size = 3, stroke = 1)
+    )
+  )
+
+plotly::ggplotly(p)
+
+### umap with distances
+
+readr::read_tsv()
+
+janno_final
