@@ -94,6 +94,12 @@ duplicates_to_remove <- setdiff(identical_groups$id, group_representatives)
 janno_without_identicals <- janno_pre_mds %>%
   dplyr::filter(Individual_ID %nin% duplicates_to_remove)
 
+# save janno_without_identicals for derived applications
+save(
+  janno_without_identicals,
+  file = "data/poseidon_data/janno_without_identicals.RData"
+)
+
 # write ind_list for extraction
 tibble::tibble(
   ind = paste0("<", sort(janno_without_identicals$Individual_ID), ">")

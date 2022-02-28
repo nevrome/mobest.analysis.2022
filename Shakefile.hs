@@ -220,7 +220,9 @@ main = shakeArgs shakeOptions {
     , dataPoseidonDataIdenticalFilter "plink.mdist"
     , dataPoseidonDataIdenticalFilter "plink.mdist.id"
     ] -->
-    [ code01 "ind_list.txt" ]
+    [ dataPoseidonData "janno_without_identicals.RData"
+    , code01 "ind_list.txt"
+    ]
 
   code01 "05_poseidon_extract.sh" %$
     code01 "ind_list.txt" : map dataPoseidonDataAADRv50 [
