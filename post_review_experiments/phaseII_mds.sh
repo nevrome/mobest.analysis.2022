@@ -15,6 +15,9 @@ cd post_review_experiments/data/phaseII_package
 # pruning
 plink1.9 --bfile phaseII_package --exclude ../../../code/01_poseidon_data_preparation/myrange.txt --range --maf --make-bed --out phaseII.pruned
 
+# pairwise distances
+plink1.9 --bfile phaseII.pruned --distance square 1-ibs
+
 # generate general pairwise stats
 plink1.9 --bfile phaseII.pruned --genome --out phaseII.pruned
 

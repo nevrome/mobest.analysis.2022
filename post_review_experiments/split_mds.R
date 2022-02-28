@@ -98,7 +98,8 @@ janno_final <- janno_final %>% dplyr::arrange(
   Date_BC_AD_Median_Derived
 ) %>%
   dplyr::mutate(
-    pop = purrr::map_chr(Group_Name, function(x) { x[[1]] })
+    pop = purrr::map_chr(Group_Name, function(x) { x[[1]] }),
+    pup = purrr::map_chr(Publication_Status, function(x) { x[[1]] })
   )
 
 #### plot ####
@@ -108,11 +109,11 @@ library(ggplot2)
 load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 
-ggplot() +
+p <- ggplot() +
   geom_point(
     data = janno_final,
     aes(
-      x = C1, y = C3, 
+      x = C1, y = C2, 
       color = Date_BC_AD_Median_Derived,
       shape = region_id,
       label = pop
@@ -152,7 +153,7 @@ plotly::ggplotly(p)
 # ems
 
 mds_umap_raw <- uwot::umap(
-  mds[2:3], n_neighbors = 15, min_dist = 0.1
+  mds[2:10], n_neighbors = 100, min_dist = 0.1
 )
 mds_umap <- tibble::tibble(D1 = mds_umap_raw[,1], D2 = mds_umap_raw[,2])
 
@@ -169,6 +170,81 @@ p <- janno_final %>%
   geom_point(
     aes(
       x = D1, y = D2, 
+      color = pup,
+      shape = region_id,
+      label = pop
+    ),
+    size = 2
+  ) +
+  scale_shape_manual(
+    values = region_id_shapes,
+    na.value = 3
+  ) +
+  #age_colors_gradient +
+  coord_fixed() +
+  theme_bw() +
+  theme(
+    legend.position = "bottom",
+    legend.box = "vertical",
+    legend.background = element_blank(),
+    legend.title = element_text(size = 13),
+    legend.spacing.y = unit(0.2, 'cm'),
+    legend.key.height = unit(0.4, 'cm'),
+    legend.text = element_text(size = 10),
+  ) +
+  guides(
+    color = guide_none(),
+    #color = guide_colorbar(title = "Time", barwidth = 20, barheight = 1.5),
+    shape = guide_legend(
+      title = "Region", nrow = 3, ncol = 3, byrow = T,
+      override.aes = aes(size = 3, stroke = 1)
+    )
+  )
+
+plotly::ggplotly(p)
+
+### umap with distances
+
+dist_values <- readr::read_tsv(
+  "post_review_experiments/data/phaseII_package/plink.mdist",
+  col_names = F,
+  col_types = readr::cols(.default = readr::col_double())
+) %>% as.data.frame()
+dist_labels <- readr::read_tsv(
+  "post_review_experiments/data/phaseII_package/plink.mdist.id",
+  col_names = F,
+  col_types = readr::cols(.default = readr::col_character())
+)
+
+colnames(dist_values) <- dist_labels$X2
+rownames(dist_values) <- dist_labels$X2
+dist_matrix <- dist_values %>% as.matrix()
+#dist_matrix[lower.tri(dist_matrix)] <- NA
+mydist <- as.dist(dist_matrix)
+
+dist_umap_raw <- uwot::umap(
+  mydist, n_neighbors = 100, min_dist = 0.1
+)
+
+# conf <- umap::umap.defaults
+# conf$n_neighbors <- 300
+# conf$min_dist <- 0.01
+# dist_umap_raw_2 <- umap::umap(
+#   as.matrix(mydist),
+#   input = "dist",
+#   config = conf
+# )$layout
+
+j <- janno_final %>% dplyr::left_join(
+  tibble::as_tibble(dist_umap_raw, rownames = "Poseidon_ID"),
+  by = c("Individual_ID" = "Poseidon_ID")
+)
+
+p <- ggplot() +
+  geom_point(
+    data = j,
+    aes(
+      x = V1, y = V2, 
       color = Date_BC_AD_Median_Derived,
       shape = region_id,
       label = pop
@@ -200,9 +276,3 @@ p <- janno_final %>%
   )
 
 plotly::ggplotly(p)
-
-### umap with distances
-
-readr::read_tsv()
-
-janno_final
