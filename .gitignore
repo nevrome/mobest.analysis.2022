@@ -52,12 +52,13 @@ schemata/*.png
 
 # singularity images
 *.sif
+*.sif.backup
 stempdir/
 
 # github access token
 .github_pat
 
-# rendered stuff
+# rendered output
 *.pdf
 *.html
 

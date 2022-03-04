@@ -3,10 +3,7 @@ From: rocker/geospatial:4.1
 
 %labels
   Author clemens@nevrome.de
-  Version v1.0.0
-
-%files
-  .github_pat .github_pat
+  Version v1.1.0
 
 %environment
   PATH=$PATH:/additional_software
@@ -23,7 +20,7 @@ From: rocker/geospatial:4.1
   chmod +x trident-Linux
   mv trident-Linux /additional_software/trident
   # install the mobest R package
-  R --slave -e 'remotes::install_github("nevrome/mobest", auth_token = readLines(".github_pat")[1], dependencies = TRUE)'
+  R --slave -e 'remotes::install_github("nevrome/mobest", dependencies = TRUE)'
   # install all dependencies of the analysis repo
-  R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2020", auth_token = readLines(".github_pat")[1], dependencies = TRUE)'
+  R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2020", dependencies = TRUE)'
 
