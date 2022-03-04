@@ -8,15 +8,15 @@ load("data/origin_search/janno_search.RData")
 load("data/origin_search/closest_points_examples.RData")
 load("data/origin_search/distance_grid_examples.RData")
 
-janno_search %<>% dplyr::filter(Individual_ID == "3DT26.SG")
-closest_points_examples %<>% dplyr::filter(Individual_ID == "3DT26.SG")
-distance_grid_examples %<>% dplyr::filter(Individual_ID == "3DT26.SG")
+janno_search %<>% dplyr::filter(Poseidon_ID == "3DT26.SG")
+closest_points_examples %<>% dplyr::filter(Poseidon_ID == "3DT26.SG")
+distance_grid_examples %<>% dplyr::filter(Poseidon_ID == "3DT26.SG")
 
 p <- ggplot() +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(
     data = distance_grid_examples %>%
-      dplyr::group_by(Individual_ID, x, y, z) %>%
+      dplyr::group_by(Poseidon_ID, x, y, z) %>%
       dplyr::summarise(
         gen_dist = mean(gen_dist),
         .groups = "drop"

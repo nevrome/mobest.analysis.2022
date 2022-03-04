@@ -26,8 +26,8 @@ load("data/poseidon_data/janno_pre_mds.RData")
 
 spatiotemporal_distances <- janno_pre_mds %$%
   data.frame(
-    IID1 = rep(Individual_ID, each = length(unique(Individual_ID))),
-    IID2 = Individual_ID,
+    IID1 = rep(Poseidon_ID, each = length(unique(Poseidon_ID))),
+    IID2 = Poseidon_ID,
     spatial_distance = 
       data.frame(x, y) %>% 
       stats::dist(method = "euclidean") %>% 
@@ -75,11 +75,11 @@ identical_groups <- genetic_identicals_groups %>%
 
 group_representatives <- identical_groups %>%
   dplyr::left_join(
-    janno_pre_mds, by = c("id" = "Individual_ID")
+    janno_pre_mds, by = c("id" = "Poseidon_ID")
   ) %>%
   dplyr::group_by(group) %>%
   dplyr::filter(
-    Nr_autosomal_SNPs == max(Nr_autosomal_SNPs)
+    Nr_SNPs == max(Nr_SNPs)
   ) %>%
   dplyr::filter(
     dplyr::row_number() == 1
@@ -92,7 +92,7 @@ duplicates_to_remove <- setdiff(identical_groups$id, group_representatives)
 # remove identicals
 `%nin%` <- Negate(`%in%`)
 janno_without_identicals <- janno_pre_mds %>%
-  dplyr::filter(Individual_ID %nin% duplicates_to_remove)
+  dplyr::filter(Poseidon_ID %nin% duplicates_to_remove)
 
 # save janno_without_identicals for derived applications
 save(
@@ -102,7 +102,7 @@ save(
 
 # write ind_list for extraction
 tibble::tibble(
-  ind = paste0("<", sort(janno_without_identicals$Individual_ID), ">")
+  ind = paste0("<", sort(janno_without_identicals$Poseidon_ID), ">")
 ) %>% 
   readr::write_delim(
     file = "code/01_poseidon_data_preparation/ind_list.txt",

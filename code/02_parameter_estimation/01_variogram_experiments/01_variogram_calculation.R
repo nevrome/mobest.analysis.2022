@@ -5,7 +5,7 @@ load("data/poseidon_data/janno_final.RData")
 
 d_all <- mobest::calculate_pairwise_distances(
   independent = mobest::create_spatpos(
-    id = janno_final$Individual_ID,
+    id = janno_final$Poseidon_ID,
     x = janno_final$x,
     y = janno_final$y,
     z = janno_final$Date_BC_AD_Median_Derived

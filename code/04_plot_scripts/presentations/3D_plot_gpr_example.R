@@ -14,12 +14,12 @@ threed <- janno_final %>%
     ]
   )
 
-roman <- which(janno_final$Individual_ID == "3DT26.SG")
+roman <- which(janno_final$Poseidon_ID == "3DT26.SG")
 threed_roman <- threed[roman,]
 
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
-    id = janno_final$Individual_ID,
+    id = janno_final$Poseidon_ID,
     x = list(janno_final$x),
     y = list(janno_final$y),
     z = list(janno_final$Date_BC_AD_Median_Derived),

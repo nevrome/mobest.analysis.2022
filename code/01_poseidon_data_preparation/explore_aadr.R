@@ -7,11 +7,11 @@ aadr_raw <- readr::read_tsv("https://reichdata.hms.harvard.edu/pub/datasets/amh_
 
 aadr_renamed <- aadr_raw %>%
   dplyr::select(
-    Individual_ID = `Version ID`,
+    Poseidon_ID = `Version ID`,
     Latitude = Lat.,
     Longitude = Long.,
     Date_BP_Median_Derived = `Date mean in BP in years before 1950 CE [OxCal mu for a direct radiocarbon date, and average of range for a contextual date]`,
-    Nr_autosomal_SNPs = `SNPs hit on autosomal targets`,
+    Nr_SNPs = `SNPs hit on autosomal targets`,
     Xcontam = `Xcontam ANGSD MOM point estimate (only if male and ≥200)`,
     Genetic_Sex = Sex,
     ASSESSMENT
@@ -49,9 +49,9 @@ aadr_spatial <- aadr_age_filtered %>%
   ) %>%  
   sf::st_drop_geometry()
 
-# Nr_autosomal_SNPs: should be >= 20000 SNPs
+# Nr_SNPs: should be >= 20000 SNPs
 aadr_QC <- aadr_spatial %>% dplyr::filter(
-  Nr_autosomal_SNPs >= 20000
+  Nr_SNPs >= 20000
 )
 # Xcontam: if male, then should not be higher then 10%
 aadr_QC <- aadr_QC %>% dplyr::filter(

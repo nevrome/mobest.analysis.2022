@@ -39,7 +39,7 @@ origins <- origin_grid_modified %>%
 
 origins_with_janno <- origins %>% dplyr::full_join(
   janno_final %>% dplyr::transmute(
-    Individual_ID, 
+    Poseidon_ID, 
     Group_Name, 
     Country, 
     x, 
@@ -48,8 +48,8 @@ origins_with_janno <- origins %>% dplyr::full_join(
     C1,
     C2,
     C3,
-    Publication_Status_1 = purrr::map_chr(
-      Publication_Status, 
+    Publication_1 = purrr::map_chr(
+      Publication, 
       function(x){
         x[[1]] %>%
           gsub("\\(.*$", "", .) %>%
@@ -57,7 +57,7 @@ origins_with_janno <- origins %>% dplyr::full_join(
       }
     )
   ),
-  by = c("search_id" = "Individual_ID")
+  by = c("search_id" = "Poseidon_ID")
 ) %>%
   dplyr::mutate(
     Group_Name = sapply(Group_Name, function(x) { x[[1]] })
@@ -65,11 +65,11 @@ origins_with_janno <- origins %>% dplyr::full_join(
  
 origin_table <- origins_with_janno %>%
   dplyr::transmute(
-    Individual_ID = search_id,
+    Poseidon_ID = search_id,
     Group_Name = Group_Name,
     Country = Country,
     Region = region_id,
-    Publication = Publication_Status_1,
+    Publication = Publication_1,
     Search_x = x,
     Search_y = y,
     Search_z = Date_BC_AD_Median_Derived,

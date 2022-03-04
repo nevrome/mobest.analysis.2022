@@ -19,7 +19,7 @@ load("data/origin_search/retrospection_distance_retrovar.RData")
 
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
-    id = janno_final$Individual_ID,
+    id = janno_final$Poseidon_ID,
     x = list(janno_final$x),
     y = list(janno_final$y),
     z = list(Map(function(x) {x[age_resampling_run]}, janno_final$Date_BC_AD_Sample) %>% unlist()),
@@ -59,7 +59,7 @@ origin_grid_list <- Map(
     
     mobest::search_spatial_origin(
       independent = mobest::create_spatpos_multi(
-        id = janno_search$Individual_ID,
+        id = janno_search$Poseidon_ID,
         x = list(janno_search$x),
         y = list(janno_search$y),
         z = list(janno_search$search_z),

@@ -10,7 +10,7 @@ load("data/origin_search/default_kernel.RData")
 
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
-    id = janno_final$Individual_ID,
+    id = janno_final$Poseidon_ID,
     x = list(janno_final$x),
     y = list(janno_final$y),
     z = list(janno_final$Date_BC_AD_Median_Derived),
@@ -114,7 +114,7 @@ janno_search <- janno_final %>%
 
 origin_grid_median <- mobest::search_spatial_origin(
   independent = mobest::create_spatpos_multi(
-    id = janno_search$Individual_ID,
+    id = janno_search$Poseidon_ID,
     x = list(janno_search$x),
     y = list(janno_search$y),
     z = list(janno_search$search_z),
@@ -135,8 +135,8 @@ origin_grid_median <- origin_grid_median %>%
     spatial_distance = spatial_distance/1000
   ) %>%
   dplyr::left_join(
-    janno_final %>% dplyr::select(Individual_ID, region_id),
-    by = c("search_id" = "Individual_ID")
+    janno_final %>% dplyr::select(Poseidon_ID, region_id),
+    by = c("search_id" = "Poseidon_ID")
   ) %>%
   dplyr::filter(region_id != "Other region")
 

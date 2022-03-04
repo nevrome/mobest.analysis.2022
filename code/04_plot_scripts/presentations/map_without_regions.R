@@ -9,7 +9,7 @@ load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 
 # janno_final <- janno_final %>% dplyr::mutate(
-#   year_of_publication = readr::parse_number(Publication_Status)
+#   year_of_publication = readr::parse_number(Publication)
 # ) %>% dplyr::filter(
 #   year_of_publication <= 2014
 # )

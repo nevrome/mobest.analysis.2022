@@ -33,8 +33,8 @@ purrr::walk2(
       spatial_distance = spatial_distance/1000
     ) %>%
     dplyr::left_join(
-      janno_final %>% dplyr::select(Individual_ID, region_id),
-      by = c("search_id" = "Individual_ID")
+      janno_final %>% dplyr::select(Poseidon_ID, region_id),
+      by = c("search_id" = "Poseidon_ID")
     )
   
   # means for search points across age resampling

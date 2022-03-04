@@ -22,19 +22,19 @@ janno_search <- janno_final %>%
     z = Date_BC_AD_Median_Derived
   ) %>%
   dplyr::filter(
-    Individual_ID %in% ioi
+    Poseidon_ID %in% ioi
   ) %>%
   dplyr::mutate(
-    Individual_ID = factor(Individual_ID, levels = ioi)
+    Poseidon_ID = factor(Poseidon_ID, levels = ioi)
   ) %>%
-  dplyr::arrange(Individual_ID)
+  dplyr::arrange(Poseidon_ID)
 
 #### prepare model grid ####
 nr_of_resampling_runs <- 10
 
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
-    id = janno_final$Individual_ID,
+    id = janno_final$Poseidon_ID,
     x = Map(function(i){janno_final$x}, seq_len(nr_of_resampling_runs)),
     y = Map(function(i){janno_final$y}, seq_len(nr_of_resampling_runs)),
     z = Map(
@@ -74,7 +74,7 @@ grid_list <- interpol_grid_specific %>%
   ) %>%
   dplyr::left_join(
     janno_search %>% dplyr::select(
-      Individual_ID, Date_BC_AD_Median_Derived, C1, C2
+      Poseidon_ID, Date_BC_AD_Median_Derived, C1, C2
     ) %>% 
       dplyr::mutate(
         z = Date_BC_AD_Median_Derived - retrospection_distance
@@ -89,7 +89,7 @@ distance_grid_multi_resampling <- grid_list %>%
   dplyr::ungroup()
 
 closest_points_examples <- distance_grid_multi_resampling %>% 
-  dplyr::group_by(independent_table_id, Individual_ID) %>%
+  dplyr::group_by(independent_table_id, Poseidon_ID) %>%
   dplyr::filter(gen_dist == min(gen_dist)) %>%
   # dplyr::filter(gen_dist <= quantile(gen_dist, prob = 0.1)) %>%
   # dplyr::filter(
@@ -103,7 +103,7 @@ closest_points_examples <- distance_grid_multi_resampling %>%
   dplyr::ungroup()
 
 distance_grid_examples <- distance_grid_multi_resampling %>%
-  dplyr::group_by(id, Individual_ID) %>%
+  dplyr::group_by(id, Poseidon_ID) %>%
   dplyr::transmute(x, y, z, gen_dist = mean(gen_dist)) %>%
   dplyr::ungroup()
 

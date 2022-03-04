@@ -10,9 +10,9 @@ load("data/origin_search/distance_grid_examples.RData")
 
 p <- ggplot() +
   facet_wrap(
-    ~Individual_ID,
+    ~Poseidon_ID,
     ncol = 2,
-    labeller = ggplot2::labeller(Individual_ID = c(
+    labeller = ggplot2::labeller(Poseidon_ID = c(
       "Stuttgart_published.DG" = paste(
         "Stuttgart ~5250BC",
         "Early Neolithic, Linear Pottery culture",
@@ -42,7 +42,7 @@ p <- ggplot() +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(
     data = distance_grid_examples %>%
-      dplyr::group_by(Individual_ID, x, y, z) %>%
+      dplyr::group_by(Poseidon_ID, x, y, z) %>%
       dplyr::summarise(
         gen_dist = mean(gen_dist),
         .groups = "drop"
@@ -67,7 +67,7 @@ p <- ggplot() +
   ) +
   geom_text(
     data = data.frame(
-      Individual_ID = janno_search$Individual_ID,
+      Poseidon_ID = janno_search$Poseidon_ID,
       plot_label = LETTERS[seq_len(nrow(janno_search))]
     ),
     aes(label = plot_label),

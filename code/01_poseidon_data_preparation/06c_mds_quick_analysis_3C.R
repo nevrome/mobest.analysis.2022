@@ -11,7 +11,7 @@ load("data/spatial/epsg3035.RData")
 
 janno_mds <- janno %>% 
   dplyr::left_join(
-    mds, by = c("Individual_ID" = "IID")
+    mds, by = c("Poseidon_ID" = "IID")
   )
 
 fig <- plotly::plot_ly(janno_mds, x = ~C1, y = ~C2, z = ~C3, color = ~Date_BC_AD_Median, marker = list(size = 2))

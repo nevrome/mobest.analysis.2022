@@ -11,7 +11,7 @@ load("data/spatial/epsg3035.RData")
 
 janno_mds <- janno %>% 
   dplyr::left_join(
-    mds, by = c("Individual_ID" = "IID")
+    mds, by = c("Poseidon_ID" = "IID")
   )
 
 ggplot() +

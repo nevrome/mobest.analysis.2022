@@ -33,11 +33,11 @@ load("epsg3035.RData")
 origin_grid_mean_infodense <- origin_grid_mean %>%
   dplyr::left_join(
     janno_final %>% dplyr::select(-region_id),
-    by = c("search_id" = "Individual_ID")
+    by = c("search_id" = "Poseidon_ID")
   ) %>%
   tibble::add_column(
     Pop = sapply(.$Group_Name, \(x) x[[1]]),
-    Pup = sapply(.$Publication_Status, \(x) x[[1]]),
+    Pup = sapply(.$Publication, \(x) x[[1]]),
     .after = "search_id"
   ) %>%
   dplyr::select(-Date_BC_AD_Prob) %>%

@@ -5,7 +5,7 @@ load("data/poseidon_data/janno_final.RData")
 
 mleGPsep_out <- mobest::laGP_mle_anisotropic(
   independent = mobest::create_spatpos(
-    id = janno_final$Individual_ID,
+    id = janno_final$Poseidon_ID,
     x = janno_final$x / 1000,
     y = janno_final$y / 1000,
     z = janno_final$Date_BC_AD_Median_Derived
@@ -19,7 +19,7 @@ mleGPsep_out <- mobest::laGP_mle_anisotropic(
 
 jmleGPsep_out <- mobest::laGP_jmle_anisotropic(
   independent = mobest::create_spatpos(
-    id = janno_final$Individual_ID,
+    id = janno_final$Poseidon_ID,
     x = janno_final$x / 1000,
     y = janno_final$y / 1000,
     z = janno_final$Date_BC_AD_Median_Derived

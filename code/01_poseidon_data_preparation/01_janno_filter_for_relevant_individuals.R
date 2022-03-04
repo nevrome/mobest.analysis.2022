@@ -8,17 +8,18 @@ source("code/01_poseidon_data_preparation/00_aadr_age_string_parser.R")
 aadr_raw <- readr::read_tsv("data/poseidon_data/aadrv50/v50.0_1240k_public.anno", na = c("", ".."))
 
 aadr_minimal_janno <- aadr_raw %>%
-  dplyr::select(
-    Individual_ID = `Version ID`,
+  dplyr::transmute(
+    Poseidon_ID = `Version ID`,
     Group_Name = `Group ID`,
     Country = Country,
     Latitude = Lat.,
     Longitude = Long.,
-    Nr_autosomal_SNPs = `SNPs hit on autosomal targets`,
-    Xcontam = `Xcontam ANGSD MOM point estimate (only if male and ≥200)`,
+    Nr_SNPs = `SNPs hit on autosomal targets`,
+    # This is not a defined .janno column any more since Poseidon 2.5.0
+    Xcontam = as.numeric(`Xcontam ANGSD MOM point estimate (only if male and ≥200)`),
     Genetic_Sex = Sex,
     ASSESSMENT,
-    Publication_Status = Publication,
+    Publication = Publication,
     aadr_age_string = `Full Date: One of two formats. (Format 1) 95.4% CI calibrated radiocarbon age (Conventional Radiocarbon Age BP, Lab number) e.g. 2624-2350 calBCE (3990±40 BP, Ua-35016). (Format 2) Archaeological context range, e.g. 2500-1700 BCE`
   ) %>% cbind(
     split_age_string(.$aadr_age_string)
@@ -28,7 +29,7 @@ aadr_minimal_janno <- aadr_raw %>%
 # create a minimal aadr poseidon package by adding a .janno and a POSEIDON.yml file
 poseidonR::write_janno(aadr_minimal_janno, "data/poseidon_data/aadrv50/aadr_poseidon.janno")
 writeLines(
-  c("poseidonVersion: 2.4.0"
+  c("poseidonVersion: 2.5.0"
   , "title: aadr_poseidon"
   , "contributor:"
   , "  - name: John Doe"
@@ -86,9 +87,9 @@ janno_spatial_filtered_non_sf <- janno_spatial_filtered %>%
   ) %>%  
   sf::st_drop_geometry()
 
-# Nr_autosomal_SNPs: should be >= 20000 SNPs
+# Nr_SNPs: should be >= 25000 SNPs
 janno_QC <- janno_spatial_filtered_non_sf %>% dplyr::filter(
-  Nr_autosomal_SNPs >= 25000
+  Nr_SNPs >= 25000
 )
 # Xcontam: if male, then should not be higher then 10%
 janno_QC <- janno_QC %>% dplyr::filter(
@@ -123,7 +124,7 @@ save(janno_pre_mds, file = "data/poseidon_data/janno_pre_mds.RData")
 
 # store ind list for poseidon extraction
 tibble::tibble(
-  ind = paste0("<", sort(janno_filtered_final$Individual_ID), ">")
+  ind = paste0("<", sort(janno_filtered_final$Poseidon_ID), ">")
 ) %>% 
   readr::write_delim(
     file = "code/01_poseidon_data_preparation/pre_identicals_filter_ind_list.txt",

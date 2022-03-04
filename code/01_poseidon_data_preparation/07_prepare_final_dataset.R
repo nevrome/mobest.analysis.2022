@@ -23,7 +23,7 @@ read_mds <- function(x) {
 janno <- poseidonR::read_janno("data/poseidon_data/poseidon_extracted/poseidon_extracted.janno")
 mds <- read_mds("data/poseidon_data/mds/mds.mds") %>% 
   dplyr::transmute(
-    Individual_ID = IID,
+    Poseidon_ID = IID,
     C1 = C1,
     C2 = C2,
     C3 = C3

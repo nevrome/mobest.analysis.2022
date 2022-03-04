@@ -7,7 +7,7 @@ load("data/plot_reference_data/age_colors_gradient.RData")
 source("code/04_plot_scripts/paper/individuals_to_highlight.R")
 
 lookup <- individuals %>% 
-  dplyr::inner_join(janno_final, by = c("search_id" = "Individual_ID"))
+  dplyr::inner_join(janno_final, by = c("search_id" = "Poseidon_ID"))
 
 lookup_top          <- lookup %>% dplyr::filter(C2 > -0.01)
 lookup_left         <- lookup_top %>% dplyr::filter(C1 < mean(C1))
