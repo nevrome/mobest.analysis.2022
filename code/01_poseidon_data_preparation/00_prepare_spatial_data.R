@@ -19,24 +19,27 @@ save(epsg3035, file = "data/spatial/epsg3035.RData")
 
 # land_outline
 # land_outline <- rnaturalearth::ne_download(
-#   scale = 50, type = 'land', category = 'physical'
-# ) %>% sf::st_as_sf()
+#   scale = 50, type = 'land', category = 'physical',
+#   returnclass = "sf"
+# )
 # save(land_outline, file = "data_tracked/natural_earth_geodata/land_outline.RData")
 load("data_tracked/natural_earth_geodata/land_outline.RData")
 save(land_outline, file = "data/spatial/land_outline.RData")
 
 # rivers
 # rivers <- rnaturalearth::ne_download(
-#   scale = 50, type = 'rivers_lake_centerlines', category = 'physical'
-# ) %>% sf::st_as_sf()
+#   scale = 50, type = 'rivers_lake_centerlines', category = 'physical',
+#   returnclass = "sf"
+# )
 # save(rivers, file = "data_tracked/natural_earth_geodata/rivers.RData")
 load("data_tracked/natural_earth_geodata/rivers.RData")
 save(rivers, file = "data/spatial/rivers.RData")
 
 # lakes
 # lakes <- rnaturalearth::ne_download(
-#   scale = 50, type = 'lakes', category = 'physical'
-# ) %>% sf::st_as_sf()
+#   scale = 50, type = 'lakes', category = 'physical',
+#   returnclass = "sf"
+# )
 # save(lakes, file = "data_tracked/natural_earth_geodata/lakes.RData")
 load("data_tracked/natural_earth_geodata/lakes.RData")
 save(lakes, file = "data/spatial/lakes.RData")
