@@ -1,4 +1,23 @@
 library(magrittr)
+library(ggplot2)
+
+load("data/poseidon_data/janno_final.RData")
+
+janno_final %>%
+  dplyr::mutate(
+    Capture_Type = dplyr::case_when(
+      grepl(".SG", Poseidon_ID) ~ "Shotgun",
+      TRUE ~ "Capture"
+    )
+  ) %>%
+  ggplot() +
+  geom_point(
+    aes(C1, C3, colour = Capture_Type)
+  )
+  
+
+
+#### phase experiment ####
 
 load("data/poseidon_data/janno_without_identicals.RData")
 
