@@ -22,7 +22,9 @@ up("singularity_mobest.sif")
 down("ShakeReport.html")
 down("plots/")
 down("tables/")
+down("data/poseidon_data/poseidon_extracted/")
 down("data/")
+
 
 #### run all plotting scripts ####
 

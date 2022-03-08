@@ -1,6 +1,16 @@
 library(magrittr)
 library(ggplot2)
 
+#### pca experiment ####
+
+pca_out <- smartsnp::smart_pca(
+  "data/poseidon_data/poseidon_extracted/poseidon_extracted.geno",
+  sample_group = 1:500,
+  missing_impute = "mean"
+)
+
+#### experiment with MDS + capture vs. shotgun ####
+
 load("data/poseidon_data/janno_final.RData")
 
 janno_final %>%
