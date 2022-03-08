@@ -1,6 +1,36 @@
 library(magrittr)
 library(ggplot2)
 
+#### read emu ####
+
+emu <- readr::read_delim("emu_out.txt.eigenvecs", delim = " ", col_names = FALSE)
+
+emu_merged <- emu %>%
+  dplyr::bind_cols(janno_final) %>%
+  dplyr::mutate(
+    pop = purrr::map_chr(Group_Name, function(x){x[[1]]}),
+    capture = dplyr::case_when(
+      grepl(".SG", Poseidon_ID) ~ "Shotgun",
+      TRUE ~ "Capture"
+    )
+  )
+
+p <- emu_merged %>%
+  ggplot() +
+  geom_point(aes(X1, X2)) #color = age_group_id, shape = region_id, label = pop))
+
+plotly::ggplotly(p)
+
+plotly::plot_ly(
+  x=emu_merged$X1,
+  y=emu_merged$X2,
+  z=emu_merged$X3,
+  type="scatter3d",
+  mode="markers",
+  color=emu_merged$capture,
+  size = I(30)
+)
+
 #### analyze pca results ####
 
 load("pca_experiment_project_shotgun_on_capture.RData")
@@ -15,13 +45,23 @@ load("data/poseidon_data/janno_final.RData")
 compa <- sonc %>%
   dplyr::bind_cols(cons) %>%
   dplyr::bind_cols(janno_final) %>%
-  dplyr::mutate(pop = purrr::map_chr(Group_Name, function(x){x[[1]]}))
-  
+  dplyr::mutate(
+    pop = purrr::map_chr(Group_Name, function(x){x[[1]]}),
+    capture = dplyr::case_when(
+      grepl(".SG", Poseidon_ID) ~ "Shotgun",
+      TRUE ~ "Capture"
+    )
+  )
+
+compa %>%
+  ggplot() +
+  geom_point(aes(sonc.PC1, -sonc.PC2, label = pop, colour = capture))
+
 p <- compa %>%
   ggplot() +
-  geom_point(
-    aes(cons.PC1, cons.PC2, color = cons.Class, label = pop) 
-  )
+  geom_point(aes(sonc.PC1, -sonc.PC2, label = pop), color = "red") +
+  geom_point(aes(cons.PC1, cons.PC2, label = pop), color = "blue") +
+  geom_point(aes(-C1*5000, C2*5000, label = pop), color = "green")
 
 plotly::ggplotly(p)
 
