@@ -23,6 +23,7 @@ Imports:
     scales (>= 1.1.1),
     sf (>= 1.0-2),
     shiny (>= 1.7.0),
+    smartsnp (>= 1.1.0),
     stats (>= 4.1.1),
     stringr (>= 1.4.0),
     tibble (>= 3.1.4),
