@@ -24,7 +24,7 @@ pca_out <- smartsnp::smart_pca(
   missing_impute = "mean",
   pc_axes = 3,
   sample_project = to_project,
-  pc_project = 3
+  pc_project = c(1,2,3)
 )
 
 save(pca_out, file = "pca_experiment_project_shotgun_on_capture.RData")
