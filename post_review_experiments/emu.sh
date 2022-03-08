@@ -8,4 +8,4 @@ emu \
   --n_out 3 \
   --threads 8 \
   --out emu_out.txt \
-  --loadings emu_loadings.txt
+  --loadings
