@@ -14,11 +14,19 @@ From: rocker/geospatial:4.1
   # install eigensoft
   apt-get install -y eigensoft --no-install-recommends
   # install plink
-  apt-get install plink1.9
+  apt-get install -y plink1.9
   # install trident
   wget https://github.com/poseidon-framework/poseidon-hs/releases/latest/download/trident-Linux
   chmod +x trident-Linux
   mv trident-Linux /additional_software/trident
+  # install emu
+  apt-get install -y python3-pip
+  pip3 install numpy cython scipy
+  git clone https://github.com/Rosemeis/emu.git
+  cd emu
+  python3 setup.py build_ext --inplace
+  pip3 install -e .
+  cd ..
   # install the mobest R package
   R --slave -e 'remotes::install_github("nevrome/mobest", dependencies = TRUE)'
   # install all dependencies of the analysis repo
