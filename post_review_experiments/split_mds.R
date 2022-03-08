@@ -1,6 +1,30 @@
 library(magrittr)
 library(ggplot2)
 
+#### analyze pca results ####
+
+load("pca_experiment_project_shotgun_on_capture.RData")
+sonc <- pca_out$pca.sample_coordinates %>% tibble::as_tibble()
+colnames(sonc) <- paste0("sonc.", colnames(sonc))
+load("pca_experiment_project_capture_on_shotgun.RData")
+cons <- pca_out$pca.sample_coordinates %>% tibble::as_tibble()
+colnames(cons) <- paste0("cons.", colnames(cons))
+
+load("data/poseidon_data/janno_final.RData")
+
+compa <- sonc %>%
+  dplyr::bind_cols(cons) %>%
+  dplyr::bind_cols(janno_final) %>%
+  dplyr::mutate(pop = purrr::map_chr(Group_Name, function(x){x[[1]]}))
+  
+p <- compa %>%
+  ggplot() +
+  geom_point(
+    aes(cons.PC1, cons.PC2, color = cons.Class, label = pop) 
+  )
+
+plotly::ggplotly(p)
+
 #### pca experiment ####
 
 pca_out <- smartsnp::smart_pca(
@@ -8,6 +32,12 @@ pca_out <- smartsnp::smart_pca(
   sample_group = 1:500,
   missing_impute = "mean"
 )
+
+pca_out$pca.sample_coordinates %>% tibble::as_tibble() %>%
+  ggplot() +
+  geom_point(
+    aes(PC1, PC2)
+  )
 
 #### experiment with MDS + capture vs. shotgun ####
 
