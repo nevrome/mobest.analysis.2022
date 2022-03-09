@@ -4,7 +4,7 @@ library(ggplot2)
 #### umap on emu ####
 
 emu_umap_raw <- uwot::umap(
-  emu, n_neighbors = 10, min_dist = 0.1
+  emu, n_neighbors = 400, min_dist = 0.6
 )
 emu_umap <- tibble::tibble(D1 = emu_umap_raw[,1], D2 = emu_umap_raw[,2])
 
@@ -18,10 +18,16 @@ emu_umap_full <- emu_umap %>%
     )
   )
 
-emu_umap_full %>% ggplot() +
+load("data/plot_reference_data/age_colors_gradient.RData")
+load("data/plot_reference_data/region_id_shapes.RData")
+p <- emu_umap_full %>% ggplot() +
   geom_point(
-    aes(x = D1, y = D2, colour = age_group_id, shape = region_id)
-  )
+    aes(x = D1, y = D2, colour = Date_BC_AD_Median_Derived, shape = region_id, label = pop)
+  ) +
+  scale_shape_manual(values = region_id_shapes, na.value = 1) +
+  age_colors_gradient
+
+plotly::ggplotly(p)
 
 #### read emu ####
 
