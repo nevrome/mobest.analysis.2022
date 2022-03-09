@@ -1,4 +1,4 @@
-# qsub -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=100G -now n -V -j y -o ~/log -N experiment singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript post_review_experiments/pca_experiments.R
+# qsub -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=200G -now n -V -j y -o ~/log -N experiment singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript post_review_experiments/pca_experiments.R
 
 library(magrittr)
 
