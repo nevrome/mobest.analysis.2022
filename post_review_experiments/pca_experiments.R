@@ -2,31 +2,31 @@
 
 library(magrittr)
 
-#### projection pca ####
-
 fam <- readr::read_tsv(
   "data/poseidon_data/poseidon_extracted/poseidon_extracted.fam",
   col_names = FALSE
-  )
-
-fam_capture <- fam %>%
-  dplyr::mutate(
-    Capture_Type = dplyr::case_when(
-      grepl(".SG", X2) ~ "Shotgun",
-      TRUE ~ "Capture"
-    )
-  ) 
-
-pca_out <- smartsnp::smart_pca(
-  "data/poseidon_data/poseidon_extracted/poseidon_extracted.geno",
-  sample_group = seq_len(nrow(fam)),
-  missing_impute = "mean",
-  pc_axes = 3,
-  sample_project = which(fam_capture$Capture_Type == "Capture"),
-  pc_project = c(1,2,3)
 )
 
-save(pca_out, file = "pca_experiment_project_capture_on_shotgun.RData")
+#### projection pca ####
+# 
+# fam_capture <- fam %>%
+#   dplyr::mutate(
+#     Capture_Type = dplyr::case_when(
+#       grepl(".SG", X2) ~ "Shotgun",
+#       TRUE ~ "Capture"
+#     )
+#   ) 
+# 
+# pca_out <- smartsnp::smart_pca(
+#   "data/poseidon_data/poseidon_extracted/poseidon_extracted.geno",
+#   sample_group = seq_len(nrow(fam)),
+#   missing_impute = "mean",
+#   pc_axes = 3,
+#   sample_project = which(fam_capture$Capture_Type == "Capture"),
+#   pc_project = c(1,2,3)
+# )
+# 
+# save(pca_out, file = "pca_experiment_project_capture_on_shotgun.RData")
 
 # pca_out <- smartsnp::smart_pca(
 #   "data/poseidon_data/poseidon_extracted/poseidon_extracted.geno",
@@ -41,12 +41,11 @@ save(pca_out, file = "pca_experiment_project_capture_on_shotgun.RData")
 
 #### normal pca ####
 
-# pca_out <- smartsnp::smart_pca(
-#   "data/poseidon_data/poseidon_extracted/poseidon_extracted.geno",
-#   sample_group = seq_len(nrow(fam)),
-#   missing_impute = "mean",
-#   pc_axes = 3,
-#   pc_project = 3
-# )
-# 
-# save(pca_out, file = "pca_experiment.RData")
+pca_out <- smartsnp::smart_pca(
+  "data/poseidon_data/poseidon_extracted/poseidon_extracted.geno",
+  sample_group = seq_len(nrow(fam)),
+  missing_impute = "mean",
+  pc_axes = 10
+)
+
+save(pca_out, file = "pca_experiment.RData")
