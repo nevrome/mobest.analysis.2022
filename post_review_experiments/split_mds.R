@@ -4,7 +4,7 @@ library(ggplot2)
 #### umap on emu ####
 
 emu_umap_raw <- uwot::umap(
-  emu, n_neighbors = 400, min_dist = 0.6
+  emu, n_neighbors = 300, min_dist = 0.6
 )
 emu_umap <- tibble::tibble(D1 = emu_umap_raw[,1], D2 = emu_umap_raw[,2])
 
@@ -43,7 +43,7 @@ emu_merged <- emu %>%
     )
   )
 
-p <- emu_merged %>%
+emu_merged %>%
   ggplot() +
   geom_point(aes(X1, X3, color = capture)) #color = age_group_id, shape = region_id, label = pop))
 
@@ -59,8 +59,36 @@ plotly::plot_ly(
   size = I(30)
 )
 
+#### umap on pca ####
+
+pca_umap_raw <- uwot::umap(
+  pca_complete[3:5], n_neighbors = 300, min_dist = 0.2
+)
+pca_umap <- tibble::tibble(D1 = pca_umap_raw[,1], D2 = pca_umap_raw[,2])
+
+pca_umap_full <- pca_umap %>%
+  dplyr::bind_cols(janno_final) %>%
+  dplyr::mutate(
+    pop = purrr::map_chr(Group_Name, function(x){x[[1]]}),
+    capture = dplyr::case_when(
+      grepl(".SG", Poseidon_ID) ~ "Shotgun",
+      TRUE ~ "Capture"
+    )
+  )
+
+load("data/plot_reference_data/age_colors_gradient.RData")
+load("data/plot_reference_data/region_id_shapes.RData")
+pca_umap_full %>% ggplot() +
+  geom_point(
+    aes(x = D1, y = D2, colour = Date_BC_AD_Median_Derived, shape = region_id, label = pop)
+  ) +
+  scale_shape_manual(values = region_id_shapes, na.value = 1) +
+  age_colors_gradient
+
 #### analyze pca results ####
 
+load("pca_experiment.RData")
+pca_complete <- pca_out$pca.sample_coordinates %>% tibble::as_tibble()
 load("pca_experiment_project_shotgun_on_capture.RData")
 sonc <- pca_out$pca.sample_coordinates %>% tibble::as_tibble()
 colnames(sonc) <- paste0("sonc.", colnames(sonc))
@@ -70,7 +98,8 @@ colnames(cons) <- paste0("cons.", colnames(cons))
 
 load("data/poseidon_data/janno_final.RData")
 
-compa <- sonc %>%
+compa <- pca_complete %>%
+  dplyr::bind_cols(sonc) %>%
   dplyr::bind_cols(cons) %>%
   dplyr::bind_cols(janno_final) %>%
   dplyr::mutate(
@@ -83,13 +112,15 @@ compa <- sonc %>%
 
 compa %>%
   ggplot() +
-  geom_point(aes(sonc.PC1, -sonc.PC2, label = pop, colour = capture))
+  geom_point(aes(PC1, PC3, label = pop, colour = capture))
 
 p <- compa %>%
   ggplot() +
-  geom_point(aes(sonc.PC1, -sonc.PC2, label = pop), color = "red") +
-  geom_point(aes(cons.PC1, cons.PC2, label = pop), color = "blue") +
-  geom_point(aes(-C1*5000, C2*5000, label = pop), color = "green")
+  geom_point(
+    aes(x = PC1, y = PC3, colour = Date_BC_AD_Median_Derived, shape = region_id, label = pop)
+  ) +
+  scale_shape_manual(values = region_id_shapes, na.value = 1) +
+  age_colors_gradient
 
 plotly::ggplotly(p)
 
