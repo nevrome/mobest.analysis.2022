@@ -1,6 +1,28 @@
 library(magrittr)
 library(ggplot2)
 
+#### umap on emu ####
+
+emu_umap_raw <- uwot::umap(
+  emu, n_neighbors = 10, min_dist = 0.1
+)
+emu_umap <- tibble::tibble(D1 = emu_umap_raw[,1], D2 = emu_umap_raw[,2])
+
+emu_umap_full <- emu_umap %>%
+  dplyr::bind_cols(janno_final) %>%
+  dplyr::mutate(
+    pop = purrr::map_chr(Group_Name, function(x){x[[1]]}),
+    capture = dplyr::case_when(
+      grepl(".SG", Poseidon_ID) ~ "Shotgun",
+      TRUE ~ "Capture"
+    )
+  )
+
+emu_umap_full %>% ggplot() +
+  geom_point(
+    aes(x = D1, y = D2, colour = age_group_id, shape = region_id)
+  )
+
 #### read emu ####
 
 emu <- readr::read_delim("emu_out.txt.eigenvecs", delim = " ", col_names = FALSE)
@@ -17,7 +39,7 @@ emu_merged <- emu %>%
 
 p <- emu_merged %>%
   ggplot() +
-  geom_point(aes(X1, X2)) #color = age_group_id, shape = region_id, label = pop))
+  geom_point(aes(X1, X3, color = capture)) #color = age_group_id, shape = region_id, label = pop))
 
 plotly::ggplotly(p)
 
