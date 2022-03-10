@@ -29,6 +29,10 @@ mds <- read_mds("data/poseidon_data/mds/mds.mds") %>%
     C3 = C3
   )
 
+# mds %>%
+#   ggplot() +
+#   geom_point(aes(x = C1, y = C3, color = grepl(".SG", Poseidon_ID)))
+
 # run age processing
 janno_age <- janno %>% poseidonR::process_age()
 
