@@ -30,7 +30,7 @@ read_assoc <- function(x) {
 assoc <- read_assoc("data/poseidon_data/clean/clean1.assoc")
 
 bad_snps <- assoc %>%
-  dplyr::filter(P < 10^-10) %$%
+  dplyr::filter(P < 10^-3) %$%
   SNP
   
 bim <- readr::read_tsv("data/poseidon_data/clean/clean1.bim", col_names = FALSE)
