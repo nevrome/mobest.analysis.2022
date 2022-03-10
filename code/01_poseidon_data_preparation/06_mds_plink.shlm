@@ -4,7 +4,7 @@ cd data/poseidon_data/mds
 
 # generate general pairwise stats
 plink1.9 \
-  --bfile ../clean/clean1 \
+  --bfile ../clean/bubu/bubu \
   --genome \
   --out clean1
 
