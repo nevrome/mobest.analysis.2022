@@ -4,7 +4,7 @@ cd data/poseidon_data/mds
 
 # generate general pairwise stats
 plink1.9 \
-  --bfile ../clean/bubu/bubu \
+  --bfile ../clean/zuzu/zuzu \
   --genome \
   --out clean1
 
@@ -13,7 +13,7 @@ plink1.9 \
 # C2 with --mds-plot 2 or --mds-plot 3. So it's sufficient to call --mds-plot 3 once
 # and then select the desired dimensions later)
 plink1.9 \
-  --bfile ../clean/clean1 \
+  --bfile ../clean/zuzu/zuzu \
   --cluster --mds-plot 3 \
   --read-genome clean1.genome \
   --out mds
