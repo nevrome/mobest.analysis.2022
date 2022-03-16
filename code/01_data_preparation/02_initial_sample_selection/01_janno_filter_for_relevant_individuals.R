@@ -104,9 +104,9 @@ janno_QC <- janno_QC %>% dplyr::filter(
 )
 # Coverage and damage are not too relevant here as filter criteria
 
-janno_filtered_final <- janno_pre_identicals_filter <- janno_QC
+janno_initial_selection <- janno_QC
 
-save(janno_pre_identicals_filter, file = "data/genotype_data/janno_pre_identicals_filter.RData")
+save(janno_initial_selection, file = "data/genotype_data/janno_initial_selection.RData")
 
 # export for QGIS: check every now and then if the new data justifies different region definition
 # janno_filtered_final %>% 
@@ -124,7 +124,7 @@ save(janno_pre_identicals_filter, file = "data/genotype_data/janno_pre_identical
 
 # store ind list for poseidon extraction
 tibble::tibble(
-  ind = paste0("<", sort(janno_filtered_final$Poseidon_ID), ">")
+  ind = paste0("<", sort(janno_initial_selection$Poseidon_ID), ">")
 ) %>% 
   readr::write_delim(
     file = "code/01_data_preparation/ind_list_initial_selection.txt",
