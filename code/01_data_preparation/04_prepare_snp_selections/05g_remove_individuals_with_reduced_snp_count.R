@@ -8,7 +8,7 @@ bubu %>%
     ind = paste0("<", Poseidon_ID, ">")
   ) %>%
   readr::write_delim(
-    file = "code/01_genotype_data_preparation/post_cleaning_ind_list.txt",
+    file = "code/01_data_preparation/post_cleaning_ind_list.txt",
     delim = " ",
     col_names = FALSE
   )

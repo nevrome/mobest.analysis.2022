@@ -105,7 +105,7 @@ tibble::tibble(
   ind = paste0("<", sort(janno_without_identicals$Poseidon_ID), ">")
 ) %>% 
   readr::write_delim(
-    file = "code/01_genotype_data_preparation/ind_list.txt",
+    file = "code/01_data_preparation/ind_list.txt",
     delim = " ",
     col_names = FALSE
   )

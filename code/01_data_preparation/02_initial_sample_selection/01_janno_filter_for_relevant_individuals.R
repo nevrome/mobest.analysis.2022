@@ -2,7 +2,7 @@ library(magrittr)
 
 load("data/spatial/epsg3035.RData")
 load("data/spatial/research_area.RData")
-source("code/01_genotype_data_preparation/02_initial_sample_selection/aadr_age_string_parser.R")
+source("code/01_data_preparation/02_initial_sample_selection/aadr_age_string_parser.R")
 
 # read aadr .anno file to transform it to a minimal .janno file
 aadr_raw <- readr::read_tsv("data/genotype_data/aadrv50/v50.0_1240k_public.anno", na = c("", ".."))
@@ -127,7 +127,7 @@ tibble::tibble(
   ind = paste0("<", sort(janno_filtered_final$Poseidon_ID), ">")
 ) %>% 
   readr::write_delim(
-    file = "code/01_genotype_data_preparation/pre_identicals_filter_ind_list.txt",
+    file = "code/01_data_preparation/pre_identicals_filter_ind_list.txt",
     delim = " ",
     col_names = FALSE
   )
