@@ -1,10 +1,10 @@
 library(magrittr)
 library(ggplot2)
 
-mds <- readr::read_delim("data/poseidon_data/mds/poseidon_extracted3.pruned.mds", " ", trim_ws = T) %>%
+mds <- readr::read_delim("data/genotype_data/mds/poseidon_extracted3.pruned.mds", " ", trim_ws = T) %>%
   dplyr::select(-X7)
 
-janno <- poseidonR::read_janno("data/poseidon_data/poseidon_extracted/poseidon_extracted.janno")
+janno <- poseidonR::read_janno("data/genotype_data/poseidon_extracted/poseidon_extracted.janno")
 
 load("data/spatial/mobility_regions.RData")
 load("data/spatial/epsg3035.RData")

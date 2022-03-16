@@ -1,6 +1,6 @@
 source("code/04_plot_scripts/paper/mobility_curves_plot_function.R")
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/origin_search/origin_grid_derived_data_retro_low.RData")
 list2env(origin_grid_derived_data, envir = .GlobalEnv)
 

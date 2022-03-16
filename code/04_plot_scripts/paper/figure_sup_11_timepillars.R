@@ -1,7 +1,7 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/gpr/interpol_grid_examples.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 

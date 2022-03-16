@@ -10,7 +10,7 @@ g_for_this_run <- as.numeric(args[4])
 
 #### data ####
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 
 interpol_comparison <- mobest::crossvalidate(
   independent = mobest::create_spatpos(

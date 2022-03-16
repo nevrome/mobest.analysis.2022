@@ -1,7 +1,7 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 
 d_all <- mobest::calculate_pairwise_distances(
   independent = mobest::create_spatpos(

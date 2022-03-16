@@ -1,7 +1,7 @@
 library(magrittr)
 
 load("data/origin_search/origin_grid_modified.RData")
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 
 cut_angle <- function(x) {
   dplyr::case_when(

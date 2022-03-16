@@ -20,8 +20,8 @@ read_mds <- function(x) {
 }
 
 # read active data
-janno <- poseidonR::read_janno("data/poseidon_data/poseidon_extracted/poseidon_extracted.janno")
-mds <- read_mds("data/poseidon_data/mds/mds.mds") %>% 
+janno <- poseidonR::read_janno("data/genotype_data/poseidon_extracted/poseidon_extracted.janno")
+mds <- read_mds("data/genotype_data/mds/mds.mds") %>% 
   dplyr::transmute(
     Poseidon_ID = IID,
     C1 = C1,
@@ -75,4 +75,4 @@ janno_final <- janno_final %>% dplyr::arrange(
   Date_BC_AD_Median_Derived
 )
 
-save(janno_final, file = "data/poseidon_data/janno_final.RData")
+save(janno_final, file = "data/genotype_data/janno_final.RData")

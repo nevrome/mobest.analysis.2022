@@ -1,7 +1,7 @@
 library(magrittr)
 library(laGP)
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/parameter_exploration/variogram/estimated_nuggets.RData")
 nugget_derived <- as.numeric(readLines("data/parameter_exploration/variogram/nuggets.txt")[1])
 

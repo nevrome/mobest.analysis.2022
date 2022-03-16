@@ -4,7 +4,7 @@ library(ggplot2)
 #### data ####
 
 # origin search
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/origin_search/origin_grid_mean.RData")
 
 origin_grid_mean_infodense <- origin_grid_mean %>%

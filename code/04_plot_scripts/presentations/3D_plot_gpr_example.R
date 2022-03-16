@@ -1,6 +1,6 @@
 library(magrittr)
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/spatial/area.RData")
 load("data/origin_search/retrospection_distance.RData")
 

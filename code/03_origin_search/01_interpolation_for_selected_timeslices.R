@@ -2,7 +2,7 @@ library(magrittr)
 
 #### data ####
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/spatial/extended_area.RData")
 load("data/origin_search/default_kernel.RData")
 

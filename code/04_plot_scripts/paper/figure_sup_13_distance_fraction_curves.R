@@ -1,7 +1,7 @@
 library(ggplot2)
 library(magrittr)
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/origin_search/moving_origin_grid.RData")
 
 moving_origin_grid_modified <- moving_origin_grid %>%

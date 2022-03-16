@@ -2,10 +2,10 @@ library(magrittr)
 
 load("data/spatial/epsg3035.RData")
 load("data/spatial/research_area.RData")
-source("code/01_poseidon_data_preparation/00_aadr_age_string_parser.R")
+source("code/01_genotype_data_preparation/02_initial_sample_selection/aadr_age_string_parser.R")
 
 # read aadr .anno file to transform it to a minimal .janno file
-aadr_raw <- readr::read_tsv("data/poseidon_data/aadrv50/v50.0_1240k_public.anno", na = c("", ".."))
+aadr_raw <- readr::read_tsv("data/genotype_data/aadrv50/v50.0_1240k_public.anno", na = c("", ".."))
 
 aadr_minimal_janno <- aadr_raw %>%
   dplyr::transmute(
@@ -27,7 +27,7 @@ aadr_minimal_janno <- aadr_raw %>%
   poseidonR::as.janno()
 
 # create a minimal aadr poseidon package by adding a .janno and a POSEIDON.yml file
-poseidonR::write_janno(aadr_minimal_janno, "data/poseidon_data/aadrv50/aadr_poseidon.janno")
+poseidonR::write_janno(aadr_minimal_janno, "data/genotype_data/aadrv50/aadr_poseidon.janno")
 writeLines(
   c("poseidonVersion: 2.5.0"
   , "title: aadr_poseidon"
@@ -43,7 +43,7 @@ writeLines(
   , "  snpSet: 1240K"
   , "jannoFile: aadr_poseidon.janno"
   ),
-  con = "data/poseidon_data/aadrv50/POSEIDON.yml"
+  con = "data/genotype_data/aadrv50/POSEIDON.yml"
 )
 
 # lacking spatial info filter
@@ -72,7 +72,7 @@ janno_spatial <- janno_age_filtered %>%
 # export for QGIS: Check if the research area is still adequate
 # janno_spatial %>%
 #   dplyr::select_if(is.list %>% Negate) %>%
-#   sf::write_sf(dsn = "data/poseidon_data/janno_spatial_pre_filter.gpkg", driver = "GPKG")
+#   sf::write_sf(dsn = "data/genotype_data/janno_spatial_pre_filter.gpkg", driver = "GPKG")
 
 janno_spatial_filtered <- janno_spatial %>%
   sf::st_intersection(
@@ -106,7 +106,7 @@ janno_QC <- janno_QC %>% dplyr::filter(
 
 janno_filtered_final <- janno_pre_identicals_filter <- janno_QC
 
-save(janno_pre_identicals_filter, file = "data/poseidon_data/janno_pre_identicals_filter.RData")
+save(janno_pre_identicals_filter, file = "data/genotype_data/janno_pre_identicals_filter.RData")
 
 # export for QGIS: check every now and then if the new data justifies different region definition
 # janno_filtered_final %>% 
@@ -116,7 +116,7 @@ save(janno_pre_identicals_filter, file = "data/poseidon_data/janno_pre_identical
 #   ) %>%
 #   sf::st_transform(epsg3035) %>%
 #   dplyr::select_if(is.list %>% Negate) %>%
-#   sf::write_sf(dsn = "data/poseidon_data/janno_spatial_post_filter.gpkg", driver = "GPKG")
+#   sf::write_sf(dsn = "data/genotype_data/janno_spatial_post_filter.gpkg", driver = "GPKG")
 
 # library(ggplot2)
 # ggplot(janno_filtered_final) +
@@ -127,7 +127,7 @@ tibble::tibble(
   ind = paste0("<", sort(janno_filtered_final$Poseidon_ID), ">")
 ) %>% 
   readr::write_delim(
-    file = "code/01_poseidon_data_preparation/pre_identicals_filter_ind_list.txt",
+    file = "code/01_genotype_data_preparation/pre_identicals_filter_ind_list.txt",
     delim = " ",
     col_names = FALSE
   )

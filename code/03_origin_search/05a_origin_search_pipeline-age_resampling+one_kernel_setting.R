@@ -10,7 +10,7 @@ age_resampling_run <- as.numeric(args[1])
 
 #### data ####
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/spatial/search_area.RData")
 load("data/origin_search/default_kernel.RData")
 load("data/origin_search/retrospection_distance.RData")

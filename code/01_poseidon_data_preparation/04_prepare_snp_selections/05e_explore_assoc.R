@@ -27,15 +27,15 @@ read_assoc <- function(x) {
   )
 }
 
-assoc <- read_assoc("data/poseidon_data/clean/clean1.assoc")
+assoc <- read_assoc("data/genotype_data/clean/clean1.assoc")
 
 bad_snps <- assoc %>%
   dplyr::filter(P < 10^-3) %$%
   SNP
   
-bim <- readr::read_tsv("data/poseidon_data/clean/clean1.bim", col_names = FALSE)
+bim <- readr::read_tsv("data/genotype_data/clean/clean1.bim", col_names = FALSE)
 filtered_bim <- bim %>% dplyr::filter(
   !(X2 %in% bad_snps)
 )
 
-readr::write_tsv(filtered_bim, file = "data/poseidon_data/clean/filter.bim", col_names = FALSE)
+readr::write_tsv(filtered_bim, file = "data/genotype_data/clean/filter.bim", col_names = FALSE)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd data/poseidon_data/clean
+cd data/genotype_data/clean
 
 trident init \
   --inFormat PLINK \

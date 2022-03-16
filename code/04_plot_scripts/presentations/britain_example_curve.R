@@ -4,7 +4,7 @@ library(ggplot2)
 #### data ####
 
 # curves
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/origin_search/origin_grid_mean.RData")
 load("data/origin_search/moving_origin_grid.RData")
 load("data/origin_search/no_data_windows.RData")

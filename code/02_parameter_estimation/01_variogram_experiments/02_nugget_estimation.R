@@ -1,6 +1,6 @@
 library(magrittr)
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/parameter_exploration/variogram/all_distances.RData")
 
 d_all_long <- d_all %>% tidyr::pivot_longer(

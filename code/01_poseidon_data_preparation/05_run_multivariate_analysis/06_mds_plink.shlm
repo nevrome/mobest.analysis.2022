@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd data/poseidon_data/mds
+cd data/genotype_data/mds
 
 # generate general pairwise stats
 plink1.9 \

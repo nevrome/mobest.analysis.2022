@@ -7,7 +7,7 @@ library(magrittr)
 
 # file.copy(
 #   from = c(
-#     "data/poseidon_data/janno_final.RData",
+#     "data/genotype_data/janno_final.RData",
 #     "data/origin_search/origin_grid_mean.RData",
 #     "data/origin_search/origin_grid_modified.RData",
 #     "data/spatial/extended_area.RData",

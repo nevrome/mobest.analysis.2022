@@ -1,7 +1,7 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/parameter_exploration/crossvalidation/interpol_comparison.RData")
 
 sample_interpol_comparison <- interpol_comparison %>%
