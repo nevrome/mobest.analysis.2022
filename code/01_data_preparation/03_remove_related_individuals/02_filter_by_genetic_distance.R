@@ -2,12 +2,12 @@ library(magrittr)
 
 # get and prepare data
 dist_values <- readr::read_tsv(
-  "data/genotype_data/identical_filter/plink.mdist",
+  "data/genotype_data/remove_related_individuals/plink.mdist",
   col_names = F,
   col_types = readr::cols(.default = readr::col_double())
 ) %>% as.data.frame()
 dist_labels <- readr::read_tsv(
-  "data/genotype_data/identical_filter/plink.mdist.id",
+  "data/genotype_data/remove_related_individuals/plink.mdist.id",
   col_names = F,
   col_types = readr::cols(.default = readr::col_character())
 )
@@ -22,7 +22,7 @@ genetic_distances <- dist_matrix %>%
   setNames(c("IID1", "IID2", "genetic_distance")) %>%
   dplyr::filter(!is.na(genetic_distance))
 
-load("data/genotype_data/janno_pre_identicals_filter.RData")
+load("data/genotype_data/janno_initial_selection.RData")
 
 spatiotemporal_distances <- janno_pre_identicals_filter %$%
   data.frame(
