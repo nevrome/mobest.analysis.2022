@@ -127,7 +127,7 @@ tibble::tibble(
   ind = paste0("<", sort(janno_filtered_final$Poseidon_ID), ">")
 ) %>% 
   readr::write_delim(
-    file = "code/01_data_preparation/pre_identicals_filter_ind_list.txt",
+    file = "code/01_data_preparation/ind_list_initial_selection.txt",
     delim = " ",
     col_names = FALSE
   )
