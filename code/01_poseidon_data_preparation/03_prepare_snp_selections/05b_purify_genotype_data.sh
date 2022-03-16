@@ -8,6 +8,6 @@ plink1.9 \
   --bfile ../poseidon_extracted/poseidon_extracted \
   --exclude range ../../../code/01_poseidon_data_preparation/myrange.txt \
   --maf 0.05 \
-  --make-bed --out clean1
+  --make-bed --out purified
 
 

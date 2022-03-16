@@ -22,9 +22,9 @@ genetic_distances <- dist_matrix %>%
   setNames(c("IID1", "IID2", "genetic_distance")) %>%
   dplyr::filter(!is.na(genetic_distance))
 
-load("data/poseidon_data/janno_pre_mds.RData")
+load("data/poseidon_data/janno_pre_identicals_filter.RData")
 
-spatiotemporal_distances <- janno_pre_mds %$%
+spatiotemporal_distances <- janno_pre_identicals_filter %$%
   data.frame(
     IID1 = rep(Poseidon_ID, each = length(unique(Poseidon_ID))),
     IID2 = Poseidon_ID,
@@ -75,7 +75,7 @@ identical_groups <- genetic_identicals_groups %>%
 
 group_representatives <- identical_groups %>%
   dplyr::left_join(
-    janno_pre_mds, by = c("id" = "Poseidon_ID")
+    janno_pre_identicals_filter, by = c("id" = "Poseidon_ID")
   ) %>%
   dplyr::group_by(group) %>%
   dplyr::filter(
@@ -91,7 +91,7 @@ duplicates_to_remove <- setdiff(identical_groups$id, group_representatives)
 
 # remove identicals
 `%nin%` <- Negate(`%in%`)
-janno_without_identicals <- janno_pre_mds %>%
+janno_without_identicals <- janno_pre_identicals_filter %>%
   dplyr::filter(Poseidon_ID %nin% duplicates_to_remove)
 
 # save janno_without_identicals for derived applications
