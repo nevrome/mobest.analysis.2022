@@ -1,5 +1,4 @@
 library(magrittr)
-library(ggplot2)
 
 # CHR     Chromosome
 # SNP     SNP ID
@@ -12,6 +11,7 @@ library(ggplot2)
 # P       Asymptotic p-value for this test
 # OR      Estimated odds ratio (for A1, i.e. A2 is reference)
 
+# read .assoc file
 read_assoc <- function(x) {
   readr::read_fwf(
     file = x, 
@@ -26,16 +26,14 @@ read_assoc <- function(x) {
     skip = 1
   )
 }
+assoc <- read_assoc("data/genotype_data/snp_subsets/plink.assoc")
 
-assoc <- read_assoc("data/genotype_data/clean/clean1.assoc")
-
+# select SNPs to remove based on a simple threshold 
 bad_snps <- assoc %>%
   dplyr::filter(P < 10^-3) %$%
   SNP
-  
-bim <- readr::read_tsv("data/genotype_data/clean/clean1.bim", col_names = FALSE)
-filtered_bim <- bim %>% dplyr::filter(
-  !(X2 %in% bad_snps)
-)
 
-readr::write_tsv(filtered_bim, file = "data/genotype_data/clean/filter.bim", col_names = FALSE)
+# read current .bim file to create a bim file without the bad snps
+bim <- readr::read_tsv("data/genotype_data/snp_subsets/purified.bim", col_names = FALSE)
+filtered_bim <- bim %>% dplyr::filter(!(X2 %in% bad_snps))
+readr::write_tsv(filtered_bim, file = "data/genotype_data/snp_subsets/capture_shotgun_filter.bim", col_names = FALSE)
