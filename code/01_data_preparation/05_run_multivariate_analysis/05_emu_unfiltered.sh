@@ -10,5 +10,4 @@ emu \
   --n_out 10 \
   --maf 0.05 \
   --threads 48 \
-  --out multivariate_analysis/EMU_unfiltered_snp_selection/emu_out.txt \
-  --loadings
+  --out multivariate_analysis/EMU_unfiltered_snp_selection/emu_out.txt
