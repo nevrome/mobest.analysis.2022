@@ -58,7 +58,7 @@ read_mds <- function(x) {
       n = 3000
     ),
     trim_ws = T,
-    col_types = "ccdddd_",
+    col_types = "ccdddddddddd",
     skip = 1
   )
 }
