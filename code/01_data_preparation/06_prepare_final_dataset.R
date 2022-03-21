@@ -1,47 +1,22 @@
 library(magrittr)
 
+load("data/genotype_data/janno_without_identicals.RData")
+load("data/genotype_data/post_snp_selection_individuals.RData")
 load("data/spatial/mobility_regions.RData")
 load("data/spatial/epsg3035.RData")
 
-# function to read plink mds files
-read_mds <- function(x) {
-  readr::read_fwf(
-    file = x, 
-    col_positions = readr::fwf_empty(
-      x,
-      skip = 1,
-      col_names = c("FID", "IID", "SOL", "C1", "C2", "C3"),
-      n = 3000
-    ),
-    trim_ws = T,
-    col_types = "ccdddd_",
-    skip = 1
-  )
-}
-
-# read active data
-janno <- poseidonR::read_janno("data/genotype_data/poseidon_extracted/poseidon_extracted.janno")
-mds <- read_mds("data/genotype_data/mds/mds.mds") %>% 
-  dplyr::transmute(
-    Poseidon_ID = IID,
-    C1 = C1,
-    C2 = C2,
-    C3 = C3
-  )
-
-# mds %>%
-#   ggplot() +
-#   geom_point(aes(x = C1, y = C3, color = grepl(".SG", Poseidon_ID)))
-
-# run age processing
-janno_age <- janno %>% poseidonR::process_age()
-
-# merge mds info into dataset
-janno_mds <- janno_age %>% 
-  dplyr::left_join(mds)
+# construct up-to-date state of the janno table
+# the join should make sure that the individual order is the same as in the in-
+# and therefore output of the multivar stats below 
+janno <- post_snp_selection_individuals %>%
+  dplyr::left_join(
+    janno_without_identicals,
+    by = "Poseidon_ID"
+  ) %>%
+  dplyr::select(-source_file)
 
 # add spatial and temporal grouping and coordinates
-janno_spatial <- janno_mds %>%
+janno_spatial <- janno %>%
   sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = FALSE) %>%
   sf::st_transform(crs = epsg3035)
 
@@ -57,7 +32,7 @@ region_vector <- janno_spatial %>%
   ) %$%
   factor(region_id, levels = c(levels(mobility_regions$region_id), "Other region"))
   
-janno_final <- janno_spatial %>%
+janno_context_complete <- janno_spatial %>%
   dplyr::mutate(
     region_id = region_vector,
     age_group_id = cut(
@@ -70,8 +45,93 @@ janno_final <- janno_spatial %>%
   ) %>%
   sf::st_drop_geometry()
 
+# read results of the multivariate analyses
+
+# mds
+read_mds <- function(x) {
+  readr::read_fwf(
+    file = x, 
+    col_positions = readr::fwf_empty(
+      x,
+      skip = 1,
+      col_names = c("FID", "IID", "SOL", paste0("C", 1:10)),
+      n = 3000
+    ),
+    trim_ws = T,
+    col_types = "ccdddd_",
+    skip = 1
+  )
+}
+
+mds_unfiltered_snp_selection <- read_mds(
+  "data/genotype_data/multivariate_analysis/MDS_unfiltered_snp_selection/mds.mds"
+) %>% dplyr::select(-IID, -FID, -SOL) %>%
+  dplyr::rename_with(
+    .cols = tidyselect::starts_with("C"),
+    function(x) { paste0(x, "_mds_u") }
+  )
+
+mds_filtered_snp_selection <- read_mds(
+  "data/genotype_data/multivariate_analysis/MDS_filtered_snp_selection/mds.mds"
+) %>% dplyr::select(-IID, -FID, -SOL) %>%
+  dplyr::rename_with(
+    .cols = tidyselect::starts_with("C"),
+    function(x) { paste0(x, "_mds_f") }
+  )
+
+# mds_filtered_snp_selection %>%
+#   ggplot() +
+#   geom_point(aes(x = C1_mds_f, y = C3_mds_f, color = grepl(".SG", IID)))
+
+# pca
+load("data/genotype_data/multivariate_analysis/PCA_unfiltered_snp_selection/pca_out.RData")
+pca_unfiltered_snp_selection <- pca_out$pca.sample_coordinates %>%
+  tibble::as_tibble() %>%
+  dplyr::select(-Group, -Class) %>%
+  dplyr::rename_with(
+    .cols = tidyselect::starts_with("PC"),
+    function(x) { paste0(gsub("P", "", x), "_pca_u") }
+  )
+
+load("data/genotype_data/multivariate_analysis/PCA_filtered_snp_selection/pca_out.RData")
+pca_filtered_snp_selection <- pca_out$pca.sample_coordinates %>%
+  tibble::as_tibble() %>%
+  dplyr::select(-Group, -Class) %>%
+  dplyr::rename_with(
+    .cols = tidyselect::starts_with("PC"),
+    function(x) { paste0(gsub("P", "", x), "_pca_f") }
+  )
+
+# emu
+emu_unfiltered_snp_selection <- readr::read_delim(
+  "data/genotype_data/multivariate_analysis/EMU_unfiltered_snp_selection/emu_out.txt.eigenvecs",
+  delim = " ", col_names = FALSE, col_types = "dddddddddd"
+) %>% dplyr::rename_with(
+  .cols = tidyselect::starts_with("X"),
+  function(x) { paste0("C", gsub("X", "", x), "_emu_u") }
+)
+
+emu_filtered_snp_selection <- readr::read_delim(
+  "data/genotype_data/multivariate_analysis/EMU_filtered_snp_selection/emu_out.txt.eigenvecs",
+  delim = " ", col_names = FALSE, col_types = "dddddddddd"
+) %>% dplyr::rename_with(
+  .cols = tidyselect::starts_with("X"),
+  function(x) { paste0("C", gsub("X", "", x), "_emu_f") }
+)
+
+# merge multivariate analysis output with janno
+janno_multivar <- dplyr::bind_cols(
+  janno_context_complete,
+  mds_unfiltered_snp_selection,
+  mds_filtered_snp_selection,
+  pca_unfiltered_snp_selection,
+  pca_filtered_snp_selection,
+  emu_unfiltered_snp_selection,
+  emu_filtered_snp_selection
+)
+
 # finalize data
-janno_final <- janno_final %>% dplyr::arrange(
+janno_final <- janno_multivar %>% dplyr::arrange(
   Date_BC_AD_Median_Derived
 )
 
