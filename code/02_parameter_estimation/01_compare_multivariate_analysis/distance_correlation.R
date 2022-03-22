@@ -1,3 +1,5 @@
+library(magrittr)
+
 load("data/genotype_data/janno_final.RData")
 
 d <- function(...) {
