@@ -39,28 +39,42 @@ spatiotemp_dist <- d(
   )[,3]
 )
 
-mobest::calculate_dependent_pairwise_distances(
-  ids = janno_final$Poseidon_ID,
-  dependent = mobest::create_obs(
-    C1_mds_u = janno_final$C1_mds_u,
-    C2_mds_u = janno_final$C2_mds_u,
-    C3_mds_u = janno_final$C3_mds_u,
-    C4_mds_u = janno_final$C4_mds_u,
-    C5_mds_u = janno_final$C5_mds_u
-  )
-) %>% 
-  purrr::reduce(
-    function(x, y) { dplyr::bind_cols(x, y[3]) }
-  ) %>%
-  dplyr::select(-Var1, -Var2) %>%
-  d_cum_df %>%
-  dplyr::summarise(
-    dplyr::across(
-      .fns = function(x) {
-        cor(spatiotemp_dist, x)^2
-      }
-    )
-  )
+purrr::pmap_df(
+  as.list(
+    expand.grid(method = c("mds", "pca", "emu"), fstate = c("u", "f"), stringsAsFactors = F)
+  ),
+  function(method, fstate) {
+    mobest::calculate_dependent_pairwise_distances(
+      ids = janno_final$Poseidon_ID,
+      dependent = mobest::create_obs(
+        C1 = janno_final[[paste("C1", method, fstate, sep = "_")]],
+        C2 = janno_final[[paste("C2", method, fstate, sep = "_")]],
+        C3 = janno_final[[paste("C3", method, fstate, sep = "_")]],
+        C4 = janno_final[[paste("C4", method, fstate, sep = "_")]],
+        C5 = janno_final[[paste("C5", method, fstate, sep = "_")]]
+      )
+    ) %>%
+      purrr::reduce(
+        function(x, y) { dplyr::bind_cols(x, y[3]) }
+      ) %>%
+      dplyr::select(-Var1, -Var2) %>%
+      d_cum_df %>%
+      dplyr::summarise(
+        dplyr::across(
+          .fns = function(x) {
+            cor(spatiotemp_dist, x)^2
+          }
+        )
+      ) %>%
+      dplyr::mutate(
+        method = method,
+        snp_selection = fstate
+      )
+  }
+)
+
+
+
 
 #save(large_distance_table, "data/parameter_exploration/multivariate_comparison/large_distance_table.RData")
 
