@@ -1,11 +1,15 @@
 library(magrittr)
 
 load("data/genotype_data/janno_without_identicals.RData")
-load("data/genotype_data/post_snp_selection_individuals.RData")
 load("data/spatial/mobility_regions.RData")
 load("data/spatial/epsg3035.RData")
 
 # construct up-to-date state of the janno table
+
+post_snp_selection_individuals <- poseidonR::read_janno(
+  "data/genotype_data/snp_subsets/filtered_snp_selection/filtered_snp_selection.janno"
+) %>% dplyr::select(Poseidon_ID)
+
 # the join should make sure that the individual order is the same as in the in-
 # and therefore output of the multivar stats below 
 janno <- post_snp_selection_individuals %>%
