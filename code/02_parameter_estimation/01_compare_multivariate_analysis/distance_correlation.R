@@ -53,7 +53,8 @@ purrr::pmap_df(
         C2 = janno_final[[paste("C2", method, fstate, sep = "_")]],
         C3 = janno_final[[paste("C3", method, fstate, sep = "_")]],
         C4 = janno_final[[paste("C4", method, fstate, sep = "_")]],
-        C5 = janno_final[[paste("C5", method, fstate, sep = "_")]]
+        C5 = janno_final[[paste("C5", method, fstate, sep = "_")]],
+        C6 = janno_final[[paste("C6", method, fstate, sep = "_")]]
       )
     ) %>%
       purrr::reduce(
@@ -75,13 +76,6 @@ purrr::pmap_df(
   }
 )
 
-
-
-
 #save(large_distance_table, "data/parameter_exploration/multivariate_comparison/large_distance_table.RData")
 
-
-
-
-
-
+# dplyr::mutate(dplyr::across(tidyselect:::where(is.numeric), round, 3)) %>% knitr::kable()
