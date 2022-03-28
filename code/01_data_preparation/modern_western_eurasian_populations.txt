@@ -1,0 +1,83 @@
+# Canary_Islander
+# German
+# Irish
+# Irish_Ulster
+# Polish
+# Shetlandic
+# Sorb
+Abazin
+Abkhasian
+Adygei
+Albanian
+Armenian
+Armenian_Hemsheni
+Assyrian
+Avar
+Azeri
+Balkar
+Basque
+BedouinA
+BedouinB
+Belarusian
+Bulgarian
+Chechen
+Circassian
+Croatian
+Cypriot
+Czech
+Darginian
+Druze
+English
+Estonian
+Ezid
+Finnish
+French
+Georgian
+Greek
+Hungarian
+Icelandic
+Ingushian
+Iranian
+Italian_North
+Italian_South
+Jew_Ashkenazi
+Jew_Georgian
+Jew_Iranian
+Jew_Iraqi
+Jew_Libyan
+Jew_Moroccan
+Jew_Tunisian
+Jew_Turkish
+Jew_Yemenite
+Jordanian
+Kabardinian
+Kaitag
+Karachai
+Kubachinian
+Kumyk
+Kurd
+Lak
+Lebanese
+Lebanese_Christian
+Lebanese_Muslim
+Lezgin
+Lithuanian
+Maltese
+Moldavian
+Mordovian
+Norwegian
+Orcadian
+Ossetian
+Palestinian
+Romanian
+Russian
+Sardinian
+Saudi
+Scottish
+Sicilian
+Spanish
+Spanish_North
+Syrian
+Tabasaran
+Turkish
+Ukrainian
