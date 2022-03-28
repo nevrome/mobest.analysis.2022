@@ -5,7 +5,7 @@ load("data/spatial/research_area.RData")
 source("code/01_data_preparation/02_initial_sample_selection/aadr_age_string_parser.R")
 
 # read aadr .anno file to transform it to a minimal .janno file
-aadr_raw <- readr::read_tsv("data/genotype_data/aadrv50/v50.0_1240k_public.anno", na = c("", ".."))
+aadr_raw <- readr::read_tsv("data/genotype_data/aadrv50_1240K/v50.0_1240k_public.anno", na = c("", ".."))
 
 aadr_minimal_janno <- aadr_raw %>%
   dplyr::transmute(
@@ -26,25 +26,8 @@ aadr_minimal_janno <- aadr_raw %>%
   ) %>%
   poseidonR::as.janno()
 
-# create a minimal aadr poseidon package by adding a .janno and a POSEIDON.yml file
-poseidonR::write_janno(aadr_minimal_janno, "data/genotype_data/aadrv50/aadr_poseidon.janno")
-writeLines(
-  c("poseidonVersion: 2.5.0"
-  , "title: aadr_poseidon"
-  , "contributor:"
-  , "  - name: John Doe"
-  , "    email: john@doe.net"
-  , "packageVersion: 0.1.0"
-  , "genotypeData:"
-  , "  format: EIGENSTRAT"
-  , "  genoFile: aadr_eig.geno"
-  , "  snpFile: aadr_eig.snp"
-  , "  indFile: aadr_eig.ind"
-  , "  snpSet: 1240K"
-  , "jannoFile: aadr_poseidon.janno"
-  ),
-  con = "data/genotype_data/aadrv50/POSEIDON.yml"
-)
+# add a minimal .janno file to the aadr poseidon package (for later extraction)
+poseidonR::write_janno(aadr_minimal_janno, "data/genotype_data/aadrv50_1240K/aadr_poseidon.janno")
 
 # lacking spatial info filter
 janno_raw_spatial_positions <- aadr_minimal_janno %>%
