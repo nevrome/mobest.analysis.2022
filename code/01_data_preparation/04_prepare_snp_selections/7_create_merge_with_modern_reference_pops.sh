@@ -16,7 +16,9 @@ trident forge \
   -f "*aadrv50_1240K_HO_Western_Eurasia_modern*,*unfiltered_snp_selection*" \
   --intersect \
   -o snp_subsets/unfiltered_snp_selection_with_modern_reference_pops \
-  --minimal
+  --minimal \
+  --no-extract \
+  --outFormat EIGENSTRAT
   
 trident forge \
   -d aadrv50_1240K_HO_Western_Eurasia_modern \
@@ -24,5 +26,7 @@ trident forge \
   -f "*aadrv50_1240K_HO_Western_Eurasia_modern*,*filtered_snp_selection*" \
   --intersect \
   -o snp_subsets/filtered_snp_selection_with_modern_reference_pops \
-  --minimal
+  --minimal \
+  --no-extract \
+  --outFormat EIGENSTRAT
   
