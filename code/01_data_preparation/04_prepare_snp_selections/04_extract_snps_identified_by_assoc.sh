@@ -15,6 +15,5 @@ trident forge \
   -f "" \
   -d unfiltered_snp_selection_pre_ind_correction \
   -o filtered_snp_selection_pre_ind_correction \
-  --selectSnps capture_shotgun_filter.bim
-  
-  
+  --selectSnps capture_shotgun_filter.bim \
+  --minimal
