@@ -123,6 +123,27 @@ emu_filtered_snp_selection <- readr::read_delim(
   function(x) { paste0("C", gsub("X", "", x), "_emu_f") }
 )
 
+# pca projected
+load("data/genotype_data/multivariate_analysis/PCA_projected_unfiltered_snp_selection/pca_out.RData")
+pca_projected_unfiltered_snp_selection <- pca_out$pca.sample_coordinates %>%
+  tibble::as_tibble() %>%
+  dplyr::filter(Class == "Projected") %>%
+  dplyr::select(-Group, -Class) %>%
+  dplyr::rename_with(
+    .cols = tidyselect::starts_with("PC"),
+    function(x) { paste0(gsub("P", "", x), "_pca_proj_u") }
+  )
+
+load("data/genotype_data/multivariate_analysis/PCA_projected_filtered_snp_selection/pca_out.RData")
+pca_projected_filtered_snp_selection <- pca_out$pca.sample_coordinates %>%
+  tibble::as_tibble() %>%
+  dplyr::filter(Class == "Projected") %>%
+  dplyr::select(-Group, -Class) %>%
+  dplyr::rename_with(
+    .cols = tidyselect::starts_with("PC"),
+    function(x) { paste0(gsub("P", "", x), "_pca_proj_f") }
+  )
+
 # merge multivariate analysis output with janno
 janno_multivar <- dplyr::bind_cols(
   janno_context_complete,
@@ -131,7 +152,9 @@ janno_multivar <- dplyr::bind_cols(
   pca_unfiltered_snp_selection,
   pca_filtered_snp_selection,
   emu_unfiltered_snp_selection,
-  emu_filtered_snp_selection
+  emu_filtered_snp_selection,
+  pca_projected_unfiltered_snp_selection,
+  pca_projected_filtered_snp_selection
 )
 
 # finalize data
