@@ -43,7 +43,7 @@ spatiotemp_dist <- d(
 
 purrr::pmap_df(
   as.list(
-    expand.grid(method = c("mds", "pca", "emu"), fstate = c("u", "f"), stringsAsFactors = F)
+    expand.grid(method = c("mds", "pca", "emu", "pca_proj"), fstate = c("u", "f"), stringsAsFactors = F)
   ),
   function(method, fstate) {
     mobest::calculate_dependent_pairwise_distances(
