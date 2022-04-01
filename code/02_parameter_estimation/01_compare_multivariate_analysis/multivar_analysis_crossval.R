@@ -1,8 +1,15 @@
 library(magrittr)
 
-# read console input
+#### load command line arguments ####
+
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
 run <- args[1]
+
+#### load data ####
+
+load("data/genotype_data/janno_final.RData")
+
+#### prepare method permutations ####
 
 permutations <- as.list(
   expand.grid(
@@ -18,15 +25,13 @@ observation_bundles_list <- permutations %>%
     function(method, fstate, end_dimension_sequence) {
       dims <- paste0("C", 1:end_dimension_sequence)
       dep_va_list <- paste(dims, method, fstate, sep = "_") %>%
-        purrr::map(
-          function(x) { janno_final[[x]] }
-        )
+        purrr::map( function(x) { janno_final[[x]] } )
       names(dep_va_list) <- dims
       do.call(mobest::create_obs, dep_va_list)
     }
   )
 
-load("data/genotype_data/janno_final.RData")
+#### run crossvalidation ####
 
 multivar_comparison <- mobest::crossvalidate(
   independent = mobest::create_spatpos(
@@ -52,6 +57,8 @@ multivar_comparison <- multivar_comparison %>%
     multivar_method = permutations$method[[run]],
     multivar_fstate = permutations$fstate[[run]]
   )
+
+#### save result current iteration ####
 
 save(multivar_comparison, file = paste0(
   "data/parameter_exploration/multivariate_analysis_comparison/crossvalidation/multivar_comparison_",
