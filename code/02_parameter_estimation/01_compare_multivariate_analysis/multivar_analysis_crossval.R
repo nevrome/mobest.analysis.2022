@@ -20,12 +20,16 @@ permutations <- as.list(
   )
 )
 
+range01 <- function(x){ ( x - min(x) ) / ( max(x) - min(x) )}
+
 observation_bundles_list <- permutations %>%
   purrr::pmap(
     function(method, fstate, end_dimension_sequence) {
       dims <- paste0("C", 1:end_dimension_sequence)
       dep_va_list <- paste(dims, method, fstate, sep = "_") %>%
-        purrr::map( function(x) { janno_final[[x]] } )
+        purrr::map( function(x) { 
+          range01(janno_final[[x]])
+        } )
       names(dep_va_list) <- dims
       do.call(mobest::create_obs, dep_va_list)
     }
