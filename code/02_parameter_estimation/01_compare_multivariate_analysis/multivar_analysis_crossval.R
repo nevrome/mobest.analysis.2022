@@ -3,7 +3,7 @@ library(magrittr)
 #### load command line arguments ####
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
-run <- args[1]
+run <- as.integer(args[1])
 
 #### load data ####
 
