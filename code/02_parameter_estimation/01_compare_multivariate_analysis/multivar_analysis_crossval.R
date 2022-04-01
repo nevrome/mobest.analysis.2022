@@ -54,7 +54,7 @@ multivar_comparison <- multivar_comparison %>%
   )
 
 save(multivar_comparison, file = paste0(
-  "data/parameter_exploration/multivariate_analysis_comparison/out_of_sample_prediction/multivar_comparison_",
+  "data/parameter_exploration/multivariate_analysis_comparison/crossvalidation/multivar_comparison_",
   run,
   ".RData"
 ))
