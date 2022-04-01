@@ -57,6 +57,7 @@ multivar_comparison_with_multidim_dists <- dplyr::bind_cols(
 # group difference by multivar method and and dependent_dist
 multivar_comparison_group <- multivar_comparison_with_multidim_dists %>%
   dplyr::group_by(multivar_method, multivar_fstate, dependent_var) %>%
+  #dplyr::filter(difference < stats::quantile(difference, probs = 0.1)) %>%
   dplyr::summarise(
     mean_squared_difference = mean(difference^2),
     .groups = "drop"
