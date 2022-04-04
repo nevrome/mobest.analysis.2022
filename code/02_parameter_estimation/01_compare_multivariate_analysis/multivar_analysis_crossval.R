@@ -28,7 +28,8 @@ observation_bundles_list <- permutations %>%
       dims <- paste0("C", 1:end_dimension_sequence)
       dep_va_list <- paste(dims, method, fstate, sep = "_") %>%
         purrr::map( function(x) { 
-          range01(janno_final[[x]])
+          #range01(janno_final[[x]])
+          janno_final[[x]]
         } )
       names(dep_va_list) <- dims
       do.call(mobest::create_obs, dep_va_list)
@@ -46,11 +47,11 @@ multivar_comparison <- mobest::crossvalidate(
   ),
   dependent = observation_bundles_list[[run]],
   kernel = mobest::create_kernset_cross(
-    ds = 500*1000,
-    dt = 500, 
+    ds = 800*1000,
+    dt = 800,
     g = 0.1
   ),
-  iterations = 10,
+  iterations = 1,
   groups = 10,
   quiet = F
 )
