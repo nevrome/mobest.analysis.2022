@@ -32,21 +32,40 @@ distance_products <- purrr::pmap_df(
     multivar_method_observation_bundles
   ),
   function(method, fstate, observation_bundle) {
-    cum_across_dim_pairwise_distances <- mobest::calculate_dependent_pairwise_distances(
+    # calculate pairwise distances
+    dim_pairwise_distances_all <- mobest::calculate_dependent_pairwise_distances(
       ids = janno_final$Poseidon_ID,
-      dependent = observation_bundle
+      dependent = observation_bundle,
+      with_resid = T,
+      independent = mobest::create_spatpos(
+        id = janno_final$Poseidon_ID,
+        x = janno_final$x,
+        y = janno_final$y,
+        z = janno_final$Date_BC_AD_Median_Derived
+      )
     ) %>%
-      purrr::reduce( function(x, y) { dplyr::bind_cols(x, y[3]) } ) %>%
-      dplyr::select(-Var1, -Var2) %>%
-      d_cum_df
+      purrr::reduce( function(x, y) { dplyr::bind_cols(x, y[3:4]) } ) %>%
+      dplyr::select(-Var1, -Var2)
+    # split normal distances and residual distances
+    dim_pairwise_distances <- dim_pairwise_distances_all %>%
+      dplyr::select(-tidyselect::contains("resid"))
+    dim_pairwise_distances_resid <- dim_pairwise_distances_all %>%
+      dplyr::select(tidyselect::contains("resid"))
+    # Nugget determination
+    #### TODO ####
+    # prepare cum: cumulation here means "distances in multi-dim spaces"
+    cum_across_dim_pairwise_distances <- d_cum_df(dim_pairwise_distances)
+    # cum: median pairwise distances in different genetic spaces
     distance_median <- cum_across_dim_pairwise_distances %>%
       dplyr::summarise(
         dplyr::across(.fns = function(x) { median(x) } )
       )
+    # cum: correlation of different pairwise spaces with spatiotemporal distance
     distance_correlation <- cum_across_dim_pairwise_distances %>%
       dplyr::summarise(
         dplyr::across(.fns = function(x) { cor(spatiotemp_dist, x)^2 } )
       )
+    # combine results in a common output data structure
     dplyr::bind_rows(distance_median, distance_correlation) %>%
       dplyr::mutate(
         measure = c("median", "distance correlation"),
