@@ -54,17 +54,39 @@ multivar_comparison_with_multidim_dists <- dplyr::bind_cols(
     values_to = "difference"
   )
 
+load("data/parameter_exploration/multivariate_analysis_comparison/distance_median.RData")
+multivar_comparison_multidim_scaled <- multivar_comparison_with_multidim_dists %>%
+  dplyr::left_join(
+    distance_median %>%
+      tidyr::pivot_longer(
+        cols = tidyselect::starts_with("C"),
+        names_to = "dependent_var",
+        values_to = "median_pairwise_distance"
+      ),
+    by = c(
+      "multivar_method" = "method",
+      "multivar_fstate" = "snp_selection",
+      "dependent_var"
+    )
+  ) %>%
+  dplyr::mutate(
+    scaled_difference = difference / median_pairwise_distance
+  )
+
 # group difference by multivar method and and dependent_dist
-multivar_comparison_group <- multivar_comparison_with_multidim_dists %>%
+multivar_comparison_group <- multivar_comparison_multidim_scaled %>%
   dplyr::group_by(multivar_method, multivar_fstate, dependent_var) %>%
   #dplyr::filter(difference < stats::quantile(difference, probs = 0.1)) %>%
   dplyr::summarise(
-    mean_squared_difference = mean(difference^2),
+    mean_squared_difference = mean(scaled_difference^2),
     .groups = "drop"
   )
 
 library(ggplot2)
 multivar_comparison_group %>%
+  dplyr::mutate(
+    dependent_var = factor(dependent_var, paste0("C1toC", 1:10))
+  ) %>%
   ggplot() +
   geom_point(aes(x = dependent_var, y = mean_squared_difference, color = multivar_method, shape = multivar_fstate))
 
