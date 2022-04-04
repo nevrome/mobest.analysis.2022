@@ -163,3 +163,32 @@ janno_final <- janno_multivar %>% dplyr::arrange(
 )
 
 save(janno_final, file = "data/genotype_data/janno_final.RData")
+
+# package observation bundles for the different methods (MDS, EMU, ...)
+
+multivar_method_permutations <- as.list(
+  expand.grid(
+    method = c("mds", "pca", "emu", "pca_proj"),
+    fstate = c("u", "f"),
+    end_dimension_sequence = 10,
+    stringsAsFactors = F,
+    KEEP.OUT.ATTRS = F
+  )
+)
+
+multivar_method_observation_bundles <- permutations %>%
+  purrr::pmap(
+    function(method, fstate, end_dimension_sequence) {
+      dims <- paste0("C", 1:end_dimension_sequence)
+      dep_va_list <- paste(dims, method, fstate, sep = "_") %>%
+        purrr::map( function(x) { janno_final[[x]] } )
+      names(dep_va_list) <- dims
+      do.call(mobest::create_obs, dep_va_list)
+    }
+  )
+
+save(
+  multivar_method_permutations,
+  multivar_method_observation_bundles,
+  file = "data/genotype_data/multivar_perm_obs_bundles.RData"
+)
