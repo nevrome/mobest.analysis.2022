@@ -8,33 +8,7 @@ run <- as.integer(args[1])
 #### load data ####
 
 load("data/genotype_data/janno_final.RData")
-
-#### prepare method permutations ####
-
-permutations <- as.list(
-  expand.grid(
-    method = c("mds", "pca", "emu", "pca_proj"),
-    fstate = c("u", "f"),
-    end_dimension_sequence = 10,
-    stringsAsFactors = F
-  )
-)
-
-range01 <- function(x){ ( x - min(x) ) / ( max(x) - min(x) )}
-
-observation_bundles_list <- permutations %>%
-  purrr::pmap(
-    function(method, fstate, end_dimension_sequence) {
-      dims <- paste0("C", 1:end_dimension_sequence)
-      dep_va_list <- paste(dims, method, fstate, sep = "_") %>%
-        purrr::map( function(x) { 
-          #range01(janno_final[[x]])
-          janno_final[[x]]
-        } )
-      names(dep_va_list) <- dims
-      do.call(mobest::create_obs, dep_va_list)
-    }
-  )
+load("data/genotype_data/multivar_perm_obs_bundles.RData")
 
 #### run crossvalidation ####
 
@@ -45,7 +19,7 @@ multivar_comparison <- mobest::crossvalidate(
     y = janno_final$y, 
     z = janno_final$Date_BC_AD_Median_Derived
   ),
-  dependent = observation_bundles_list[[run]],
+  dependent = multivar_method_observation_bundles[[run]],
   kernel = mobest::create_kernset_cross(
     ds = 800*1000,
     dt = 800,
@@ -59,8 +33,8 @@ multivar_comparison <- mobest::crossvalidate(
 multivar_comparison <- multivar_comparison %>%
   dplyr::select(-ds, -dt, -g) %>%
   dplyr::mutate(
-    multivar_method = permutations$method[[run]],
-    multivar_fstate = permutations$fstate[[run]]
+    multivar_method = multivar_method_permutations$method[[run]],
+    multivar_fstate = multivar_method_permutations$fstate[[run]]
   )
 
 #### save result current iteration ####

@@ -176,7 +176,7 @@ multivar_method_permutations <- as.list(
   )
 )
 
-multivar_method_observation_bundles <- permutations %>%
+multivar_method_observation_bundles <- multivar_method_permutations %>%
   purrr::pmap(
     function(method, fstate, end_dimension_sequence) {
       dims <- paste0("C", 1:end_dimension_sequence)
