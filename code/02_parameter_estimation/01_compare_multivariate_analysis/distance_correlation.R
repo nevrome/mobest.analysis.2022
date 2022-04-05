@@ -67,7 +67,6 @@ distance_products <- purrr::pmap_df(
         dim_pairwise_distances_resid,
         by = c("from" = "Var1", "to" = "Var2")
       )
-    
     variances <- janno_final %>%
       dplyr::select(tidyselect::ends_with(paste0("_", method, "_", fstate))) %>%
       tidyr::pivot_longer(
@@ -79,25 +78,22 @@ distance_products <- purrr::pmap_df(
       dplyr::mutate(
         dim = purrr::map_chr(strsplit(dim_method_fstate, "_"), function(x) { x[[1]] })
       )
-      
-    hu <- lower_left_distances %>% tidyr::pivot_longer(
+    nuggets <- lower_left_distances %>% tidyr::pivot_longer(
         cols = tidyselect::contains("resid"),
         names_to = "dist_type", values_to = "dist_val"
       ) %>%
       dplyr::mutate(
         dim = purrr::map_chr(strsplit(dist_type, "_"), function(x) { x[[1]] })
-      )
-      
-    hu %>%
+      ) %>%
       dplyr::left_join(variances, by = "dim") %>%
       dplyr::mutate(
         dist_val_adjusted = 0.5*(dist_val^2/variance)
       ) %>%
-      dplyr::group_by(dim) %>%
+      dplyr::group_by(dim, dim_method_fstate) %>%
       dplyr::summarise(
-        estimated_nugget = mean(dist_val_adjusted)
+        estimated_nugget = mean(dist_val_adjusted),
+        .groups = "drop"
       )
-    
     # prepare cum: cumulation here means "distances in multi-dim spaces"
     cum_across_dim_pairwise_distances <- d_cum_df(dim_pairwise_distances)
     # cum: median pairwise distances in different genetic spaces
