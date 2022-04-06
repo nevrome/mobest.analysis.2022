@@ -1,3 +1,5 @@
+# qsub -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=50G -now n -V -j y -o ~/log -N lambda_2D singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/01_compare_multivariate_analysis/distance_correlation.R
+
 library(magrittr)
 
 load("data/genotype_data/janno_final.RData")
