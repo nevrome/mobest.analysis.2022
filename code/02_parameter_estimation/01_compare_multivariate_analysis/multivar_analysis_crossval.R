@@ -9,6 +9,7 @@ run <- as.integer(args[1])
 
 load("data/genotype_data/janno_final.RData")
 load("data/genotype_data/multivar_perm_obs_bundles.RData")
+load("data/parameter_exploration/multivariate_analysis_comparison/distance_products.RData")
 
 #### run crossvalidation ####
 
@@ -23,7 +24,7 @@ multivar_comparison <- mobest::crossvalidate(
   kernel = mobest::create_kernset_cross(
     ds = 800*1000,
     dt = 800,
-    g = 0.1
+    g = 0.1 # TODO: Replace with appropriate nugget for each dimension
   ),
   iterations = 1,
   groups = 10,
