@@ -36,7 +36,8 @@ small_spatiotemporal_dists <- dplyr::full_join(
 
 spatiotemp_dist <- d(geo_pairwise_distances[,3], time_pairwise_distances[,3])
 
-distance_products <- purrr::pmap_df(
+future::plan(future::multisession, workers = 8)
+distance_products <- furrr::future_pmap_dfr(
   list(
     multivar_method_permutations$method,
     multivar_method_permutations$fstate,
@@ -96,31 +97,42 @@ distance_products <- purrr::pmap_df(
       )
     # prepare cum: cumulation here means "distances in multi-dim spaces"
     cum_across_dim_pairwise_distances <- d_cum_df(dim_pairwise_distances)
-    # cum: median pairwise distances in different genetic spaces
-    distance_median <- cum_across_dim_pairwise_distances %>%
+    # cum: mean pairwise distances in different genetic spaces
+    distance_mean <- cum_across_dim_pairwise_distances %>%
       dplyr::summarise(
-        dplyr::across(.fns = function(x) { median(x) } )
+        dplyr::across(.fns = function(x) { mean(x) } )
+      ) %>%
+      tidyr::pivot_longer(
+        cols = tidyselect::everything(),
+        names_to = "dim_range",
+        values_to = "mean_pairwise_distances"
       )
     # cum: correlation of different pairwise spaces with spatiotemporal distance
     distance_correlation <- cum_across_dim_pairwise_distances %>%
       dplyr::summarise(
         dplyr::across(.fns = function(x) { cor(spatiotemp_dist, x)^2 } )
+      ) %>%
+      tidyr::pivot_longer(
+        cols = tidyselect::everything(),
+        names_to = "dim_range",
+        values_to = "r_squared_genetic_spatiotemporal_distance"
       )
     # combine results in a common output data structure
-    dplyr::bind_rows(distance_median, distance_correlation) %>%
+    dplyr::full_join(
+      nuggets,
+      dplyr::full_join(
+        distance_mean, distance_correlation, by = "dim_range"
+      ) %>%
+        dplyr::mutate(
+          dim = gsub("C1to", "", dim_range)
+        ),
+      by = "dim"
+    ) %>%
       dplyr::mutate(
-        measure = c("median", "distance correlation"),
         method = method,
         snp_selection = fstate
       )
   }
 )
 
-distance_median <- distance_products %>% dplyr::filter(measure == "median")
-distance_correlation <- distance_products %>% dplyr::filter(measure == "distance correlation")
-
-save(distance_median, file = "data/parameter_exploration/multivariate_analysis_comparison/distance_median.RData")
-
-#save(large_distance_table, file = "data/parameter_exploration/multivariate_comparison/large_distance_table.RData")
-
-# dplyr::mutate(dplyr::across(tidyselect:::where(is.numeric), round, 3)) %>% knitr::kable()
+save(distance_products, file = "data/parameter_exploration/multivariate_analysis_comparison/distance_products.RData")
