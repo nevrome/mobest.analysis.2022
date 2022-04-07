@@ -11,6 +11,24 @@ load("data/genotype_data/janno_final.RData")
 load("data/genotype_data/multivar_perm_obs_bundles.RData")
 load("data/parameter_exploration/multivariate_analysis_comparison/distance_products.RData")
 
+method_run <- multivar_method_permutations$method[[run]]
+fstate_run <- multivar_method_permutations$fstate[[run]]
+
+distance_products_for_run <- distance_products %>%
+  dplyr::filter(method == method_run, snp_selection == fstate_run) %>%
+  dplyr::arrange(
+    factor(dim, levels = names(multivar_method_observation_bundles[[run]]))
+  )
+
+kernels_per_dim_for_run <- purrr::map(
+  distance_products_for_run$estimated_nugget, function(g) { 
+    mobest::create_kernel(1000000, 1000000, 200, g) 
+  }) %>% 
+  magrittr::set_names(distance_products_for_run$dim) %>%
+  do.call(mobest::create_kernset, .) %>%
+  list(.) %>%
+  magrittr::set_names(paste("kernel_settings", method_run, fstate_run, sep = "_"))
+
 #### run crossvalidation ####
 
 multivar_comparison <- mobest::crossvalidate(
@@ -21,18 +39,13 @@ multivar_comparison <- mobest::crossvalidate(
     z = janno_final$Date_BC_AD_Median_Derived
   ),
   dependent = multivar_method_observation_bundles[[run]],
-  kernel = mobest::create_kernset_cross(
-    ds = 800*1000,
-    dt = 800,
-    g = 0.1 # TODO: Replace with appropriate nugget for each dimension
-  ),
+  kernel = kernels_per_dim_for_run,
   iterations = 1,
   groups = 10,
   quiet = F
 )
 
 multivar_comparison <- multivar_comparison %>%
-  dplyr::select(-ds, -dt, -g) %>%
   dplyr::mutate(
     multivar_method = multivar_method_permutations$method[[run]],
     multivar_fstate = multivar_method_permutations$fstate[[run]]
