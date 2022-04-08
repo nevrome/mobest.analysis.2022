@@ -1,5 +1,6 @@
 library(magrittr)
 
+load("data/parameter_exploration/multivariate_analysis_comparison/distance_products.RData")
 source("code/02_parameter_estimation/01_compare_multivariate_analysis/distance_helper_functions.R")
 
 # read and rbind all crossvalidation run output files
@@ -21,6 +22,7 @@ multivar_comparison_raw_long <- multivar_comparison_raw %>%
     values_from = "difference"
   )
 
+# calculate multidim differences
 multivar_comparison_with_multidim_dists <- dplyr::bind_cols(
     dplyr::select(
       multivar_comparison_raw_long, 
@@ -38,7 +40,7 @@ multivar_comparison_with_multidim_dists <- dplyr::bind_cols(
     values_to = "difference"
   )
 
-load("data/parameter_exploration/multivariate_analysis_comparison/distance_products.RData")
+# scale multidim differences with the mean pairwise distance in multidim space
 multivar_comparison_multidim_scaled <- multivar_comparison_with_multidim_dists %>%
   dplyr::left_join(
     distance_products,
@@ -53,18 +55,24 @@ multivar_comparison_multidim_scaled <- multivar_comparison_with_multidim_dists %
   )
 
 # group difference by multivar method and and dependent_dist
-multivar_comparison_group <- multivar_comparison_multidim_scaled %>%
+multivar_comparison_grouped <- multivar_comparison_multidim_scaled %>%
   dplyr::group_by(multivar_method, multivar_fstate, dependent_var) %>%
-  #dplyr::filter(difference < stats::quantile(difference, probs = 0.1)) %>%
   dplyr::summarise(
-    mean_squared_difference = mean(scaled_difference^2),
+    mean_squared_difference_estimated_real = mean(scaled_difference^2),
     .groups = "drop"
   )
 
-library(ggplot2)
-multivar_comparison_group %>%
-  dplyr::mutate(
-    dependent_var = factor(dependent_var, paste0("C1toC", 1:10))
-  ) %>%
-  ggplot() +
-  geom_point(aes(x = dependent_var, y = mean_squared_difference, color = multivar_method, shape = multivar_fstate))
+multivar_comparison_summary <- distance_products %>%
+  dplyr::left_join(
+    multivar_comparison_grouped,
+    by = c(
+      "dim_range" = "dependent_var",
+      "method" = "multivar_method",
+      "snp_selection" = "multivar_fstate"
+    )
+  )
+
+save(
+  multivar_comparison_summary,
+  file = "data/parameter_exploration/multivariate_analysis_comparison/multivar_comparison_summary.RData"
+)
