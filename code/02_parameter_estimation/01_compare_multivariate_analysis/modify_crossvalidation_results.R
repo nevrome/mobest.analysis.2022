@@ -17,7 +17,7 @@ multivar_comparison_raw <- lapply(
 multivar_comparison_raw_long <- multivar_comparison_raw %>%
   tidyr::pivot_wider(
     id_cols = c("id", "mixing_iteration", "multivar_method", "multivar_fstate"),
-    names_from = "dependent_var",
+    names_from = "dependent_var_id",
     values_from = "difference"
   )
 
@@ -38,23 +38,18 @@ multivar_comparison_with_multidim_dists <- dplyr::bind_cols(
     values_to = "difference"
   )
 
-load("data/parameter_exploration/multivariate_analysis_comparison/distance_median.RData")
+load("data/parameter_exploration/multivariate_analysis_comparison/distance_products.RData")
 multivar_comparison_multidim_scaled <- multivar_comparison_with_multidim_dists %>%
   dplyr::left_join(
-    distance_median %>%
-      tidyr::pivot_longer(
-        cols = tidyselect::starts_with("C"),
-        names_to = "dependent_var",
-        values_to = "median_pairwise_distance"
-      ),
+    distance_products,
     by = c(
       "multivar_method" = "method",
       "multivar_fstate" = "snp_selection",
-      "dependent_var"
+      "dependent_var" = "dim_range"
     )
   ) %>%
   dplyr::mutate(
-    scaled_difference = difference / median_pairwise_distance
+    scaled_difference = difference / mean_pairwise_distances
   )
 
 # group difference by multivar method and and dependent_dist
