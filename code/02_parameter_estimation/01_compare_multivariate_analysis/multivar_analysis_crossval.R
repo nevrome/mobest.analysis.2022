@@ -22,7 +22,12 @@ distance_products_for_run <- distance_products %>%
 
 kernels_per_dim_for_run <- purrr::map(
   distance_products_for_run$estimated_nugget, function(g) { 
-    mobest::create_kernel(1000000, 1000000, 200, g) 
+    mobest::create_kernel(
+      800*1000,
+      800*1000,
+      800,
+      g
+    )
   }) %>% 
   magrittr::set_names(distance_products_for_run$dim) %>%
   do.call(mobest::create_kernset, .) %>%
