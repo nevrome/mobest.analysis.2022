@@ -10,7 +10,7 @@ threed <- janno_final %>%
     y = y/1000,
     z = Date_BC_AD_Median_Derived,
     color = viridis::viridis(50)[
-      as.numeric(cut(janno_final$C1, breaks = 50))
+      as.numeric(cut(janno_final$C1_mds_u, breaks = 50))
     ]
   )
 
@@ -19,21 +19,20 @@ threed_roman <- threed[roman,]
 
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
-    id = janno_final$Poseidon_ID,
-    x = list(janno_final$x),
-    y = list(janno_final$y),
-    z = list(janno_final$Date_BC_AD_Median_Derived),
-    it = "age_median"
+    age_median = mobest::create_spatpos(
+      id = janno_final$Poseidon_ID,
+      x = janno_final$x,
+      y = janno_final$y,
+      z = janno_final$Date_BC_AD_Median_Derived
+    )
   ),
   dependent = mobest::create_obs(
-    C1 = janno_final$C1
+    C1 = janno_final$C1_mds_u
   ),
   kernel = mobest::create_kernset_multi(
-    d = list(c(500000, 500000, 900)), 
-    g = 0.06, 
-    on_residuals = T, 
-    auto = F,
-    it = "ds500_dt900_g008"
+    ds500_dt900_g006 = mobest::create_kernset(
+      C1 = mobest::create_kernel(500000, 500000, 900, 0.06)
+    )
   ),
   prediction_grid = list(
     scs100_tl50 = mobest::prediction_grid_for_spatiotemporal_area(
@@ -50,9 +49,9 @@ threedinter <- interpol_grid %>%
   dplyr::mutate(
     order = findInterval(mean, sort(mean)),
     mean_limited = ifelse(
-      mean < min(janno_final$C1), min(janno_final$C1), 
+      mean < min(janno_final$C1_mds_u), min(janno_final$C1_mds_u), 
       ifelse(
-        mean > max(janno_final$C1), max(janno_final$C1),
+        mean > max(janno_final$C1_mds_u), max(janno_final$C1_mds_u),
         mean     
       )
     )
