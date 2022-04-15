@@ -13,8 +13,8 @@ janno_search <- janno_final %>%
     search_z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[1] })
   ) %>% dplyr::filter(
     Poseidon_ID %in% c(
-      "Stuttgart_published.DG"#, 
-      # "RISE434.SG", 
+      #"Stuttgart_published.DG"#, 
+      "RISE434.SG"#, 
       # "3DT26.SG",
       # "SI-40.SG"
     )
@@ -58,7 +58,8 @@ search <- mobest::locate(
     search_area,
     spatial_cell_size = 70000
   ),
-  search_time_distance = seq(-3000, 1500, 50)
+  search_time = seq(-4000, -2000, 50),
+  search_time_mode = "absolute"
 )
 
 gugu <- mobest::multiply_dependent_probabilities(search)
@@ -73,7 +74,7 @@ huhu <- gugu %>%
   )
 
 library(ggplot2)
-huhu %>% dplyr::group_split(time_distance) %>%
+huhu %>% dplyr::group_split(search_z) %>%
   purrr::walk2(
     1:length(.), .,
     function(i, x) {
@@ -84,10 +85,12 @@ huhu %>% dplyr::group_split(time_distance) %>%
         ) +
         ggtitle(x$search_z %>% unique)
       ggsave(
-        paste0("plots/presentation/movie/", sprintf("sequence_%03d", i), ".png"),
-        p
+        paste0("plots/presentation/movie/", sprintf("sequence_%03d", i), ".jpeg"),
+        p,
+        width = 10,
+        height = 7
       )
     }
   )
 
-# ffmpeg -f image2 -framerate 3 -i sequence_%03d.png -loop -1 -s 720x480 sequence.gif
+# ffmpeg -f image2 -framerate 3 -i sequence_%03d.jpeg -loop 0 -s 720x480 sequence.gif
