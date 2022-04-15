@@ -29,7 +29,7 @@ janno_search <- janno_final %>%
     )
   )
 
-search <- mobest::search_origin(
+search <- mobest::locate(
   independent = mobest::create_spatpos_multi(
     age_median = mobest::create_spatpos(
       id = janno_final$Poseidon_ID,
@@ -40,12 +40,14 @@ search <- mobest::search_origin(
   ),
   dependent = mobest::create_obs(
     C1_mds_u = janno_final$C1_mds_u,
-    C2_mds_u = janno_final$C2_mds_u
+    C2_mds_u = janno_final$C2_mds_u#,
+    #C3_mds_u = janno_final$C3_mds_u
   ),
   kernel = mobest::create_kernset_multi(
     kernel_1 = mobest::create_kernset(
       C1_mds_u = mobest::create_kernel(900000, 900000, 800, 0.07),
-      C2_mds_u = mobest::create_kernel(900000, 900000, 800, 0.07)
+      C2_mds_u = mobest::create_kernel(900000, 900000, 800, 0.07)#,
+      #C3_mds_u = mobest::create_kernel(900000, 900000, 800, 0.2)
     )
   ),
   search_independent = mobest::create_spatpos_multi(
@@ -58,28 +60,31 @@ search <- mobest::search_origin(
   ),
   search_dependent = mobest::create_obs(
     C1_mds_u = janno_search$C1_mds_u,
-    C2_mds_u = janno_search$C2_mds_u
+    C2_mds_u = janno_search$C2_mds_u#,
+    #C3_mds_u = janno_search$C3_mds_u
   ),
   search_space_grid = mobest::create_prediction_grid(
     search_area,
     spatial_cell_size = 50000
   ),
-  rearview_distance = 700
+  search_time_distance = -700
 )
 
-huhu <- search %>%
+gugu <- mobest::multiply_dependent_probabilities(search)
+  
+huhu <- gugu %>%
   dplyr::filter(
     #id == "Stuttgart_published.DG",
-    dependent_var_id == "C1_mds_u",
+    #id == "3DT26.SG",
     independent_table_id == "search_selection",
     field_independent_table_id == "age_median",
     field_kernel_setting_id == "kernel_1"
   )
-
+  
 library(ggplot2)
 huhu %>%
   ggplot() +
   geom_raster(
-    aes(x = field_x, y = field_y, fill = probability)
+    aes(x = field_x, y = field_y, fill = probability_product)
   ) +
   facet_wrap(~id)
