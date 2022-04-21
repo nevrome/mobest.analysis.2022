@@ -1,3 +1,5 @@
+# qsub -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=50G -now n -V -j y -o ~/log -N apple singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/04_plot_scripts/presentations/origin_search_narrative_movie.R
+
 library(magrittr)
 library(ggplot2)
 
