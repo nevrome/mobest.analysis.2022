@@ -130,7 +130,7 @@ s <- scatterplot3d::scatterplot3d(
 s$box3d()
 dev.off()
 
-#### plot with one timeslice, z-axis C1 ####
+#### plot with one timeslice, z-axis C1, old angle ####
 
 png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1a.png", width = 22, height = 14, units = "cm", res = 300)
 
@@ -149,6 +149,8 @@ s <- scatterplot3d::scatterplot3d(
 s$box3d()
 dev.off()
 
+#### plot with one timeslice, z-axis C1 ####
+
 png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1b.png", width = 22, height = 14, units = "cm", res = 300)
 
 s <- scatterplot3d::scatterplot3d(
@@ -156,11 +158,11 @@ s <- scatterplot3d::scatterplot3d(
   color = threedinter_timeslice$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
   xlim = range(threed$x), ylim = range(threed$y),
   lwd = 0.1, pch = 18, cex.symbols = 0.8,
-  angle = 30,
+  angle = -70,
   xlab = "x", ylab = "y", zlab = "MDS C1",
   col.axis = "grey",
   zlim = c(-0.08, 0.11),
-  mar = c(2.7, 2.7, 0, 2)
+  mar = c(2.7, 2.0, 0, 2.7)
 )
 
 s$box3d()
@@ -173,22 +175,22 @@ cut_segments <- function(x, y, z_top, z_bottom, color ) {
   bottom <- s$xyz.convert(x, y, z_bottom)
   segments(
     bottom$x, bottom$y, top$x, top$y,
-    col = color, lwd = 0.5
+    col = color, lwd = 0.8
   )
 }
 
-png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1b_sd.png", width = 22, height = 14, units = "cm", res = 300)
+png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1b_error.png", width = 22, height = 14, units = "cm", res = 300)
 
 s <- scatterplot3d::scatterplot3d(
   threedinter_timeslice$x, threedinter_timeslice$y, threedinter_timeslice$mean, 
   color = threedinter_timeslice$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
   xlim = range(threed$x), ylim = range(threed$y),
   lwd = 0.1, pch = 18, cex.symbols = 0.8,
-  angle = 30,
+  angle = -70,
   xlab = "x", ylab = "y", zlab = "MDS C1",
   col.axis = "grey",
   zlim = c(-0.08, 0.11),
-  mar = c(2.7, 2.7, 0, 2)
+  mar = c(2.7, 2.0, 0, 2.7)
 )
 
 cut_segments(
@@ -211,54 +213,6 @@ threedinter_timeslice_below <- threedinter_timeslice %>%
 threedinter_timeslice_above <- threedinter_timeslice %>%
   dplyr::filter(mean >= obsval)
 
-png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1b_plane.png", width = 22, height = 14, units = "cm", res = 300)
-
-s <- scatterplot3d::scatterplot3d(
-  threedinter_timeslice_below$x, threedinter_timeslice_below$y, threedinter_timeslice_below$mean, 
-  color = threedinter_timeslice_below$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
-  xlim = range(threed$x), ylim = range(threed$y),
-  lwd = 0.1, pch = 18, cex.symbols = 0.8,
-  angle = 30,
-  xlab = "x", ylab = "y", zlab = "MDS C1",
-  col.axis = "grey",
-  zlim = c(-0.08, 0.11),
-  mar = c(2.7, 2.7, 0, 2)
-)
-
-below <- s$xyz.convert(
-  threedinter_timeslice_below$x,
-  threedinter_timeslice_below$y,
-  threedinter_timeslice_below$mean
-)
-points(
-  below$x, below$y,
-  col = threedinter_timeslice_below$color,
-  pch = 18, cex = 0.8
-)
-
-s$plane3d(
-  Intercept = obsval,#janno_search$C1_mds_u,
-  x.coef = 0, y.coef = 0,
-  lty = "dotted", draw_polygon = TRUE, draw_lines = TRUE, 
-  polygon_args = list(col = rgb(0.8, 0.8, 0.8, 0.8))
-)
-
-above <- s$xyz.convert(
-  threedinter_timeslice_above$x,
-  threedinter_timeslice_above$y,
-  threedinter_timeslice_above$mean
-)
-points(
-  above$x, above$y,
-  col = threedinter_timeslice_above$color,
-  pch = 18, cex = 0.8
-)
-
-s$box3d()
-dev.off()
-
-#### plot with one timeslice, z-axis C1, observation plane, error ####
-
 seglist <- threedinter_timeslice %>%
   dplyr::mutate(
     segment_position = dplyr::case_when(
@@ -268,18 +222,18 @@ seglist <- threedinter_timeslice %>%
     )
   ) %>% dplyr::group_split(segment_position)
 
-png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1b_sd_plane.png", width = 22, height = 14, units = "cm", res = 300)
+png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1b_plane.png", width = 22, height = 14, units = "cm", res = 300)
 
 s <- scatterplot3d::scatterplot3d(
   threedinter_timeslice_below$x, threedinter_timeslice_below$y, threedinter_timeslice_below$mean, 
   color = threedinter_timeslice_below$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
   xlim = range(threed$x), ylim = range(threed$y),
   lwd = 0.1, pch = 18, cex.symbols = 0.8,
-  angle = 30,
+  angle = -70,
   xlab = "x", ylab = "y", zlab = "MDS C1",
   col.axis = "grey",
   zlim = c(-0.08, 0.11),
-  mar = c(2.7, 2.7, 0, 2)
+  mar = c(2.7, 2.0, 0, 2.7)
 )
 
 below <- s$xyz.convert(
