@@ -128,11 +128,11 @@ dev.off()
 
 #### plot with one timeslice, z-axis C1 ####
 
-png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1.png", width = 22, height = 14, units = "cm", res = 300)
+png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1a.png", width = 22, height = 14, units = "cm", res = 300)
 
 s <- scatterplot3d::scatterplot3d(
   threedinter_timeslice$x, threedinter_timeslice$y, threedinter_timeslice$mean, 
-  color = ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
+  color = threedinter_timeslice$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
   xlim = range(threed$x), ylim = range(threed$y),
   lwd = 0.1, pch = 18, cex.symbols = 0.8,
   angle = 70,
@@ -144,16 +144,32 @@ s <- scatterplot3d::scatterplot3d(
 
 dev.off()
 
-#### plot with one timeslice, z-axis C1 and error ####
-
-png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1_sd.png", width = 22, height = 14, units = "cm", res = 300)
+png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1b.png", width = 22, height = 14, units = "cm", res = 300)
 
 s <- scatterplot3d::scatterplot3d(
   threedinter_timeslice$x, threedinter_timeslice$y, threedinter_timeslice$mean, 
-  color = ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
+  color = threedinter_timeslice$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
   xlim = range(threed$x), ylim = range(threed$y),
   lwd = 0.1, pch = 18, cex.symbols = 0.8,
-  angle = 70,
+  angle = 30,
+  xlab = "x", ylab = "y", zlab = "MDS C1",
+  col.axis = "grey",
+  zlim = c(-0.08, 0.11),
+  mar = c(2.7, 2.7, 0, 2)
+)
+
+dev.off()
+
+#### plot with one timeslice, z-axis C1 and error ####
+
+png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1b_sd.png", width = 22, height = 14, units = "cm", res = 300)
+
+s <- scatterplot3d::scatterplot3d(
+  threedinter_timeslice$x, threedinter_timeslice$y, threedinter_timeslice$mean, 
+  color = threedinter_timeslice$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
+  xlim = range(threed$x), ylim = range(threed$y),
+  lwd = 0.1, pch = 18, cex.symbols = 0.8,
+  angle = 30,
   xlab = "x", ylab = "y", zlab = "MDS C1",
   col.axis = "grey",
   zlim = c(-0.08, 0.11),
@@ -172,8 +188,10 @@ bottom <- s$xyz.convert(
 )
 segments(
   top$x, top$y, bottom$x, bottom$y,
-  col = ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha * 1.5),
+  col = threedinter_timeslice$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha * 1.5),
   lwd = 0.5
 )
 
 dev.off()
+
+#### 
