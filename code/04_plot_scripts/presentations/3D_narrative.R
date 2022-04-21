@@ -1,8 +1,17 @@
 library(magrittr)
 
 load("data/genotype_data/janno_final.RData")
-# load("data/spatial/area.RData")
+load("data/spatial/area.RData")
 load("data/spatial/search_area.RData")
+
+janno_search <- janno_final %>%
+  dplyr::mutate(
+    search_z = Date_BC_AD_Median_Derived
+  ) %>% dplyr::filter(
+    Poseidon_ID %in% c(
+      "Stuttgart_published.DG"
+    )
+  )
 
 #### basic plot of observations ####
 
@@ -49,12 +58,12 @@ model_grid <- mobest::create_model_grid(
   ),
   kernel = mobest::create_kernset_multi(
     kernel1 = mobest::create_kernset(
-      C1_mds_u = mobest::create_kernel(500000, 500000, 900, 0.06)
+      C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
     )
   ),
   prediction_grid = mobest::create_spatpos_multi(
     timeslice = mobest::create_prediction_grid(
-      search_area,
+      area,
       spatial_cell_size = 50000
     ) %>% mobest::geopos_to_spatpos(seq(-8000, 2000, 200))
   )
@@ -110,7 +119,7 @@ dev.off()
 #### plot with one interpolation timeslice ####
 
 threedinter_timeslice <- threedinter %>%
-  dplyr::filter(z == -5000)
+  dplyr::filter(z == -5600)
 
 # plot
 png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice.png", width = 22, height = 14, units = "cm", res = 300)
@@ -142,7 +151,7 @@ s <- scatterplot3d::scatterplot3d(
   angle = 70,
   xlab = "x", ylab = "y", zlab = "MDS C1",
   col.axis = "grey",
-  zlim = c(-0.08, 0.11),
+  zlim = c(-0.11, 0.11),
   mar = c(2.7, 2.7, 0, 2)
 )
 
@@ -161,7 +170,7 @@ s <- scatterplot3d::scatterplot3d(
   angle = -70,
   xlab = "x", ylab = "y", zlab = "MDS C1",
   col.axis = "grey",
-  zlim = c(-0.08, 0.11),
+  zlim = c(-0.11, 0.11),
   mar = c(2.7, 2.0, 0, 2.7)
 )
 
@@ -189,7 +198,7 @@ s <- scatterplot3d::scatterplot3d(
   angle = -70,
   xlab = "x", ylab = "y", zlab = "MDS C1",
   col.axis = "grey",
-  zlim = c(-0.08, 0.11),
+  zlim = c(-0.11, 0.11),
   mar = c(2.7, 2.0, 0, 2.7)
 )
 
@@ -232,7 +241,7 @@ s <- scatterplot3d::scatterplot3d(
   angle = -70,
   xlab = "x", ylab = "y", zlab = "MDS C1",
   col.axis = "grey",
-  zlim = c(-0.08, 0.11),
+  zlim = c(-0.11, 0.11),
   mar = c(2.7, 2.0, 0, 2.7)
 )
 
@@ -294,51 +303,118 @@ dev.off()
 
 #### origin search ####
 
-# janno_search <- janno_final %>%
+spatial_pred_grid <- mobest::create_prediction_grid(
+  area,
+  spatial_cell_size = 30000
+)
+
+search <- mobest::locate(
+  independent = mobest::create_spatpos(
+    id = janno_final$Poseidon_ID,
+    x = janno_final$x,
+    y = janno_final$y,
+    z = janno_final$Date_BC_AD_Median_Derived
+  ),
+  dependent = mobest::create_obs(
+    C1_mds_u = janno_final$C1_mds_u,
+    C2_mds_u = janno_final$C2_mds_u
+  ),
+  kernel = mobest::create_kernset(
+    C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
+    C2_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
+  ),
+  search_independent = mobest::create_spatpos(
+    id = janno_search$Poseidon_ID,
+    x = janno_search$x,
+    y = janno_search$y,
+    z = janno_search$Date_BC_AD_Median_Derived
+  ),
+  search_dependent = mobest::create_obs(
+    C1_mds_u = janno_search$C1_mds_u,
+    C2_mds_u = janno_search$C2_mds_u
+  ),
+  search_space_grid = spatial_pred_grid,
+  search_time = -5600,
+  search_time_mode = "absolute"
+)
+
+search_prod <- mobest::multiply_dependent_probabilities(search)
+
+# threedprob <- search_prod %>%
 #   dplyr::mutate(
-#     search_z = sapply(janno_final$Date_BC_AD_Sample, function(x){ x[1] })
-#   ) %>% dplyr::filter(
-#     Poseidon_ID %in% c(
-#       "Stuttgart_published.DG" 
-#       #, "RISE434.SG" 
-#       #, "3DT26.SG"
-#       #, "SI-40.SG"
-#     )
+#     x = field_x/1000,
+#     y = field_y/1000,
+#     z = probability_product,
+#     color = viridis::inferno(
+#       50, direction = -1
+#     )[as.numeric(cut(probability_product, breaks = 50))]
 #   )
 # 
-# search <- mobest::locate(
-#   independent = mobest::create_spatpos(
-#     id = janno_final$Poseidon_ID,
-#     x = janno_final$x,
-#     y = janno_final$y,
-#     z = janno_final$Date_BC_AD_Median_Derived
-#   ),
-#   dependent = mobest::create_obs(
-#     C1_mds_u = janno_final$C1_mds_u,
-#     C2_mds_u = janno_final$C2_mds_u
-#   ),
-#   kernel = mobest::create_kernset(
-#     C1_mds_u = mobest::create_kernel(900000, 900000, 800, 0.07),
-#     C2_mds_u = mobest::create_kernel(900000, 900000, 800, 0.07)
-#   ),
-#   search_independent = mobest::create_spatpos(
-#     id = janno_search$Poseidon_ID,
-#     x = janno_search$x,
-#     y = janno_search$y,
-#     z = janno_search$Date_BC_AD_Median_Derived
-#   ),
-#   search_dependent = mobest::create_obs(
-#     C1_mds_u = janno_search$C1_mds_u,
-#     C2_mds_u = janno_search$C2_mds_u
-#   ),
-#   search_space_grid = mobest::create_prediction_grid(
-#     search_area,
-#     spatial_cell_size = 50000
-#   ),
-#   search_time = -700,#seq(-4000, -1800, 50),
-#   search_time_mode = "absolute"
+# png(filename = "plots/presentation/3D_plot_prob_Stuttgart.png", width = 22, height = 14, units = "cm", res = 300)
+# 
+# s <- scatterplot3d::scatterplot3d(
+#   threedprob$x, threedprob$y, threedprob$z, 
+#   color = threedprob$color,
+#   xlim = range(threed$x), ylim = range(threed$y),
+#   lwd = 0.5, pch = 18, cex.symbols = 0.8,
+#   angle = -70,
+#   xlab = "x", ylab = "y", zlab = "MDS C1",
+#   col.axis = "grey",
+#   zlim = c(0, 2000),
+#   mar = c(2.7, 2.0, 0, 2.7)
 # )
 # 
-# search_prod <- mobest::multiply_dependent_probabilities(search)
+# s$box3d()
+# dev.off()
+#   
+  
+library(ggplot2)
 
+load("data/spatial/research_area.RData")
+load("data/spatial/extended_area.RData")
+load("data/spatial/epsg3035.RData")
+
+p <- ggplot() +
+  geom_sf(data = extended_area, fill = "black") +
+  geom_raster(
+    data = search_prod,
+    mapping = aes(x = field_x, y = field_y, fill = probability_product),
+  ) +
+  scale_fill_viridis_c(option = "mako", direction = -1) +
+  geom_sf(data = extended_area, fill = NA, colour = "black") +
+  geom_point(
+    data = janno_search,
+    mapping = aes(x = x, y = y),
+    colour = "red",
+    size = 5
+  ) +
+  theme_bw() +
+  coord_sf(
+    expand = FALSE,
+    crs = epsg3035
+  ) +
+  guides(
+    fill = guide_colorbar(title = "Probability  ", barwidth = 25)
+  ) +
+  theme(
+    legend.position = "bottom",
+    legend.box = "horizontal",
+    legend.title = element_text(size = 15),
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    legend.text = element_text(size = 15),
+    strip.text = element_text(size = 15),
+    axis.ticks = element_blank(),
+    panel.background = element_rect(fill = "#BFD5E3")
+  )
+
+ggsave(
+  "plots/presentation/huhu.png",
+  plot = p,
+  device = "png",
+  scale = 0.75,
+  dpi = 300,
+  width = 300, height = 300, units = "mm",
+  limitsize = F
+)
 
