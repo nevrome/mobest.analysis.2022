@@ -39,6 +39,19 @@ s <- scatterplot3d::scatterplot3d(
   mar = c(2.7, 2.7, 0, 2)
 )
 
+# cs <- s$xyz.convert(threed_roman$x, threed_roman$y, threed_roman$z)
+# points(
+#   cs$x, cs$y,
+#   col = "red",
+#   pch = 18, cex = 3.5
+# )
+# 
+# points(
+#   cs$x, cs$y,
+#   col = threed_roman$color,
+#   pch = 18, cex = 2.5
+# )
+
 s$box3d()
 dev.off()
 
