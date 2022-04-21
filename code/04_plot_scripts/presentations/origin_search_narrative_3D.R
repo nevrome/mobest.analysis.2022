@@ -440,41 +440,4 @@ plot_prob(search_prod, "plots/presentation/search_map.png")
 
 #### movie ####
 
-search_movie <- mobest::locate(
-  independent = mobest::create_spatpos(
-    id = janno_final$Poseidon_ID,
-    x = janno_final$x,
-    y = janno_final$y,
-    z = janno_final$Date_BC_AD_Median_Derived
-  ),
-  dependent = mobest::create_obs(
-    C1_mds_u = janno_final$C1_mds_u,
-    C2_mds_u = janno_final$C2_mds_u
-  ),
-  kernel = mobest::create_kernset(
-    C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
-    C2_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
-  ),
-  search_independent = mobest::create_spatpos(
-    id = janno_search$Poseidon_ID,
-    x = janno_search$x,
-    y = janno_search$y,
-    z = janno_search$Date_BC_AD_Median_Derived
-  ),
-  search_dependent = mobest::create_obs(
-    C1_mds_u = janno_search$C1_mds_u,
-    C2_mds_u = janno_search$C2_mds_u
-  ),
-  search_space_grid = spatial_pred_grid,
-  search_time = seq(-8000, -5000, 50),
-  search_time_mode = "absolute"
-)
 
-search_movie_prod <- mobest::multiply_dependent_probabilities(search_movie)
-
-search_movie_prod %>%
-  dplyr::group_split(search_z) %>%
-  purrr::walk2(
-    ., paste0("plots/presentation/movie/", sprintf("frame_%03d", 1:length(.))),
-    plot_prob
-  )
