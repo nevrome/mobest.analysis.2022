@@ -314,11 +314,11 @@ cut_segments(
 s$box3d()
 dev.off()
 
-#### origin search ####
+#### origin search example  ####
 
 spatial_pred_grid <- mobest::create_prediction_grid(
   area,
-  spatial_cell_size = 100000
+  spatial_cell_size = 20000
 )
 
 search <- mobest::locate(
@@ -353,46 +353,23 @@ search <- mobest::locate(
 
 search_prod <- mobest::multiply_dependent_probabilities(search, omit_dependent_details = F)
 
-# threedprob <- search_prod %>%
-#   dplyr::mutate(
-#     x = field_x/1000,
-#     y = field_y/1000,
-#     z = probability_product,
-#     color = viridis::inferno(
-#       50, direction = -1
-#     )[as.numeric(cut(probability_product, breaks = 50))]
-#   )
-# 
-# png(filename = "plots/presentation/3D_plot_prob_Stuttgart.png", width = 22, height = 14, units = "cm", res = 300)
-# 
-# s <- scatterplot3d::scatterplot3d(
-#   threedprob$x, threedprob$y, threedprob$z, 
-#   color = threedprob$color,
-#   xlim = range(threed$x), ylim = range(threed$y),
-#   lwd = 0.5, pch = 18, cex.symbols = 0.8,
-#   angle = -70,
-#   xlab = "x", ylab = "y", zlab = "MDS C1",
-#   col.axis = "grey",
-#   zlim = c(0, 2000),
-#   mar = c(2.7, 2.0, 0, 2.7)
-# )
-# 
-# s$box3d()
-# dev.off()
-#   
-  
 library(ggplot2)
 
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 
-ggplot() +
+p <- ggplot() +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(
     data = search_prod,
     mapping = aes(x = field_x, y = field_y, fill = probability_C2_mds_u),
   ) +
+  annotate(
+    "text",
+    x = 6700000, y = 4400000, size = 11,
+    label = "5600 calBC"
+  ) +
   scale_fill_viridis_c(option = "mako", direction = -1) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
   geom_point(
@@ -419,126 +396,14 @@ ggplot() +
     strip.text = element_text(size = 15),
     axis.ticks = element_blank(),
     panel.background = element_rect(fill = "#BFD5E3")
-  ) +
-  ggtitle(paste("time calBC/AD:", unique(search_prod$search_z)))
+  )
 
 ggsave(
-  path,
+  "plots/presentation/search_map_Stuttgart_5600_C2.png",
   plot = p,
   device = "png",
   scale = 0.6,
   dpi = 300,
-  width = 350, height = 300, units = "mm",
+  width = 370, height = 300, units = "mm",
   limitsize = F
 )
-
-plot_prob(search_prod, "plots/presentation/search_map.png")
-
-#### place ####
-
-model_grid <- mobest::create_model_grid(
-  independent = mobest::create_spatpos_multi(
-    age_median = mobest::create_spatpos(
-      id = janno_final$Poseidon_ID,
-      x = janno_final$x,
-      y = janno_final$y,
-      z = janno_final$Date_BC_AD_Median_Derived
-    )
-  ),
-  dependent = mobest::create_obs(
-    C1_mds_u = janno_final$C1_mds_u,
-    C2_mds_u = janno_final$C2_mds_u
-  ),
-  kernel = mobest::create_kernset_multi(
-    kernel1 = mobest::create_kernset(
-      C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
-      C2_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
-    )
-  ),
-  prediction_grid = mobest::create_spatpos_multi(
-    poi = mobest::create_geopos(
-      id = janno_search$Poseidon_ID,
-      x = janno_search$x,
-      y = janno_search$y
-    ) %>% mobest::geopos_to_spatpos(seq(-8000, 2000, 500))#seq(-8000, 2000, 200))
-  )
-)
-
-interpol_grid <- mobest::run_model_grid(model_grid)
-
-interpol_grid_wide <- interpol_grid %>%
-  tidyr::pivot_wider(
-    names_from = "dependent_var_id",
-    values_from = c("mean", "sd")
-  )
-
-search <- mobest::locate(
-  independent = mobest::create_spatpos(
-    id = janno_final$Poseidon_ID,
-    x = janno_final$x,
-    y = janno_final$y,
-    z = janno_final$Date_BC_AD_Median_Derived
-  ),
-  dependent = mobest::create_obs(
-    C1_mds_u = janno_final$C1_mds_u,
-    C2_mds_u = janno_final$C2_mds_u
-  ),
-  kernel = mobest::create_kernset(
-    C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
-    C2_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
-  ),
-  search_independent = mobest::create_spatpos(
-    id = interpol_grid_wide$id,
-    x = interpol_grid_wide$x,
-    y = interpol_grid_wide$y,
-    z = interpol_grid_wide$z
-  ),
-  search_dependent = mobest::create_obs(
-    C1_mds_u = interpol_grid_wide$mean_C1_mds_u,
-    C2_mds_u = interpol_grid_wide$mean_C2_mds_u
-  ),
-  search_dependent_error = mobest::create_obs_error(
-    C1_mds_u_sd = interpol_grid_wide$sd_C1_mds_u,
-    C2_mds_u_sd = interpol_grid_wide$sd_C2_mds_u
-  ),
-  search_space_grid = spatial_pred_grid,
-  search_time = 0,
-  search_time_mode = "relative"
-)
-
-search_prod <- mobest::multiply_dependent_probabilities(search, omit_dependent_details = F)
-
-ggplot() +
-  geom_sf(data = extended_area, fill = "black") +
-  geom_raster(
-    data = search_prod %>% dplyr::filter(search_z == 2000),
-    mapping = aes(x = field_x, y = field_y, fill = probability_product),
-  ) +
-  scale_fill_viridis_c(option = "mako", direction = -1) +
-  geom_sf(data = extended_area, fill = NA, colour = "black") +
-  geom_point(
-    data = janno_search,
-    mapping = aes(x = x, y = y),
-    colour = "red",
-    size = 5
-  ) +
-  theme_bw() +
-  coord_sf(
-    expand = FALSE,
-    crs = epsg3035
-  ) +
-  guides(
-    fill = guide_colorbar(title = "Probability  ", barwidth = 25)
-  ) +
-  theme(
-    legend.position = "bottom",
-    legend.box = "horizontal",
-    legend.title = element_text(size = 15),
-    axis.title = element_blank(),
-    axis.text = element_blank(),
-    legend.text = element_text(size = 15),
-    strip.text = element_text(size = 15),
-    axis.ticks = element_blank(),
-    panel.background = element_rect(fill = "#BFD5E3")
-  ) +
-  ggtitle(paste("time calBC/AD:", unique(search_prod$search_z)))
