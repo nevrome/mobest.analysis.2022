@@ -318,7 +318,7 @@ dev.off()
 
 spatial_pred_grid <- mobest::create_prediction_grid(
   area,
-  spatial_cell_size = 30000
+  spatial_cell_size = 100000
 )
 
 search <- mobest::locate(
@@ -351,7 +351,7 @@ search <- mobest::locate(
   search_time_mode = "absolute"
 )
 
-search_prod <- mobest::multiply_dependent_probabilities(search)
+search_prod <- mobest::multiply_dependent_probabilities(search, omit_dependent_details = F)
 
 # threedprob <- search_prod %>%
 #   dplyr::mutate(
@@ -387,57 +387,158 @@ load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 
-plot_prob <- function(search_prod, path) {
+ggplot() +
+  geom_sf(data = extended_area, fill = "black") +
+  geom_raster(
+    data = search_prod,
+    mapping = aes(x = field_x, y = field_y, fill = probability_C2_mds_u),
+  ) +
+  scale_fill_viridis_c(option = "mako", direction = -1) +
+  geom_sf(data = extended_area, fill = NA, colour = "black") +
+  geom_point(
+    data = janno_search,
+    mapping = aes(x = x, y = y),
+    colour = "red",
+    size = 5
+  ) +
+  theme_bw() +
+  coord_sf(
+    expand = FALSE,
+    crs = epsg3035
+  ) +
+  guides(
+    fill = guide_colorbar(title = "Probability  ", barwidth = 25)
+  ) +
+  theme(
+    legend.position = "bottom",
+    legend.box = "horizontal",
+    legend.title = element_text(size = 15),
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    legend.text = element_text(size = 15),
+    strip.text = element_text(size = 15),
+    axis.ticks = element_blank(),
+    panel.background = element_rect(fill = "#BFD5E3")
+  ) +
+  ggtitle(paste("time calBC/AD:", unique(search_prod$search_z)))
 
-  p <- ggplot() +
-    geom_sf(data = extended_area, fill = "black") +
-    geom_raster(
-      data = search_prod,
-      mapping = aes(x = field_x, y = field_y, fill = probability_product),
-    ) +
-    scale_fill_viridis_c(option = "mako", direction = -1) +
-    geom_sf(data = extended_area, fill = NA, colour = "black") +
-    geom_point(
-      data = janno_search,
-      mapping = aes(x = x, y = y),
-      colour = "red",
-      size = 5
-    ) +
-    theme_bw() +
-    coord_sf(
-      expand = FALSE,
-      crs = epsg3035
-    ) +
-    guides(
-      fill = guide_colorbar(title = "Probability  ", barwidth = 25)
-    ) +
-    theme(
-      legend.position = "bottom",
-      legend.box = "horizontal",
-      legend.title = element_text(size = 15),
-      axis.title = element_blank(),
-      axis.text = element_blank(),
-      legend.text = element_text(size = 15),
-      strip.text = element_text(size = 15),
-      axis.ticks = element_blank(),
-      panel.background = element_rect(fill = "#BFD5E3")
-    ) +
-    ggtitle(paste("time calBC/AD:", unique(search_prod$search_z)))
-  
-  ggsave(
-    path,
-    plot = p,
-    device = "png",
-    scale = 0.6,
-    dpi = 300,
-    width = 350, height = 300, units = "mm",
-    limitsize = F
-  )
-
-}
+ggsave(
+  path,
+  plot = p,
+  device = "png",
+  scale = 0.6,
+  dpi = 300,
+  width = 350, height = 300, units = "mm",
+  limitsize = F
+)
 
 plot_prob(search_prod, "plots/presentation/search_map.png")
 
-#### movie ####
+#### place ####
 
+model_grid <- mobest::create_model_grid(
+  independent = mobest::create_spatpos_multi(
+    age_median = mobest::create_spatpos(
+      id = janno_final$Poseidon_ID,
+      x = janno_final$x,
+      y = janno_final$y,
+      z = janno_final$Date_BC_AD_Median_Derived
+    )
+  ),
+  dependent = mobest::create_obs(
+    C1_mds_u = janno_final$C1_mds_u,
+    C2_mds_u = janno_final$C2_mds_u
+  ),
+  kernel = mobest::create_kernset_multi(
+    kernel1 = mobest::create_kernset(
+      C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
+      C2_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
+    )
+  ),
+  prediction_grid = mobest::create_spatpos_multi(
+    poi = mobest::create_geopos(
+      id = janno_search$Poseidon_ID,
+      x = janno_search$x,
+      y = janno_search$y
+    ) %>% mobest::geopos_to_spatpos(seq(-8000, 2000, 500))#seq(-8000, 2000, 200))
+  )
+)
 
+interpol_grid <- mobest::run_model_grid(model_grid)
+
+interpol_grid_wide <- interpol_grid %>%
+  tidyr::pivot_wider(
+    names_from = "dependent_var_id",
+    values_from = c("mean", "sd")
+  )
+
+search <- mobest::locate(
+  independent = mobest::create_spatpos(
+    id = janno_final$Poseidon_ID,
+    x = janno_final$x,
+    y = janno_final$y,
+    z = janno_final$Date_BC_AD_Median_Derived
+  ),
+  dependent = mobest::create_obs(
+    C1_mds_u = janno_final$C1_mds_u,
+    C2_mds_u = janno_final$C2_mds_u
+  ),
+  kernel = mobest::create_kernset(
+    C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
+    C2_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
+  ),
+  search_independent = mobest::create_spatpos(
+    id = interpol_grid_wide$id,
+    x = interpol_grid_wide$x,
+    y = interpol_grid_wide$y,
+    z = interpol_grid_wide$z
+  ),
+  search_dependent = mobest::create_obs(
+    C1_mds_u = interpol_grid_wide$mean_C1_mds_u,
+    C2_mds_u = interpol_grid_wide$mean_C2_mds_u
+  ),
+  search_dependent_error = mobest::create_obs_error(
+    C1_mds_u_sd = interpol_grid_wide$sd_C1_mds_u,
+    C2_mds_u_sd = interpol_grid_wide$sd_C2_mds_u
+  ),
+  search_space_grid = spatial_pred_grid,
+  search_time = 0,
+  search_time_mode = "relative"
+)
+
+search_prod <- mobest::multiply_dependent_probabilities(search, omit_dependent_details = F)
+
+ggplot() +
+  geom_sf(data = extended_area, fill = "black") +
+  geom_raster(
+    data = search_prod %>% dplyr::filter(search_z == 2000),
+    mapping = aes(x = field_x, y = field_y, fill = probability_product),
+  ) +
+  scale_fill_viridis_c(option = "mako", direction = -1) +
+  geom_sf(data = extended_area, fill = NA, colour = "black") +
+  geom_point(
+    data = janno_search,
+    mapping = aes(x = x, y = y),
+    colour = "red",
+    size = 5
+  ) +
+  theme_bw() +
+  coord_sf(
+    expand = FALSE,
+    crs = epsg3035
+  ) +
+  guides(
+    fill = guide_colorbar(title = "Probability  ", barwidth = 25)
+  ) +
+  theme(
+    legend.position = "bottom",
+    legend.box = "horizontal",
+    legend.title = element_text(size = 15),
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    legend.text = element_text(size = 15),
+    strip.text = element_text(size = 15),
+    axis.ticks = element_blank(),
+    panel.background = element_rect(fill = "#BFD5E3")
+  ) +
+  ggtitle(paste("time calBC/AD:", unique(search_prod$search_z)))
