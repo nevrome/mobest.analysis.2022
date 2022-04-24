@@ -316,6 +316,19 @@ dev.off()
 
 #### origin search example  ####
 
+janno_search <- janno_final %>%
+  dplyr::mutate(
+    search_z = Date_BC_AD_Median_Derived
+  ) %>% dplyr::filter(
+    Poseidon_ID %in% c(
+      "Stuttgart_published.DG"
+      #"RISE434.SG"
+      #"3DT26.SG"
+      #"SI-40.SG"
+    )
+  )
+
+
 spatial_pred_grid <- mobest::create_prediction_grid(
   area,
   spatial_cell_size = 20000
@@ -330,11 +343,13 @@ search <- mobest::locate(
   ),
   dependent = mobest::create_obs(
     C1_mds_u = janno_final$C1_mds_u,
-    C2_mds_u = janno_final$C2_mds_u
+    C2_mds_u = janno_final$C2_mds_u,
+    C3_mds_u = janno_final$C3_mds_u
   ),
   kernel = mobest::create_kernset(
     C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
-    C2_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
+    C2_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
+    C3_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
   ),
   search_independent = mobest::create_spatpos(
     id = janno_search$Poseidon_ID,
@@ -344,7 +359,8 @@ search <- mobest::locate(
   ),
   search_dependent = mobest::create_obs(
     C1_mds_u = janno_search$C1_mds_u,
-    C2_mds_u = janno_search$C2_mds_u
+    C2_mds_u = janno_search$C2_mds_u,
+    C3_mds_u = janno_search$C3_mds_u
   ),
   search_space_grid = spatial_pred_grid,
   search_time = -5600,
@@ -363,12 +379,12 @@ p <- ggplot() +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(
     data = search_prod,
-    mapping = aes(x = field_x, y = field_y, fill = probability_C2_mds_u),
+    mapping = aes(x = field_x, y = field_y, fill = probability_product),
   ) +
   annotate(
     "text",
     x = 6700000, y = 4400000, size = 11,
-    label = "5600 calBC"
+    label = "1150 calAD"
   ) +
   scale_fill_viridis_c(option = "mako", direction = -1) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
@@ -399,7 +415,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  "plots/presentation/search_map_Stuttgart_5600_C2.png",
+  "plots/presentation/search_map.png",
   plot = p,
   device = "png",
   scale = 0.6,
@@ -407,3 +423,4 @@ ggsave(
   width = 370, height = 300, units = "mm",
   limitsize = F
 )
+
