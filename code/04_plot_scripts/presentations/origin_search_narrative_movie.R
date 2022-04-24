@@ -208,3 +208,6 @@ search_movie2_prod %>%
     plot_prob
   )
 
+# ffmpeg -f image2 -framerate 3 -i frame_movie1_%03d.jpeg -loop 0 -s 720x480 sequence.gif
+# ffmpeg -r 10 -f image2 -s 720x480 -i frame_movie1_%03d.jpeg -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -vcodec libx264 -crf 25 -pix_fmt yuv420p movie1.mp4
+
