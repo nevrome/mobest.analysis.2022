@@ -17,7 +17,7 @@ mle_out <- mobest::laGP_mle_sequence_isotropic_fixed_g(
     C2_mds_u = janno_final$C2_mds_u
   ),
   iterations = 5,
-  g = tibble::deframe(estimated_nuggets[,c("dependent_var_id", "nugget")])[c("C1_mds_u", "C2_mds_u")],
+  g = tibble::deframe(estimated_nuggets[,c("dependent_var_id", "nugget")]),
   space_time_scaling_factor_sequence = seq(0.1, 2.0, 0.1)
 )
 
