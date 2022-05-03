@@ -11,8 +11,8 @@ mleGPsep_out <- mobest::laGP_mle_anisotropic(
     z = janno_final$Date_BC_AD_Median_Derived
   ),
   dependent = mobest::create_obs(
-    C1 = janno_final$C1,
-    C2 = janno_final$C2
+    C1_mds_u = janno_final$C1_mds_u,
+    C2_mds_u = janno_final$C2_mds_u
   ),
   iterations = 5
 )
@@ -25,8 +25,8 @@ jmleGPsep_out <- mobest::laGP_jmle_anisotropic(
     z = janno_final$Date_BC_AD_Median_Derived
   ),
   dependent = mobest::create_obs(
-    C1 = janno_final$C1,
-    C2 = janno_final$C2
+    C1_mds_u = janno_final$C1_mds_u,
+    C2_mds_u = janno_final$C2_mds_u
   ),
   iterations = 5
 )
@@ -36,8 +36,7 @@ mlesep_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
   dplyr::mutate(
     parameter = factor(parameter, levels = c("dx", "dy", "dt", "g")),
     mle_method = factor(mle_method, levels = c("mleGPsep", "jmleGPsep")),
-    ancestry_component = factor(ancestry_component, levels = c("C1", "C2"))
+    ancestry_component = factor(ancestry_component, levels = c("C1_mds_u", "C2_mds_u"))
   )
 
 save(mlesep_out, file = "data/parameter_exploration/mle/mlesep_out.RData")
-
