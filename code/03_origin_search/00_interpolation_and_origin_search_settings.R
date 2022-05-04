@@ -12,12 +12,12 @@ kern <- dplyr::left_join(
 
 default_kernset_mds2 <- mobest::create_kernset(
   C1_mds_u = mobest::create_kernel(
-    dsx = kern$dsx[1], dsy = kern$dsy[1], dt = kern$dt[1],
+    dsx = kern$dsx[1] * 1000, dsy = kern$dsy[1] * 1000, dt = kern$dt[1],
     g = kern$nugget[1],
     on_residuals = T, auto = F
   ),
   C2_mds_u = mobest::create_kernel(
-    dsx = kern$dsx[2], dsy = kern$dsy[2], dt = kern$dt[2],
+    dsx = kern$dsx[2] * 1000, dsy = kern$dsy[2] * 1000, dt = kern$dt[2],
     g = kern$nugget[2],
     on_residuals = T, auto = F
   )
@@ -27,17 +27,17 @@ save(default_kernset_mds2, file = "data/origin_search/default_kernset_mds2.RData
 
 default_kernset_mds3 <- mobest::create_kernset(
   C1_mds_u = mobest::create_kernel(
-    dsx = kern$dsx[1], dsy = kern$dsy[1], dt = kern$dt[1],
+    dsx = kern$dsx[1] * 1000, dsy = kern$dsy[1] * 1000, dt = kern$dt[1],
     g = kern$nugget[1],
     on_residuals = T, auto = F
   ),
   C2_mds_u = mobest::create_kernel(
-    dsx = kern$dsx[2], dsy = kern$dsy[2], dt = kern$dt[2],
+    dsx = kern$dsx[2] * 1000, dsy = kern$dsy[2] * 1000, dt = kern$dt[2],
     g = kern$nugget[2],
     on_residuals = T, auto = F
   ),
   C3_mds_u = mobest::create_kernel(
-    dsx = kern$dsx[3], dsy = kern$dsy[3], dt = kern$dt[3],
+    dsx = kern$dsx[3] * 1000, dsy = kern$dsy[3] * 1000, dt = kern$dt[3],
     g = kern$nugget[3],
     on_residuals = T, auto = F
   )
