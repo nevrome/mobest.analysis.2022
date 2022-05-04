@@ -1,31 +1,49 @@
 library(magrittr)
 
+load("data/parameter_exploration/variogram/estimated_nuggets.RData")
 load("data/parameter_exploration/crossvalidation/best_kernel.RData")
-best_kernel_mds2 <- best_kernel[[1]]
+kern <- dplyr::left_join(
+  best_kernel %>% dplyr::select(-mean_squared_difference),
+  estimated_nuggets %>% dplyr::select(-dist_type),
+  by = "dependent_var_id"
+)
 
 #### kernel size ####
 
-spatial_kernel_size_km <- best_kernel_mds2$ds
-temporal_kernel_size_years <- best_kernel_mds2$dt
-nugget <- best_kernel_mds2$g
-
-default_kernel <- mobest::create_kernset_multi(
-  d = list(c(
-    spatial_kernel_size_km * 1000, 
-    spatial_kernel_size_km * 1000, 
-    temporal_kernel_size_years
-  )), 
-  g = nugget, 
-  on_residuals = T, 
-  auto = F,
-  it = paste0(
-    "ds", spatial_kernel_size_km, 
-    "_dt", temporal_kernel_size_years, 
-    "_g", as.character(nugget) %>% gsub("\\.", "", .)
+default_kernset_mds2 <- mobest::create_kernset(
+  C1_mds_u = mobest::create_kernel(
+    dsx = kern$dsx[1], dsy = kern$dsy[1], dt = kern$dt[1],
+    g = kern$nugget[1],
+    on_residuals = T, auto = F
+  ),
+  C2_mds_u = mobest::create_kernel(
+    dsx = kern$dsx[2], dsy = kern$dsy[2], dt = kern$dt[2],
+    g = kern$nugget[2],
+    on_residuals = T, auto = F
   )
 )
 
-save(default_kernel, file = "data/origin_search/default_kernel.RData")
+save(default_kernset_mds2, file = "data/origin_search/default_kernset_mds2.RData")
+
+default_kernset_mds3 <- mobest::create_kernset(
+  C1_mds_u = mobest::create_kernel(
+    dsx = kern$dsx[1], dsy = kern$dsy[1], dt = kern$dt[1],
+    g = kern$nugget[1],
+    on_residuals = T, auto = F
+  ),
+  C2_mds_u = mobest::create_kernel(
+    dsx = kern$dsx[2], dsy = kern$dsy[2], dt = kern$dt[2],
+    g = kern$nugget[2],
+    on_residuals = T, auto = F
+  ),
+  C3_mds_u = mobest::create_kernel(
+    dsx = kern$dsx[3], dsy = kern$dsy[3], dt = kern$dt[3],
+    g = kern$nugget[3],
+    on_residuals = T, auto = F
+  )
+)
+
+save(default_kernset_mds3, file = "data/origin_search/default_kernset_mds3.RData")
 
 #### retrospection_distance ####
 
@@ -33,7 +51,7 @@ kernel_theta <- Vectorize(function(distance, d) { exp(-(distance^2) / d) })
 
 kernel_theta_data <- expand.grid(
   dist_p1_p2 = seq(0, 2000, 1),
-  d          = temporal_kernel_size_years^2
+  d          = 800^2
 ) %>%
   dplyr::mutate(
     k = kernel_theta(dist_p1_p2, d),
