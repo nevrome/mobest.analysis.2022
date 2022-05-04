@@ -17,9 +17,7 @@ janno_final <- janno_final %>%
   )
 
 p_C1 <- interpol_grid %>%
-  dplyr::filter(
-    dependent_var_id %in% "C1"
-  ) %>%
+  dplyr::filter(dependent_var_id %in% "C1_mds_u") %>%
   ggplot() +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(aes(x, y, fill = mean)) +
@@ -59,9 +57,7 @@ p_C1 <- interpol_grid %>%
   )
 
 p_C2 <- interpol_grid %>%
-  dplyr::filter(
-    dependent_var_id %in% "C2"
-  ) %>%
+  dplyr::filter(dependent_var_id %in% "C2_mds_u") %>%
   ggplot() +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(aes(x, y, fill = mean)) +
