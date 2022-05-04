@@ -7,9 +7,9 @@ load("data/parameter_exploration/crossvalidation/best_kernel.RData")
 # for each ancestry component
 ps <- purrr::map2(
   interpol_comparison_group %>%
-    dplyr::group_split(dependent_var),
+    dplyr::group_split(dependent_var_id),
   best_kernel %>%
-    dplyr::group_split(dependent_var),
+    dplyr::group_split(dependent_var_id),
   function(a, b) {
     ggplot() +
     geom_tile(
@@ -17,7 +17,7 @@ ps <- purrr::map2(
       aes(x = dsx, y = dt, fill = mean_squared_difference)
     ) +
     scale_fill_viridis_c(direction = -1) +
-    facet_wrap(~dependent_var) +
+    facet_wrap(~dependent_var_id) +
     coord_fixed() +
     theme_bw() +
     theme(
