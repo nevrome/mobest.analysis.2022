@@ -9,7 +9,7 @@
 #$ -pe smp 2 #needs X CPU cores
 #$ -l h_vmem=5G #request XGb of memory
 #$ -V # load personal profile
-#$ -t 1-800 # array job length
+#$ -t 1-400 # array job length
 #$ -tc 30 # number of concurrently running tasks in array
 
 date

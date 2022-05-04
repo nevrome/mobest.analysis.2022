@@ -1,4 +1,4 @@
-# qsub code/02_parameter_estimation/crossvalidation/sge_parameter_exploration.sh
+# qsub code/02_parameter_estimation/03_crossvalidation/sge_parameter_exploration.shq
 
 library(magrittr)
 
