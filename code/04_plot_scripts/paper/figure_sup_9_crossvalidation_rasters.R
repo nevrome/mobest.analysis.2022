@@ -4,19 +4,17 @@ library(ggplot2)
 load("data/parameter_exploration/crossvalidation/interpol_comparison_group.RData")
 load("data/parameter_exploration/crossvalidation/best_kernel.RData")
 
-icg <- interpol_comparison_group %>%
-  dplyr::filter(
-    !dependent_var %in% c("C3_dist", "CVdist3") & g == min(g)
-  ) %>%
-  dplyr::group_split(dependent_var)
-min_point <- best_kernel[[1]]
-
 # for each ancestry component
-ps <- lapply(seq_along(icg), function(i) {
-  icg[[i]] %>%
+ps <- purrr::map2(
+  interpol_comparison_group %>%
+    dplyr::group_split(dependent_var),
+  best_kernel %>%
+    dplyr::group_split(dependent_var),
+  function(a, b) {
     ggplot() +
     geom_tile(
-      aes(x = ds, y = dt, fill = mean_squared_difference)
+      data = a,
+      aes(x = dsx, y = dt, fill = mean_squared_difference)
     ) +
     scale_fill_viridis_c(direction = -1) +
     facet_wrap(~dependent_var) +
@@ -32,25 +30,24 @@ ps <- lapply(seq_along(icg), function(i) {
     xlab(latex2exp::TeX("$\\sqrt{\\theta_s}$")) +
     ylab(latex2exp::TeX("$\\sqrt{\\theta_t}$")) +
     scale_x_continuous(breaks = seq(0, 2000, 100)) +
-    scale_y_continuous(breaks = seq(0, 2000, 100))
-})
+    scale_y_continuous(breaks = seq(0, 2000, 100)) +
+    geom_point(
+      data = b,
+      aes(x = dsx, y = dt), 
+      color = "red", pch = 4, size = 5
+    ) +
+    annotate(
+      "text",
+      x = b$dsx + 500, y = b$dt,
+      label = latex2exp::TeX(paste0("$\\sqrt{\\theta_s}$ = ", b$dsx, " | \\sqrt{$\\theta_t}$ = ", b$dt)),
+      parse = TRUE,
+      color = "red",
+      size = 4
+    )
+  }
+)
 
-ps[[3]] <- ps[[3]] +
-  geom_point(
-    data = min_point,
-    aes(x = ds, y = dt), 
-    color = "red", pch = 4, size = 5
-  ) +
-  annotate(
-    "text",
-    x = min_point$ds + 500, y = min_point$dt,
-    label = latex2exp::TeX(paste0("$\\sqrt{\\theta_s}$ = ", min_point$ds, " | \\sqrt{$\\theta_t}$ = ", min_point$dt)),
-    parse = TRUE,
-    color = "red",
-    size = 4
-  )
-
-p <- cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 2, labels = "AUTO")
+p <- cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 3, labels = "AUTO")
 
 ggsave(
   "plots/figure_sup_9_crossvalidation_rasters.pdf",
