@@ -4,7 +4,7 @@ library(magrittr)
 
 load("data/genotype_data/janno_final.RData")
 load("data/spatial/epsg3035.RData")
-load("data/origin_search/default_kernel.RData")
+load("data/origin_search/default_kernset_mds2.RData")
 
 # individual points
 
@@ -50,43 +50,39 @@ Riga <- sf::st_as_sf(
   remove = FALSE
 ) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
 
-time_points <- seq(-7500, 1500, 1000)
-n_time_points <- length(time_points) 
+times <- seq(-7500, 1500, 1000)
+n_times <- length(time_points) 
+
+make_spatpos <- function(x) {
+  mobest::create_spatpos(1:n_times, rep(x[1], n_times), rep(x[2], n_times), times)
+}
 
 #### prepare model grid ####
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
-    id = janno_final$Poseidon_ID,
-    x = list(janno_final$x),
-    y = list(janno_final$y),
-    z = list(janno_final$Date_BC_AD_Median_Derived),
-    it = "age_median"
+    age_median = mobest::create_spatpos(
+      id = janno_final$Poseidon_ID,
+      x = janno_final$x,
+      y = janno_final$y,
+      z = janno_final$Date_BC_AD_Median_Derived
+    )
   ),
-  dependent = mobest::create_obs(
-    C1 = janno_final$C1,
-    C2 = janno_final$C2
+  dependent = mobest::create_obs_multi(
+    MDS2 = mobest::create_obs(
+      C1_mds_u = janno_final$C1_mds_u,
+      C2_mds_u = janno_final$C2_mds_u
+    )
   ),
-  kernel = default_kernel,
+  kernel = mobest::create_kernset_multi(
+    default_kernel = default_kernset_mds2
+  ),
   prediction_grid = mobest::create_spatpos_multi(
-    x = list(
-      rep(London[1], n_time_points),
-      rep(Riga[1], n_time_points),
-      rep(Rome[1], n_time_points),
-      rep(Budapest[1], n_time_points),
-      rep(Barcelona[1], n_time_points),
-      rep(Jerusalem[1], n_time_points)
-    ), 
-    y = list(
-      rep(London[2], n_time_points),
-      rep(Riga[2], n_time_points),
-      rep(Rome[2], n_time_points),
-      rep(Budapest[2], n_time_points),
-      rep(Barcelona[2], n_time_points),
-      rep(Jerusalem[2], n_time_points)
-    ),
-    z = rep(list(time_points), 6),
-    id = 1:n_time_points,
-    it = c("London", "Riga", "Rome", "Budapest", "Barcelona", "Jerusalem")
+    Rome      = make_spatpos(Rome),
+    Budapest  = make_spatpos(Budapest),
+    Barcelona = make_spatpos(Barcelona),
+    London    = make_spatpos(London),
+    Jerusalem = make_spatpos(Jerusalem),
+    Riga      = make_spatpos(Riga)
   )
 )
 

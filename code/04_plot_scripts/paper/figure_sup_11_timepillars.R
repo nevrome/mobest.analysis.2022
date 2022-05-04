@@ -16,20 +16,20 @@ p <- ggplot() +
   facet_wrap(~pred_grid_id, nrow = 3) +
   geom_point(
     data = janno_final,
-    aes(x = C1, y = C2),
+    aes(x = C1_mds_u, y = C2_mds_u),
     alpha = 0.1, size = 1, shape = 3
   ) +  
   geom_path(
     data = poi_timeseries,
-    aes(x = mean_C1, y = mean_C2),
+    aes(x = mean_C1_mds_u, y = mean_C2_mds_u),
     size = 0.8,
     color = "lightgrey"
   ) +
   geom_errorbar(
     data = poi_timeseries,
     aes(
-      x = mean_C1, 
-      ymin = mean_C2 - sd_C2, ymax = mean_C2 + sd_C2,
+      x = mean_C1_mds_u, 
+      ymin = mean_C2_mds_u - sd_C2_mds_u, ymax = mean_C2_mds_u + sd_C2_mds_u,
       color = z
     ),
     size = 0.4,
@@ -37,8 +37,8 @@ p <- ggplot() +
   geom_errorbarh(
     data = poi_timeseries,
     aes(
-      y = mean_C2, 
-      xmin = mean_C1 - sd_C1, xmax = mean_C1 + sd_C1,
+      y = mean_C2_mds_u, 
+      xmin = mean_C1_mds_u - sd_C1_mds_u, xmax = mean_C1_mds_u + sd_C1_mds_u,
       color = z
     ),
     size = 0.4,
@@ -46,8 +46,8 @@ p <- ggplot() +
   geom_point(
     data = poi_timeseries,
     aes(
-      x = mean_C1, 
-      y = mean_C2,
+      x = mean_C1_mds_u, 
+      y = mean_C2_mds_u,
       color = z
     ),
     size = 2
