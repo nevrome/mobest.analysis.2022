@@ -23,40 +23,31 @@ echo Index: ${i}
 # parameters
 ds_to_explore=($(seq 100 100 2000))
 dt_to_explore=($(seq 100 100 2000))
-#g_to_explore=(0.07 0.22)
-readarray g_to_explore < data/parameter_exploration/variogram/nuggets.txt
 
-jobs=$((${#g_to_explore[@]}*${#ds_to_explore[@]}*${#dt_to_explore[@]}))
+jobs=$((${#ds_to_explore[@]}*${#dt_to_explore[@]}))
 
 echo Number of jobs: $jobs
 
 dss=()
 dts=()
-gs=()
 
 # parameter permutations
-for g in "${g_to_explore[@]}"
+for ds in "${ds_to_explore[@]}"
 do
-  for ds in "${ds_to_explore[@]}"
+  for dt in "${dt_to_explore[@]}"
   do
-    for dt in "${dt_to_explore[@]}"
-    do
-      dss+=($ds)
-      dts+=($dt)
-      gs+=($g)
-    done
+    dss+=($ds)
+    dts+=($dt)
   done
 done
 
 current_ds=${dss[${i}]}
 current_dt=${dts[${i}]}
-current_g=${gs[${i}]}
 
 echo ds: ${current_ds}
 echo dt: ${current_dt}
-echo g: ${current_g}
 
-singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/03_crossvalidation/crossvalidation.R ${i} ${current_ds} ${current_dt} ${current_g}
+singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/03_crossvalidation/crossvalidation.R ${i} ${current_ds} ${current_dt}
 
 date
 
