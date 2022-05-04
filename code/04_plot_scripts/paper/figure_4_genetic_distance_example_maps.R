@@ -5,14 +5,13 @@ load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/origin_search/janno_search.RData")
-load("data/origin_search/closest_points_examples.RData")
-load("data/origin_search/distance_grid_examples.RData")
+load("data/origin_search/location_examples.RData")
 
 p <- ggplot() +
   facet_wrap(
-    ~Poseidon_ID,
+    ~search_id,
     ncol = 2,
-    labeller = ggplot2::labeller(Poseidon_ID = c(
+    labeller = ggplot2::labeller(search_id = c(
       "Stuttgart_published.DG" = paste(
         "Stuttgart ~5250BC",
         "Early Neolithic, Linear Pottery culture",
@@ -41,13 +40,8 @@ p <- ggplot() +
   ) +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(
-    data = distance_grid_examples %>%
-      dplyr::group_by(Poseidon_ID, x, y, z) %>%
-      dplyr::summarise(
-        gen_dist = mean(gen_dist),
-        .groups = "drop"
-      ),
-    mapping = aes(x = x, y = y, fill = gen_dist),
+    data = location_examples,
+    mapping = aes(x = field_x, y = field_y, fill = probability),
   ) +
   scale_fill_viridis_c(option = "mako", direction = -1) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
@@ -57,31 +51,13 @@ p <- ggplot() +
     colour = "red",
     size = 5
   ) +
-  geom_point(
-    data = closest_points_examples,
-    mapping = aes(x = x, y = y),
-    colour = "orange",
-    size = 4,
-    shape = 4,
-    stroke = 2
-  ) +
-  geom_text(
-    data = data.frame(
-      Poseidon_ID = janno_search$Poseidon_ID,
-      plot_label = LETTERS[seq_len(nrow(janno_search))]
-    ),
-    aes(label = plot_label),
-    x = -Inf, y = Inf, hjust = -0.4, vjust = 1.4,
-    inherit.aes = FALSE,
-    size = 7
-  ) +
   theme_bw() +
   coord_sf(
     expand = FALSE,
     crs = epsg3035
   ) +
   guides(
-    fill = guide_colorbar(title = "Genetic distance  ", barwidth = 25)
+    fill = guide_colorbar(title = "Probability  ", barwidth = 25)
   ) +
   theme(
     legend.position = "bottom",
