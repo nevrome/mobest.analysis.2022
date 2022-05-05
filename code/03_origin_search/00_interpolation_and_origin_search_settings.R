@@ -47,22 +47,38 @@ save(default_kernset_mds3, file = "data/origin_search/default_kernset_mds3.RData
 
 #### retrospection_distance ####
 
+temporal_kernel_size_years <- 800
+
 kernel_theta <- Vectorize(function(distance, d) { exp(-(distance^2) / d) })
 
 kernel_theta_data <- expand.grid(
   dist_p1_p2 = seq(0, 2000, 1),
-  d          = 800^2
+  d = temporal_kernel_size_years^2
 ) %>%
   dplyr::mutate(
     k = kernel_theta(dist_p1_p2, d),
     k_cum = cumsum(k/sum(k))
   )
 
-save(kernel_theta_data, file = "data/origin_search/kernel_theta_data.RData")
+retrospection_distance_low <- kernel_theta_data %>%
+  dplyr::filter(k < 0.75) %>%
+  head(1) %$%
+  dist_p1_p2
 
-retrospection_distance <- kernel_theta_data %>%
+retrospection_distance_default <- kernel_theta_data %>%
   dplyr::filter(k < 0.5) %>%
   head(1) %$%
   dist_p1_p2
 
-save(retrospection_distance, file = "data/origin_search/retrospection_distance.RData")
+retrospection_distance_high <- kernel_theta_data %>%
+  dplyr::filter(k < 0.25) %>%
+  head(1) %$%
+  dist_p1_p2
+
+retrospection_distances <- c(
+  low = retrospection_distance_low,
+  default = retrospection_distance_default,
+  high = retrospection_distance_high
+)
+
+save(retrospection_distances, file = "data/origin_search/retrospection_distances.RData")
