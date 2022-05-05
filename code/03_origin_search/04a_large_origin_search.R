@@ -1,4 +1,4 @@
-# qsub code/03_origin_search/05b_sge_origin_search.sh
+# qsub code/03_origin_search/04b_sge_large_origin_search.sh
 
 library(magrittr)
 
@@ -32,7 +32,7 @@ spatial_pred_grid <- mobest::create_prediction_grid(
 
 #### calculate locate probability ####
 
-origin_grid <- mobest::locate_multi(
+probability_grid <- mobest::locate_multi(
   independent = mobest::create_spatpos_multi(
     mobest::create_spatpos(
       id = janno_final$Poseidon_ID,
@@ -71,8 +71,12 @@ origin_grid <- mobest::locate_multi(
   search_time_mode = "relative"
 )
 
+prob_product_grid <- mobest::multiply_dependent_probabilities(probability_grid)
+
+origin_vectors <- mobest::determine_origin_vectors(prob_product_grid)
+
 #### save result ####
 
-save(origin_grid, file = paste0(
+save(origin_vectors, file = paste0(
   "data/origin_search/age_resampling+one_kernel_setting/run_", age_resampling_run, ".RData"
 ))
