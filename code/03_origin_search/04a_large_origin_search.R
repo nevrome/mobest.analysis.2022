@@ -22,8 +22,8 @@ janno_search <- janno_final %>%
     region_id != "Other region",
     Date_BC_AD_Median_Derived >= -7300 &
       Date_BC_AD_Median_Derived <= 1500
-  ) %>%
-  dplyr::slice_head(n = 5)
+  )# %>%
+  #dplyr::slice_head(n = 5)
 
 spatial_pred_grid <- mobest::create_prediction_grid(
   extended_area,
