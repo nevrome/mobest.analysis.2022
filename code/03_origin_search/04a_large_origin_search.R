@@ -1,4 +1,4 @@
-# qsub code/03_origin_search/04b_sge_large_origin_search.sh
+# qsub code/03_origin_search/04b_sge_large_origin_search.shq
 
 library(magrittr)
 
