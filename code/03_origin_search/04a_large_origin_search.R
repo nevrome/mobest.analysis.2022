@@ -15,7 +15,7 @@ load("data/spatial/extended_area.RData")
 load("data/origin_search/default_kernset_mds2.RData")
 load("data/origin_search/retrospection_distances.RData")
 
-age_resampling_runs <- 5
+age_resampling_runs <- 30
 
 janno_final_spatpos <- purrr::map(
   seq_len(age_resampling_runs), function(age_resampling_run) {
@@ -93,5 +93,5 @@ origin_vectors <- mobest::determine_origin_vectors(prob_product_grid, independen
 #### save result ####
 
 save(origin_vectors, file = paste0(
-  "data/origin_search/age_resampling+one_kernel_setting/sample_", sample_run, ".RData"
+  "data/origin_search/age_resampling+one_kernel_setting/ovs_sample_", sample_run, ".RData"
 ))
