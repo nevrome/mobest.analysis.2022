@@ -15,7 +15,7 @@ load("data/spatial/extended_area.RData")
 load("data/origin_search/default_kernset_mds2.RData")
 load("data/origin_search/retrospection_distances.RData")
 
-age_resampling_runs <- 25
+age_resampling_runs <- 100
 
 janno_final_spatpos <- purrr::map(
   seq_len(age_resampling_runs), function(age_resampling_run) {
@@ -88,7 +88,7 @@ probability_grid <- mobest::locate_multi(
 
 prob_product_grid <- mobest::multiply_dependent_probabilities(probability_grid)
 
-origin_vectors <- mobest::determine_origin_vectors(prob_product_grid, search_independent_table_id)
+origin_vectors <- mobest::determine_origin_vectors(prob_product_grid, independent_table_id)
 
 #### save result ####
 
