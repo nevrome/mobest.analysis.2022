@@ -6,10 +6,10 @@ load("data/genotype_data/janno_final.RData")
 
 #### load, merge and modify data ####
 
-origin_vectors <- lapply(
+origin_vectors_raw <- lapply(
   list.files(
-    "data/origin_search/age_resampling+one_kernel_setting/age_resampling+one_kernel_setting", 
-    pattern = "^run_[0-9]+",
+    "data/origin_search/age_resampling+one_kernel_setting", 
+    pattern = "^sample_[0-9]+",
     full.names = T
   ), function(x) {
     load(x)
@@ -23,8 +23,10 @@ origin_vectors <- dplyr::left_join(
   by = c("search_id" = "Poseidon_ID")
 )
 
+packed_origin_vectors <- mobest::pack_origin_vectors(origin_vectors, region_id)
+
 origin_summary <- mobest::summarize_origin_vectors(
-  origin_vectors,
+  packed_origin_vectors,
   region_id,
   window_start = -8000,
   window_stop = 2000,

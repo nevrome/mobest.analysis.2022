@@ -15,7 +15,7 @@ load("data/spatial/extended_area.RData")
 load("data/origin_search/default_kernset_mds2.RData")
 load("data/origin_search/retrospection_distances.RData")
 
-age_resampling_runs <- 100
+age_resampling_runs <- 5
 
 janno_final_spatpos <- purrr::map(
   seq_len(age_resampling_runs), function(age_resampling_run) {
@@ -33,8 +33,8 @@ janno_final_spatpos_multi <- do.call(
   c(janno_final_spatpos, list(.names = paste0("age_resampling_run_", seq_len(age_resampling_runs))))
 )
 
-janno_search <- janno_final %>%
-  dplyr::filter(
+janno_search <- dplyr::filter(
+    janno_final,
     region_id != "Other region",
     Date_BC_AD_Median_Derived >= -7300 &
       Date_BC_AD_Median_Derived <= 1500
