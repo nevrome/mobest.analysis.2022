@@ -9,7 +9,7 @@ load("data/genotype_data/janno_final.RData")
 origin_vectors_raw <- lapply(
   list.files(
     "data/origin_search/age_resampling+one_kernel_setting", 
-    pattern = "^sample_[0-9]+",
+    pattern = "^ovs\\_sample\\_[0-9]+",
     full.names = T
   ), function(x) {
     load(x)
@@ -17,11 +17,18 @@ origin_vectors_raw <- lapply(
   }
 ) %>% dplyr::bind_rows()
 
-origin_vectors <- dplyr::left_join(
+origin_vectors_region <- dplyr::left_join(
   origin_vectors_raw,
   janno_final %>% dplyr::select(Poseidon_ID, region_id),
   by = c("search_id" = "Poseidon_ID")
 )
+
+origin_vectors <- dplyr::mutate(
+    origin_vectors_region,
+    dplyr::across(tidyselect::any_of(
+      c("field_x", "field_y", "search_x", "search_y", "ov_x", "ov_y", "ov_dist", "ov_dist_sd")
+    ), function(x) { x/1000 })
+  )
 
 packed_origin_vectors <- mobest::pack_origin_vectors(origin_vectors, region_id)
 
@@ -37,16 +44,20 @@ origin_summary <- mobest::summarize_origin_vectors(
 no_data_windows <- mobest::find_no_data_windows(origin_summary, region_id)
 
 # library(ggplot2)
-# origin_summary %>%
-#   ggplot() +
+# ggplot() +
+#   geom_line(
+#     data = origin_summary,
+#     mapping = aes(z, ov_dist)
+#   ) +
 #   geom_point(
-#     aes(z, undirected_mean_spatial_distance, color = mean_angle_deg)
+#     data = packed_origin_vectors,
+#     mapping = aes(search_z, ov_dist, color = ov_angle_deg)
 #   ) +
 #   facet_wrap(~region_id) +
 #   scale_color_gradientn(colours = c("red", "green", "blue", "red"))
 
 #### save output ####
 
-save(origin_vectors, file = "data/origin_search/origin_vectors.RData")
+save(packed_origin_vectors, file = "data/origin_search/packed_origin_vectors.RData")
 save(origin_summary, file = "data/origin_search/origin_summary.RData")
 save(no_data_windows, file = "data/origin_search/no_data_windows.RData")
