@@ -15,7 +15,7 @@ load("data/spatial/extended_area.RData")
 load("data/origin_search/default_kernset_mds2.RData")
 load("data/origin_search/retrospection_distances.RData")
 
-age_resampling_runs <- 30
+age_resampling_runs <- 5
 
 janno_final_spatpos <- purrr::map(
   seq_len(age_resampling_runs), function(age_resampling_run) {
