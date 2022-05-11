@@ -16,10 +16,30 @@ plot_curves <- function(
   
   lookup <- individuals %>% dplyr::inner_join(packed_origin_vectors, by = "search_id")
   
+  packed_origin_vectors_time <- packed_origin_vectors %>%
+    dplyr::left_join(
+      janno_final %>% dplyr::select(
+        search_id = Poseidon_ID,
+        Date_BC_AD_Median_Derived,
+        Date_BC_AD_Prob
+      ),
+      by = "search_id"
+    ) %>%
+    dplyr::bind_cols(
+      .,
+      purrr::map_dfr(.$Date_BC_AD_Prob, function(x) {
+        start_stop <- x %>% dplyr::filter(two_sigma) %>% dplyr::slice(c(1,dplyr::n()))
+        tibble::tibble(
+          Date_BC_AD_Start_Derived = start_stop$age[1],
+          Date_BC_AD_Stop_Derived = start_stop$age[2]
+        )
+      })
+    ) %>%
+    dplyr::select(-Date_BC_AD_Prob)
+    
   #### mobility estimator curves ####
 
-  #p_estimator <- ggplot() +
-  ggplot() +
+  p_estimator <- ggplot() +
     lemon::facet_rep_wrap(~region_id, ncol = 2, repeat.tick.labels = T) +
     geom_rect(
       data = no_data_windows,
@@ -61,19 +81,18 @@ plot_curves <- function(
     #   mapping = aes(x = z, y = directed_mean_spatial_distance_upper_quartile),
     #   size = 0.4
     # ) +
-    # geom_errorbarh(
-    #   data = packed_origin_vectors %>%
-    #     dplyr::left_join(),
-    #   mapping = aes(
-    #     y = directed_mean_spatial_distance, 
-    #     xmax = mean_search_z + sd_search_z,
-    #     xmin = mean_search_z - sd_search_z,
-    #     color = mean_angle_deg
-    #   ),
-    #   alpha = 0.7,
-    #   size = 0.1,
-    #   height = 40
-    # ) +
+    geom_errorbarh(
+      data = packed_origin_vectors_time,
+      mapping = aes(
+        y = ov_dist,
+        xmax = Date_BC_AD_Stop_Derived,
+        xmin = Date_BC_AD_Start_Derived,
+        color = ov_angle_deg
+      ),
+      alpha = 0.7,
+      size = 0.1,
+      height = 40
+    ) +
     geom_errorbar(
       data = packed_origin_vectors,
       mapping = aes(
@@ -143,7 +162,7 @@ plot_curves <- function(
     scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
     coord_cartesian(
       xlim = c(-7400, 1400),
-      ylim = c(-100, 2500) #max(origin_grid_mean$directed_mean_spatial_distance, na.rm = T))
+      ylim = c(-100, 2700) #max(origin_grid_mean$directed_mean_spatial_distance, na.rm = T))
     )
   
   #### direction legend ####
