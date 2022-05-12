@@ -8,13 +8,14 @@ load("data/spatial/area.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
+load("data/origin_search/default_kernset_mds2.RData")
 
 janno_search <- janno_final %>%
   dplyr::mutate(
     search_z = Date_BC_AD_Median_Derived
   ) %>% dplyr::filter(
     Poseidon_ID %in% c(
-      "Stuttgart_published.DG"
+      "3DT26.SG"
     )
   )
 
@@ -32,12 +33,12 @@ plot_prob <- function(search_prod, path) {
     geom_sf(data = extended_area, fill = "black") +
     geom_raster(
       data = search_prod,
-      mapping = aes(x = field_x, y = field_y, fill = probability_product),
+      mapping = aes(x = field_x, y = field_y, fill = probability),
     ) +
     annotate(
       "text",
       x = 6700000, y = 4400000, size = 11,
-      label = toBCAD(unique(search_prod$search_z))
+      label = toBCAD(unique(search_prod$field_z))
     ) +
     scale_fill_viridis_c(option = "mako", direction = -1) +
     geom_sf(data = extended_area, fill = NA, colour = "black") +
@@ -81,91 +82,12 @@ plot_prob <- function(search_prod, path) {
 
 spatial_pred_grid <- mobest::create_prediction_grid(
   area,
-  spatial_cell_size = 20000
+  spatial_cell_size = 50000
 )
 
 #### movie1 ####
 
-# search_movie1 <- mobest::locate(
-#   independent = mobest::create_spatpos(
-#     id = janno_final$Poseidon_ID,
-#     x = janno_final$x,
-#     y = janno_final$y,
-#     z = janno_final$Date_BC_AD_Median_Derived
-#   ),
-#   dependent = mobest::create_obs(
-#     C1_mds_u = janno_final$C1_mds_u,
-#     C2_mds_u = janno_final$C2_mds_u
-#   ),
-#   kernel = mobest::create_kernset(
-#     C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
-#     C2_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
-#   ),
-#   search_independent = mobest::create_spatpos(
-#     id = janno_search$Poseidon_ID,
-#     x = janno_search$x,
-#     y = janno_search$y,
-#     z = janno_search$Date_BC_AD_Median_Derived
-#   ),
-#   search_dependent = mobest::create_obs(
-#     C1_mds_u = janno_search$C1_mds_u,
-#     C2_mds_u = janno_search$C2_mds_u
-#   ),
-#   search_space_grid = spatial_pred_grid,
-#   search_time = seq(-7500, -5000, 10),
-#   search_time_mode = "absolute"
-# )
-# 
-# search_movie1_prod <- mobest::multiply_dependent_probabilities(search_movie1)
-# 
-# search_movie1_prod %>%
-#   dplyr::group_split(search_z) %>%
-#   purrr::walk2(
-#     ., paste0("plots/presentation/movie/", sprintf("frame_movie1_%03d", 1:length(.)), ".jpeg"),
-#     plot_prob
-#   )
-
-#### movie2 ####
-
-janno_search <- tibble::tibble(x = 25.90848, y = 42.51272) %>% ggplot2::sf_transform_xy(epsg3035, 4326)
-
-model_grid <- mobest::create_model_grid(
-  independent = mobest::create_spatpos_multi(
-    age_median = mobest::create_spatpos(
-      id = janno_final$Poseidon_ID,
-      x = janno_final$x,
-      y = janno_final$y,
-      z = janno_final$Date_BC_AD_Median_Derived
-    )
-  ),
-  dependent = mobest::create_obs(
-    C1_mds_u = janno_final$C1_mds_u,
-    C2_mds_u = janno_final$C2_mds_u
-  ),
-  kernel = mobest::create_kernset_multi(
-    kernel1 = mobest::create_kernset(
-      C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
-      C2_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
-    )
-  ),
-  prediction_grid = mobest::create_spatpos_multi(
-    poi = mobest::create_geopos(
-      id = "Karanovo",
-      x = janno_search$x,
-      y = janno_search$y
-    ) %>% mobest::geopos_to_spatpos(seq(-7500, -1500, 10))
-  )
-)
-
-interpol_grid <- mobest::run_model_grid(model_grid)
-
-interpol_grid_wide <- interpol_grid %>%
-  tidyr::pivot_wider(
-    names_from = "dependent_var_id",
-    values_from = c("mean", "sd")
-  )
-
-search_movie2 <- mobest::locate(
+search_movie1 <- mobest::locate(
   independent = mobest::create_spatpos(
     id = janno_final$Poseidon_ID,
     x = janno_final$x,
@@ -176,38 +98,29 @@ search_movie2 <- mobest::locate(
     C1_mds_u = janno_final$C1_mds_u,
     C2_mds_u = janno_final$C2_mds_u
   ),
-  kernel = mobest::create_kernset(
-    C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
-    C2_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
-  ),
+  kernel = default_kernset_mds2,
   search_independent = mobest::create_spatpos(
-    id = interpol_grid_wide$id,
-    x = interpol_grid_wide$x,
-    y = interpol_grid_wide$y,
-    z = interpol_grid_wide$z
+    id = janno_search$Poseidon_ID,
+    x = janno_search$x,
+    y = janno_search$y,
+    z = janno_search$Date_BC_AD_Median_Derived
   ),
   search_dependent = mobest::create_obs(
-    C1_mds_u = interpol_grid_wide$mean_C1_mds_u,
-    C2_mds_u = interpol_grid_wide$mean_C2_mds_u
-  ),
-  search_dependent_error = mobest::create_obs_error(
-    C1_mds_u_sd = interpol_grid_wide$sd_C1_mds_u,
-    C2_mds_u_sd = interpol_grid_wide$sd_C2_mds_u
+    C1_mds_u = janno_search$C1_mds_u,
+    C2_mds_u = janno_search$C2_mds_u
   ),
   search_space_grid = spatial_pred_grid,
-  search_time = 0,
-  search_time_mode = "relative"
+  search_time = seq(-1000, 350, 50),
+  search_time_mode = "absolute"
 )
 
-search_movie2_prod <- mobest::multiply_dependent_probabilities(search_movie2)
+search_movie1_prod <- mobest::multiply_dependent_probabilities(search_movie1)
 
-search_movie2_prod %>%
-  dplyr::group_split(search_z) %>%
+search_movie1_prod %>%
+  dplyr::group_split(field_z) %>%
   purrr::walk2(
-    ., paste0("plots/presentation/movie/", sprintf("frame_movie2_%03d", 1:length(.))),
+    ., paste0("plots/presentation/movie/", sprintf("frame_movie3_%03d", 1:length(.)), ".jpeg"),
     plot_prob
   )
 
-# ffmpeg -f image2 -framerate 3 -i frame_movie1_%03d.jpeg -loop 0 -s 720x480 sequence.gif
-# ffmpeg -r 10 -f image2 -s 720x480 -i frame_movie1_%03d.jpeg -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -vcodec libx264 -crf 25 -pix_fmt yuv420p movie1.mp4
-
+# ffmpeg -r 3 -f image2 -s 720x480 -i frame_movie3_%03d.jpeg -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -vcodec libx264 -crf 25 -pix_fmt yuv420p movie1.mp4
