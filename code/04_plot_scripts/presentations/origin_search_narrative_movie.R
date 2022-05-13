@@ -30,6 +30,36 @@ toBCAD <- function(x) {
 plot_prob <- function(search_prod, path) {
   
   p <- ggplot() +
+    facet_wrap(
+      ~search_id,
+      ncol = 2,
+      labeller = ggplot2::labeller(search_id = c(
+        "Stuttgart_published.DG" = paste(
+          "Stuttgart ~5250BC",
+          "Early Neolithic, Linear Pottery culture",
+          "Lazaridis et al. 2014",
+          sep = "\n"
+        ),
+        "RISE434.SG" = paste(
+          "RISE434 ~2750BC",
+          "Late Neolithic, Corded Ware culture",
+          "Allentoft et al. 2015",
+          sep = "\n"
+        ),
+        "3DT26.SG" = paste(
+          "3DRIF-26 ~200AD",
+          "Roman Britain",
+          "Martiniano et al. 2016",
+          sep = "\n"
+        ),
+        "SI-40.SG" = paste(
+          "SI-40 ~1150AD",
+          "Medieval Period, Crusades",
+          "Haber et al. 2019",
+          sep = "\n"
+        )
+      ))
+    ) +
     geom_sf(data = extended_area, fill = "black") +
     geom_raster(
       data = search_prod,
@@ -40,7 +70,7 @@ plot_prob <- function(search_prod, path) {
       x = 6700000, y = 4400000, size = 11,
       label = toBCAD(unique(search_prod$field_z))
     ) +
-    scale_fill_viridis_c(option = "mako", direction = -1) +
+    scale_fill_viridis_c(breaks = c(500, 1000), option = "mako", direction = -1) +
     geom_sf(data = extended_area, fill = NA, colour = "black") +
     geom_point(
       data = janno_search,
@@ -54,7 +84,7 @@ plot_prob <- function(search_prod, path) {
       crs = epsg3035
     ) +
     guides(
-      fill = guide_colorbar(title = "Probability  ", barwidth = 25)
+      fill = guide_colorbar(title = "\"Origin\" probability  ", barwidth = 25)
     ) +
     theme(
       legend.position = "bottom",
@@ -74,7 +104,7 @@ plot_prob <- function(search_prod, path) {
     device = "jpeg",
     scale = 0.6,
     dpi = 300,
-    width = 370, height = 300, units = "mm",
+    width = 325, height = 300, units = "mm",
     limitsize = F
   )
   
@@ -82,7 +112,7 @@ plot_prob <- function(search_prod, path) {
 
 spatial_pred_grid <- mobest::create_prediction_grid(
   area,
-  spatial_cell_size = 50000
+  spatial_cell_size = 20000
 )
 
 #### movie1 ####
@@ -110,7 +140,7 @@ search_movie1 <- mobest::locate(
     C2_mds_u = janno_search$C2_mds_u
   ),
   search_space_grid = spatial_pred_grid,
-  search_time = seq(-1000, 350, 50),
+  search_time = seq(-1000, 300, 10),
   search_time_mode = "absolute"
 )
 
@@ -123,4 +153,4 @@ search_movie1_prod %>%
     plot_prob
   )
 
-# ffmpeg -r 3 -f image2 -s 720x480 -i frame_movie3_%03d.jpeg -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -vcodec libx264 -crf 25 -pix_fmt yuv420p movie1.mp4
+# ffmpeg -r 10 -f image2 -s 720x480 -i frame_movie3_%03d.jpeg -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -vcodec libx264 -crf 40 -pix_fmt yuv420p example_movie.mp4
