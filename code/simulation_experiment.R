@@ -8,11 +8,19 @@ independent <- mobest::create_spatpos(
 )
 
 dependent = mobest::create_obs(
-  component = c(
-    runif(50, 0, 0.4) + 0.3 * independent$z[1:50],
-    runif(50, 0.6, 1) - 0.3 * independent$z[51:100]
+  component = purrr::pmap_dbl(
+    independent, function(...) {
+      row <- list(...)
+      if (grepl("A", row$id)) {
+        0.25 + sample(c(0.3, -0.3), 1) * sqrt((0.2 - row$x)^2 + (0.5 - row$y)^2) + 0.25 * row$z
+      } else {
+        0.75 + sample(c(0.3, -0.3), 1) * sqrt((0.8 - row$x)^2 + (0.5 - row$y)^2) - 0.25 * row$z
+      }
+    }
   )
 )
+
+independent
 
 # library(magrittr)
 # library(ggplot2)
@@ -28,14 +36,27 @@ dependent = mobest::create_obs(
 #     mapping = aes(x, z, color = grepl("A", id))
 #   )
 # 
-# ggplot() +
-#   geom_point(
-#     data = dplyr::bind_cols(
-#       independent,
-#       dependent
-#     ),
-#     mapping = aes(z, component, color = grepl("A", id))
-#   )
+
+ggplot() +
+  geom_point(
+    data = dplyr::bind_cols(
+      independent,
+      dependent
+    ),
+    mapping = aes(x, y, color = component)
+  ) +
+  scale_color_viridis_c()
+
+ggplot() +
+  geom_point(
+    data = dplyr::bind_cols(
+      independent,
+      dependent
+    ),
+    mapping = aes(z, component, color = grepl("A", id))
+  )
+
+
 
 locate_simple <- mobest::locate(
   independent = independent,
