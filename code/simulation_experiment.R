@@ -8,19 +8,11 @@ independent <- mobest::create_spatpos(
 )
 
 dependent = mobest::create_obs(
-  component = purrr::pmap_dbl(
-    independent, function(...) {
-      row <- list(...)
-      if (grepl("A", row$id)) {
-        0.25 + sample(c(0.3, -0.3), 1) * sqrt((0.2 - row$x)^2 + (0.5 - row$y)^2) + 0.25 * row$z
-      } else {
-        0.75 + sample(c(0.3, -0.3), 1) * sqrt((0.8 - row$x)^2 + (0.5 - row$y)^2) - 0.25 * row$z
-      }
-    }
+  component = c(
+    runif(50, 0, 0.4) + 0.3 * independent$z[1:50],
+    runif(50, 0.6, 1) - 0.3 * independent$z[51:100]
   )
 )
-
-independent
 
 # library(magrittr)
 # library(ggplot2)
@@ -81,13 +73,26 @@ locate_simple <- mobest::locate(
   quiet = F
 )
 
+hu <- mobest::determine_origin_vectors(mobest::multiply_dependent_probabilities(locate_simple), field_z)
+
 # plot the resulting probability surface
 library(ggplot2)
-locate_simple %>%
-  #dplyr::filter(field_z < 0.7 & field_z < 0.9) %>%
-  ggplot() +
+ggplot() +
   facet_wrap(~field_z) +
-  geom_raster(mapping = aes(x = field_x, y = field_y, fill = probability)) +
-  geom_point(mapping = aes(x = search_x, y = search_y), colour = "red") +
+  geom_raster(
+    data = locate_simple,
+    mapping = aes(x = field_x, y = field_y, fill = probability)
+  ) +
+  geom_point(
+    data = locate_simple,
+    mapping = aes(x = search_x, y = search_y),
+    colour = "red"
+  ) +
+  geom_point(
+    data = hu,
+    mapping = aes(x = field_x, y = field_y),
+    colour = "orange"
+  ) +
   coord_fixed()
+
 
