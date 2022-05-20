@@ -1,66 +1,70 @@
+library(magrittr)
+library(ggplot2)
+
 set.seed(100)
 
 independent <- mobest::create_spatpos(
-  id = c(paste0("A", 1:50), paste0("B", 1:50)),
-  x = c(runif(50, 0, 0.4), runif(50, 0.6, 1)),
-  y = c(runif(100, 0, 1)),
+  id = c(paste0("A_", 1:25), paste0("B_", 1:75)),
+  x = c(runif(25, 0, 0.5), runif(25, 0.5, 1), runif(25, 0, 0.5), runif(25, 0.5, 1)),
+  y = c(runif(25, 0.5, 1), runif(25, 0, 0.5), runif(25, 0, 0.5), runif(25, 0.5, 1)),
   z = c(runif(100, 0, 1))
 )
 
 dependent = mobest::create_obs(
   component = c(
-    rnorm(50, 0.2, 0.1) + 0.3 * independent$z[1:50],
-    rnorm(50, 0.8, 0.1) - 0.3 * independent$z[51:100]
+    rnorm(25, 0.25, 0.1) + 0.25 * independent$z[1:25],
+    rnorm(75, 0.75, 0.1) - 0.25 * independent$z[26:100]
   )
 )
 
-library(magrittr)
-library(ggplot2)
+ind_group <- independent %>% tidyr::separate(id, into = c("group", "id"), sep = "_")
+
 ggplot() +
   geom_point(
-    data = independent,
-    mapping = aes(x, y, color = grepl("A", id))
+    data = ind_group,
+    mapping = aes(x, y, color = group)
   )
 
 ggplot() +
   geom_point(
-    data = independent,
-    mapping = aes(x, z, color = grepl("A", id))
+    data = ind_group,
+    mapping = aes(x, z, color = group)
   )
 
+# ggplot() +
+#   geom_point(
+#     data = dplyr::bind_cols(
+#       independent,
+#       dependent
+#     ),
+#     mapping = aes(x, y, color = component)
+#   ) +
+#   scale_color_viridis_c()
 
 ggplot() +
   geom_point(
     data = dplyr::bind_cols(
-      independent,
+      ind_group,
       dependent
     ),
-    mapping = aes(x, y, color = component)
-  ) +
-  scale_color_viridis_c()
-
-ggplot() +
-  geom_point(
-    data = dplyr::bind_cols(
-      independent,
-      dependent
-    ),
-    mapping = aes(z, component, color = grepl("A", id))
+    mapping = aes(z, component, color = group)
   )
 
-kernel_length <- 0.5
+kernel_length <- 0.3
+nugget <- 0.2
 
 locate_simple <- mobest::locate(
   independent = independent,
   dependent = dependent,
   kernel = mobest::create_kernset(
     component = mobest::create_kernel(
-      kernel_length,
-      kernel_length,
-      kernel_length, 0.1, on_residuals = T)
+      kernel_length, kernel_length, kernel_length,
+      nugget,
+      on_residuals = T
+    )
   ),
   search_independent = mobest::create_spatpos(
-    id = "APioneer", x = 0.75, y = 0.5, z = 1
+    id = "APioneer", x = 0.75, y = 0.25, z = 1
   ),
   search_dependent = mobest::create_obs(
     component = 0.25
