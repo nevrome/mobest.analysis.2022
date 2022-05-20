@@ -9,25 +9,25 @@ independent <- mobest::create_spatpos(
 
 dependent = mobest::create_obs(
   component = c(
-    runif(50, 0, 0.4) + 0.3 * independent$z[1:50],
-    runif(50, 0.6, 1) - 0.3 * independent$z[51:100]
+    rnorm(50, 0.2, 0.1) + 0.3 * independent$z[1:50],
+    rnorm(50, 0.8, 0.1) - 0.3 * independent$z[51:100]
   )
 )
 
-# library(magrittr)
-# library(ggplot2)
-# ggplot() +
-#   geom_point(
-#     data = independent,
-#     mapping = aes(x, y, color = grepl("A", id))
-#   )
-# 
-# ggplot() +
-#   geom_point(
-#     data = independent,
-#     mapping = aes(x, z, color = grepl("A", id))
-#   )
-# 
+library(magrittr)
+library(ggplot2)
+ggplot() +
+  geom_point(
+    data = independent,
+    mapping = aes(x, y, color = grepl("A", id))
+  )
+
+ggplot() +
+  geom_point(
+    data = independent,
+    mapping = aes(x, z, color = grepl("A", id))
+  )
+
 
 ggplot() +
   geom_point(
@@ -48,13 +48,16 @@ ggplot() +
     mapping = aes(z, component, color = grepl("A", id))
   )
 
-
+kernel_length <- 0.5
 
 locate_simple <- mobest::locate(
   independent = independent,
   dependent = dependent,
   kernel = mobest::create_kernset(
-    component = mobest::create_kernel(0.3, 0.3, 0.3, 0.1, on_residuals = T)
+    component = mobest::create_kernel(
+      kernel_length,
+      kernel_length,
+      kernel_length, 0.1, on_residuals = T)
   ),
   search_independent = mobest::create_spatpos(
     id = "APioneer", x = 0.75, y = 0.5, z = 1
