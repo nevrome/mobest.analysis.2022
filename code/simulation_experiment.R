@@ -3,10 +3,10 @@ library(ggplot2)
 
 set.seed(100)
 
-nr_iterations <- 20
+nr_iterations <- 10
 its <- seq_len(nr_iterations)
 
-independent <- purrr::map(
+independent_list_I <- purrr::map(
   its, function(i) {
     mobest::create_spatpos(
       id = c(paste0("A_", 1:25), paste0("B_", 1:75)),
@@ -17,20 +17,37 @@ independent <- purrr::map(
   }
 )
 
-dependent <- purrr::map(
-  independent, function(i) {
-    mobest::create_obs(
-      component = c(
-        rnorm(25, 0.25, 0.1) + 0.25 * i$z[1:25],
-        rnorm(75, 0.75, 0.1) - 0.25 * i$z[26:100]
+# x <- seq(0,1,0.01)
+# plot(x, 1-exp(-3*x))
+
+dependent_list_II <- purrr::map(
+  independent_list_I, function(i) {
+    mobest::create_obs_multi(
+        linear = mobest::create_obs(
+          component = c(
+            rnorm(25, 0.25, 0.1) + 0.25 * i$z[1:25],
+            rnorm(75, 0.75, 0.1) - 0.25 * i$z[26:100]
+          )
+        ),
+        limited_slow = mobest::create_obs(
+          component = c(
+            rnorm(25, 0.25, 0.1) + 0.25 * (1 - exp(-3*i$z[1:25])),
+            rnorm(75, 0.75, 0.1) - 0.25 * (1 - exp(-3*i$z[26:100]))
+          )
+        ),
+        limited_fast = mobest::create_obs(
+          component = c(
+            rnorm(25, 0.25, 0.1) + 0.25 * (1 - exp(-10*i$z[1:25])),
+            rnorm(75, 0.75, 0.1) - 0.25 * (1 - exp(-10*i$z[26:100]))
+          )
+        )
       )
-    )
-  }
-)
+    }
+  )
 
 kernel_table <- tidyr::crossing(
   kernel_length = seq(0.1, 0.5, 0.1),
-  nugget = c(0.05, 0.1, 0.2)
+  nugget = 0.1,#c(0.05, 0.1, 0.2)
 ) %>%
   dplyr::mutate(
     kernel_setting_id = paste("kernel", 1:nrow(.), sep = "_")
@@ -47,24 +64,25 @@ kernels <- purrr::pmap(
       )
     )
   }) %>%
-  magrittr::set_names(kernel_table$kernel_id) %>%
+  magrittr::set_names(kernel_table$kernel_setting_id) %>%
   do.call(mobest::create_kernset_multi, .)
 
 locate_res <- purrr::pmap_dfr(
-  list(its, independent, dependent), function(it_num, ind, dep) {
+  list(its, independent_list_I, dependent_list_II), function(it_num, ind, dep) {
     i <- paste0("iteration_", it_num)
     message("Running: ", it_num, " of ", nr_iterations)
     mobest::locate_multi(
       independent = mobest::create_spatpos_multi(ind, .names = i),
-      dependent = mobest::create_obs_multi(dep, .names = i),
+      dependent = dep,
       kernel = kernels,
       search_independent = mobest::create_spatpos_multi(
-        mobest::create_spatpos(id = "APioneer", x = 0.75, y = 0.25, z = 1),
+        mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1),
         .names = i
       ),
       search_dependent = mobest::create_obs_multi(
-        mobest::create_obs(component = 0.25), 
-        .names = i
+        linear = mobest::create_obs(component = 0.25), 
+        limited_slow = mobest::create_obs(component = 0.25),
+        limited_fast = mobest::create_obs(component = 0.25)
       ),
       # spatial search grid: Where to search
       search_space_grid = expand.grid(
@@ -88,7 +106,7 @@ ovs %>%
   dplyr::mutate(
     top_left = (field_x <= 0.5) & (field_y >= 0.5)
   ) %>%
-  dplyr::group_by(kernel_setting_id, field_z) %>%
+  dplyr::group_by(kernel_setting_id, dependent_setting_id, field_z) %>%
   dplyr::summarise(
     n_top_left = sum(top_left),
     sd_top_left = sd(top_left),
@@ -98,20 +116,23 @@ ovs %>%
     kernel_table,
     by = "kernel_setting_id"
   ) %>%
+  dplyr::mutate(
+    dependent_setting_id = factor(dependent_setting_id, c("linear", "limited_slow", "limited_fast"))
+  ) %>%
   ggplot() +
-  facet_grid(cols = dplyr::vars(kernel_length)) +
-  geom_line(aes(x = field_z, y = n_top_left, color = as.factor(nugget)))# +
-  # geom_point(aes(x = field_z, y = n_top_left) ) +
-  # geom_errorbar(aes(
-  #   x = field_z,
-  #   ymin = n_top_left - 2*sd_top_left,
-  #   ymax = n_top_left + 2*sd_top_left
-  # ))
+  ggh4x::facet_nested(dependent_setting_id ~ kernel_length) +
+  geom_line(aes(x = field_z, y = n_top_left)) +
+  geom_point(aes(x = field_z, y = n_top_left)) +
+  geom_errorbar(aes(
+    x = field_z,
+    ymin = n_top_left - 2*sd_top_left,
+    ymax = n_top_left + 2*sd_top_left
+  ))
 
 #### diagnostic plots
 
-ind_group <- independent[[1]] %>% tidyr::separate(id, into = c("group", "id"), sep = "_")
-dep1 <- dependent[[1]]
+ind_group <- independent_list_I[[1]] %>% tidyr::separate(id, into = c("group", "id"), sep = "_")
+dep1 <- dependent_list_II[[1]]$linear
 ls1 <- locate_simple %>% dplyr::filter(
   independent_table_id == "iteration_1",
   dependent_setting_id == "iteration_1"
