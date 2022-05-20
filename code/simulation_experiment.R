@@ -3,7 +3,7 @@ library(ggplot2)
 
 set.seed(100)
 
-nr_iterations <- 10
+nr_iterations <- 100
 its <- seq_len(nr_iterations)
 
 independent_list_I <- purrr::map(
@@ -109,7 +109,6 @@ ovs %>%
   dplyr::group_by(kernel_setting_id, dependent_setting_id, field_z) %>%
   dplyr::summarise(
     n_top_left = sum(top_left),
-    sd_top_left = sd(top_left),
     .groups = "drop"
   ) %>%
   dplyr::left_join(
@@ -122,17 +121,25 @@ ovs %>%
   ggplot() +
   ggh4x::facet_nested(dependent_setting_id ~ kernel_length) +
   geom_line(aes(x = field_z, y = n_top_left)) +
-  geom_point(aes(x = field_z, y = n_top_left)) +
-  geom_errorbar(aes(
-    x = field_z,
-    ymin = n_top_left - 2*sd_top_left,
-    ymax = n_top_left + 2*sd_top_left
-  ))
+  geom_point(aes(x = field_z, y = n_top_left))
 
 #### diagnostic plots
 
 ind_group <- independent_list_I[[1]] %>% tidyr::separate(id, into = c("group", "id"), sep = "_")
 dep1 <- dependent_list_II[[1]]$linear
+
+spacetime_and_genetics <- purrr::map2_dfr(
+  independent_list_I[1:10], dependent_list_II[1:10], function(ind, dep) {
+    dplyr::left_join(
+      ind %>% tidyr::separate(id, into = c("group", "id_num"), sep = "_", remove = F),
+      tibble::enframe(dep) %>%
+        tidyr::unnest(cols = value) %>%
+        dplyr::mutate(id = rep(ind$id, length(dep))),
+      by = "id"
+    )
+  }
+)
+
 ls1 <- locate_simple %>% dplyr::filter(
   independent_table_id == "iteration_1",
   dependent_setting_id == "iteration_1"
@@ -159,6 +166,16 @@ ggplot() +
     data = dplyr::bind_cols(ind_group, dep1),
     mapping = aes(z, component, color = group)
   )
+
+spacetime_and_genetics %>%
+ggplot() +
+  geom_point(
+    mapping = aes(z, component, color = group)
+  ) +
+  geom_smooth(
+    mapping = aes(z, component, color = group)
+  ) +
+  facet_wrap(~name)
 
 ggplot() +
   facet_wrap(~field_z) +
