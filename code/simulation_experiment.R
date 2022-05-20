@@ -121,7 +121,8 @@ ovs %>%
   ggplot() +
   ggh4x::facet_nested(dependent_setting_id ~ kernel_length) +
   geom_line(aes(x = field_z, y = n_top_left)) +
-  geom_point(aes(x = field_z, y = n_top_left))
+  geom_point(aes(x = field_z, y = n_top_left)) +
+  coord_cartesian(ylim = c(25,100))
 
 #### diagnostic plots
 
