@@ -3,22 +3,62 @@ library(ggplot2)
 
 set.seed(100)
 
-nr_iterations <- 100
+nr_iterations <- 5
 its <- seq_len(nr_iterations)
 
-independent_list_I <- purrr::map(
-  its, function(i) {
-    mobest::create_spatpos(
-      id = c(paste0("A_", 1:25), paste0("B_", 1:75)),
-      x = c(runif(25, 0, 0.5), runif(25, 0.5, 1), runif(25, 0, 0.5), runif(25, 0.5, 1)),
-      y = c(runif(25, 0.5, 1), runif(25, 0, 0.5), runif(25, 0, 0.5), runif(25, 0.5, 1)),
-      z = c(runif(100, 0, 1))
+pop_sizes <- c(5, 25, 100)
+
+independent_list_II <- purrr::map(
+  pop_sizes, function(pop_size) {
+    popA <- seq_len(pop_size)
+    popB <- seq_len(pop_size*3)
+    independent_list_I <- purrr::map(
+      its, function(i) {
+        mobest::create_spatpos(
+          id = c(paste0("A_", popA), paste0("B_", popB)),
+          x = c(runif(popA, 0, 0.5), runif(popA, 0.5, 1), runif(popA, 0, 0.5), runif(popA, 0.5, 1)),
+          y = c(runif(popA, 0.5, 1), runif(popA, 0, 0.5), runif(popA, 0, 0.5), runif(popA, 0.5, 1)),
+          z = c(runif(pop_size*4, 0, 1))
+        )
+      }
     )
+    return(independent_list_I)
   }
 )
 
 # x <- seq(0,1,0.01)
 # plot(x, 1-exp(-3*x))
+
+dependent_list_III <- purrr::map(
+  independent_list_II, function(independent_list_I) {
+    dependent_list_II <-  purrr::map(
+      independent_list_I, function(i) {
+        dependent_list <- mobest::create_obs_multi(
+          linear = mobest::create_obs(
+            component = dplyr::case_when(
+              grepl("A", i$id) ~ rnorm(1, 0.25, 0.1) + 0.25 * i$z,
+              grepl("B", i$id) ~ rnorm(1, 0.75, 0.1) - 0.25 * i$z
+            )
+          ),
+          limited_slow = mobest::create_obs(
+            component = dplyr::case_when(
+              grepl("A", i$id) ~ rnorm(1, 0.25, 0.1) + 0.25 * (1 - exp(-3*i$z)),
+              grepl("B", i$id) ~ rnorm(1, 0.75, 0.1) - 0.25 * (1 - exp(-3*i$z))
+            )
+          ),
+          limited_fast = mobest::create_obs(
+            component = dplyr::case_when(
+              grepl("A", i$id) ~ rnorm(1, 0.25, 0.1) + 0.25 * (1 - exp(-10*i$z)),
+              grepl("B", i$id) ~ rnorm(1, 0.75, 0.1) - 0.25 * (1 - exp(-10*i$z))
+            )
+          )
+        )
+        return(dependent_list)
+      }
+    )
+    return(dependent_list_II)
+  }
+)
 
 dependent_list_II <- purrr::map(
   independent_list_I, function(i) {
