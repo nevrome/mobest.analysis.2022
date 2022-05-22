@@ -4,7 +4,7 @@ library(ggplot2)
 #### set parameters ####
 
 set.seed(100)
-nr_iterations <- 20
+nr_iterations <- 100
 its <- seq_len(nr_iterations)
 pop_sizes <- c(10, 25, 50)
 
@@ -109,8 +109,8 @@ locate_res <- purrr::pmap_dfr(
           ),
           # spatial search grid: Where to search
           search_space_grid = expand.grid(
-            x = seq(0, 1, 0.05), 
-            y = seq(0, 1, 0.05)
+            x = seq(0, 1, 0.1), 
+            y = seq(0, 1, 0.1)
           ) %>% { mobest::create_geopos(id = 1:nrow(.), x = .$x, y = .$y) },
           # search time: When to search
           search_time = seq(0.1,0.9,0.1),
@@ -146,11 +146,15 @@ ovs %>%
     dependent_setting_id = factor(dependent_setting_id, c("linear", "limited_slow", "limited_fast"))
   ) %>%
   ggplot() +
-  theme_bw() +
   ggh4x::facet_nested(kernel_length ~ pop_size + dependent_setting_id) +
   geom_line(aes(x = field_z, y = n_top_left)) +
   geom_point(aes(x = field_z, y = n_top_left))+ 
-  geom_hline(yintercept = nr_iterations/4)# +
+  geom_hline(yintercept = nr_iterations/4) +
+  scale_x_continuous(breaks = seq(0,1,0.2)) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )# +
   #coord_cartesian(ylim = c(25,100))
 
 #### diagnostic plots
