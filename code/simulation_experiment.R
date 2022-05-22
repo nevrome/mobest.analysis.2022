@@ -60,40 +60,15 @@ dependent_list_III <- purrr::map(
   }
 )
 
-dependent_list_II <- purrr::map(
-  independent_list_I, function(i) {
-    mobest::create_obs_multi(
-        linear = mobest::create_obs(
-          component = c(
-            rnorm(25, 0.25, 0.1) + 0.25 * i$z[1:25],
-            rnorm(75, 0.75, 0.1) - 0.25 * i$z[26:100]
-          )
-        ),
-        limited_slow = mobest::create_obs(
-          component = c(
-            rnorm(25, 0.25, 0.1) + 0.25 * (1 - exp(-3*i$z[1:25])),
-            rnorm(75, 0.75, 0.1) - 0.25 * (1 - exp(-3*i$z[26:100]))
-          )
-        ),
-        limited_fast = mobest::create_obs(
-          component = c(
-            rnorm(25, 0.25, 0.1) + 0.25 * (1 - exp(-10*i$z[1:25])),
-            rnorm(75, 0.75, 0.1) - 0.25 * (1 - exp(-10*i$z[26:100]))
-          )
-        )
-      )
-    }
-  )
-
 kernel_table <- tidyr::crossing(
   kernel_length = seq(0.1, 0.5, 0.1),
-  nugget = 0.1,#c(0.05, 0.1, 0.2)
+  nugget = 0.1,
 ) %>%
   dplyr::mutate(
     kernel_setting_id = paste("kernel", 1:nrow(.), sep = "_")
   )
 
-kernels <- purrr::pmap(
+kernels_list <- purrr::pmap(
   kernel_table, function(...) {
     row <- list(...)
     mobest::create_kernset(
@@ -107,46 +82,56 @@ kernels <- purrr::pmap(
   magrittr::set_names(kernel_table$kernel_setting_id) %>%
   do.call(mobest::create_kernset_multi, .)
 
+#### run origin search ####
+
 locate_res <- purrr::pmap_dfr(
-  list(its, independent_list_I, dependent_list_II), function(it_num, ind, dep) {
-    i <- paste0("iteration_", it_num)
-    message("Running: ", it_num, " of ", nr_iterations)
-    mobest::locate_multi(
-      independent = mobest::create_spatpos_multi(ind, .names = i),
-      dependent = dep,
-      kernel = kernels,
-      search_independent = mobest::create_spatpos_multi(
-        mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1),
-        .names = i
-      ),
-      search_dependent = mobest::create_obs_multi(
-        linear = mobest::create_obs(component = 0.25), 
-        limited_slow = mobest::create_obs(component = 0.25),
-        limited_fast = mobest::create_obs(component = 0.25)
-      ),
-      # spatial search grid: Where to search
-      search_space_grid = expand.grid(
-        x = seq(0, 1, 0.05), 
-        y = seq(0, 1, 0.05)
-      ) %>% { mobest::create_geopos(id = 1:nrow(.), x = .$x, y = .$y) },
-      # search time: When to search
-      search_time = seq(0.1,0.9,0.1),
-      search_time_mode = "absolute",
-      quiet = T
+  list(pop_sizes, independent_list_II, dependent_list_III),
+  function(pop_size, independent_list_I, dependent_list_II) {
+    message("Running: ", pop_size, " of ", pop_sizes)
+    purrr::pmap_dfr(
+      list(its, independent_list_I, dependent_list_II), function(it_num, ind, dep) {
+        i <- paste0("iteration_", it_num)
+        message("Running: ", it_num, " of ", nr_iterations)
+        locate_res_single <- mobest::locate_multi(
+          independent = mobest::create_spatpos_multi(ind, .names = i),
+          dependent = dep,
+          kernel = kernels,
+          search_independent = mobest::create_spatpos_multi(
+            mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1),
+            .names = i
+          ),
+          search_dependent = mobest::create_obs_multi(
+            linear = mobest::create_obs(component = 0.25), 
+            limited_slow = mobest::create_obs(component = 0.25),
+            limited_fast = mobest::create_obs(component = 0.25)
+          ),
+          # spatial search grid: Where to search
+          search_space_grid = expand.grid(
+            x = seq(0, 1, 0.05), 
+            y = seq(0, 1, 0.05)
+          ) %>% { mobest::create_geopos(id = 1:nrow(.), x = .$x, y = .$y) },
+          # search time: When to search
+          search_time = seq(0.1,0.9,0.1),
+          search_time_mode = "absolute",
+          quiet = T
+        )
+        locate_res_single$pop_size <- pop_size
+        return(locate_res_single)
+      }
     )
   }
 )
 
 locate_product <- mobest::multiply_dependent_probabilities(locate_res)
 ovs <- mobest::determine_origin_vectors(
-  locate_product, independent_table_id, dependent_setting_id, kernel_setting_id, field_z
+  locate_product, pop_size, independent_table_id, dependent_setting_id, kernel_setting_id, field_z
 )
 
 ovs %>%
   dplyr::mutate(
     top_left = (field_x <= 0.5) & (field_y >= 0.5)
   ) %>%
-  dplyr::group_by(kernel_setting_id, dependent_setting_id, field_z) %>%
+  dplyr::group_by(pop_size, kernel_setting_id, dependent_setting_id, field_z) %>%
   dplyr::summarise(
     n_top_left = sum(top_left),
     .groups = "drop"
@@ -159,10 +144,10 @@ ovs %>%
     dependent_setting_id = factor(dependent_setting_id, c("linear", "limited_slow", "limited_fast"))
   ) %>%
   ggplot() +
-  ggh4x::facet_nested(dependent_setting_id ~ kernel_length) +
+  ggh4x::facet_nested(dependent_setting_id ~ pop_size + kernel_length) +
   geom_line(aes(x = field_z, y = n_top_left)) +
-  geom_point(aes(x = field_z, y = n_top_left)) +
-  coord_cartesian(ylim = c(25,100))
+  geom_point(aes(x = field_z, y = n_top_left))# +
+  #coord_cartesian(ylim = c(25,100))
 
 #### diagnostic plots
 
