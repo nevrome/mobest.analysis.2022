@@ -1,12 +1,14 @@
 library(magrittr)
 library(ggplot2)
 
+#### set parameters ####
+
 set.seed(100)
-
-nr_iterations <- 5
+nr_iterations <- 20
 its <- seq_len(nr_iterations)
+pop_sizes <- c(10, 25, 50)
 
-pop_sizes <- c(5, 25, 100)
+#### prepare input data ####
 
 independent_list_II <- purrr::map(
   pop_sizes, function(pop_size) {
@@ -87,7 +89,7 @@ kernels_list <- purrr::pmap(
 locate_res <- purrr::pmap_dfr(
   list(pop_sizes, independent_list_II, dependent_list_III),
   function(pop_size, independent_list_I, dependent_list_II) {
-    message("Running: ", pop_size, " of ", pop_sizes)
+    message("Running: ", pop_size, " of ", paste(pop_sizes, collapse = ", "))
     purrr::pmap_dfr(
       list(its, independent_list_I, dependent_list_II), function(it_num, ind, dep) {
         i <- paste0("iteration_", it_num)
@@ -95,7 +97,7 @@ locate_res <- purrr::pmap_dfr(
         locate_res_single <- mobest::locate_multi(
           independent = mobest::create_spatpos_multi(ind, .names = i),
           dependent = dep,
-          kernel = kernels,
+          kernel = kernels_list,
           search_independent = mobest::create_spatpos_multi(
             mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1),
             .names = i
@@ -144,9 +146,11 @@ ovs %>%
     dependent_setting_id = factor(dependent_setting_id, c("linear", "limited_slow", "limited_fast"))
   ) %>%
   ggplot() +
-  ggh4x::facet_nested(dependent_setting_id ~ pop_size + kernel_length) +
+  theme_bw() +
+  ggh4x::facet_nested(kernel_length ~ pop_size + dependent_setting_id) +
   geom_line(aes(x = field_z, y = n_top_left)) +
-  geom_point(aes(x = field_z, y = n_top_left))# +
+  geom_point(aes(x = field_z, y = n_top_left))+ 
+  geom_hline(yintercept = nr_iterations/4)# +
   #coord_cartesian(ylim = c(25,100))
 
 #### diagnostic plots
