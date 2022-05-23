@@ -17,11 +17,16 @@ independent_list_II <- purrr::map(
     independent_list_I <- purrr::map(
       its, function(i) {
         mobest::create_spatpos(
-          id = c(paste0("A_", popA), paste0("B_", popB)),
+          id = seq_len(pop_size*4),
           x = c(runif(popA, 0, 0.5), runif(popA, 0.5, 1), runif(popA, 0, 0.5), runif(popA, 0.5, 1)),
           y = c(runif(popA, 0.5, 1), runif(popA, 0, 0.5), runif(popA, 0, 0.5), runif(popA, 0.5, 1)),
           z = c(runif(pop_size*4, 0, 1))
-        )
+        ) %>%
+          dplyr::mutate(
+            group = c(rep("A", pop_size), rep("B", pop_size*3)),
+            pop_size = pop_size,
+            iteration = i
+          )
       }
     )
     return(independent_list_I)
@@ -29,29 +34,34 @@ independent_list_II <- purrr::map(
 )
 
 # x <- seq(0,1,0.01)
-# plot(x, 1-exp(-3*x))
+# plot(x, x, ylim = c(0,1))
+# plot(x, 1-exp(-3*x), ylim = c(0,1))
+# plot(x, 1-exp(-7*x), ylim = c(0,1))
 
 dependent_list_III <- purrr::map(
   independent_list_II, function(independent_list_I) {
     dependent_list_II <-  purrr::map(
       independent_list_I, function(i) {
+        ig <- dplyr::group_split(i, group)
+        igA <- ig[[1]]
+        igB <- ig[[2]]
         dependent_list <- mobest::create_obs_multi(
           linear = mobest::create_obs(
-            component = dplyr::case_when(
-              grepl("A", i$id) ~ rnorm(1, 0.25, 0.1) + 0.25 * i$z,
-              grepl("B", i$id) ~ rnorm(1, 0.75, 0.1) - 0.25 * i$z
+            component = c(
+              rnorm(nrow(igA), 0.25, 0.1) + 0.25 * igA$z,
+              rnorm(nrow(igB), 0.75, 0.1) - 0.25 * igB$z
             )
           ),
           limited_slow = mobest::create_obs(
-            component = dplyr::case_when(
-              grepl("A", i$id) ~ rnorm(1, 0.25, 0.1) + 0.25 * (1 - exp(-3*i$z)),
-              grepl("B", i$id) ~ rnorm(1, 0.75, 0.1) - 0.25 * (1 - exp(-3*i$z))
+            component = c(
+              rnorm(nrow(igA), 0.25, 0.1) + 0.25 * (1 - exp(-3*igA$z)),
+              rnorm(nrow(igB), 0.75, 0.1) - 0.25 * (1 - exp(-3*igB$z))
             )
           ),
           limited_fast = mobest::create_obs(
-            component = dplyr::case_when(
-              grepl("A", i$id) ~ rnorm(1, 0.25, 0.1) + 0.25 * (1 - exp(-10*i$z)),
-              grepl("B", i$id) ~ rnorm(1, 0.75, 0.1) - 0.25 * (1 - exp(-10*i$z))
+            component = c(
+              rnorm(nrow(igA), 0.25, 0.1) + 0.25 * (1 - exp(-7*igA$z)),
+              rnorm(nrow(igB), 0.75, 0.1) - 0.25 * (1 - exp(-7*igB$z))
             )
           )
         )
@@ -83,6 +93,100 @@ kernels_list <- purrr::pmap(
   }) %>%
   magrittr::set_names(kernel_table$kernel_setting_id) %>%
   do.call(mobest::create_kernset_multi, .)
+
+#### test/examples ####
+
+overview <- purrr::map2_dfr(
+  independent_list_II, dependent_list_III, function(ind_I, dep_II) {
+    purrr::map2_dfr(
+      ind_I, dep_II, function(ind, dep_I) {
+        dep_I_merged <- purrr::imap_dfr(
+          dep_I, function(dep, n) {
+            dep %>% dplyr::mutate(
+              id = seq_len(dplyr::n()),
+              process = factor(n, levels = c("linear", "limited_slow", "limited_fast"))
+            )
+          }
+        )
+        dplyr::left_join(ind, dep_I_merged, by = "id")
+      }  
+    )
+  }
+)
+
+ex1 <- overview %>% dplyr::filter(pop_size == 25, iteration == 6, process == "linear")
+
+ggplot() +
+  geom_point(
+    data = ex1,
+    mapping = aes(x, y, color = group)
+  )
+
+ggplot() +
+  geom_point(
+    data = ex1,
+    mapping = aes(x, z, color = group)
+  )
+
+ggplot() +
+  geom_point(
+    data = ex1,
+    mapping = aes(z, component, color = group)
+  )
+
+ex2 <- overview %>% dplyr::filter(iteration == 6)
+
+ex2 %>%
+  ggplot() +
+  geom_point(
+    mapping = aes(z, component, color = group)
+  ) +
+  geom_smooth(
+    mapping = aes(z, component, color = group)
+  ) +
+  facet_grid(rows = dplyr::vars(process), cols = dplyr::vars(pop_size))
+
+#### search test run ####
+
+locate_test_res <- mobest::locate(
+  independent = independent_list_II[[2]][[6]],
+  dependent = dependent_list_III[[2]][[6]]$limited_slow,
+  kernel = kernels_list$kernel_3,
+  search_independent = mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1),
+  search_dependent = mobest::create_obs(component = 0.25),
+  # spatial search grid: Where to search
+  search_space_grid = expand.grid(
+    x = seq(0, 1, 0.1), 
+    y = seq(0, 1, 0.1)
+  ) %>% { mobest::create_geopos(id = 1:nrow(.), x = .$x, y = .$y) },
+  # search time: When to search
+  search_time = seq(0.1,0.9,0.1),
+  search_time_mode = "absolute",
+  quiet = T
+)
+
+locate_test_product <- mobest::multiply_dependent_probabilities(locate_test_res)
+ovs_test <- mobest::determine_origin_vectors(locate_test_product, field_z)
+
+locate_test_run %>%
+  ggplot() +
+    facet_wrap(~field_z) +
+    geom_raster(
+      data = locate_test_res,
+      mapping = aes(x = field_x, y = field_y, fill = probability)
+    ) +
+    geom_point(
+      data = mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1),
+      mapping = aes(x = x, y = y),
+      colour = "red"
+    ) +
+    geom_point(
+      data = ovs_test,
+      mapping = aes(x = field_x, y = field_y),
+      colour = "orange"
+    ) +
+    coord_fixed()
+
 
 #### run origin search ####
 
@@ -151,84 +255,10 @@ ovs %>%
   geom_point(aes(x = field_z, y = n_top_left))+ 
   geom_hline(yintercept = nr_iterations/4) +
   scale_x_continuous(breaks = seq(0,1,0.2)) +
+  scale_y_continuous(breaks = seq(25, 100, 25)) +
   theme_bw() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1)
-  )# +
-  #coord_cartesian(ylim = c(25,100))
-
-#### diagnostic plots
-
-ind_group <- independent_list_I[[1]] %>% tidyr::separate(id, into = c("group", "id"), sep = "_")
-dep1 <- dependent_list_II[[1]]$linear
-
-spacetime_and_genetics <- purrr::map2_dfr(
-  independent_list_I[1:10], dependent_list_II[1:10], function(ind, dep) {
-    dplyr::left_join(
-      ind %>% tidyr::separate(id, into = c("group", "id_num"), sep = "_", remove = F),
-      tibble::enframe(dep) %>%
-        tidyr::unnest(cols = value) %>%
-        dplyr::mutate(id = rep(ind$id, length(dep))),
-      by = "id"
-    )
-  }
-)
-
-ls1 <- locate_simple %>% dplyr::filter(
-  independent_table_id == "iteration_1",
-  dependent_setting_id == "iteration_1"
-)
-ovs1 <- ovs %>% dplyr::filter(
-  independent_table_id == "iteration_1",
-  dependent_setting_id == "iteration_1"
-)
-
-ggplot() +
-  geom_point(
-    data = ind_group,
-    mapping = aes(x, y, color = group)
-  )
-
-ggplot() +
-  geom_point(
-    data = ind_group,
-    mapping = aes(x, z, color = group)
-  )
-
-ggplot() +
-  geom_point(
-    data = dplyr::bind_cols(ind_group, dep1),
-    mapping = aes(z, component, color = group)
-  )
-
-spacetime_and_genetics %>%
-ggplot() +
-  geom_point(
-    mapping = aes(z, component, color = group)
   ) +
-  geom_smooth(
-    mapping = aes(z, component, color = group)
-  ) +
-  facet_wrap(~name)
-
-ggplot() +
-  facet_wrap(~field_z) +
-  geom_raster(
-    data = ls1,
-    mapping = aes(x = field_x, y = field_y, fill = probability)
-  ) +
-  geom_point(
-    data = ls1,
-    mapping = aes(x = search_x, y = search_y),
-    colour = "red"
-  ) +
-  geom_point(
-    data = ovs1,
-    mapping = aes(x = field_x, y = field_y),
-    colour = "orange"
-  ) +
-  coord_fixed()
-
-
-
+  coord_cartesian(ylim = c(25,100))
 
