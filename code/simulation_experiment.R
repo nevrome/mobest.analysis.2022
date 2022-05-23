@@ -114,7 +114,7 @@ overview <- purrr::map2_dfr(
   }
 )
 
-ex1 <- overview %>% dplyr::filter(pop_size == 25, iteration == 6, process == "linear")
+ex1 <- overview %>% dplyr::filter(pop_size == 25, iteration == 33, process == "linear")
 
 ggplot() +
   geom_point(
@@ -134,7 +134,7 @@ ggplot() +
     mapping = aes(z, component, color = group)
   )
 
-ex2 <- overview %>% dplyr::filter(iteration == 6)
+ex2 <- overview %>% dplyr::filter(iteration == 33)
 
 ex2 %>%
   ggplot() +
@@ -149,8 +149,8 @@ ex2 %>%
 #### search test run ####
 
 locate_test_res <- mobest::locate(
-  independent = independent_list_II[[2]][[6]],
-  dependent = dependent_list_III[[2]][[6]]$limited_slow,
+  independent = independent_list_II[[2]][[33]],
+  dependent = dependent_list_III[[2]][[33]]$limited_slow,
   kernel = kernels_list$kernel_3,
   search_independent = mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1),
   search_dependent = mobest::create_obs(component = 0.25),
