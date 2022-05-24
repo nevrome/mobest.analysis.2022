@@ -1,6 +1,46 @@
 library(magrittr)
 library(ggplot2)
 
+#### inform sim ####
+
+load("data/genotype_data/janno_final.RData")
+load("data/spatial/epsg3035.RData")
+load("data/spatial/area.RData")
+
+janno_sf <- sf::st_as_sf(janno_final, coords = c("x", "y"), crs = epsg3035)
+circle_centers <- tibble::tribble(
+  ~location, ~x, ~y,
+  "Iberia", 3100000, 2000000,
+  "Baltics", 5400000, 3800000
+  # "Britain", 3500000, 3300000,
+  # "Hungary", 5000000, 2700000
+  # "Denmark", 4400000, 3600000,
+  # "Rome",    4600000, 2100000
+) %>%
+  sf::st_as_sf(coords = c("x", "y"), crs = epsg3035)
+circles <- sf::st_buffer(
+  circle_centers,
+  dist = 480000,
+  #dist = 300000,
+  # dist = 250000
+)
+
+ggplot() +
+  geom_sf(data = area) +
+  geom_sf(data = janno_sf) +
+  geom_sf(data = circles, aes(color = location), fill = NA, size = 2) +
+  coord_sf(crs = epsg3035, datum = epsg3035)
+  
+inter <- sf::st_intersection(
+  janno_sf,
+  circles
+)
+
+inter %>%
+  ggplot() +
+  geom_point(aes(x = Date_BC_AD_Median_Derived, y = C1_mds_u, color = location))
+  
+  
 #### set parameters ####
 
 set.seed(100)
