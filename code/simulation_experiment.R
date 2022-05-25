@@ -6,40 +6,95 @@ library(ggplot2)
 load("data/genotype_data/janno_final.RData")
 load("data/spatial/epsg3035.RData")
 load("data/spatial/area.RData")
+load("data/origin_search/default_kernset_mds2.RData")
 
 janno_sf <- sf::st_as_sf(janno_final, coords = c("x", "y"), crs = epsg3035)
 circle_centers <- tibble::tribble(
   ~location, ~x, ~y,
-  "Iberia", 3100000, 2000000,
-  "Baltics", 5400000, 3800000
-  # "Britain", 3500000, 3300000,
-  # "Hungary", 5000000, 2700000
+  # "Iberia", 3100000, 2000000,
+  # "Baltics", 5400000, 3800000
+  "Britain", 3500000, 3300000,
+  "Hungary", 5000000, 2700000
   # "Denmark", 4400000, 3600000,
   # "Rome",    4600000, 2100000
-) %>%
+)
+circle_centers_sf <- circle_centers %>%
   sf::st_as_sf(coords = c("x", "y"), crs = epsg3035)
-circles <- sf::st_buffer(
-  circle_centers,
-  dist = 480000,
-  #dist = 300000,
+circles <- circle_centers_sf %>%
+  sf::st_buffer(
+  # dist = 480000,
+  # dist = 300000,
   # dist = 250000
+  dist = 500000
 )
 
-ggplot() +
-  geom_sf(data = area) +
-  geom_sf(data = janno_sf) +
-  geom_sf(data = circles, aes(color = location), fill = NA, size = 2) +
-  coord_sf(crs = epsg3035, datum = epsg3035)
+# ggplot() +
+#   geom_sf(data = area) +
+#   geom_sf(data = janno_sf) +
+#   geom_sf(data = circles, aes(color = location), fill = NA, size = 2) +
+#   coord_sf(crs = epsg3035, datum = epsg3035)
   
 inter <- sf::st_intersection(
   janno_sf,
   circles
 )
 
-inter %>%
-  ggplot() +
-  geom_point(aes(x = Date_BC_AD_Median_Derived, y = C1_mds_u, color = location))
+# inter %>%
+#   ggplot() +
+#   geom_point(aes(x = Date_BC_AD_Median_Derived, y = C1_mds_u, color = location))
+
+#### prepare model grid ####
+times <- seq(-7500, 1500, 100)
+n_times <- length(times) 
+make_spatpos <- function(x) {
+  mobest::create_spatpos(1:n_times, rep(x[[2]], n_times), rep(x[[3]], n_times), times)
+}
+
+model_grid <- mobest::create_model_grid(
+  independent = mobest::create_spatpos_multi(
+    age_median = mobest::create_spatpos(
+      id = janno_final$Poseidon_ID,
+      x = janno_final$x,
+      y = janno_final$y,
+      z = janno_final$Date_BC_AD_Median_Derived
+    )
+  ),
+  dependent = mobest::create_obs_multi(
+    MDS2 = mobest::create_obs(
+      C1_mds_u = janno_final$C1_mds_u
+    )
+  ),
+  kernel = mobest::create_kernset_multi(
+    default_kernel = default_kernset_mds2
+  ),
+  prediction_grid = mobest::create_spatpos_multi(
+    # Iberia = make_spatpos(circle_centers[1,]),
+    # Baltics = make_spatpos(circle_centers[2,])
+    Britain = make_spatpos(circle_centers[1,]),
+    Hungary = make_spatpos(circle_centers[2,])
+    # Denmark = make_spatpos(circle_centers[1,]),
+    # Rome = make_spatpos(circle_centers[2,])
+  )
+)
+
+interpol_grid_examples <- mobest::run_model_grid(model_grid)
   
+ggplot() +
+  geom_point(
+    data = inter,
+    aes(x = Date_BC_AD_Median_Derived, y = C1_mds_u, color = location)
+  ) +
+  geom_ribbon(
+    data = interpol_grid_examples,
+    aes(x = z, ymin = mean - sd, ymax = mean + sd, fill = pred_grid_id),
+    alpha = 0.2
+  ) +
+  geom_line(
+    data = interpol_grid_examples,
+    aes(x = z, y = mean, color = pred_grid_id)
+  )
+
+
   
 #### set parameters ####
 
