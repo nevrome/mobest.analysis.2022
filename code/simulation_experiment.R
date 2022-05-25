@@ -129,37 +129,37 @@ independent_list_II <- purrr::map(
 )
 
 linear <- function(x) { x }
-limited_slow <- function(x) { 1-exp(-2*x) }
-limited_fast <- function(x) { 1-exp(-7*x) }
+limited_slow <- function(x) { 1 - exp(-2*x) }
+limited_fast <- function(x) { 1 - exp(-7*x) }
 intertwined <- function(x) { x + sin(5*pi * x) }
 sd_val <- 0.1
 
-huhu <- purrr::imap_dfr(
- c(intertwined = intertwined, limited_slow = limited_slow, limited_fast = limited_fast),
- function(f, name) {
-   dplyr::bind_rows(
-    tibble::tibble(
-      x      = seq(0,1,0.01),
-      y_min  = 0.25 + 0.25 * f(x) - sd_val,
-      y_mean = 0.25 + 0.25 * f(x),
-      y_max  = 0.25 + 0.25 * f(x) + sd_val,
-      group = "A"
-    ),
-    tibble::tibble(
-      x      = seq(0,1,0.01),
-      y_min  = 0.75 - 0.25 * f(x) - sd_val,
-      y_mean = 0.75 - 0.25 * f(x),
-      y_max  = 0.75 - 0.25 * f(x) + sd_val,
-      group = "B"
-    )
-  ) %>% dplyr::mutate(func = name)
-})
-
-huhu %>%
-  ggplot() +
-  facet_wrap(~func) +
-  geom_ribbon(aes(x, ymin = y_min, ymax = y_max, fill = group), alpha = 0.2) +
-  geom_line(aes(x, y_mean, color = group))
+# huhu <- purrr::imap_dfr(
+#  c(intertwined = intertwined, limited_slow = limited_slow, limited_fast = limited_fast),
+#  function(f, name) {
+#    dplyr::bind_rows(
+#     tibble::tibble(
+#       x      = seq(0,1,0.01),
+#       y_min  = 0.25 + 0.25 * f(x) - sd_val,
+#       y_mean = 0.25 + 0.25 * f(x),
+#       y_max  = 0.25 + 0.25 * f(x) + sd_val,
+#       group = "A"
+#     ),
+#     tibble::tibble(
+#       x      = seq(0,1,0.01),
+#       y_min  = 0.75 - 0.25 * f(x) - sd_val,
+#       y_mean = 0.75 - 0.25 * f(x),
+#       y_max  = 0.75 - 0.25 * f(x) + sd_val,
+#       group = "B"
+#     )
+#   ) %>% dplyr::mutate(func = name)
+# })
+# 
+# huhu %>%
+#   ggplot() +
+#   facet_wrap(~func) +
+#   geom_ribbon(aes(x, ymin = y_min, ymax = y_max, fill = group), alpha = 0.2) +
+#   geom_line(aes(x, y_mean, color = group))
 
 
 
@@ -171,22 +171,22 @@ dependent_list_III <- purrr::map(
         igA <- ig[[1]]
         igB <- ig[[2]]
         dependent_list <- mobest::create_obs_multi(
-          linear = mobest::create_obs(
-            component = c(
-              rnorm(nrow(igA), 0.25, 0.1) + 0.25 * igA$z,
-              rnorm(nrow(igB), 0.75, 0.1) - 0.25 * igB$z
-            )
-          ),
           limited_slow = mobest::create_obs(
             component = c(
-              rnorm(nrow(igA), 0.25, 0.1) + 0.25 * (1 - exp(-3*igA$z)),
-              rnorm(nrow(igB), 0.75, 0.1) - 0.25 * (1 - exp(-3*igB$z))
+              rnorm(nrow(igA), 0.25, 0.1) + 0.25 * limited_slow(igA$z),
+              rnorm(nrow(igB), 0.75, 0.1) - 0.25 * limited_slow(igA$z)
             )
           ),
           limited_fast = mobest::create_obs(
             component = c(
-              rnorm(nrow(igA), 0.25, 0.1) + 0.25 * (1 - exp(-7*igA$z)),
-              rnorm(nrow(igB), 0.75, 0.1) - 0.25 * (1 - exp(-7*igB$z))
+              rnorm(nrow(igA), 0.25, 0.1) + 0.25 * limited_fast(igA$z),
+              rnorm(nrow(igB), 0.75, 0.1) - 0.25 * limited_fast(igA$z)
+            )
+          ),
+          intertwined = mobest::create_obs(
+            component = c(
+              rnorm(nrow(igA), 0.25, 0.1) + 0.25 * intertwined(igA$z),
+              rnorm(nrow(igB), 0.75, 0.1) - 0.25 * intertwined(igB$z)
             )
           )
         )
@@ -229,7 +229,7 @@ overview <- purrr::map2_dfr(
           dep_I, function(dep, n) {
             dep %>% dplyr::mutate(
               id = seq_len(dplyr::n()),
-              process = factor(n, levels = c("linear", "limited_slow", "limited_fast"))
+              process = factor(n, levels = c("limited_slow", "limited_fast", "intertwined"))
             )
           }
         )
@@ -239,7 +239,7 @@ overview <- purrr::map2_dfr(
   }
 )
 
-ex1 <- overview %>% dplyr::filter(pop_size == 25, iteration == 33, process == "linear")
+ex1 <- overview %>% dplyr::filter(pop_size == 25, iteration == 6, process == "intertwined")
 
 ggplot() +
   geom_point(
@@ -259,23 +259,23 @@ ggplot() +
     mapping = aes(z, component, color = group)
   )
 
-ex2 <- overview %>% dplyr::filter(iteration == 33)
+ex2 <- overview %>% dplyr::filter(iteration == 6)
 
 ex2 %>%
   ggplot() +
   geom_point(
     mapping = aes(z, component, color = group)
   ) +
-  geom_smooth(
-    mapping = aes(z, component, color = group)
-  ) +
+  # geom_smooth(
+  #   mapping = aes(z, component, color = group)
+  # ) +
   facet_grid(rows = dplyr::vars(process), cols = dplyr::vars(pop_size))
 
 #### search test run ####
 
 locate_test_res <- mobest::locate(
-  independent = independent_list_II[[2]][[33]],
-  dependent = dependent_list_III[[2]][[33]]$limited_slow,
+  independent = independent_list_II[[2]][[6]],
+  dependent = dependent_list_III[[2]][[6]]$intertwined,
   kernel = kernels_list$kernel_3,
   search_independent = mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1),
   search_dependent = mobest::create_obs(component = 0.25),
@@ -293,24 +293,23 @@ locate_test_res <- mobest::locate(
 locate_test_product <- mobest::multiply_dependent_probabilities(locate_test_res)
 ovs_test <- mobest::determine_origin_vectors(locate_test_product, field_z)
 
-locate_test_run %>%
-  ggplot() +
-    facet_wrap(~field_z) +
-    geom_raster(
-      data = locate_test_res,
-      mapping = aes(x = field_x, y = field_y, fill = probability)
-    ) +
-    geom_point(
-      data = mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1),
-      mapping = aes(x = x, y = y),
-      colour = "red"
-    ) +
-    geom_point(
-      data = ovs_test,
-      mapping = aes(x = field_x, y = field_y),
-      colour = "orange"
-    ) +
-    coord_fixed()
+ggplot() +
+  facet_wrap(~field_z) +
+  geom_raster(
+    data = locate_test_res,
+    mapping = aes(x = field_x, y = field_y, fill = probability)
+  ) +
+  geom_point(
+    data = mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1),
+    mapping = aes(x = x, y = y),
+    colour = "red"
+  ) +
+  geom_point(
+    data = ovs_test,
+    mapping = aes(x = field_x, y = field_y),
+    colour = "orange"
+  ) +
+  coord_fixed()
 
 
 #### run origin search ####
@@ -332,9 +331,9 @@ locate_res <- purrr::pmap_dfr(
             .names = i
           ),
           search_dependent = mobest::create_obs_multi(
-            linear = mobest::create_obs(component = 0.25), 
             limited_slow = mobest::create_obs(component = 0.25),
-            limited_fast = mobest::create_obs(component = 0.25)
+            limited_fast = mobest::create_obs(component = 0.25),
+            intertwined = mobest::create_obs(component = 0.25)
           ),
           # spatial search grid: Where to search
           search_space_grid = expand.grid(
@@ -372,7 +371,7 @@ ovs %>%
     by = "kernel_setting_id"
   ) %>%
   dplyr::mutate(
-    dependent_setting_id = factor(dependent_setting_id, c("linear", "limited_slow", "limited_fast"))
+    dependent_setting_id = factor(dependent_setting_id, c("limited_slow", "limited_fast", "intertwined"))
   ) %>%
   ggplot() +
   ggh4x::facet_nested(kernel_length ~ pop_size + dependent_setting_id) +
@@ -380,10 +379,10 @@ ovs %>%
   geom_point(aes(x = field_z, y = n_top_left))+ 
   geom_hline(yintercept = nr_iterations/4) +
   scale_x_continuous(breaks = seq(0,1,0.2)) +
-  scale_y_continuous(breaks = seq(25, 100, 25)) +
+  #scale_y_continuous(breaks = seq(25, 100, 25)) +
   theme_bw() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1)
-  ) +
-  coord_cartesian(ylim = c(25,100))
+  )# +
+  #coord_cartesian(ylim = c(25,100))
 
