@@ -99,7 +99,7 @@ ggplot() +
 #### set parameters ####
 
 set.seed(100)
-nr_iterations <- 100
+nr_iterations <- 10
 its <- seq_len(nr_iterations)
 pop_sizes <- c(10, 25, 50)
 
@@ -129,12 +129,13 @@ independent_list_II <- purrr::map(
 )
 
 linear <- function(x) { x }
-limited_slow <- function(x) { 1-exp(-3*x) }
+limited_slow <- function(x) { 1-exp(-2*x) }
 limited_fast <- function(x) { 1-exp(-7*x) }
+intertwined <- function(x) { x + sin(5*pi * x) }
 sd_val <- 0.1
 
 huhu <- purrr::imap_dfr(
- c(linear = linear, limited_slow = limited_slow, limited_fast = limited_fast),
+ c(intertwined = intertwined, limited_slow = limited_slow, limited_fast = limited_fast),
  function(f, name) {
    dplyr::bind_rows(
     tibble::tibble(
