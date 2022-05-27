@@ -7,6 +7,7 @@ load("data/genotype_data/janno_final.RData")
 load("data/spatial/epsg3035.RData")
 load("data/spatial/area.RData")
 load("data/spatial/area.RData")
+load("data/spatial/extended_area.RData")
 load("data/origin_search/default_kernset_mds2.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 
@@ -50,8 +51,8 @@ p_map <- ggplot() +
   theme_bw() +
   coord_sf(
     expand = FALSE,
-    crs = epsg3035,
-    datum = epsg3035
+    crs = epsg3035
+    #, datum = epsg3035
   ) + 
   theme(
     axis.title = element_blank(),
@@ -73,16 +74,8 @@ inter <- sf::st_intersection(
   circles
 )
 
-# inter %>%
-#   ggplot() +
-#   geom_point(aes(x = Date_BC_AD_Median_Derived, y = C1_mds_u, color = location))
-
 #### prepare model grid ####
 times <- seq(-7500, 1500, 100)
-n_times <- length(times) 
-make_spatpos <- function(x) {
-  mobest::create_spatpos(1:n_times, rep(x[[1]], n_times), rep(x[[2]], n_times), times)
-}
 
 model_grid <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(
@@ -102,12 +95,11 @@ model_grid <- mobest::create_model_grid(
     default_kernel = default_kernset_mds2
   ),
   prediction_grid = mobest::create_spatpos_multi(
-    Iberia =      make_spatpos(circle_centers[1, c("x", "y")]),
-    Baltics =     make_spatpos(circle_centers[2, c("x", "y")]),
-    Britain =     make_spatpos(circle_centers[3, c("x", "y")]),
-    Balkans =     make_spatpos(circle_centers[4, c("x", "y")]),
-    Scandinavia = make_spatpos(circle_centers[5, c("x", "y")]),
-    Italy =       make_spatpos(circle_centers[6, c("x", "y")])
+    circles = mobest::create_geopos(
+      id = circle_centers$location,
+      x = circle_centers$x,
+      y = circle_centers$y
+    ) %>% mobest::geopos_to_spatpos(times)
   )
 )
 
@@ -115,11 +107,11 @@ interpol_grid_examples <- mobest::run_model_grid(model_grid)
 
 ie <- dplyr::left_join(
   interpol_grid_examples,
-  circle_centers %>% dplyr::select(-c("x", "y")),
-  by = c("pred_grid_id" = "location")
+  circle_centers,
+  by = c("geo_id" = "location", "x", "y")
 )
   
-ggplot() +
+p_funnel <- ggplot() +
   facet_wrap(~setup) +
   geom_point(
     data = inter,
@@ -127,14 +119,14 @@ ggplot() +
   ) +
   geom_ribbon(
     data = ie,
-    aes(x = z, ymin = mean - sd, ymax = mean + sd, fill = pred_grid_id),
+    aes(x = z, ymin = mean - sd, ymax = mean + sd, fill = geo_id),
     alpha = 0.2
   ) +
   geom_line(
     data = ie,
-    aes(x = z, y = mean, color = pred_grid_id)
-  )
-
+    aes(x = z, y = mean, color = geo_id)
+  ) +
+  theme_bw()
 
   
 #### set parameters ####
