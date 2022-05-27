@@ -9,10 +9,6 @@ load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 load("data/spatial/mobility_regions.RData")
 
-ex <- raster::extent(research_area)
-xlimit <- c(ex[1], ex[2])
-ylimit <- c(ex[3], ex[4])
-
 # map
 p_map <- ggplot() +
   geom_sf(
