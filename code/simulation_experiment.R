@@ -47,7 +47,8 @@ p_map <- ggplot() +
   age_colors_gradient +
   ggnewscale::new_scale_color() +
   geom_sf(data = circle_centers_sf, aes(color = group), size = 5) +
-  geom_sf(data = circles, aes(color = group), fill = NA, size = 2) +
+  geom_sf(data = circles, aes(color = group, fill = group), alpha = 0.3, size = 2) +
+  scale_colour_manual(values = c("A" = "#F8766D", "B" = "#00BFC4")) +
   theme_bw() +
   coord_sf(
     expand = FALSE,
@@ -57,16 +58,7 @@ p_map <- ggplot() +
   theme(
     axis.title = element_blank(),
     legend.position = "none",
-    legend.background = element_blank(),
-    legend.title = element_text(size = 13),
-    legend.spacing.y = unit(0.2, 'cm'),
-    legend.key.height = unit(0.4, 'cm'),
-    legend.text = element_text(size = 10),
-    panel.background = element_rect(fill = "#BFD5E3"),
-    plot.margin = unit(c(5.5, 1, 5.5, 5.5), "points")
-  ) +
-  guides(
-    color = guide_colorbar(title = "Time", barwidth = 20, barheight = 1.5)
+    panel.background = element_rect(fill = "#BFD5E3")
   )
 
 inter <- sf::st_intersection(
@@ -115,18 +107,30 @@ p_funnel <- ggplot() +
   facet_wrap(~setup) +
   geom_point(
     data = inter,
-    aes(x = Date_BC_AD_Median_Derived, y = C1_mds_u, color = location)
+    aes(x = Date_BC_AD_Median_Derived, y = C1_mds_u, color = group)
   ) +
   geom_ribbon(
     data = ie,
-    aes(x = z, ymin = mean - sd, ymax = mean + sd, fill = geo_id),
+    aes(x = z, ymin = mean - sd, ymax = mean + sd, fill = group),
     alpha = 0.2
   ) +
   geom_line(
     data = ie,
-    aes(x = z, y = mean, color = geo_id)
+    aes(x = z, y = mean, color = group)
   ) +
-  theme_bw()
+  scale_colour_manual(values =  c("A" = "#F8766D", "B" = "#00BFC4")) +
+  theme_bw() +
+  theme(
+    legend.position = "none"
+  ) +
+  xlab("time [years calBC/calAD]")
+
+cowplot::plot_grid(
+  p_map,
+  p_funnel,
+  nrow = 2,
+  align = "v"
+)
 
   
 #### set parameters ####
