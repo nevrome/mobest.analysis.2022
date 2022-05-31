@@ -1,3 +1,5 @@
+load("data/simulation/scenarios.RData")
+
 #### set parameters ####
 
 set.seed(100)
@@ -40,20 +42,20 @@ dependent_list_III <- purrr::map(
         dependent_list <- mobest::create_obs_multi(
           limited_slow = mobest::create_obs(
             component = c(
-              rnorm(nrow(igA), 0.25, 0.1) + 0.25 * limited_slow(igA$z),
-              rnorm(nrow(igB), 0.75, 0.1) - 0.25 * limited_slow(igA$z)
+              rnorm(nrow(igA), 0.25, scenario_sd) + 0.25 * limited_slow(igA$z),
+              rnorm(nrow(igB), 0.75, scenario_sd) - 0.25 * limited_slow(igA$z)
             )
           ),
           limited_fast = mobest::create_obs(
             component = c(
-              rnorm(nrow(igA), 0.25, 0.1) + 0.25 * limited_fast(igA$z),
-              rnorm(nrow(igB), 0.75, 0.1) - 0.25 * limited_fast(igA$z)
+              rnorm(nrow(igA), 0.25, scenario_sd) + 0.25 * limited_fast(igA$z),
+              rnorm(nrow(igB), 0.75, scenario_sd) - 0.25 * limited_fast(igA$z)
             )
           ),
           intertwined = mobest::create_obs(
             component = c(
-              rnorm(nrow(igA), 0.25, 0.1) + 0.25 * intertwined(igA$z),
-              rnorm(nrow(igB), 0.75, 0.1) - 0.25 * intertwined(igB$z)
+              rnorm(nrow(igA), 0.25, scenario_sd) + 0.25 * intertwined(igA$z),
+              rnorm(nrow(igB), 0.75, scenario_sd) - 0.25 * intertwined(igB$z)
             )
           )
         )
@@ -66,7 +68,7 @@ dependent_list_III <- purrr::map(
 
 kernel_table <- tidyr::crossing(
   kernel_length = seq(0.1, 0.5, 0.1),
-  nugget = 0.1,
+  nugget = scenario_sd,
 ) %>%
   dplyr::mutate(
     kernel_setting_id = paste("kernel", 1:nrow(.), sep = "_")
@@ -85,3 +87,30 @@ kernels_list <- purrr::pmap(
   }) %>%
   magrittr::set_names(kernel_table$kernel_setting_id) %>%
   do.call(mobest::create_kernset_multi, .)
+
+#### summarize data ####
+
+mock_data_overview <- purrr::map2_dfr(
+  independent_list_II, dependent_list_III, function(ind_I, dep_II) {
+    purrr::map2_dfr(
+      ind_I, dep_II, function(ind, dep_I) {
+        dep_I_merged <- purrr::imap_dfr(
+          dep_I, function(dep, n) {
+            dep %>% dplyr::mutate(
+              id = seq_len(dplyr::n()),
+              process = factor(n, levels = c("limited_slow", "limited_fast", "intertwined"))
+            )
+          }
+        )
+        dplyr::left_join(ind, dep_I_merged, by = "id")
+      }  
+    )
+  }
+)
+
+#### store results ####
+
+save(
+  independent_list_II, dependent_list_III, kernel_table, kernels_list, mock_data_overview,
+  file = "data/simulation/mock_data.RData"
+)
