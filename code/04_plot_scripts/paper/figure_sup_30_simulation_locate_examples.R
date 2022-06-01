@@ -1,3 +1,8 @@
+library(magrittr)
+library(ggplot2)
+
+load("data/simulation/example_run.RData")
+
 p_list <- purrr::map2(
   dplyr::group_split(locate_test_product, dependent_setting_id),
   dplyr::group_split(ovs, dependent_setting_id),
