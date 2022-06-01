@@ -81,7 +81,7 @@ kernels_list <- purrr::pmap(
       component = mobest::create_kernel(
         row$kernel_length, row$kernel_length, row$kernel_length,
         row$nugget,
-        on_residuals = T
+        on_residuals = F
       )
     )
   }) %>%

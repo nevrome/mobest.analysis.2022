@@ -7,11 +7,17 @@ load("data/simulation/mock_data.RData")
 interpol_test_res <- mobest::create_model_grid(
   independent = mobest::create_spatpos_multi(ind = independent_list_II[[2]][[6]]),
   dependent = dependent_list_III[[2]][[6]],
-  kernel = mobest::create_kernset_multi(kern = kernels_list$kernel_1),
+  kernel = kernels_list,
+    # mobest::create_kernset_multi(
+    #   #kern = kernels_list$kernel_1
+    #   limited_slow = mobest::create_kernset(
+    #     component = mobest::create_kernel(0.2, 0.2, 0.2, 0.1, on_residuals = T)
+    #   )
+    # ),
   prediction_grid = mobest::create_spatpos_multi(
-    A = mobest::create_geopos(id = 1, x = 0.125, y = 0.875) %>%
+    A = mobest::create_geopos(id = 1, x = 0.25, y = 0.75) %>%
         mobest::geopos_to_spatpos(z = seq(0,1,0.05)),
-    B = mobest::create_geopos(id = 2, x = 0.875, y = 0.125) %>%
+    B = mobest::create_geopos(id = 2, x = 0.75, y = 0.25) %>%
       mobest::geopos_to_spatpos(z = seq(0,1,0.05))
   )
 ) %>% mobest::run_model_grid()
