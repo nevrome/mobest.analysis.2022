@@ -1,12 +1,13 @@
 load("data/simulation/scenarios.RData")
 load("data/simulation/mock_data.RData")
+load("data/simulation/example_run.RData")
 
-ex <- mock_data_overview %>% 
+ex1 <- mock_data_overview %>% 
   dplyr::filter(pop_size == 25, iteration == 6, process == "intertwined")
 
 p_xy <- ggplot() +
   geom_point(
-    data = ex %>% dplyr::arrange(z),
+    data = ex1 %>% dplyr::arrange(z),
     mapping = aes(x, y, color = group)
   ) +
   coord_fixed() +
@@ -15,7 +16,7 @@ p_xy <- ggplot() +
 
 p_xz <- ggplot() +
   geom_point(
-    data = ex %>% dplyr::arrange(y),
+    data = ex1 %>% dplyr::arrange(y),
     mapping = aes(x, z, color = group)
   ) +
   coord_fixed() +
@@ -24,7 +25,7 @@ p_xz <- ggplot() +
 
 p_yz <- ggplot() +
   geom_point(
-    data = ex %>% dplyr::arrange(x),
+    data = ex1 %>% dplyr::arrange(x),
     mapping = aes(y, z, color = group)
   ) +
   coord_fixed() +
@@ -51,13 +52,18 @@ cowplot::plot_grid(
 
 ####
 
-
-
+ex2 <- mock_data_overview %>% 
+  dplyr::filter(pop_size == 25, iteration == 6)
 
 ggplot() +
+  facet_wrap(~process) +
   geom_point(
-    data = ex1,
+    data = ex2,
     mapping = aes(z, component, color = group)
+  ) +
+  geom_line(
+    data = interpol_test_res %>% dplyr::rename(process = dependent_setting_id),
+    aes(z, mean, color = pred_grid_id)
   )
 
 ex2 <- overview %>% dplyr::filter(iteration == 6)
@@ -71,3 +77,37 @@ ex2 %>%
   #   mapping = aes(z, component, color = group)
   # ) +
   facet_grid(rows = dplyr::vars(process), cols = dplyr::vars(pop_size))
+
+
+####
+
+
+p_list <- purrr::map2(
+  dplyr::group_split(locate_test_product, dependent_setting_id),
+  dplyr::group_split(ovs, dependent_setting_id),
+  function(locate_dep, ovs_dep) {
+    ggplot() +
+      facet_wrap(~field_z) +
+      geom_raster(
+        data = locate_dep,
+        mapping = aes(x = field_x, y = field_y, fill = probability)
+      ) +
+      geom_point(
+        data = mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1),
+        mapping = aes(x = x, y = y),
+        colour = "red"
+      ) +
+      geom_point(
+        data = ovs_dep,
+        mapping = aes(x = field_x, y = field_y),
+        colour = "orange"
+      ) +
+      coord_fixed() +
+      theme_bw() +
+      theme(legend.position = "none")
+  }
+)
+
+cowplot::plot_grid(
+  plotlist = p_list, nrow = 1
+)
