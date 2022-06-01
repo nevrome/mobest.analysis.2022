@@ -1,9 +1,10 @@
-load("data/simulation/scenarios.RData")
+library(magrittr)
+library(ggplot2)
+
 load("data/simulation/mock_data.RData")
-load("data/simulation/example_run.RData")
 
 ex1 <- mock_data_overview %>% 
-  dplyr::filter(pop_size == 25, iteration == 6, process == "intertwined")
+  dplyr::filter(pop_size == 25, iteration == 6, process == "limited_slow")
 
 p_xy <- ggplot() +
   geom_point(
@@ -32,6 +33,16 @@ p_yz <- ggplot() +
   theme_bw() +
   theme(legend.position = "none")
 
-p_top <- cowplot::plot_grid(
+p <- cowplot::plot_grid(
   p_xy, p_xz, p_yz, nrow = 1
+)
+
+ggsave(
+  paste0("plots/figure_sup_28_simulation_setup.pdf"),
+  plot = p,
+  device = "pdf",
+  scale = 0.7,
+  dpi = 300,
+  width = 300, height = 100, units = "mm",
+  limitsize = F
 )
