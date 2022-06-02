@@ -29,7 +29,10 @@ p_list <- purrr::map2(
   dplyr::group_split(ovs, dependent_setting_id),
   function(locate_dep, ovs_dep) {
     ggplot() +
-      facet_wrap(~field_z) +
+      facet_wrap(
+        ~field_z,
+        labeller = function(x) {label_both(x, sep = " = ")}
+      ) +
       geom_raster(
         data = locate_dep,
         mapping = aes(x = field_x, y = field_y, fill = probability)

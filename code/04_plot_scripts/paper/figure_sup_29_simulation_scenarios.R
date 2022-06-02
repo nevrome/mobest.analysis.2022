@@ -16,24 +16,41 @@ p_scenarios <- scenario_blueprint %>%
   ylab("component (\"ancestry\")")
 
 ex2 <- mock_data_overview %>%
-  dplyr::filter(pop_size == 25, iteration == 6)
+  dplyr::filter(pop_size == 50, iteration == 6)
+
+interpol <- interpol_test_res %>% dplyr::mutate(
+    scenario = dependent_setting_id
+  )
+
+kernel_labels <- c(
+  `kernel_1` = "kernel d = 0.1",
+  `kernel_2` = "kernel d = 0.2",
+  `kernel_3` = "kernel d = 0.3",
+  `kernel_4` = "kernel d = 0.4",
+  `kernel_5` = "kernel d = 0.5"
+)
 
 p_example_runs <- ggplot() +
   facet_grid(
-    rows = dplyr::vars(kernel_setting_id),
-    cols = dplyr::vars(scenario)) +
+    rows = dplyr::vars(kernel_human_readable),
+    cols = dplyr::vars(scenario),
+    labeller = labeller(
+      kernel_setting_id = as_labeller(kernel_labels)
+    )
+  ) +
   geom_ribbon(
-    data = interpol_test_res %>% dplyr::rename(scenario = dependent_setting_id),
+    data = interpol,
     aes(z, ymin = mean-sd, ymax = mean+sd, fill = pred_grid_id),
     alpha = 0.2
   ) +
   geom_line(
-    data = interpol_test_res %>% dplyr::rename(scenario = dependent_setting_id),
+    data = interpol,
     aes(z, mean, color = pred_grid_id)
   ) +
   geom_point(
     data = ex2,
-    mapping = aes(z, component, color = group)
+    mapping = aes(z, component, color = group),
+    size = 0.7,
   ) +
   coord_cartesian(ylim = c(0, 1)) +
   theme_bw() +
@@ -56,3 +73,4 @@ ggsave(
   width = 300, height = 400, units = "mm",
   limitsize = F
 )
+
