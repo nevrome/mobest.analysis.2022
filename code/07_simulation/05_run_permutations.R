@@ -6,7 +6,7 @@ load("data/simulation/mock_data.RData")
 
 #### set parameters ####
 
-spatial_search_grid <- seq(0, 1, 0.2)
+spatial_search_grid <- seq(0, 1, 0.05)
 search_times <- seq(0.1,0.9,0.1)
 
 #### run origin search ####

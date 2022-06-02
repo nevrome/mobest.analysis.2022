@@ -3,7 +3,7 @@ load("data/simulation/scenarios.RData")
 #### set parameters ####
 
 set.seed(100)
-nr_iterations <- 10
+nr_iterations <- 100
 its <- seq_len(nr_iterations)
 pop_sizes <- c(10, 50, 100)
 
