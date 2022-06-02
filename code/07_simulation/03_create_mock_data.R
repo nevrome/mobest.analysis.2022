@@ -5,7 +5,7 @@ load("data/simulation/scenarios.RData")
 set.seed(100)
 nr_iterations <- 10
 its <- seq_len(nr_iterations)
-pop_sizes <- c(10, 25, 50)
+pop_sizes <- c(10, 50, 100)
 
 #### prepare input data ####
 
@@ -114,3 +114,4 @@ save(
   independent_list_II, dependent_list_III, kernel_table, kernels_list, mock_data_overview,
   file = "data/simulation/mock_data.RData"
 )
+

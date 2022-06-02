@@ -4,7 +4,7 @@ load("data/simulation/mock_data.RData")
 
 #### set parameters ####
 
-ex_pop_size_id <- 3
+ex_pop_size_id <- 2
 ex_iteration <- 6
 
 #### interpolation test run ####
