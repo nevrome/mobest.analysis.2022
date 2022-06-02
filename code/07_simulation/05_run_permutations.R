@@ -1,9 +1,24 @@
+# qsub -b y -cwd -q archgen.q -pe smp 32 -l h_vmem=10G -now n -V -j y -o ~/log -N simulation singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/07_simulation/05_run_permutations.R
+
+library(magrittr)
+
+load("data/simulation/mock_data.RData")
+
+#### set parameters ####
+
+spatial_search_grid <- seq(0, 1, 0.2)
+search_times <- seq(0.1,0.9,0.1)
+
 #### run origin search ####
 
+nr_iterations <- length(independent_list_II[[1]])
+its <- seq_len(nr_iterations)
+
 locate_res <- purrr::pmap_dfr(
-  list(pop_sizes, independent_list_II, dependent_list_III),
-  function(pop_size, independent_list_I, dependent_list_II) {
-    message("Running: ", pop_size, " of ", paste(pop_sizes, collapse = ", "))
+  list(independent_list_II, dependent_list_III),
+  function(independent_list_I, dependent_list_II) {
+    pop_size <- unique(independent_list_I[[1]]$pop_size)
+    message("Running pop size: ", pop_size)
     purrr::pmap_dfr(
       list(its, independent_list_I, dependent_list_II), function(it_num, ind, dep) {
         i <- paste0("iteration_", it_num)
@@ -23,11 +38,11 @@ locate_res <- purrr::pmap_dfr(
           ),
           # spatial search grid: Where to search
           search_space_grid = expand.grid(
-            x = seq(0, 1, 0.1), 
-            y = seq(0, 1, 0.1)
+            x = spatial_search_grid, 
+            y = spatial_search_grid
           ) %>% { mobest::create_geopos(id = 1:nrow(.), x = .$x, y = .$y) },
           # search time: When to search
-          search_time = seq(0.1,0.9,0.1),
+          search_time = search_times,
           search_time_mode = "absolute",
           quiet = T
         )
@@ -43,7 +58,9 @@ ovs <- mobest::determine_origin_vectors(
   locate_product, pop_size, independent_table_id, dependent_setting_id, kernel_setting_id, field_z
 )
 
-ovs %>%
+#### summary results in terms of accuracy ####
+
+permutations_accuracy_summary <- ovs %>%
   dplyr::mutate(
     top_left = (field_x <= 0.5) & (field_y >= 0.5)
   ) %>%
@@ -60,3 +77,9 @@ ovs %>%
     dependent_setting_id = factor(dependent_setting_id, c("limited_slow", "limited_fast", "intertwined"))
   )
 
+#### store results ####
+
+save(
+  permutations_accuracy_summary,
+  file = "data/simulation/permutations_accuracy_summary.RData"
+)
