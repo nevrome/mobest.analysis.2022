@@ -1,4 +1,8 @@
-ggplot() +
+library(ggplot2)
+
+load("data/simulation/permutations_accuracy_summary.RData")
+
+ggplot(data = permutations_accuracy_summary) +
   ggh4x::facet_nested(kernel_length ~ pop_size + dependent_setting_id) +
   geom_line(aes(x = field_z, y = n_top_left)) +
   geom_point(aes(x = field_z, y = n_top_left))+ 
