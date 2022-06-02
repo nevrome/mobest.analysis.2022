@@ -6,7 +6,7 @@ scenario_sd <- 0.1
 
 scenario_blueprint <- purrr::imap_dfr(
  c(intertwined = intertwined, limited_slow = limited_slow, limited_fast = limited_fast),
- function(f, name) {
+ function(f, scenario_name) {
    dplyr::bind_rows(
     tibble::tibble(
       x      = seq(0,1,0.01),
@@ -22,7 +22,9 @@ scenario_blueprint <- purrr::imap_dfr(
       y_max  = 0.75 - 0.25 * f(x) + scenario_sd,
       group = "B"
     )
-  ) %>% dplyr::mutate(func = name)
+  ) %>% dplyr::mutate(
+    scenario = factor(scenario_name, levels = c("limited_slow", "limited_fast", "intertwined"))
+  )
 })
 
 #### store results ####

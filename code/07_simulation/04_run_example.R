@@ -20,7 +20,13 @@ interpol_test_res <- mobest::create_model_grid(
     B = mobest::create_geopos(id = 2, x = 0.75, y = 0.25) %>%
       mobest::geopos_to_spatpos(z = seq(0,1,0.05))
   )
-) %>% mobest::run_model_grid()
+) %>% mobest::run_model_grid() %>%
+  dplyr::mutate(
+    dependent_setting_id = factor(
+      dependent_setting_id,
+      levels = c("limited_slow", "limited_fast", "intertwined")
+    )
+  )
 
 #### search test run ####
 
@@ -45,7 +51,13 @@ locate_test_res <- mobest::locate_multi(
   search_time = seq(0.1,0.9,0.1),
   search_time_mode = "absolute",
   quiet = T
-)
+) %>%
+  dplyr::mutate(
+    dependent_setting_id = factor(
+      dependent_setting_id,
+      levels = c("limited_slow", "limited_fast", "intertwined")
+    )
+  )
 
 locate_test_product <- mobest::multiply_dependent_probabilities(locate_test_res)
 ovs <- mobest::determine_origin_vectors(locate_test_product, dependent_setting_id, field_z)

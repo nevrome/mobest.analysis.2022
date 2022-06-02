@@ -98,7 +98,7 @@ mock_data_overview <- purrr::map2_dfr(
           dep_I, function(dep, n) {
             dep %>% dplyr::mutate(
               id = seq_len(dplyr::n()),
-              process = factor(n, levels = c("limited_slow", "limited_fast", "intertwined"))
+              scenario = factor(n, levels = c("limited_slow", "limited_fast", "intertwined"))
             )
           }
         )
