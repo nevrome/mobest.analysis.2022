@@ -49,8 +49,8 @@ locate_test_res <- mobest::locate_multi(
   ),
   # spatial search grid: Where to search
   search_space_grid = expand.grid(
-    x = seq(0, 1, 0.1), 
-    y = seq(0, 1, 0.1)
+    x = seq(0, 1, 0.05), 
+    y = seq(0, 1, 0.05)
   ) %>% { mobest::create_geopos(id = 1:nrow(.), x = .$x, y = .$y) },
   # search time: When to search
   search_time = seq(0.1,0.9,0.1),
