@@ -7,7 +7,7 @@ load("data/simulation/example_run.RData")
 
 p_scenarios <- scenario_blueprint %>%
   ggplot() +
-  facet_wrap(~func) +
+  facet_wrap(~scenario) +
   geom_ribbon(aes(x, ymin = y_min, ymax = y_max, fill = group), alpha = 0.2) +
   geom_line(aes(x, y_mean, color = group)) +
   theme_bw() +
@@ -21,14 +21,14 @@ ex2 <- mock_data_overview %>%
 p_example_runs <- ggplot() +
   facet_grid(
     rows = dplyr::vars(kernel_setting_id),
-    cols = dplyr::vars(process)) +
+    cols = dplyr::vars(scenario)) +
   geom_ribbon(
-    data = interpol_test_res %>% dplyr::rename(process = dependent_setting_id),
+    data = interpol_test_res %>% dplyr::rename(scenario = dependent_setting_id),
     aes(z, ymin = mean-sd, ymax = mean+sd, fill = pred_grid_id),
     alpha = 0.2
   ) +
   geom_line(
-    data = interpol_test_res %>% dplyr::rename(process = dependent_setting_id),
+    data = interpol_test_res %>% dplyr::rename(scenario = dependent_setting_id),
     aes(z, mean, color = pred_grid_id)
   ) +
   geom_point(
@@ -43,6 +43,7 @@ p_example_runs <- ggplot() +
 
 p <- cowplot::plot_grid(
   p_scenarios, p_example_runs, nrow = 2, axis = "lr" , align = "v",
+  labels = c("A", "B"),
   rel_heights = c(1, 4)
 )
 

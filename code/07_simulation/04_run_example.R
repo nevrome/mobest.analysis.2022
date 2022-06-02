@@ -2,11 +2,16 @@ library(magrittr)
 
 load("data/simulation/mock_data.RData")
 
+#### set parameters ####
+
+ex_pop_size_id <- 3
+ex_iteration <- 6
+
 #### interpolation test run ####
 
 interpol_test_res <- mobest::create_model_grid(
-  independent = mobest::create_spatpos_multi(ind = independent_list_II[[2]][[6]]),
-  dependent = dependent_list_III[[2]][[6]],
+  independent = mobest::create_spatpos_multi(ind = independent_list_II[[ex_pop_size_id]][[ex_iteration]]),
+  dependent = dependent_list_III[[ex_pop_size_id]][[ex_iteration]],
   kernel = kernels_list,
     # mobest::create_kernset_multi(
     #   #kern = kernels_list$kernel_1
@@ -31,8 +36,8 @@ interpol_test_res <- mobest::create_model_grid(
 #### search test run ####
 
 locate_test_res <- mobest::locate_multi(
-  independent = mobest::create_spatpos_multi(A = independent_list_II[[2]][[6]]),
-  dependent = dependent_list_III[[2]][[6]],
+  independent = mobest::create_spatpos_multi(A = independent_list_II[[ex_pop_size_id]][[ex_iteration]]),
+  dependent = dependent_list_III[[ex_pop_size_id]][[ex_iteration]],
   kernel = mobest::create_kernset_multi(A = kernels_list$kernel_3),
   search_independent = mobest::create_spatpos_multi(
     A = mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1)
