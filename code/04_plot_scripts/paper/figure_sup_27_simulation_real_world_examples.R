@@ -40,7 +40,8 @@ p_funnel <- ggplot() +
   facet_wrap(~setup) +
   geom_point(
     data = janno_intersected,
-    aes(x = Date_BC_AD_Median_Derived, y = C1_mds_u, color = group)
+    aes(x = Date_BC_AD_Median_Derived, y = C1_mds_u, color = group),
+    size = 0.6
   ) +
   geom_ribbon(
     data = interpolation_circle_centers,
@@ -74,3 +75,4 @@ ggsave(
   width = 350, height = 200, units = "mm",
   limitsize = F
 )
+

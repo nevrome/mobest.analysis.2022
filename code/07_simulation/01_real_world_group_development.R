@@ -11,10 +11,10 @@ circle_centers <- tibble::tribble(
   ~setup, ~group, ~location, ~x, ~y,
   "I",   "A", "Iberia",      3100000, 2000000,
   "I",   "B", "Baltics",     5400000, 3900000,
-  "II",  "A", "Britain",     3400000, 3500000,
-  "II",  "B", "Balkans",     5300000, 2500000,
-  "III", "A", "Scandinavia", 4500000, 3800000,
-  "III", "B", "Italy",       4500000, 2000000
+  "II",  "A", "Italy",       4500000, 2000000,
+  "II",  "B", "Scandinavia", 4500000, 3800000,
+  "III", "A", "Balkans",     5300000, 2500000,
+  "III", "B", "Britain",     3400000, 3500000
 )
 circle_centers_sf <- circle_centers %>%
   sf::st_as_sf(coords = c("x", "y"), crs = epsg3035)
