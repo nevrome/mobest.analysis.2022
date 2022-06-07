@@ -26,7 +26,7 @@ p <- ggplot(data = permutations_accuracy_summary) +
   ) +
   geom_line(aes(x = field_z, y = n_top_left)) +
   geom_point(aes(x = field_z, y = n_top_left))+ 
-  geom_hline(yintercept = nr_iterations/4) +
+  geom_hline(yintercept = 25) +
   scale_x_continuous(breaks = seq(0,1,0.2)) +
   scale_y_continuous(breaks = seq(25, 100, 25)) +
   theme_bw() +

@@ -4,7 +4,7 @@ library(ggplot2)
 load("data/simulation/mock_data.RData")
 
 ex1 <- mock_data_overview %>% 
-  dplyr::filter(pop_size == 50, iteration == 6, scenario == "limited_slow")
+  dplyr::filter(pop_size == 50, iteration == 6, scenario == "linear")
 
 p_xy <- ggplot() +
   geom_point(

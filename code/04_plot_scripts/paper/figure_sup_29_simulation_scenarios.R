@@ -32,7 +32,7 @@ kernel_labels <- c(
 
 p_example_runs <- ggplot() +
   facet_grid(
-    rows = dplyr::vars(kernel_human_readable),
+    rows = dplyr::vars(kernel_setting_id),
     cols = dplyr::vars(scenario),
     labeller = labeller(
       kernel_setting_id = as_labeller(kernel_labels)
