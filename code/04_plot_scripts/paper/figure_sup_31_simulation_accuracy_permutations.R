@@ -27,11 +27,11 @@ p <- ggplot(data = permutations_accuracy_summary) +
   geom_line(aes(x = field_z, y = n_top_left)) +
   geom_point(aes(x = field_z, y = n_top_left))+ 
   geom_hline(yintercept = 25) +
-  scale_x_continuous(breaks = seq(0,1,0.2)) +
+  scale_x_continuous(breaks = seq(0.1,0.9,0.1)) +
   scale_y_continuous(breaks = seq(25, 100, 25)) +
   theme_bw() +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1)
+    axis.text.x = element_text(size = 7, angle = 90, hjust = 1, vjust = 0.5)
   ) +
   ylab("number \"correct\" origin attributions")
 

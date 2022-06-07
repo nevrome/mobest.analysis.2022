@@ -11,8 +11,12 @@ p_scenarios <- scenario_blueprint %>%
   geom_ribbon(aes(x, ymin = y_min, ymax = y_max, fill = group), alpha = 0.2) +
   geom_line(aes(x, y_mean, color = group)) +
   theme_bw() +
-  theme(legend.position = "none", axis.title = element_blank()) +
-  xlab("z (\"time\")") +
+  scale_x_continuous(breaks = seq(0.1, 0.9, 0.1)) +
+  theme(
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
+  ) +
   ylab("component (\"ancestry\")")
 
 ex2 <- mock_data_overview %>%
@@ -54,7 +58,11 @@ p_example_runs <- ggplot() +
   ) +
   coord_cartesian(ylim = c(0, 1)) +
   theme_bw() +
-  theme(legend.position = "none") +
+  scale_x_continuous(breaks = seq(0.1, 0.9, 0.1)) +
+  theme(
+    legend.position = "none",
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
+  ) +
   xlab("z (\"time\")") +
   ylab("component (\"ancestry\")")
 
