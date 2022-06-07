@@ -1,4 +1,4 @@
-# qsub -b y -cwd -q archgen.q -pe smp 32 -l h_vmem=10G -now n -V -j y -o ~/log -N simulation singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/07_simulation/05_run_permutations.R
+# qsub -b y -cwd -q archgen.q -pe smp 32 -l h_vmem=50G -now n -V -j y -o ~/log -N simulation singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/07_simulation/05_run_permutations.R
 
 library(magrittr)
 
@@ -38,8 +38,8 @@ locate_res <- purrr::pmap_dfr(
             .names = i
           ),
           search_dependent = mobest::create_obs_multi(
-            limited_slow = mobest::create_obs(component = limited_slow(search_times)),
-            limited_fast = mobest::create_obs(component = limited_fast(search_times)),
+            linear = mobest::create_obs(component = linear(search_times)),
+            limited = mobest::create_obs(component = limited(search_times)),
             intertwined  = mobest::create_obs(component = intertwined(search_times))
           ),
           # spatial search grid: Where to search
@@ -80,7 +80,7 @@ permutations_accuracy_summary <- ovs %>%
     by = "kernel_setting_id"
   ) %>%
   dplyr::mutate(
-    dependent_setting_id = factor(dependent_setting_id, c("limited_slow", "limited_fast", "intertwined"))
+    dependent_setting_id = factor(dependent_setting_id, c("linear", "limited", "intertwined"))
   )
 
 #### store results ####

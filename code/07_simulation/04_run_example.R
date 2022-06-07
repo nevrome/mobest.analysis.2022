@@ -16,7 +16,7 @@ interpol_test_res <- mobest::create_model_grid(
   kernel = kernels_list,
     # mobest::create_kernset_multi(
     #   #kern = kernels_list$kernel_1
-    #   limited_slow = mobest::create_kernset(
+    #   limited = mobest::create_kernset(
     #     component = mobest::create_kernel(0.2, 0.2, 0.2, 0.1, on_residuals = T)
     #   )
     # ),
@@ -30,7 +30,7 @@ interpol_test_res <- mobest::create_model_grid(
   dplyr::mutate(
     dependent_setting_id = factor(
       dependent_setting_id,
-      levels = c("limited_slow", "limited_fast", "intertwined")
+      levels = c("linear", "limited", "intertwined")
     )
   )
 
@@ -50,8 +50,8 @@ locate_test_res <- mobest::locate_multi(
     )
   ),
   search_dependent = mobest::create_obs_multi(
-    limited_slow = mobest::create_obs(component = limited_slow(search_times)),
-    limited_fast = mobest::create_obs(component = limited_fast(search_times)),
+    linear = mobest::create_obs(component = linear(search_times)),
+    limited = mobest::create_obs(component = limited(search_times)),
     intertwined  = mobest::create_obs(component = intertwined(search_times))
   ),
   # spatial search grid: Where to search
@@ -67,7 +67,7 @@ locate_test_res <- mobest::locate_multi(
   dplyr::mutate(
     dependent_setting_id = factor(
       dependent_setting_id,
-      levels = c("limited_slow", "limited_fast", "intertwined")
+      levels = c("linear", "limited", "intertwined")
     )
   )
 

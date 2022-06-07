@@ -40,22 +40,22 @@ dependent_list_III <- purrr::map(
         igA <- ig[[1]]
         igB <- ig[[2]]
         dependent_list <- mobest::create_obs_multi(
-          limited_slow = mobest::create_obs(
+          linear = mobest::create_obs(
             component = c(
-              rnorm(nrow(igA), 0.25, scenario_sd) + 0.25 * limited_slow(igA$z),
-              rnorm(nrow(igB), 0.75, scenario_sd) - 0.25 * limited_slow(igA$z)
+              rnorm(nrow(igA), 0.2, scenario_sd) + 0.3 * linear(igA$z),
+              rnorm(nrow(igB), 0.8, scenario_sd) - 0.3 * linear(igA$z)
             )
           ),
-          limited_fast = mobest::create_obs(
+          limited = mobest::create_obs(
             component = c(
-              rnorm(nrow(igA), 0.25, scenario_sd) + 0.25 * limited_fast(igA$z),
-              rnorm(nrow(igB), 0.75, scenario_sd) - 0.25 * limited_fast(igA$z)
+              rnorm(nrow(igA), 0.2, scenario_sd) + 0.3 * limited(igA$z),
+              rnorm(nrow(igB), 0.8, scenario_sd) - 0.3 * limited(igA$z)
             )
           ),
           intertwined = mobest::create_obs(
             component = c(
-              rnorm(nrow(igA), 0.25, scenario_sd) + 0.25 * intertwined(igA$z),
-              rnorm(nrow(igB), 0.75, scenario_sd) - 0.25 * intertwined(igB$z)
+              rnorm(nrow(igA), 0.2, scenario_sd) + 0.3 * intertwined(igA$z),
+              rnorm(nrow(igB), 0.8, scenario_sd) - 0.3 * intertwined(igB$z)
             )
           )
         )
@@ -98,7 +98,7 @@ mock_data_overview <- purrr::map2_dfr(
           dep_I, function(dep, n) {
             dep %>% dplyr::mutate(
               id = seq_len(dplyr::n()),
-              scenario = factor(n, levels = c("limited_slow", "limited_fast", "intertwined"))
+              scenario = factor(n, levels = c("linear", "limited", "intertwined"))
             )
           }
         )
