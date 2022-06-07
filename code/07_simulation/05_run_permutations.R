@@ -3,6 +3,7 @@
 library(magrittr)
 
 load("data/simulation/mock_data.RData")
+load("data/simulation/scenarios.RData")
 
 #### set parameters ####
 
