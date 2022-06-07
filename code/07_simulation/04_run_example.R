@@ -50,9 +50,9 @@ locate_test_res <- mobest::locate_multi(
     )
   ),
   search_dependent = mobest::create_obs_multi(
-    linear = mobest::create_obs(component = linear(search_times)),
-    limited = mobest::create_obs(component = limited(search_times)),
-    intertwined  = mobest::create_obs(component = intertwined(search_times))
+    linear =      mobest::create_obs(component = 0.2 + 0.3 * linear(search_times)),
+    limited =     mobest::create_obs(component = 0.2 + 0.3 * limited(search_times)),
+    intertwined = mobest::create_obs(component = 0.2 + 0.3 * intertwined(search_times))
   ),
   # spatial search grid: Where to search
   search_space_grid = expand.grid(
