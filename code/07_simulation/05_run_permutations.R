@@ -28,13 +28,18 @@ locate_res <- purrr::pmap_dfr(
           dependent = dep,
           kernel = kernels_list,
           search_independent = mobest::create_spatpos_multi(
-            mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1),
+            mobest::create_spatpos(
+              id = paste0("pioneer_", seq_along(search_times)),
+              x = rep(0.75, length(search_times)),
+              y = rep(0.25, length(search_times)),
+              z = search_times
+            ),
             .names = i
           ),
           search_dependent = mobest::create_obs_multi(
-            limited_slow = mobest::create_obs(component = 0.25),
-            limited_fast = mobest::create_obs(component = 0.25),
-            intertwined = mobest::create_obs(component = 0.25)
+            limited_slow = mobest::create_obs(component = limited_slow(search_times)),
+            limited_fast = mobest::create_obs(component = limited_fast(search_times)),
+            intertwined  = mobest::create_obs(component = intertwined(search_times))
           ),
           # spatial search grid: Where to search
           search_space_grid = expand.grid(
@@ -42,8 +47,8 @@ locate_res <- purrr::pmap_dfr(
             y = spatial_search_grid
           ) %>% { mobest::create_geopos(id = 1:nrow(.), x = .$x, y = .$y) },
           # search time: When to search
-          search_time = search_times,
-          search_time_mode = "absolute",
+          search_time = 0,
+          search_time_mode = "relative",
           quiet = T
         )
         locate_res_single$pop_size <- pop_size

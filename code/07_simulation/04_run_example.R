@@ -1,6 +1,7 @@
 library(magrittr)
 
 load("data/simulation/mock_data.RData")
+load("data/simulation/scenarios.RData")
 
 #### set parameters ####
 
@@ -34,18 +35,24 @@ interpol_test_res <- mobest::create_model_grid(
   )
 
 #### search test run ####
+search_times <- seq(0.1, 0.9, 0.1)
 
 locate_test_res <- mobest::locate_multi(
   independent = mobest::create_spatpos_multi(A = independent_list_II[[ex_pop_size_id]][[ex_iteration]]),
   dependent = dependent_list_III[[ex_pop_size_id]][[ex_iteration]],
   kernel = mobest::create_kernset_multi(A = kernels_list$kernel_3),
   search_independent = mobest::create_spatpos_multi(
-    A = mobest::create_spatpos(id = "pioneer", x = 0.75, y = 0.25, z = 1)
+    A = mobest::create_spatpos(
+      id = paste0("pioneer_", seq_along(search_times)),
+      x = rep(0.75, length(search_times)),
+      y = rep(0.25, length(search_times)),
+      z = search_times
+    )
   ),
   search_dependent = mobest::create_obs_multi(
-    limited_slow = mobest::create_obs(component = 0.25),
-    limited_fast = mobest::create_obs(component = 0.25),
-    intertwined  = mobest::create_obs(component = 0.25)
+    limited_slow = mobest::create_obs(component = limited_slow(search_times)),
+    limited_fast = mobest::create_obs(component = limited_fast(search_times)),
+    intertwined  = mobest::create_obs(component = intertwined(search_times))
   ),
   # spatial search grid: Where to search
   search_space_grid = expand.grid(
@@ -53,8 +60,8 @@ locate_test_res <- mobest::locate_multi(
     y = seq(0, 1, 0.05)
   ) %>% { mobest::create_geopos(id = 1:nrow(.), x = .$x, y = .$y) },
   # search time: When to search
-  search_time = seq(0.1,0.9,0.1),
-  search_time_mode = "absolute",
+  search_time = 0,
+  search_time_mode = "relative",
   quiet = T
 ) %>%
   dplyr::mutate(
