@@ -1,5 +1,7 @@
+library(magrittr)
+
 linear <- function(x) { x }
-limited <- function(x) { 1 - exp(-4*x) }
+limited <- function(x) { 1 - exp(-6*x) }
 intertwined <- function(x) { 1.5*x + 0.6 * cos(3*pi * (x - 0.6)) }
 scenario_sd <- 0.1
 
