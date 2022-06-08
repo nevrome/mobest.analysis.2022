@@ -1,4 +1,4 @@
-# qsub -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=50G -now n -V -j y -o ~/log -N simulation singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/07_simulation/05_run_permutations.R
+# qsub -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=50G -now n -V -j y -o ~/log/simulation.log -N simulation 'date; singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/07_simulation/05_run_permutations.R; date'
 
 library(magrittr)
 
