@@ -67,7 +67,7 @@ dependent_list_III <- purrr::map(
 )
 
 kernel_table <- tidyr::crossing(
-  kernel_length = seq(0.1, 0.5, 0.1),
+  kernel_length = seq(0.1, 0.5, 0.2),
   nugget = scenario_sd,
 ) %>%
   dplyr::mutate(

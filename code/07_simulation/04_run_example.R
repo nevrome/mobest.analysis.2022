@@ -40,7 +40,7 @@ search_times <- seq(0.1, 0.9, 0.1)
 locate_test_res <- mobest::locate_multi(
   independent = mobest::create_spatpos_multi(A = independent_list_II[[ex_pop_size_id]][[ex_iteration]]),
   dependent = dependent_list_III[[ex_pop_size_id]][[ex_iteration]],
-  kernel = mobest::create_kernset_multi(A = kernels_list$kernel_3),
+  kernel = mobest::create_kernset_multi(A = kernels_list$kernel_2),
   search_independent = mobest::create_spatpos_multi(
     A = mobest::create_spatpos(
       id = paste0("pioneer_", seq_along(search_times)),

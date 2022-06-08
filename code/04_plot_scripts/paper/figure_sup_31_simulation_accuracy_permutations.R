@@ -4,10 +4,8 @@ load("data/simulation/permutations_accuracy_summary.RData")
 
 kernel_labels <- c(
   `kernel_1` = "kernel d = 0.1",
-  `kernel_2` = "kernel d = 0.2",
-  `kernel_3` = "kernel d = 0.3",
-  `kernel_4` = "kernel d = 0.4",
-  `kernel_5` = "kernel d = 0.5"
+  `kernel_2` = "kernel d = 0.3",
+  `kernel_3` = "kernel d = 0.5"
 )
 
 pop_size_labels <- c(

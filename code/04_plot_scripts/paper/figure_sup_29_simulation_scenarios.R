@@ -28,10 +28,8 @@ interpol <- interpol_test_res %>% dplyr::mutate(
 
 kernel_labels <- c(
   `kernel_1` = "kernel d = 0.1",
-  `kernel_2` = "kernel d = 0.2",
-  `kernel_3` = "kernel d = 0.3",
-  `kernel_4` = "kernel d = 0.4",
-  `kernel_5` = "kernel d = 0.5"
+  `kernel_2` = "kernel d = 0.3",
+  `kernel_3` = "kernel d = 0.5"
 )
 
 p_example_runs <- ggplot() +
@@ -69,7 +67,7 @@ p_example_runs <- ggplot() +
 p <- cowplot::plot_grid(
   p_scenarios, p_example_runs, nrow = 2, axis = "lr" , align = "v",
   labels = c("A", "B"),
-  rel_heights = c(1, 4)
+  rel_heights = c(1.2, 3)
 )
 
 ggsave(
@@ -78,7 +76,7 @@ ggsave(
   device = "pdf",
   scale = 0.7,
   dpi = 300,
-  width = 300, height = 400, units = "mm",
+  width = 300, height = 300, units = "mm",
   limitsize = F
 )
 
