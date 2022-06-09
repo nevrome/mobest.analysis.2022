@@ -9,14 +9,14 @@ kernel_labels <- c(
 )
 
 pop_size_labels <- c(
-  `10` = "pop size = 10*4",
-  `50` = "pop size = 50*4",
-  `100` = "pop size = 100*4"
+  `10` = "n = 10*4",
+  `50` = "n = 50*4",
+  `100` = "n = 100*4"
 )
 
 p <- ggplot(data = permutations_accuracy_summary) +
   ggh4x::facet_nested(
-    kernel_setting_id ~ pop_size + dependent_setting_id,
+    kernel_setting_id ~ dependent_setting_id + pop_size,
     labeller = labeller(
       kernel_setting_id = as_labeller(kernel_labels),
       pop_size = as_labeller(pop_size_labels)
