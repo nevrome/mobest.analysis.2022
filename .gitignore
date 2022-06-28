@@ -43,6 +43,7 @@ data/
 
 # plots
 plots/
+figures/
 
 # tables
 tables/
