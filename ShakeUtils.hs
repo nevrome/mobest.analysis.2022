@@ -32,6 +32,8 @@ data Settings = Settings {
   , qsubSmallCommand :: String
   , qsubLargeMemoryCommand :: String
   , qsubMediumCommand :: String
+  , qsubSmartSNP :: String
+  , qsubEMU :: String
   -- How to run SGE scripts
   , qsubScript :: String
 }
@@ -42,18 +44,22 @@ mpiEVAClusterSettings = Settings {
   , qsubSmallCommand       = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=20G -now n -V -j y -o ~/log -N small"
   , qsubLargeMemoryCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=40G -now n -V -j y -o ~/log -N lmemory"
   , qsubMediumCommand      = "qsub -sync y -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=32G -now n -V -j y -o ~/log -N medium"
+  , qsubSmartSNP           = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=200G -now n -V -j y -o ~/log -N smartsnp"
+  , qsubEMU                = "qsub -sync y -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=100G -now n -V -j y -o ~/log -N smartsnp"
   , qsubScript             = "qsub -sync y -N large " -- trailing space is meaningful!
 }
 
 -- #### helper functions #### --
 
 relevantRunCommand :: Settings -> FilePath -> Action ()
-relevantRunCommand (Settings singularityContainer bindPath qsubSCommand qsubLMCommand qsubMCommand qsubScript) x
-  | takeExtension x == ".R"    = cmd_ qsubSCommand "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".Rq"   = cmd_ qsubMCommand "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".shlm" = cmd_ qsubLMCommand "singularity" "exec" bindPath singularityContainer x
-  | takeExtension x == ".sh"   = cmd_ qsubSCommand "singularity" "exec" bindPath singularityContainer x
-  | takeExtension x == ".shq"  = cmd_ $ qsubScript ++ x
+relevantRunCommand (Settings singularityContainer bindPath S LM M SmartSNP EMU qsubScript) x
+  | takeExtension x == ".R"         = cmd_ S "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".Rq"        = cmd_ M "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".shlm"      = cmd_ LM "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".sh"        = cmd_ S "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".Rsmartsnp" = cmd_ SmartSNP "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".shemu"     = cmd_ EMU "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".shq"       = cmd_ $ qsubScript ++ x
 
 infixl 3 %$
 (%$) :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
