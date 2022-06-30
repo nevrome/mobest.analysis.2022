@@ -78,7 +78,7 @@ main = shakeArgs myShakeOpts $ do
 
   -- 03
 
-  code0103 "01_distance_plink.sh" %$
+  code0103 "01_distance_plink.shlm" %$
     [ code01 "myrange.txt"
     , dataGenoInitialSelection "initial_selection.bed"
     ] -->

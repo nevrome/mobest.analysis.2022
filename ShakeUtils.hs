@@ -52,13 +52,13 @@ mpiEVAClusterSettings = Settings {
 -- #### helper functions #### --
 
 relevantRunCommand :: Settings -> FilePath -> Action ()
-relevantRunCommand (Settings singularityContainer bindPath S LM M SmartSNP EMU qsubScript) x
-  | takeExtension x == ".R"         = cmd_ S "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".Rq"        = cmd_ M "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".shlm"      = cmd_ LM "singularity" "exec" bindPath singularityContainer x
-  | takeExtension x == ".sh"        = cmd_ S "singularity" "exec" bindPath singularityContainer x
-  | takeExtension x == ".Rsmartsnp" = cmd_ SmartSNP "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".shemu"     = cmd_ EMU "singularity" "exec" bindPath singularityContainer x
+relevantRunCommand (Settings singularityContainer bindPath s lm m smartSNP emu qsubScript) x
+  | takeExtension x == ".R"         = cmd_ s "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".Rq"        = cmd_ m "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".shlm"      = cmd_ lm "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".sh"        = cmd_ s "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".Rsmartsnp" = cmd_ smartSNP "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".shemu"     = cmd_ emu "singularity" "exec" bindPath singularityContainer x
   | takeExtension x == ".shq"       = cmd_ $ qsubScript ++ x
 
 infixl 3 %$
