@@ -27,7 +27,7 @@ aadr_minimal_janno <- aadr_raw %>%
   poseidonR::as.janno()
 
 # add a minimal .janno file to the aadr poseidon package (for later extraction)
-poseidonR::write_janno(aadr_minimal_janno, "data/genotype_data/aadrv50_1240K/aadr_poseidon.janno")
+# poseidonR::write_janno(aadr_minimal_janno, "data/genotype_data/aadrv50_1240K/aadr_poseidon.janno")
 
 # lacking spatial info filter
 janno_raw_spatial_positions <- aadr_minimal_janno %>%

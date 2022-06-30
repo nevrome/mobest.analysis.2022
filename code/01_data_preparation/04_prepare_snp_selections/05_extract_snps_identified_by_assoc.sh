@@ -4,11 +4,8 @@ cd data/genotype_data/snp_subsets
 
 trident init \
   --inFormat PLINK \
-  --snpSet Other \
-  --genoFile purified.bed \
-  --snpFile purified.bim \
-  --indFile purified.fam \
-  --minimal \
+  -p purified.bed \
+  --onlyGeno \
   -o unfiltered_snp_selection_pre_ind_correction
 
 trident forge \
@@ -16,4 +13,4 @@ trident forge \
   -d unfiltered_snp_selection_pre_ind_correction \
   -o filtered_snp_selection_pre_ind_correction \
   --selectSnps capture_shotgun_filter.bim \
-  --minimal
+  --onlyGeno

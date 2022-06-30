@@ -14,19 +14,3 @@ indivoutname: data/genotype_data/aadrv50_1240K/aadr_1240K.ind
 EOF
 
 convertf -p data/genotype_data/aadrv50_1240K/convertf_parfile
-
-cat > data/genotype_data/aadrv50_1240K/POSEIDON.yml <<EOF
-poseidonVersion: 2.5.0
-title: aadrv50_1240K
-contributor:
-  - name: John Doe
-    email: john@doe.net
-packageVersion: 0.1.0
-genotypeData:
-  format: EIGENSTRAT
-  genoFile: aadr_1240K_HO.geno
-  snpFile: aadr_1240K_HO.snp
-  indFile: aadr_1240K_HO.ind
-  snpSet: 1240K
-jannoFile: aadr_poseidon.janno
-EOF
