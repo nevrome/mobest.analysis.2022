@@ -86,18 +86,26 @@ code05 x = code "05_table_scripts" </> x
 code06MDS3 x = code "06_alternative_parameter_exploration" </> "MDS_3_dimensions" </> x
 code06Rearview x = code "06_alternative_parameter_exploration" </> "different_rearview_distances" </> x
 
-data_tracked x = "data_tracked" </> x
+dataTracked x = "data_tracked" </> x
 
 _data x = "data" </> x
 dataSpatial x = _data "spatial" </> x
 dataPlotReferenceData x = _data "plot_reference_data" </> x
-dataGenotypeData x = _data "genotype_data" </> x
-dataGenotypeDataAADRv501240K x = dataGenotypeData "aadrv50_1240K" </> x
-dataGenotypeDataAADRv501240KHO x = dataGenotypeData "aadrv50_1240K_HO" </> x
-dataGenotypeDataInitialSelection x = dataGenotypeData "initial_selection" </> x
-dataGenotypeDataRemoveRelatedIndividuals x = dataGenotypeData "remove_related_individuals" </> x
-dataGenotypeDataRemoveRelatedIndividualsSelection x = dataGenotypeDataRemoveRelatedIndividuals "remove_related_selection" </> x
-dataGenotypeDataSnpSubsets x = dataGenotypeData "snp_subsets" </> x 
+dataGeno x = _data "genotype_data" </> x
+dataGenoAADRv501240K x = dataGeno "aadrv50_1240K" </> x
+dataGenoAADRv501240KHO x = dataGeno "aadrv50_1240K_HO" </> x
+dataGenoInitialSelection x = dataGeno "initial_selection" </> x
+dataGenoRemoveRelatedIndividuals x = dataGeno "remove_related_individuals" </> x
+dataGenoRemoveRelatedIndividualsSelection x = dataGenoRemoveRelatedIndividuals "remove_related_selection" </> x
+dataGenoSnpSub x = dataGeno "snp_subsets" </> x 
+dataGenoSnpSubUnfilteredPre x = dataGenoSnpSub "unfiltered_snp_selection_pre_ind_correction" </> x
+dataGenoSnpSubFilteredPre x = dataGenoSnpSub "filtered_snp_selection_pre_ind_correction" </> x
+dataGenoSnpSubUnfiltered x = dataGenoSnpSub "unfiltered_snp_selection" </> x
+dataGenoSnpSubFiltered x = dataGenoSnpSub "filtered_snp_selection" </> x
+dataGenoAADRModern x = dataGeno "aadrv50_1240K_HO_Western_Eurasia_modern" </> x
+dataGenoSnpSubUnfilteredModern x = dataGenoSnpSub "unfiltered_snp_selection_with_modern_reference_pops" </> x
+dataGenoSnpSubFilteredModern x = dataGenoSnpSub "filtered_snp_selection_with_modern_reference_pops" </> x
+
 
 -- dataPoseidonDataPoseidonExtractedPreIdenticalsFilter x = dataPoseidonData "poseidon_extracted_pre_identicals_filter" </> x
 -- dataPoseidonDataIdenticalFilter x = dataPoseidonData "identical_filter" </> x
