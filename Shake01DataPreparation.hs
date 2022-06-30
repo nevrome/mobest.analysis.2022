@@ -97,8 +97,8 @@ main = shakeArgs myShakeOpts $ do
     , code01 "ind_list_remove_related_selection.txt"
     ]
 
-  code01 "05_poseidon_extract.sh" %$
-    [ code01 "ind_list.txt"
+  code0103 "03_poseidon_extract.sh" %$
+    [ code01 "ind_list_remove_related_selection.txt"
     , dataGenoAADRv501240K "aadr_1240K.geno"
     ] -->
     [ dataGenoRemoveRelatedIndividualsSelection "remove_related_selection.bed" ]
@@ -109,9 +109,9 @@ main = shakeArgs myShakeOpts $ do
     [ code01 "myrange.txt"
     , dataGenoRemoveRelatedIndividualsSelection "remove_related_selection.bed"
     ] -->
-    [ dataGenoSnpSub "purified.bed" ]
+    map dataGenoSnpSub [ "purified.bed", "purified.bim" ]
 
-  code0104 "02_edit_fam_for_assoc" %$
+  code0104 "02_edit_fam_for_assoc.R" %$
     [ dataGenoSnpSub "purified.fam" ] -->
     [ dataGenoSnpSub "purified.fam" ]
 
@@ -119,7 +119,7 @@ main = shakeArgs myShakeOpts $ do
     [ dataGenoSnpSub "purified.bed" ] -->
     [ dataGenoSnpSub "plink.assoc" ]
 
-  code0104 "04_explorse_assoc" %$
+  code0104 "04_explore_assoc.R" %$
     map dataGenoSnpSub [
       "plink.assoc"
     , "purified.bim"
@@ -142,7 +142,7 @@ main = shakeArgs myShakeOpts $ do
     , code01 "ind_list_post_snp_selection.txt"
     ]
 
-  code0104 "07_extract_inviduals_with_enough_snps.sh" %$
+  code0104 "07_extract_individuals_with_enough_snps.sh" %$
     [ dataGenoSnpSubUnfilteredPre "purified.bed"
     , dataGenoSnpSubFilteredPre "filtered_snp_selection_pre_ind_correction.bed"
     ] -->
