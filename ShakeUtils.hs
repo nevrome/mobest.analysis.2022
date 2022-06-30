@@ -91,12 +91,14 @@ dataTracked x = "data_tracked" </> x
 _data x = "data" </> x
 dataSpatial x = _data "spatial" </> x
 dataPlotReferenceData x = _data "plot_reference_data" </> x
+
 dataGeno x = _data "genotype_data" </> x
 dataGenoAADRv501240K x = dataGeno "aadrv50_1240K" </> x
 dataGenoAADRv501240KHO x = dataGeno "aadrv50_1240K_HO" </> x
 dataGenoInitialSelection x = dataGeno "initial_selection" </> x
 dataGenoRemoveRelatedIndividuals x = dataGeno "remove_related_individuals" </> x
 dataGenoRemoveRelatedIndividualsSelection x = dataGenoRemoveRelatedIndividuals "remove_related_selection" </> x
+
 dataGenoSnpSub x = dataGeno "snp_subsets" </> x 
 dataGenoSnpSubUnfilteredPre x = dataGenoSnpSub "unfiltered_snp_selection_pre_ind_correction" </> x
 dataGenoSnpSubFilteredPre x = dataGenoSnpSub "filtered_snp_selection_pre_ind_correction" </> x
@@ -106,6 +108,15 @@ dataGenoAADRModern x = dataGeno "aadrv50_1240K_HO_Western_Eurasia_modern" </> x
 dataGenoSnpSubUnfilteredModern x = dataGenoSnpSub "unfiltered_snp_selection_with_modern_reference_pops" </> x
 dataGenoSnpSubFilteredModern x = dataGenoSnpSub "filtered_snp_selection_with_modern_reference_pops" </> x
 
+dataGenoMultivar x = dataGeno "multivariate_analysis" </> x
+dataGenoMultivarMDSUnfiltered x = dataGenoMultivar "MDS_unfiltered_snp_selection" </> x
+dataGenoMultivarMDSFiltered x = dataGenoMultivar "MDS_filtered_snp_selection" </> x
+dataGenoMultivarPCAUnfiltered x = dataGenoMultivar "PCA_unfiltered_snp_selection" </> x
+dataGenoMultivarPCAFiltered x = dataGenoMultivar "PCA_filtered_snp_selection" </> x
+dataGenoMultivarEMUUnfiltered x = dataGenoMultivar "EMU_unfiltered_snp_selection" </> x
+dataGenoMultivarEMUFiltered x = dataGenoMultivar "EMU_filtered_snp_selection" </> x
+dataGenoMultivarPCAProjUnfiltered x = dataGenoMultivar "PCA_projected_unfiltered_snp_selection" </> x
+dataGenoMultivarPCAProjFiltered x = dataGenoMultivar "PCA_projected_filtered_snp_selection" </> x
 
 -- dataPoseidonDataPoseidonExtractedPreIdenticalsFilter x = dataPoseidonData "poseidon_extracted_pre_identicals_filter" </> x
 -- dataPoseidonDataIdenticalFilter x = dataPoseidonData "identical_filter" </> x

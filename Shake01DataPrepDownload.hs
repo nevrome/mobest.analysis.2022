@@ -159,39 +159,3 @@ main = shakeArgs myShakeOpts $ do
     , dataGenoSnpSubUnfilteredModern "unfiltered_snp_selection_with_modern_reference_pops.bed"
     , dataGenoSnpSubFilteredModern "filtered_snp_selection_with_modern_reference_pops.bed"
     ]
-
-  --05
-
-
-
-
-
-
-
-  -- code01 "06_mds_plink.shlm" %$
-  --   code01 "myrange.txt" : map dataPoseidonDataPoseidonExtracted [
-  --     "poseidon_extracted.bed"
-  --   , "poseidon_extracted.bim"
-  --   , "poseidon_extracted.fam"
-  --   ] -->
-  --   [ dataPoseidonDataMDS "mds.mds" ]
-
-  -- code01 "07_prepare_final_dataset.R" %$
-  --   [ dataSpatial "epsg3035.RData"
-  --   , dataSpatial "mobility_regions.RData"
-  --   , dataPoseidonDataPoseidonExtracted "poseidon_extracted.janno"
-  --   , dataPoseidonDataMDS "mds.mds"
-  --   ] -->
-  --   [ dataPoseidonData "janno_final.RData" ]
-
-  -- -- plots
-  -- code04Paper "figure_1_temporal_and_spatial_distribution_of_input_data.R" %$
-  --   [ dataPoseidonData "janno_final.RData"
-  --   , dataSpatial "research_area.RData"
-  --   , dataSpatial "extended_area.RData"
-  --   , dataSpatial "epsg3035.RData"
-  --   , dataSpatial "mobility_regions.RData"
-  --   , dataPlotReferenceData "region_id_shapes.RData"
-  --   , dataPlotReferenceData "age_colors_gradient.RData"
-  --   ] -->
-  --   [ plots "figure_1_temporal_and_spatial_distribution_of_input_data.pdf" ]
