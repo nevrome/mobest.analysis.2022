@@ -64,13 +64,6 @@ extended_research_area <- bb %>% sf::st_as_sfc()
 extended_area <- sf::st_intersection(sf::st_buffer(land_outline_small, 0), extended_research_area)
 save(extended_area, file = "data/spatial/extended_area.RData")
 
-#### search area ####
-research_area_search <- sf::st_read(
-  "data_tracked/research_area/research_area_search.gpkg", quiet = TRUE
-)
-search_area <- sf::st_intersection(sf::st_buffer(land_outline_small, 0), research_area_search)
-save(search_area, file = "data/spatial/search_area.RData")
-
 #### mobility regions ####
 
 # load manually crafted mobility regions shape file, transform it to
