@@ -10,12 +10,7 @@ import Development.Shake
 main :: IO ()
 main = shakeArgs myShakeOpts $ do
 
-  -- want $ map figures [ 
-  --     -- "research_area.RData"
-  --     "figure_1_temporal_and_spatial_distribution_of_input_data.pdf"
-  --   ]
-
-  want $ [dataGenoSnpSubUnfilteredModern "unfiltered_snp_selection_with_modern_reference_pops.bed"]
+  want $ [dataGenoSnpSubUnfilteredModern "unfiltered_snp_selection_with_modern_reference_pops.geno"]
 
   -- 01
 
@@ -105,18 +100,18 @@ main = shakeArgs myShakeOpts $ do
 
   -- 04
 
-  code0104 "01_purify_genotype_data.sh" %$
+  code0104 "01_purify_genotype_data.shlm" %$
     [ code01 "myrange.txt"
     , dataGenoRemoveRelatedIndividualsSelection "remove_related_selection.bed"
     ] -->
     map dataGenoSnpSub [ "purified.bed", "purified.bim" ]
 
   code0104 "02_edit_fam_for_assoc.R" %$
-    [ dataGenoSnpSub "purified.fam" ] -->
+    [ dataGenoSnpSub "purified.bed" ] --> -- a hacky solution to force shake to evaluate in order
     [ dataGenoSnpSub "purified.fam" ]
 
   code0104 "03_run_assoc.sh" %$
-    [ dataGenoSnpSub "purified.bed" ] -->
+    [ dataGenoSnpSub "purified.fam" ] -->
     [ dataGenoSnpSub "plink.assoc" ]
 
   code0104 "04_explore_assoc.R" %$
@@ -155,7 +150,7 @@ main = shakeArgs myShakeOpts $ do
     , dataGenoSnpSubUnfiltered "unfiltered_snp_selection.bed"
     , dataGenoSnpSubFiltered "filtered_snp_selection.bed"
     ] -->
-    [ dataGenoAADRModern "aadrv50_1240K_HO_Western_Eurasia_modern"
-    , dataGenoSnpSubUnfilteredModern "unfiltered_snp_selection_with_modern_reference_pops.bed"
-    , dataGenoSnpSubFilteredModern "filtered_snp_selection_with_modern_reference_pops.bed"
+    [ dataGenoAADRModern "aadrv50_1240K_HO_Western_Eurasia_modern.bed"
+    , dataGenoSnpSubUnfilteredModern "unfiltered_snp_selection_with_modern_reference_pops.geno"
+    , dataGenoSnpSubFilteredModern "filtered_snp_selection_with_modern_reference_pops.geno"
     ]
