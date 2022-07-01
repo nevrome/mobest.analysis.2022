@@ -18,6 +18,7 @@ myShakeOpts = shakeOptions {
     , shakeReport    = ["ShakeReport.html"]
     , shakeVerbosity = Verbose
     , shakeTimings   = True
+    , shakeStaunch   = True --  Operate in staunch mode, where building continues even after errors, similar to make --keep-going.
     }
 
 data Settings = Settings {
@@ -34,6 +35,7 @@ data Settings = Settings {
   , qsubMediumCommand :: String
   , qsubSmartSNP :: String
   , qsubEMU :: String
+  , qsubPLINK :: String
   -- How to run SGE scripts
   , qsubScript :: String
 }
@@ -45,20 +47,22 @@ mpiEVAClusterSettings = Settings {
   , qsubLargeMemoryCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=40G -now n -V -j y -o ~/log -N lmemory"
   , qsubMediumCommand      = "qsub -sync y -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=32G -now n -V -j y -o ~/log -N medium"
   , qsubSmartSNP           = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=200G -now n -V -j y -o ~/log -N smartsnp"
-  , qsubEMU                = "qsub -sync y -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=100G -now n -V -j y -o ~/log -N smartsnp"
+  , qsubEMU                = "qsub -sync y -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=100G -now n -V -j y -o ~/log -N emu"
+  , qsubPLINK              = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=100G -now n -V -j y -o ~/log -N plink"
   , qsubScript             = "qsub -sync y -N large " -- trailing space is meaningful!
 }
 
 -- #### helper functions #### --
 
 relevantRunCommand :: Settings -> FilePath -> Action ()
-relevantRunCommand (Settings singularityContainer bindPath s lm m smartSNP emu qsubScript) x
+relevantRunCommand (Settings singularityContainer bindPath s lm m smartSNP emu plink qsubScript) x
   | takeExtension x == ".R"         = cmd_ s "singularity" "exec" bindPath singularityContainer "Rscript" x
   | takeExtension x == ".Rq"        = cmd_ m "singularity" "exec" bindPath singularityContainer "Rscript" x
   | takeExtension x == ".shlm"      = cmd_ lm "singularity" "exec" bindPath singularityContainer x
   | takeExtension x == ".sh"        = cmd_ s "singularity" "exec" bindPath singularityContainer x
   | takeExtension x == ".Rsmartsnp" = cmd_ smartSNP "singularity" "exec" bindPath singularityContainer "Rscript" x
   | takeExtension x == ".shemu"     = cmd_ emu "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".shplink"   = cmd_ plink "singularity" "exec" bindPath singularityContainer x
   | takeExtension x == ".shq"       = cmd_ $ qsubScript ++ x
 
 infixl 3 %$
@@ -81,6 +85,7 @@ code0101 x = code01 "01_acquire_input_data" </> x
 code0102 x = code01 "02_initial_sample_selection" </> x
 code0103 x = code01 "03_remove_related_individuals" </> x
 code0104 x = code01 "04_prepare_snp_selections" </> x
+code0105 x = code01 "05_run_multivariate_analysis" </> x
 
 code02 x = code "02_parameter_estimation" </> x
 code02Variogram x = code02 "01_variogram_experiments" </> x

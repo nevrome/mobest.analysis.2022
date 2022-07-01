@@ -14,11 +14,11 @@ main = shakeArgs myShakeOpts $ do
 
   -- 05
 
-  code0105 "01_mds_plink_unfiltered.sh" %$
+  code0105 "01_mds_plink_unfiltered.shplink" %$
     [ dataGenoSnpSubUnfiltered "unfiltered_snp_selection.bed" ] -->
     [ dataGenoMultivarMDSUnfiltered "mds.mds" ]
 
-  code0105 "02_mds_plink_filtered.sh" %$
+  code0105 "02_mds_plink_filtered.shplink" %$
     [ dataGenoSnpSubFiltered "filtered_snp_selection.bed" ] -->
     [ dataGenoMultivarMDSFiltered "mds.mds" ]
 
