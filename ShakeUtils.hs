@@ -12,7 +12,7 @@ myShakeOpts = shakeOptions {
     --https://hackage.haskell.org/package/shake-0.19.6/docs/Development-Shake.html#g:5
       shakeFiles     = "_build"
     , shakeThreads   = 10
-    , shakeChange    = ChangeDigest
+    , shakeChange    = ChangeModtimeAndDigest --ChangeDigest
     , shakeProgress  = progressSimple
     , shakeColor     = False
     , shakeReport    = ["ShakeReport.html"]
