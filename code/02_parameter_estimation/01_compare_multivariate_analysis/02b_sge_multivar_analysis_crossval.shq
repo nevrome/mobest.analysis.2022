@@ -16,7 +16,7 @@ date
 
 echo Task in Array: ${SGE_TASK_ID}
 
-singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/01_compare_multivariate_analysis/multivar_analysis_crossval.R ${SGE_TASK_ID}
+singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/01_compare_multivariate_analysis/02a_multivar_analysis_crossval.R ${SGE_TASK_ID}
 
 date
 

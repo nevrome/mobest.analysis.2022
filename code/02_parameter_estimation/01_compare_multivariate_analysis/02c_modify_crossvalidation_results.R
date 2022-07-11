@@ -1,7 +1,7 @@
 library(magrittr)
 
 load("data/parameter_exploration/multivariate_analysis_comparison/distance_products.RData")
-source("code/02_parameter_estimation/01_compare_multivariate_analysis/distance_helper_functions.R")
+source("code/02_parameter_estimation/01_compare_multivariate_analysis/01a_distance_helper_functions.R")
 
 # read and rbind all crossvalidation run output files
 multivar_comparison_raw <- lapply(
