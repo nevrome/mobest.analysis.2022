@@ -86,13 +86,17 @@ code0102 x = code01 "02_initial_sample_selection" </> x
 code0103 x = code01 "03_remove_related_individuals" </> x
 code0104 x = code01 "04_prepare_snp_selections" </> x
 code0105 x = code01 "05_run_multivariate_analysis" </> x
+code04Paper x = code "04_plot_scripts" </> "paper" </> x
+code07 x = code "07_simulation" </> x
+
+
 
 code02 x = code "02_parameter_estimation" </> x
 code02Variogram x = code02 "01_variogram_experiments" </> x
 code02Crossvalidation x = code02 "02_crossvalidation" </> x
 code02MLE x = code02 "03_laGP_maximum_likelihood_estimation" </> x
 code03 x = code "03_origin_search" </> x
-code04Paper x = code "04_plot_scripts" </> "paper" </> x
+
 code05 x = code "05_table_scripts" </> x
 code06MDS3 x = code "06_alternative_parameter_exploration" </> "MDS_3_dimensions" </> x
 code06Rearview x = code "06_alternative_parameter_exploration" </> "different_rearview_distances" </> x
@@ -128,6 +132,8 @@ dataGenoMultivarEMUUnfiltered x = dataGenoMultivar "EMU_unfiltered_snp_selection
 dataGenoMultivarEMUFiltered x = dataGenoMultivar "EMU_filtered_snp_selection" </> x
 dataGenoMultivarPCAProjUnfiltered x = dataGenoMultivar "PCA_projected_unfiltered_snp_selection" </> x
 dataGenoMultivarPCAProjFiltered x = dataGenoMultivar "PCA_projected_filtered_snp_selection" </> x
+
+dataSimulation x = _data "simulation" </> x
 
 -- dataPoseidonDataPoseidonExtractedPreIdenticalsFilter x = dataPoseidonData "poseidon_extracted_pre_identicals_filter" </> x
 -- dataPoseidonDataIdenticalFilter x = dataPoseidonData "identical_filter" </> x
