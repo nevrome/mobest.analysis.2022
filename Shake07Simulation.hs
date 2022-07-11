@@ -1,7 +1,7 @@
 #!/usr/bin/env stack
 {- stack script
  --resolver lts-18.28
- --package shake
+ --package shake,filepath
  -}
 
 import ShakeUtils
@@ -11,15 +11,16 @@ main :: IO ()
 main = shakeArgs myShakeOpts $ do
 
   want $ [
-    -- plots "figure_sup_27_simulation_real_world_examples.pdf"
-    plots "figure_sup_28_simulation_setup.pdf"
-  , plots "figure_sup_29_simulation_scenarios.pdf"
-  , plots "figure_sup_30_simulation_locate_examples.pdf"
-  , plots "figure_sup_31_simulation_accuracy_permutations.pdf"
-  ]
+      -- plots "figure_sup_27_simulation_real_world_examples.pdf"
+      plots "figure_sup_28_simulation_setup.pdf"
+    , plots "figure_sup_29_simulation_scenarios.pdf"
+    , plots "figure_sup_30_simulation_locate_examples.pdf"
+    , plots "figure_sup_31_simulation_accuracy_permutations.pdf"
+    ]
 
   code07 "02_define_scenarios.R" %$
-    [] -> [ dataSimulation "scenarios.RData" ]
+    [] -->
+    [ dataSimulation "scenarios.RData" ]
 
   code07 "03_create_mock_data.R" %$
     [ dataSimulation "scenarios.RData" ] -->
@@ -31,7 +32,7 @@ main = shakeArgs myShakeOpts $ do
     ] -->
     [ dataSimulation "example_run.RData" ]
 
-  code07 "05_run_permutations" %$
+  code07 "05_run_permutations.RC48M50" %$
     [ dataSimulation "scenarios.RData"
     , dataSimulation "mock_data.RData"
     ] -->

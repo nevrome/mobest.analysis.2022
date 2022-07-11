@@ -36,6 +36,7 @@ data Settings = Settings {
   , qsubSmartSNP :: String
   , qsubEMU :: String
   , qsubPLINK :: String
+  , qsubRC48M50 :: String
   -- How to run SGE scripts
   , qsubScript :: String
 }
@@ -49,13 +50,14 @@ mpiEVAClusterSettings = Settings {
   , qsubSmartSNP           = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=200G -now n -V -j y -o ~/log -N smartsnp"
   , qsubEMU                = "qsub -sync y -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=100G -now n -V -j y -o ~/log -N emu"
   , qsubPLINK              = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=100G -now n -V -j y -o ~/log -N plink"
+  , qsubRC48M50            = "qsub -sync y -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=50G -now n -V -j y -o ~/log -N RC48M50"
   , qsubScript             = "qsub -sync y -N large " -- trailing space is meaningful!
 }
 
 -- #### helper functions #### --
 
 relevantRunCommand :: Settings -> FilePath -> Action ()
-relevantRunCommand (Settings singularityContainer bindPath s lm m smartSNP emu plink qsubScript) x
+relevantRunCommand (Settings singularityContainer bindPath s lm m smartSNP emu plink rc48m50 qsubScript) x
   | takeExtension x == ".R"         = cmd_ s "singularity" "exec" bindPath singularityContainer "Rscript" x
   | takeExtension x == ".Rq"        = cmd_ m "singularity" "exec" bindPath singularityContainer "Rscript" x
   | takeExtension x == ".shlm"      = cmd_ lm "singularity" "exec" bindPath singularityContainer x
@@ -63,6 +65,7 @@ relevantRunCommand (Settings singularityContainer bindPath s lm m smartSNP emu p
   | takeExtension x == ".Rsmartsnp" = cmd_ smartSNP "singularity" "exec" bindPath singularityContainer "Rscript" x
   | takeExtension x == ".shemu"     = cmd_ emu "singularity" "exec" bindPath singularityContainer x
   | takeExtension x == ".shplink"   = cmd_ plink "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".RC48M50"   = cmd_ rc48m50 "singularity" "exec" bindPath singularityContainer "Rscript" x
   | takeExtension x == ".shq"       = cmd_ $ qsubScript ++ x
 
 infixl 3 %$
