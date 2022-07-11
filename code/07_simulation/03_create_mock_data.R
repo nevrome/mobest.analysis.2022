@@ -1,3 +1,5 @@
+library(magrittr)
+
 load("data/simulation/scenarios.RData")
 
 #### set parameters ####
