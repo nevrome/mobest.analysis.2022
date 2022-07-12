@@ -9,8 +9,8 @@
 #$ -pe smp 2 #needs X CPU cores
 #$ -l h_vmem=5G #request XGb of memory
 #$ -V # load personal profile
-#$ -t 1-400 # array job length
-#$ -tc 30 # number of concurrently running tasks in array
+#$ -t 1-16000 # array job length
+#$ -tc 50 # number of concurrently running tasks in array
 
 date
 
@@ -21,33 +21,57 @@ i=$((SGE_TASK_ID - 1))
 echo Index: ${i}
 
 # parameters
+multivar_to_explore=(mds emu pca pca_proj)
+snpset_to_explore=(u f)
+dimension_to_explore=(C1 C2 C3 C4 C5)
 ds_to_explore=($(seq 100 100 2000))
 dt_to_explore=($(seq 100 100 2000))
 
-jobs=$((${#ds_to_explore[@]}*${#dt_to_explore[@]}))
+jobs=$((${#multivar_to_explore[@]}*${#snpset_to_explore[@]}*${#dimension_to_explore[@]}*${#ds_to_explore[@]}*${#dt_to_explore[@]}))
 
 echo Number of jobs: $jobs
 
+mutivars=()
+snpsets=()
+dimensions=()
 dss=()
 dts=()
 
 # parameter permutations
-for ds in "${ds_to_explore[@]}"
+for multivar in "${multivar_to_explore[@]}"
 do
-  for dt in "${dt_to_explore[@]}"
+  for snpset in "${snpset_to_explore[@]}"
   do
-    dss+=($ds)
-    dts+=($dt)
+    for dimension in "${dimension_to_explore[@]}"
+    do
+      for ds in "${ds_to_explore[@]}"
+      do
+        for dt in "${dt_to_explore[@]}"
+        do
+          multivars+=($multivar)
+          snpsets+=($snpset)
+          dimensions+=($dimension)
+          dss+=($ds)
+          dts+=($dt)
+        done
+      done
+    done
   done
 done
 
+current_multivar=${multivars[${i}]}
+current_snpset=${snpsets[${i}]}
+current_dimensions=${dimensions[${i}]}
 current_ds=${dss[${i}]}
 current_dt=${dts[${i}]}
 
+echo ds: ${current_multivar}
+echo ds: ${current_snpset}
+echo dt: ${current_dimensions}
 echo ds: ${current_ds}
 echo dt: ${current_dt}
 
-singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/03_crossvalidation/crossvalidation.R ${i} ${current_ds} ${current_dt}
+singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/03_crossvalidation/crossvalidation.R ${i} ${current_multivar} ${current_snpset} ${current_dimensions} ${current_ds} ${current_dt}
 
 date
 
