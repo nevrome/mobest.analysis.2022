@@ -46,7 +46,7 @@ multivar_comparison <- mobest::crossvalidate(
   ),
   dependent = multivar_method_observation_bundles[[run]],
   kernel = kernels_per_dim_for_run,
-  iterations = 1,
+  iterations = 10,
   groups = 10,
   quiet = F
 )
