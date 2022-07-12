@@ -24,7 +24,7 @@ down("plots/")
 down("tables/")
 down("data/genotype_data/poseidon_extracted/")
 down("data/")
-
+down("data/parameter_exploration/crossvalidation/")
 
 #### run all plotting scripts ####
 
