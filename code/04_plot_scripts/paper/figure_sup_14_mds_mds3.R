@@ -42,9 +42,9 @@ p_mds <- function(v1, v2, plot_order_dim, plot_order_factor = 1) {
     )
 }
 
-C1 <- "C1_mds_u"
-C2 <- "C2_mds_u"
-C3 <- "C3_mds_u"
+C1 <- "C1_mds_u"#"C1_pca_proj_u"
+C2 <- "C2_mds_u"#"C2_pca_proj_u"
+C3 <- "C3_mds_u"#"C3_pca_proj_u"
 
 p_C1C2 <- p_mds(C1, C2, C3)
 p_legend <- cowplot::get_legend(p_C1C2)
