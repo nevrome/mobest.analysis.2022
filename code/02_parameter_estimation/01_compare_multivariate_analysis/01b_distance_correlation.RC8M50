@@ -6,8 +6,9 @@ load("data/genotype_data/janno_final.RData")
 load("data/genotype_data/multivar_perm_obs_bundles.RData")
 source("code/02_parameter_estimation/01_compare_multivariate_analysis/01a_distance_helper_functions.R")
 
+# calculate pairwise distances
+# space
 geo_pairwise_distances <- mobest::calculate_geo_pairwise_distances(
-  ids = janno_final$Poseidon_ID,
   independent = mobest::create_spatpos(
     id = janno_final$Poseidon_ID,
     x = janno_final$x,
@@ -16,8 +17,8 @@ geo_pairwise_distances <- mobest::calculate_geo_pairwise_distances(
   )
 )
 
+# time
 time_pairwise_distances <- mobest::calculate_time_pairwise_distances(
-  ids = janno_final$Poseidon_ID,
   independent = mobest::create_spatpos(
     id = janno_final$Poseidon_ID,
     x = janno_final$x,
@@ -26,18 +27,21 @@ time_pairwise_distances <- mobest::calculate_time_pairwise_distances(
   )
 )
 
+# get all small distances <50 years & < 50km
 small_spatiotemporal_dists <- dplyr::full_join(
-  geo_pairwise_distances, time_pairwise_distances, by = c("Var1", "Var2")
+  geo_pairwise_distances, time_pairwise_distances, by = c("id1", "id2")
 ) %>% 
   dplyr::filter(time_dist < 50 & geo_dist < 50) %>%
-  dplyr::filter(Var1 != Var2) %>%
+  dplyr::filter(id1 != id2) %>%
   # remove duplicates
   igraph::graph_from_data_frame(directed = F) %>%
   igraph::simplify(remove.multiple = T, remove.loops = F) %>%
   igraph::as_data_frame(what = "edges")
 
+# spatiotemporal distances (euclidean with km == year)
 spatiotemp_dist <- d(geo_pairwise_distances[,3], time_pairwise_distances[,3])
 
+# calculate different genetic distances for the different multivar settings
 future::plan(future::multisession, workers = 8)
 distance_products <- furrr::future_pmap_dfr(
   list(
@@ -46,7 +50,7 @@ distance_products <- furrr::future_pmap_dfr(
     multivar_method_observation_bundles
   ),
   function(method, fstate, observation_bundle) {
-    # calculate pairwise distances
+    # calculate genetic pairwise distances
     dim_pairwise_distances_all <- mobest::calculate_dependent_pairwise_distances(
       ids = janno_final$Poseidon_ID,
       dependent = observation_bundle,
@@ -57,18 +61,17 @@ distance_products <- furrr::future_pmap_dfr(
         y = janno_final$y,
         z = janno_final$Date_BC_AD_Median_Derived
       )
-    ) %>%
-      purrr::reduce( function(x, y) { dplyr::bind_cols(x, y[3:4]) } )
+    )
     # split normal distances and residual distances
     dim_pairwise_distances <- dim_pairwise_distances_all %>%
-      dplyr::select(-Var1, -Var2, -tidyselect::contains("resid"))
+      dplyr::select(-id1, -id2, -tidyselect::contains("resid"))
     dim_pairwise_distances_resid <- dim_pairwise_distances_all %>%
-      dplyr::select(Var1, Var2, tidyselect::contains("resid"))
+      dplyr::select(id1, id2, tidyselect::contains("resid"))
     # Nugget determination via variogram
     lower_left_distances <- small_spatiotemporal_dists %>%
       dplyr::left_join(
         dim_pairwise_distances_resid,
-        by = c("from" = "Var1", "to" = "Var2")
+        by = c("from" = "id1", "to" = "id2")
       )
     variances <- janno_final %>%
       dplyr::select(tidyselect::ends_with(paste0("_", method, "_", fstate))) %>%
