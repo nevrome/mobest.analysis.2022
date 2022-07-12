@@ -4,9 +4,9 @@ library(magrittr)
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
 run <- args[1]
-multivar_for_this_run <- as.numeric(args[2])
-snpset_for_this_run <- as.numeric(args[3])
-dimension_for_this_run <- as.numeric(args[4])
+multivar_for_this_run <- args[2]
+snpset_for_this_run <- args[3]
+dimension_for_this_run <- args[4]
 ds_for_this_run <- as.numeric(args[5])
 dt_for_this_run <- as.numeric(args[6])
 
