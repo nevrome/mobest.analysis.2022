@@ -36,7 +36,7 @@ kernel_for_this_run <- mobest::create_kernset_multi(
 
 #### run crossvalidation ####
 
-interpol_comparison <- mobest::crossvalidate(
+interpol_comparison_raw <- mobest::crossvalidate(
   independent = mobest::create_spatpos(
     id = 1:nrow(janno_final),
     x = janno_final$x, 
@@ -49,12 +49,22 @@ interpol_comparison <- mobest::crossvalidate(
   ),
   kernel = kernel_for_this_run,
   iterations = 10,
-  groups = 10,
+  groups = 2,
   quiet = F
 )
 
-interpol_comparison$dsx <- interpol_comparison$dsx/1000
-interpol_comparison$dsy <- interpol_comparison$dsy/1000
+interpol_comparison <- interpol_comparison_raw %>%
+  dplyr::select(-independent_table_id, -dependent_setting_id, -kernel_setting_id, -pred_grid_id) %>%
+  dplyr::mutate(
+    dsx = dsx/1000,
+    dsy = dsy/1000
+  ) %>%
+  tibble::add_column(
+    dim = dimension_for_this_run,
+    multivar_method = multivar_for_this_run,
+    multivar_fstate = snpset_for_this_run,
+    .after = "dependent_var_id"
+  )
 
 save(interpol_comparison, file = paste0(
   "data/parameter_exploration/crossvalidation/interpol_comparison_",
