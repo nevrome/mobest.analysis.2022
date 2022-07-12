@@ -20,19 +20,20 @@ distance_products_for_run <- distance_products %>%
     factor(dim, levels = names(multivar_method_observation_bundles[[run]]))
   )
 
-kernels_per_dim_for_run <- purrr::map(
-  distance_products_for_run$estimated_nugget, function(g) { 
-    mobest::create_kernel(
-      800*1000,
-      800*1000,
-      800,
-      g
-    )
-  }) %>% 
-  magrittr::set_names(distance_products_for_run$dim) %>%
-  do.call(mobest::create_kernset, .) %>%
-  list(.) %>%
-  magrittr::set_names(paste("kernel_settings", method_run, fstate_run, sep = "_"))
+kernels_per_dim_for_run <- mobest::create_kernset_multi(
+  purrr::map(
+    distance_products_for_run$estimated_nugget, function(g) { 
+      mobest::create_kernel(
+        800*1000,
+        800*1000,
+        800,
+        g
+      )
+    }) %>% 
+    magrittr::set_names(distance_products_for_run$dim) %>%
+    do.call(mobest::create_kernset, .),
+  .names = paste("kernel_settings", method_run, fstate_run, sep = "_")
+)
 
 #### run crossvalidation ####
 
