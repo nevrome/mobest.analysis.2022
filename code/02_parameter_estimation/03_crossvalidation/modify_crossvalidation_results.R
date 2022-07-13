@@ -1,17 +1,18 @@
 library(magrittr)
 
 patterns <- list.files("data/parameter_exploration/crossvalidation") %>%
-  strsplit("_", perl = T) %>%
-  purrr::map(function(x) {x[c(3,4,5)]}) %>%
+  gsub("^interpol_comparison_", "", .) %>%
+  gsub("_[0-9]+\\.RData$", "", .) %>%
   unique
 
 # apply function to each pattern
-purrr::map_dfr(patterns, function(p) {
+future::plan(future::multisession, workers = 8)
+furrr::future_map_dfr(patterns, function(p) {
   # read and rbind all crossvalidation run output files
   cur_interpol_comparison <- lapply(
     list.files(
       "data/parameter_exploration/crossvalidation", 
-      pattern = paste0(c("interpol_comparison", p, "[0-9]+"), collapse = "_"),
+      pattern = p,
       full.names = T
     ), function(x) {
       load(x)
@@ -20,7 +21,7 @@ purrr::map_dfr(patterns, function(p) {
   ) %>% dplyr::bind_rows()
   # group difference by kernel
   interpol_comparison_group <- cur_interpol_comparison %>%
-    dplyr::group_by(dsx, dsy, dt) %>%
+    dplyr::group_by(dependent_var_id, dim, multivar_method, multivar_fstate, dsx, dsy, dt) %>%
     dplyr::summarise(
       mean_squared_difference = mean(difference^2),
       .groups = "drop"
