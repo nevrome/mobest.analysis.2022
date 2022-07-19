@@ -1,6 +1,6 @@
 library(magrittr)
-load("data/parameter_exploration/multivariate_analysis_comparison/distance_products.RData")
-source("code/02_parameter_estimation/01_compare_multivariate_analysis/01a_distance_helper_functions.R")
+load("data/parameter_exploration/distance_products.RData")
+source("code/02_parameter_estimation/01a_distance_helper_functions.R")
 
 # fine all patterns of crossvalidation setups
 patterns <- list.files("data/parameter_exploration/crossvalidation") %>%
@@ -34,7 +34,7 @@ crossvalidation_kernel_comparison <- furrr::future_map_dfr(patterns, function(p)
   return(cur_interpol_comparison_group)
 })
 
-save(crossvalidation_kernel_comparison, file = "data/parameter_exploration/crossval_kernel_comparison.RData")
+save(crossvalidation_kernel_comparison, file = "data/parameter_exploration/crossvalidation_kernel_comparison.RData")
 
 # find best kernel
 crossvalidation_best_kernels <- crossvalidation_kernel_comparison %>%

@@ -1,4 +1,4 @@
-# qsub code/02_parameter_estimation/03_crossvalidation/sge_parameter_exploration.shq
+# qsub code/02_parameter_estimation/02b_sge_crossvalidation.shq
 
 library(magrittr)
 
@@ -14,7 +14,7 @@ dt_for_this_run <- as.numeric(args[6])
 
 load("data/genotype_data/janno_final.RData")
 load("data/genotype_data/multivar_perm_obs_bundles.RData")
-load("data/parameter_exploration/multivariate_analysis_comparison/distance_products.RData")
+load("data/parameter_exploration/distance_products.RData")
 
 mperm <- as.data.frame(multivar_method_permutations)
 mperm_id <- which(mperm$method == multivar_for_this_run & mperm$fstate == snpset_for_this_run)

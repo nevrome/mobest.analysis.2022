@@ -72,7 +72,7 @@ echo dim: ${current_dimensions}
 echo ds: ${current_ds}
 echo dt: ${current_dt}
 
-singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/03_crossvalidation/crossvalidation.R ${i} ${current_multivar} ${current_snpset} ${current_dimensions} ${current_ds} ${current_dt}
+singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/02a_crossvalidation.R ${i} ${current_multivar} ${current_snpset} ${current_dimensions} ${current_ds} ${current_dt}
 
 date
 
