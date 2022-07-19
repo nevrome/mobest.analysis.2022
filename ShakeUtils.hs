@@ -94,7 +94,6 @@ code0103 x = code01 "03_remove_related_individuals" </> x
 code0104 x = code01 "04_prepare_snp_selections" </> x
 code0105 x = code01 "05_run_multivariate_analysis" </> x
 code02 x = code "02_parameter_estimation" </> x
-code0201 x = code02 "01_compare_multivariate_analysis" </> x
 code04Paper x = code "04_plot_scripts" </> "paper" </> x
 code07 x = code "07_simulation" </> x
 
@@ -142,8 +141,8 @@ dataGenoMultivarPCAProjUnfiltered x = dataGenoMultivar "PCA_projected_unfiltered
 dataGenoMultivarPCAProjFiltered x = dataGenoMultivar "PCA_projected_filtered_snp_selection" </> x
 
 dataParamExp x = _data "parameter_exploration" </> x
-dataParamExpMultivar x = dataParamExp "multivariate_analysis_comparison" </> x
-dataParamExpMultivarCrossval x = dataParamExpMultivar "crossvalidation" </> x
+dataParamExpVariogram x = dataParamExp "variogram" </> x
+dataParamExpCrossval x = dataParamExp "crossvalidation" </> x
 
 dataSimulation x = _data "simulation" </> x
 
