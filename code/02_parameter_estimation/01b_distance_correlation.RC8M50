@@ -140,4 +140,4 @@ distance_products <- furrr::future_pmap_dfr(
   }
 )
 
-save(distance_products, file = "data/parameter_exploration/multivariate_analysis_comparison/distance_products.RData")
+save(distance_products, file = "data/parameter_exploration/multivar_distance_products.RData")
