@@ -1,0 +1,79 @@
+#!/bin/bash
+#
+#$ -S /bin/bash #defines bash as the shell for execution
+#$ -N cross #Name of the command that will be listed in the queue
+#$ -cwd #change to current directory
+#$ -j y #join error and standard output in one file, no error file will be written
+#$ -o ~/log #standard output file or directory (joined with error because of -j y)
+#$ -q archgen.q #queue
+#$ -pe smp 2 #needs X CPU cores
+#$ -l h_vmem=5G #request XGb of memory
+#$ -V # load personal profile
+#$ -t 1-9000 # array job length
+#$ -tc 50 # number of concurrently running tasks in array
+
+date
+
+echo Task in Array: ${SGE_TASK_ID}
+
+i=$((SGE_TASK_ID - 1))
+
+echo Index: ${i}
+
+# parameters
+multivar_to_explore=(mds emu pca pca_proj)
+snpset_to_explore=(u f)
+dimension_to_explore=(C1 C2 C3 C4 C5)
+ds_to_explore=($(seq 100 100 1500))
+dt_to_explore=($(seq 100 100 1500))
+# 4*2*5*20*20 = 16000
+
+jobs=$((${#multivar_to_explore[@]}*${#snpset_to_explore[@]}*${#dimension_to_explore[@]}*${#ds_to_explore[@]}*${#dt_to_explore[@]}))
+
+echo Number of jobs: $jobs
+
+mutivars=()
+snpsets=()
+dimensions=()
+dss=()
+dts=()
+
+# parameter permutations
+for multivar in "${multivar_to_explore[@]}"
+do
+  for snpset in "${snpset_to_explore[@]}"
+  do
+    for dimension in "${dimension_to_explore[@]}"
+    do
+      for ds in "${ds_to_explore[@]}"
+      do
+        for dt in "${dt_to_explore[@]}"
+        do
+          multivars+=($multivar)
+          snpsets+=($snpset)
+          dimensions+=($dimension)
+          dss+=($ds)
+          dts+=($dt)
+        done
+      done
+    done
+  done
+done
+
+current_multivar=${multivars[${i}]}
+current_snpset=${snpsets[${i}]}
+current_dimensions=${dimensions[${i}]}
+current_ds=${dss[${i}]}
+current_dt=${dts[${i}]}
+
+echo multivar: ${current_multivar}
+echo snpset: ${current_snpset}
+echo dim: ${current_dimensions}
+echo ds: ${current_ds}
+echo dt: ${current_dt}
+
+singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/02a_crossvalidation.R ${i} ${current_multivar} ${current_snpset} ${current_dimensions} ${current_ds} ${current_dt}
+
+date
+
+exit 0

@@ -5,7 +5,7 @@ load("data/genotype_data/janno_final.RData")
 load("data/parameter_exploration/variogram/estimated_nuggets.RData")
 nugget_derived <- as.numeric(readLines("data/parameter_exploration/variogram/nuggets.txt")[1])
 
-mle_out <- mobest::laGP_mle_sequence_isotropic_fixed_g(
+mle_iso <- mobest::laGP_mle_sequence_isotropic_fixed_g(
   independent = mobest::create_spatpos(
     id = janno_final$Poseidon_ID,
     x = janno_final$x / 1000,
@@ -21,4 +21,4 @@ mle_out <- mobest::laGP_mle_sequence_isotropic_fixed_g(
   space_time_scaling_factor_sequence = seq(0.1, 2.0, 0.1)
 )
 
-save(mle_out, file = "data/parameter_exploration/mle/mle_out.RData")
+save(mle_iso, file = "data/parameter_exploration/mle_iso.RData")

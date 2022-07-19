@@ -31,7 +31,7 @@ jmleGPsep_out <- mobest::laGP_jmle_anisotropic(
   iterations = 5
 )
 
-mlesep_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
+mle_ani <- rbind(mleGPsep_out, jmleGPsep_out) %>%
   tidyr::pivot_longer(cols = c("dx", "dy", "dt", "g"), names_to = "parameter", values_to = "value") %>% 
   dplyr::mutate(
     parameter = factor(parameter, levels = c("dx", "dy", "dt", "g")),
@@ -39,4 +39,4 @@ mlesep_out <- rbind(mleGPsep_out, jmleGPsep_out) %>%
     ancestry_component = factor(ancestry_component, levels = c("C1_mds_u", "C2_mds_u"))
   )
 
-save(mlesep_out, file = "data/parameter_exploration/mle/mlesep_out.RData")
+save(mle_ani, file = "data/parameter_exploration/mle_ani.RData")
