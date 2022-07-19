@@ -3,7 +3,6 @@ library(laGP)
 
 load("data/genotype_data/janno_final.RData")
 load("data/parameter_exploration/variogram/estimated_nuggets.RData")
-nugget_derived <- as.numeric(readLines("data/parameter_exploration/variogram/nuggets.txt")[1])
 
 mle_iso <- mobest::laGP_mle_sequence_isotropic_fixed_g(
   independent = mobest::create_spatpos(
