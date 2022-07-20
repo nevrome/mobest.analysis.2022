@@ -49,7 +49,7 @@ interpol_comparison_raw <- mobest::crossvalidate(
   ),
   kernel = kernel_for_this_run,
   iterations = 10,
-  groups = 2,
+  groups = 10,
   quiet = F
 )
 
