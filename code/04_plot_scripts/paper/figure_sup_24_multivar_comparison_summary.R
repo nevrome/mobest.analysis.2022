@@ -1,7 +1,19 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/parameter_exploration/multivariate_analysis_comparison/multivar_comparison_summary.RData")
+load("data/parameter_exploration/distance_products.RData")
+load("data/parameter_exploration/crossvalidation_multivar_comparison.RData")
+
+multivar_comparison_summary <- distance_products %>%
+  dplyr::filter(method != "pca") %>%
+  dplyr::left_join(
+    crossvalidation_multivar_comparison,
+    by = c(
+      "method" = "multivar_method",
+       "snp_selection" = "multivar_fstate",
+       "dim_range" = "dependent_var"
+    )
+  )
 
 multivar_comparison_summary_adjusted <- multivar_comparison_summary %<>%
   dplyr::mutate(
@@ -34,7 +46,6 @@ common_elements <- list(
   )
 )
 
-library(ggplot2)
 p_nugget <- multivar_comparison_summary_adjusted %>%
   ggplot() +
   geom_point(

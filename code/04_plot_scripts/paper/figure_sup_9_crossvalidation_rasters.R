@@ -60,7 +60,7 @@ ps <- purrr::map2(
 p <- cowplot::plot_grid(plotlist = ps, nrow = 2, ncol = 3, labels = "AUTO")
 
 ggsave(
-  "plots/figure_sup_9_crossvalidation_rasters2.pdf",
+  "plots/figure_sup_9_crossvalidation_rasters.pdf",
   plot = p,
   device = "pdf",
   scale = 0.8,
