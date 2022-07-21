@@ -92,7 +92,8 @@ p_cross_diff <- multivar_comparison_summary_adjusted %>%
     aes(
       x = dim,
       y = mean_squared_difference_estimated_real,
-      color = multivar_method, shape = multivar_fstate
+      color = multivar_method, shape = multivar_fstate,
+      group = multivar_method
       ),
     position = position_dodge(width = 0.5), size = 2
   ) +
@@ -111,13 +112,14 @@ p_kernel_ds <- multivar_comparison_summary_adjusted %>%
     aes(
       x = dim,
       y = dsx,
-      color = multivar_method, shape = multivar_fstate
+      color = multivar_method, shape = multivar_fstate,
+      group = multivar_method
     ),
     position = position_dodge(width = 0.5), size = 2
   ) +
   common_elements +
   ylab(latex2exp::TeX("$\\sqrt{\\theta_s}$")) +
-  ggtitle(latex2exp::TeX("estimated ideal $\\sqrt{\\theta_s}$")) +
+  ggtitle(latex2exp::TeX("Estimated ideal $\\sqrt{\\theta_s}$")) +
   scale_y_continuous(breaks = seq(100, 2000, 200), limits = c(100, 1500))
 
 p_kernel_dt <- multivar_comparison_summary_adjusted %>%
@@ -126,13 +128,14 @@ p_kernel_dt <- multivar_comparison_summary_adjusted %>%
     aes(
       x = dim,
       y = dt,
-      color = multivar_method, shape = multivar_fstate
+      color = multivar_method, shape = multivar_fstate,
+      group = multivar_method
     ),
     position = position_dodge(width = 0.5), size = 2
   ) +
   common_elements +
   ylab(latex2exp::TeX("$\\sqrt{\\theta_t}$")) +
-  ggtitle(latex2exp::TeX("estimated ideal $\\sqrt{\\theta_t}$")) +
+  ggtitle(latex2exp::TeX("Estimated ideal $\\sqrt{\\theta_t}$")) +
   scale_y_continuous(breaks = seq(100, 2000, 200), limits = c(100, 1500))
 
 p <- cowplot::plot_grid(
@@ -142,7 +145,7 @@ p <- cowplot::plot_grid(
 )
 
 ggsave(
-  paste0("plots/figure_sup_24_multivar_comparison_summary2.pdf"),
+  paste0("plots/figure_sup_24_multivar_comparison_summary.pdf"),
   plot = p,
   device = "pdf",
   scale = 0.7,
