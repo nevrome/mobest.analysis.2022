@@ -22,14 +22,19 @@ mperm_id <- which(mperm$method == multivar_for_this_run & mperm$fstate == snpset
 nugget_for_this_run <- distance_products %>%
   dplyr::filter(
     dim == dimension_for_this_run,
-    method == multivar_for_this_run,
-    snp_selection == snpset_for_this_run
+    multivar_method == multivar_for_this_run,
+    multivar_fstate == snpset_for_this_run
   ) %$%
   estimated_nugget
 
 kernel_for_this_run <- mobest::create_kernset_multi(
   kernel_for_this_run = mobest::create_kernset(
-    mobest::create_kernel(ds_for_this_run*1000, ds_for_this_run*1000, dt_for_this_run, nugget_for_this_run),
+    mobest::create_kernel(
+      ds_for_this_run*1000,
+      ds_for_this_run*1000,
+      dt_for_this_run,
+      nugget_for_this_run
+    ),
     .names = paste(dimension_for_this_run, multivar_for_this_run, snpset_for_this_run, sep = "_")
   )
 )
