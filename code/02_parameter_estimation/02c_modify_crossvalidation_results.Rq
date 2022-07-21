@@ -1,3 +1,5 @@
+# qsub -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=50G -now n -V -j y -o ~/log -N summarise singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/02c_modify_crossvalidation_results.Rq
+
 library(magrittr)
 load("data/parameter_exploration/distance_products.RData")
 source("code/02_parameter_estimation/01a_distance_helper_functions.R")
@@ -74,7 +76,7 @@ crossvalidation_multivar_comparison <- furrr::future_pmap_dfr(
         )
       }
     ) %>% dplyr::bind_rows()
-    multivar_comparison_raw_long <- cur_interpol_comparison %>%
+    multivar_comparison_raw_wide <- cur_interpol_comparison %>%
       tidyr::pivot_wider(
         id_cols = c("id", "mixing_iteration", "multivar_method", "multivar_fstate"),
         names_from = "dependent_var_id",
@@ -83,11 +85,11 @@ crossvalidation_multivar_comparison <- furrr::future_pmap_dfr(
     # calculate multidim differences
     multivar_comparison_with_multidim_dists <- dplyr::bind_cols(
       dplyr::select(
-        multivar_comparison_raw_long, 
+        multivar_comparison_raw_wide, 
         -tidyselect::starts_with("C")
       ),
       dplyr::select(
-        multivar_comparison_raw_long, 
+        multivar_comparison_raw_wide, 
         -id, -mixing_iteration, -multivar_method, -multivar_fstate
       ) %>%
         d_cum_df()
