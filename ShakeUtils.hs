@@ -46,7 +46,7 @@ mpiEVAClusterSettings = Settings {
     singularityContainer   = "singularity_mobest.sif"
   , bindPath               = "--bind=/mnt/archgen/users/schmid"
   , qsubSmallCommand       = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=20G -now n -V -j y -o ~/log -N small"
-  , qsubLargeMemoryCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=40G -now n -V -j y -o ~/log -N lmemory"
+  , qsubLargeMemoryCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=50G -now n -V -j y -o ~/log -N lmemory"
   , qsubMediumCommand      = "qsub -sync y -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=32G -now n -V -j y -o ~/log -N medium"
   , qsubSmartSNP           = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=200G -now n -V -j y -o ~/log -N smartsnp"
   , qsubEMU                = "qsub -sync y -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=100G -now n -V -j y -o ~/log -N emu"
