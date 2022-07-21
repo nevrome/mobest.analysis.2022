@@ -1,14 +1,12 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/parameter_exploration/variogram/all_distances.RData")
+load("data/parameter_exploration/targeted/all_distances.RData")
 
-d <- function(a, b, c = 0) {
-  sqrt(a^2 + b^2 + c^2)
-}
+d <- function(a, b, c = 0) { sqrt(a^2 + b^2 + c^2) }
 
+gdist2 <- Map(d, d_all$C1_mds_u_dist, d_all$C2_mds_u_dist) %>% unlist()
 gdist3 <- d_all$obs_dist_total
-gdist2 <- Map(d, d_all$C1_dist, d_all$C2_dist) %>% unlist()
 stdist <- Map(d, d_all$geo_dist, d_all$time_dist) %>% unlist()
 
 distances <- tibble::tibble(
@@ -34,10 +32,13 @@ r2s <- tibble::tibble(
   r2 = c(cor(stdist, gdist2)^2, cor(stdist, gdist3)^2)
 )
 
-p <- ggplot() +
-  geom_bin_2d(
+p <- ggplot(
+    #data = distances %>% dplyr::slice_head(n = 1000),
     data = distances,
     mapping = aes(x = stdist, y = gdist)
+  ) +
+  stat_bin_2d(
+    mapping = aes(colour = ..count..)
   ) +
   geom_label(
     data = r2s,
@@ -47,12 +48,13 @@ p <- ggplot() +
   ) +
   facet_wrap(~genetic_distance_method) +
   scale_fill_gradient(low = "grey90", high = "black") +
+  scale_colour_gradient(low = "grey90", high = "black", guide = "none") +
   theme_bw() +
   xlab("Euclidean distance in space and time (1km=1year)") +
   ylab("Euclidean distance in genetic MDS space")
 
 ggsave(
-  "plots/figure_sup_15_distance_correlation_mds3.pdf",
+  "plots/figure_sup_15_distance_correlation_mds32.pdf",
   plot = p,
   device = "pdf",
   scale = 0.6,
