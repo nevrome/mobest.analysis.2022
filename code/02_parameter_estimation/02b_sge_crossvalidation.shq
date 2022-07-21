@@ -23,7 +23,7 @@ echo Index: ${i}
 # parameters
 multivar_to_explore=(mds emu pca_proj)
 snpset_to_explore=(u) #(u f)
-dimension_to_explore=(C1 C2 C3 C4 C5 C6 C7 C8 C9 C10)
+dimension_to_explore=(C1 C2 C3 C4 C5 C6 C7 C8)
 ds_to_explore=($(seq 100 100 1500))
 dt_to_explore=($(seq 100 100 1500))
 # 4*2*5*20*20 = 16000
