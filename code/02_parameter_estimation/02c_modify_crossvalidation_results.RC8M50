@@ -1,4 +1,4 @@
-# qsub -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=50G -now n -V -j y -o ~/log -N summarise singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/02c_modify_crossvalidation_results.Rq
+# qsub -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=50G -now n -V -j y -o ~/log -N summarise singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/02c_modify_crossvalidation_results.RC8M50
 
 library(magrittr)
 load("data/parameter_exploration/distance_products.RData")
@@ -96,7 +96,7 @@ crossvalidation_multivar_comparison <- furrr::future_pmap_dfr(
     ) %>%
       tidyr::pivot_longer(
         cols = tidyselect::starts_with("C"),
-        names_to = "dependent_var",
+        names_to = "dim_range",
         values_to = "difference"
       )
     # scale multidim differences with the mean pairwise distance in multidim space
@@ -104,9 +104,9 @@ crossvalidation_multivar_comparison <- furrr::future_pmap_dfr(
       dplyr::left_join(
         distance_products,
         by = c(
-          "multivar_method" = "method",
-          "multivar_fstate" = "snp_selection",
-          "dependent_var" = "dim_range"
+          "multivar_method",
+          "multivar_fstate",
+          "dim_range"
         )
       ) %>%
       dplyr::mutate(
@@ -114,7 +114,7 @@ crossvalidation_multivar_comparison <- furrr::future_pmap_dfr(
       )
     # group difference by multivar method and and dependent_dist
     multivar_comparison_grouped <- multivar_comparison_multidim_scaled %>%
-      dplyr::group_by(multivar_method, multivar_fstate, dependent_var) %>%
+      dplyr::group_by(multivar_method, multivar_fstate, dim_range) %>%
       dplyr::summarise(
         mean_squared_difference_estimated_real = mean(scaled_difference^2),
         .groups = "drop"
