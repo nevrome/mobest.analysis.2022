@@ -13,7 +13,8 @@ mle_iso <- mobest::laGP_mle_sequence_isotropic_fixed_g(
   ),
   dependent = mobest::create_obs(
     C1_mds_u = janno_final$C1_mds_u,
-    C2_mds_u = janno_final$C2_mds_u
+    C2_mds_u = janno_final$C2_mds_u,
+    C3_mds_u = janno_final$C3_mds_u
   ),
   iterations = 5,
   g = tibble::deframe(estimated_nuggets[,c("dependent_var_id", "nugget")]),

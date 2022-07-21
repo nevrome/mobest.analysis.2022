@@ -12,7 +12,8 @@ mleGPsep_out <- mobest::laGP_mle_anisotropic(
   ),
   dependent = mobest::create_obs(
     C1_mds_u = janno_final$C1_mds_u,
-    C2_mds_u = janno_final$C2_mds_u
+    C2_mds_u = janno_final$C2_mds_u,
+    C3_mds_u = janno_final$C3_mds_u
   ),
   iterations = 5
 )
@@ -26,7 +27,8 @@ jmleGPsep_out <- mobest::laGP_jmle_anisotropic(
   ),
   dependent = mobest::create_obs(
     C1_mds_u = janno_final$C1_mds_u,
-    C2_mds_u = janno_final$C2_mds_u
+    C2_mds_u = janno_final$C2_mds_u,
+    C3_mds_u = janno_final$C3_mds_u
   ),
   iterations = 5
 )
@@ -36,7 +38,7 @@ mle_ani <- rbind(mleGPsep_out, jmleGPsep_out) %>%
   dplyr::mutate(
     parameter = factor(parameter, levels = c("dx", "dy", "dt", "g")),
     mle_method = factor(mle_method, levels = c("mleGPsep", "jmleGPsep")),
-    ancestry_component = factor(ancestry_component, levels = c("C1_mds_u", "C2_mds_u"))
+    ancestry_component = factor(ancestry_component, levels = c("C1_mds_u", "C2_mds_u", "C3_mds_u"))
   )
 
 save(mle_ani, file = "data/parameter_exploration/mle_ani.RData")
