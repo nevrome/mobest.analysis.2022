@@ -99,9 +99,6 @@ code07 x = code "07_simulation" </> x
 
 
 
-code02Variogram x = code02 "01_variogram_experiments" </> x
-code02Crossvalidation x = code02 "02_crossvalidation" </> x
-code02MLE x = code02 "03_laGP_maximum_likelihood_estimation" </> x
 code03 x = code "03_origin_search" </> x
 
 code05 x = code "05_table_scripts" </> x
@@ -141,8 +138,8 @@ dataGenoMultivarPCAProjUnfiltered x = dataGenoMultivar "PCA_projected_unfiltered
 dataGenoMultivarPCAProjFiltered x = dataGenoMultivar "PCA_projected_filtered_snp_selection" </> x
 
 dataParamExp x = _data "parameter_exploration" </> x
-dataParamExpVariogram x = dataParamExp "variogram" </> x
 dataParamExpCrossval x = dataParamExp "crossvalidation" </> x
+dataParamExpTargeted x = dataParamExp "targeted" </> x
 
 dataSimulation x = _data "simulation" </> x
 
