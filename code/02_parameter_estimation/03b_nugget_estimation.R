@@ -1,7 +1,7 @@
 library(magrittr)
 
 load("data/genotype_data/janno_final.RData")
-load("data/parameter_exploration/variogram/all_distances.RData")
+load("data/parameter_exploration/targeted/all_distances.RData")
 
 d_all_long <- d_all %>% tidyr::pivot_longer(
   cols = c(C1_mds_u_dist, C2_mds_u_dist, C3_mds_u_dist),
@@ -28,5 +28,5 @@ estimated_nuggets <- lower_left_variogram %>%
     dependent_var_id = gsub("_dist", "", dist_type)
   )
 
-save(lower_left_variogram, file = "data/parameter_exploration/variogram/lower_left_variogram.RData")
-save(estimated_nuggets, file = "data/parameter_exploration/variogram/estimated_nuggets.RData")
+save(lower_left_variogram, file = "data/parameter_exploration/targeted/lower_left_variogram.RData")
+save(estimated_nuggets, file = "data/parameter_exploration/targeted/estimated_nuggets.RData")

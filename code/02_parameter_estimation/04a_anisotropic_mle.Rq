@@ -41,4 +41,4 @@ mle_ani <- rbind(mleGPsep_out, jmleGPsep_out) %>%
     ancestry_component = factor(ancestry_component, levels = c("C1_mds_u", "C2_mds_u", "C3_mds_u"))
   )
 
-save(mle_ani, file = "data/parameter_exploration/mle_ani.RData")
+save(mle_ani, file = "data/parameter_exploration/targeted/mle_ani.RData")

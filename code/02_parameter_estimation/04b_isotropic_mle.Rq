@@ -2,7 +2,7 @@ library(magrittr)
 library(laGP)
 
 load("data/genotype_data/janno_final.RData")
-load("data/parameter_exploration/variogram/estimated_nuggets.RData")
+load("data/parameter_exploration/targeted/estimated_nuggets.RData")
 
 mle_iso <- mobest::laGP_mle_sequence_isotropic_fixed_g(
   independent = mobest::create_spatpos(
@@ -21,4 +21,4 @@ mle_iso <- mobest::laGP_mle_sequence_isotropic_fixed_g(
   space_time_scaling_factor_sequence = seq(0.1, 2.0, 0.1)
 )
 
-save(mle_iso, file = "data/parameter_exploration/mle_iso.RData")
+save(mle_iso, file = "data/parameter_exploration/targeted/mle_iso.RData")
