@@ -3,15 +3,25 @@ library(ggplot2)
 
 load("data/parameter_exploration/distance_products.RData")
 load("data/parameter_exploration/crossvalidation_multivar_comparison.RData")
+load("data/parameter_exploration/crossvalidation_best_kernels.RData")
 
 multivar_comparison_summary <- distance_products %>%
-  dplyr::filter(method != "pca") %>%
+  dplyr::filter(multivar_method != "pca") %>%
   dplyr::left_join(
     crossvalidation_multivar_comparison,
     by = c(
-      "method" = "multivar_method",
-       "snp_selection" = "multivar_fstate",
-       "dim_range" = "dependent_var"
+      "multivar_method",
+      "multivar_fstate",
+      "dim_range"
+    )
+  ) %>%
+  dplyr::left_join(
+    crossvalidation_best_kernels,
+    by = c(
+      "dependent_var_id",
+      "multivar_method",
+      "multivar_fstate",
+      "dim"
     )
   )
 
@@ -20,15 +30,15 @@ multivar_comparison_summary_adjusted <- multivar_comparison_summary %<>%
     dim = factor(dim, paste0("C", 1:10))
   ) %>%
   dplyr::mutate(
-    method = dplyr::recode(
-      method,
+    multivar_method = dplyr::recode(
+      multivar_method,
       "emu" = "EMU",
       "mds" = "MDS",
       "pca" = "PCA",
       "pca_proj" = "PCA\n(projected)"
     ),
-    snp_selection = dplyr::recode_factor(
-      snp_selection,
+    multivar_fstate = dplyr::recode_factor(
+      multivar_fstate,
       "u" = "unfiltered SNP set",
       "f" = "filtered SNP set"
     )
@@ -52,14 +62,14 @@ p_nugget <- multivar_comparison_summary_adjusted %>%
     aes(
       x = dim,
       y = estimated_nugget,
-      color = method, shape = snp_selection,
-      group = method
+      color = multivar_method, shape = multivar_fstate,
+      group = multivar_method
     ),
-    position = position_dodge(width = 0.5)
+    position = position_dodge(width = 0.5), size = 2
   ) +
   common_elements +
-  scale_y_reverse() +
-  ylab("Estimated nugget\n")
+  ylab(latex2exp::TeX("$\\eta$")) +
+  ggtitle("Estimated nugget")
 
 p_corr <- multivar_comparison_summary_adjusted %>%
   ggplot() +
@@ -67,18 +77,14 @@ p_corr <- multivar_comparison_summary_adjusted %>%
     aes(
       x = dim,
       y = r_squared_genetic_spatiotemporal_distance,
-      color = method, shape = snp_selection,
-      group = method
+      color = multivar_method, shape = multivar_fstate,
+      group = multivar_method
     ),
-    position = position_dodge(width = 0.5)
+    position = position_dodge(width = 0.5), size = 2
   ) +
   common_elements +
-  theme(legend.position = "right") +
-  ylab("R-Squared: Correlation of\nspatiotemporal and genetic distance") +
-  guides(
-    color = guide_legend(title = "Method"),
-    shape = guide_legend(title = "SNP selection")
-  )
+  ylab(latex2exp::TeX("$R^2$")) +
+  ggtitle("Correlation of spatiotemporal and genetic distance (CX means C1-CX)")
 
 p_cross_diff <- multivar_comparison_summary_adjusted %>%
   ggplot() +
@@ -86,27 +92,62 @@ p_cross_diff <- multivar_comparison_summary_adjusted %>%
     aes(
       x = dim,
       y = mean_squared_difference_estimated_real,
-      color = method, shape = snp_selection
+      color = multivar_method, shape = multivar_fstate
       ),
-    position = position_dodge(width = 0.5)
+    position = position_dodge(width = 0.5), size = 2
   ) +
   common_elements +
-  scale_y_reverse() +
-  ylab("Normalized difference between\npredicted and measured ancestry")
+  ylab("Difference") +
+  ggtitle("Normalized difference between predicted and measured ancestry (CX means C1-CX)") +
+  theme(legend.position = "right") +
+  guides(
+    color = guide_legend(title = "Method"),
+    shape = guide_legend(title = "SNP selection")
+  )
+
+p_kernel_ds <- multivar_comparison_summary_adjusted %>%
+  ggplot() +
+  geom_point(
+    aes(
+      x = dim,
+      y = dsx,
+      color = multivar_method, shape = multivar_fstate
+    ),
+    position = position_dodge(width = 0.5), size = 2
+  ) +
+  common_elements +
+  ylab(latex2exp::TeX("$\\sqrt{\\theta_s}$")) +
+  ggtitle(latex2exp::TeX("estimated ideal $\\sqrt{\\theta_s}$")) +
+  scale_y_continuous(breaks = seq(100, 2000, 200), limits = c(100, 1500))
+
+p_kernel_dt <- multivar_comparison_summary_adjusted %>%
+  ggplot() +
+  geom_point(
+    aes(
+      x = dim,
+      y = dt,
+      color = multivar_method, shape = multivar_fstate
+    ),
+    position = position_dodge(width = 0.5), size = 2
+  ) +
+  common_elements +
+  ylab(latex2exp::TeX("$\\sqrt{\\theta_t}$")) +
+  ggtitle(latex2exp::TeX("estimated ideal $\\sqrt{\\theta_t}$")) +
+  scale_y_continuous(breaks = seq(100, 2000, 200), limits = c(100, 1500))
 
 p <- cowplot::plot_grid(
-  p_nugget, p_corr, p_cross_diff,
+  p_nugget, p_corr, p_cross_diff, p_kernel_ds, p_kernel_dt,
   ncol = 1, align = "v", axis = "lr",
   labels = "AUTO"
 )
 
 ggsave(
-  paste0("plots/figure_sup_24_multivar_comparison_summary.pdf"),
+  paste0("plots/figure_sup_24_multivar_comparison_summary2.pdf"),
   plot = p,
   device = "pdf",
-  scale = 0.6,
+  scale = 0.7,
   dpi = 300,
-  width = 400, height = 350, units = "mm",
+  width = 380, height = 430, units = "mm",
   limitsize = F
 )
 
