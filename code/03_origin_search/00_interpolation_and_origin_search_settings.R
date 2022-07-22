@@ -1,49 +1,22 @@
 library(magrittr)
 
-load("data/parameter_exploration/variogram/estimated_nuggets.RData")
-load("data/parameter_exploration/crossvalidation/best_kernel.RData")
-kern <- dplyr::left_join(
-  best_kernel %>% dplyr::select(-mean_squared_difference),
-  estimated_nuggets %>% dplyr::select(-dist_type),
-  by = "dependent_var_id"
-)
+load("data/parameter_exploration/crossvalidation_best_kernels.RData")
 
-#### kernel size ####
+#### construct default kernel list ####
 
-default_kernset_mds2 <- mobest::create_kernset(
-  C1_mds_u = mobest::create_kernel(
-    dsx = kern$dsx[1] * 1000, dsy = kern$dsy[1] * 1000, dt = kern$dt[1],
-    g = kern$nugget[1],
-    on_residuals = T, auto = F
-  ),
-  C2_mds_u = mobest::create_kernel(
-    dsx = kern$dsx[2] * 1000, dsy = kern$dsy[2] * 1000, dt = kern$dt[2],
-    g = kern$nugget[2],
-    on_residuals = T, auto = F
-  )
-)
+default_kernset <- purrr::pmap(
+  as.list(crossvalidation_best_kernels), function(dsx, dsy, dt, g, ...) {
+    mobest::create_kernel(
+      dsx = dsx * 1000, dsy = dsy * 1000, dt = dt,
+      g = g,
+      on_residuals = T, auto = F
+    )
+  }
+) %>%
+  setNames(crossvalidation_best_kernels$dependent_var_id) %>%
+  do.call(mobest::create_kernset, .)
 
-save(default_kernset_mds2, file = "data/origin_search/default_kernset_mds2.RData")
-
-default_kernset_mds3 <- mobest::create_kernset(
-  C1_mds_u = mobest::create_kernel(
-    dsx = kern$dsx[1] * 1000, dsy = kern$dsy[1] * 1000, dt = kern$dt[1],
-    g = kern$nugget[1],
-    on_residuals = T, auto = F
-  ),
-  C2_mds_u = mobest::create_kernel(
-    dsx = kern$dsx[2] * 1000, dsy = kern$dsy[2] * 1000, dt = kern$dt[2],
-    g = kern$nugget[2],
-    on_residuals = T, auto = F
-  ),
-  C3_mds_u = mobest::create_kernel(
-    dsx = kern$dsx[3] * 1000, dsy = kern$dsy[3] * 1000, dt = kern$dt[3],
-    g = kern$nugget[3],
-    on_residuals = T, auto = F
-  )
-)
-
-save(default_kernset_mds3, file = "data/origin_search/default_kernset_mds3.RData")
+save(default_kernset, file = "data/origin_search/default_kernset.RData")
 
 #### retrospection_distance ####
 
@@ -61,7 +34,7 @@ kernel_theta_data <- expand.grid(
   )
 
 retrospection_distance_low <- kernel_theta_data %>%
-  dplyr::filter(k < 0.75) %>%
+  dplyr::filter(k < 0.8) %>%
   head(1) %$%
   dist_p1_p2
 
@@ -71,7 +44,7 @@ retrospection_distance_default <- kernel_theta_data %>%
   dist_p1_p2
 
 retrospection_distance_high <- kernel_theta_data %>%
-  dplyr::filter(k < 0.25) %>%
+  dplyr::filter(k < 0.2) %>%
   head(1) %$%
   dist_p1_p2
 
