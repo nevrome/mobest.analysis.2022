@@ -4,7 +4,7 @@ library(magrittr)
 
 load("data/genotype_data/janno_final.RData")
 load("data/spatial/epsg3035.RData")
-load("data/origin_search/default_kernset_mds2.RData")
+load("data/origin_search/default_kernset.RData")
 
 # individual points
 
@@ -51,7 +51,7 @@ Riga <- sf::st_as_sf(
 ) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
 
 times <- seq(-7500, 1500, 1000)
-n_times <- length(time_points) 
+n_times <- length(times) 
 
 make_spatpos <- function(x) {
   mobest::create_spatpos(1:n_times, rep(x[1], n_times), rep(x[2], n_times), times)
@@ -74,7 +74,7 @@ model_grid <- mobest::create_model_grid(
     )
   ),
   kernel = mobest::create_kernset_multi(
-    default_kernel = default_kernset_mds2
+    default_kernel = default_kernset
   ),
   prediction_grid = mobest::create_spatpos_multi(
     Rome      = make_spatpos(Rome),
