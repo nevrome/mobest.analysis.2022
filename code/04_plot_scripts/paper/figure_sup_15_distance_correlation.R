@@ -54,7 +54,7 @@ p <- ggplot(
   ylab("Euclidean distance in genetic MDS space")
 
 ggsave(
-  "plots/figure_sup_15_distance_correlation_mds3.pdf",
+  "plots/figure_sup_15_distance_correlation.pdf",
   plot = p,
   device = "pdf",
   scale = 0.6,
