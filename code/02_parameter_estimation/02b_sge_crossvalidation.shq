@@ -9,7 +9,7 @@
 #$ -pe smp 2 #needs X CPU cores
 #$ -l h_vmem=5G #request XGb of memory
 #$ -V # load personal profile
-#$ -t 1-10800 # array job length
+#$ -t 1-13500 # array job length
 #$ -tc 50 # number of concurrently running tasks in array
 
 date
@@ -23,10 +23,10 @@ echo Index: ${i}
 # parameters
 multivar_to_explore=(mds emu pca_proj)
 snpset_to_explore=(u f)
-dimension_to_explore=(C1 C2 C3 C4 C5 C6 C7 C8)
+dimension_to_explore=(C1 C2 C3 C4 C5 C6 C7 C8 C9 C10)
 ds_to_explore=($(seq 100 100 1500))
 dt_to_explore=($(seq 100 100 1500))
-# 3*2*8*15*15 = 10800
+# 3*2*10*15*15 = 13500
 
 jobs=$((${#multivar_to_explore[@]}*${#snpset_to_explore[@]}*${#dimension_to_explore[@]}*${#ds_to_explore[@]}*${#dt_to_explore[@]}))
 
