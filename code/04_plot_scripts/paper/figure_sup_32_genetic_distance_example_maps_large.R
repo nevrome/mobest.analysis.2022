@@ -20,7 +20,7 @@ p_loc <- function(loc, loc_name) {
     geom_point(
       data = janno_search,
       mapping = aes(x = x, y = y),
-      colour = "red",
+      fill = "red", colour = "black", shape = 21,
       size = 3
     ) +
     theme_bw() +

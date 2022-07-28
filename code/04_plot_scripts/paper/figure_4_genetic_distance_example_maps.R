@@ -7,6 +7,8 @@ load("data/spatial/epsg3035.RData")
 load("data/origin_search/janno_search.RData")
 load("data/origin_search/location_examples.RData")
 
+loc <- location_examples_C1toC2_mds_u
+
 p <- ggplot() +
   facet_wrap(
     ~search_id,
@@ -40,7 +42,7 @@ p <- ggplot() +
   ) +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(
-    data = location_examples,
+    data = loc,
     mapping = aes(x = field_x, y = field_y, fill = probability),
   ) +
   scale_fill_viridis_c(option = "mako", direction = -1) +
@@ -48,8 +50,17 @@ p <- ggplot() +
   geom_point(
     data = janno_search,
     mapping = aes(x = x, y = y),
-    colour = "red",
+    fill = "red", colour = "black", shape = 21,
     size = 5
+  ) +
+  geom_point(
+    data = loc %>% 
+      dplyr::group_by(search_id) %>%
+      dplyr::slice_max(probability) %>%
+      dplyr::ungroup(),
+    mapping = aes(x = field_x, y = field_y),
+    fill = "orange", colour = "black", shape = 21,
+    size = 3
   ) +
   theme_bw() +
   coord_sf(
@@ -57,7 +68,7 @@ p <- ggplot() +
     crs = epsg3035
   ) +
   guides(
-    fill = guide_colorbar(title = "Probability  ", barwidth = 25)
+    fill = guide_colorbar(title = "Probability  ", barwidth = 25, label = FALSE, ticks = FALSE)
   ) +
   theme(
     legend.position = "bottom",

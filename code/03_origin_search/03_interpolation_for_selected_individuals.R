@@ -82,12 +82,14 @@ location_examples <- purrr::map2_dfr(
 
 #### prepare probability products
 
+# mds
 location_examples_C1toC2_mds_u <- location_examples %>%
   dplyr::filter(dependent_var_id %in% c(
     "C1_mds_u", "C2_mds_u"
   )) %>%
   mobest::multiply_dependent_probabilities()
 
+# pca
 location_examples_C1toC2_pca_proj_u <- location_examples %>%
   dplyr::filter(dependent_var_id %in% c(
     "C1_pca_proj_u", "C2_pca_proj_u"
