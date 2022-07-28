@@ -32,7 +32,7 @@ main = shakeArgs myShakeOpts $ do
     ] -->
     [ dataParamExpCrossval "interpol_comparison_C1_mds_u_0.RData" ]
 
-  code02 "02c_modify_crossvalidation_results.R" %$
+  code02 "02c_modify_crossvalidation_results.RC8M50" %$
     [ code02 "01a_distance_helper_functions.R"
     , dataParamExp "distance_products.RData"
     , dataParamExpCrossval "interpol_comparison_C1_mds_u_0.RData"
