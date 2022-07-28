@@ -5,7 +5,7 @@ library(magrittr)
 load("data/genotype_data/janno_final.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
-load("data/origin_search/default_kernset_mds2.RData")
+load("data/origin_search/default_kernset.RData")
 
 #### prepare inputs ####
 
@@ -42,7 +42,7 @@ spatial_pred_grid <- mobest::create_prediction_grid(
 location_examples <- purrr::map2_dfr(
   janno_search %>% dplyr::group_split(Poseidon_ID), rearview_dists,
   function(janno_search, rearview) {
-    search <- mobest::locate(
+    mobest::locate(
       independent = mobest::create_spatpos(
         id = janno_final$Poseidon_ID,
         x = janno_final$x,
@@ -51,9 +51,14 @@ location_examples <- purrr::map2_dfr(
       ),
       dependent = mobest::create_obs(
         C1_mds_u = janno_final$C1_mds_u,
-        C2_mds_u = janno_final$C2_mds_u
+        C2_mds_u = janno_final$C2_mds_u,
+        C1_pca_proj_u = janno_final$C1_pca_proj_u,
+        C2_pca_proj_u = janno_final$C2_pca_proj_u,
+        C3_pca_proj_u = janno_final$C3_pca_proj_u,
+        C4_pca_proj_u = janno_final$C4_pca_proj_u,
+        C5_pca_proj_u = janno_final$C5_pca_proj_u
       ),
-      kernel = default_kernset_mds2,
+      kernel = default_kernset,
       search_independent = mobest::create_spatpos(
         id = janno_search$Poseidon_ID,
         x = janno_search$x,
@@ -62,14 +67,60 @@ location_examples <- purrr::map2_dfr(
       ),
       search_dependent = mobest::create_obs(
         C1_mds_u = janno_search$C1_mds_u,
-        C2_mds_u = janno_search$C2_mds_u
+        C2_mds_u = janno_search$C2_mds_u,
+        C1_pca_proj_u = janno_search$C1_pca_proj_u,
+        C2_pca_proj_u = janno_search$C2_pca_proj_u,
+        C3_pca_proj_u = janno_search$C3_pca_proj_u,
+        C4_pca_proj_u = janno_search$C4_pca_proj_u,
+        C5_pca_proj_u = janno_search$C5_pca_proj_u
       ),
       search_space_grid = spatial_pred_grid,
-      search_time = rearview,
+      search_time = rearview
     )
-    mobest::multiply_dependent_probabilities(search, omit_dependent_details = T)
   }
 )
 
+#### prepare probability products
+
+location_examples_C1toC2_mds_u <- location_examples %>%
+  dplyr::filter(dependent_var_id %in% c(
+    "C1_mds_u", "C2_mds_u"
+  )) %>%
+  mobest::multiply_dependent_probabilities()
+
+location_examples_C1toC2_pca_proj_u <- location_examples %>%
+  dplyr::filter(dependent_var_id %in% c(
+    "C1_pca_proj_u", "C2_pca_proj_u"
+  )) %>%
+  mobest::multiply_dependent_probabilities()
+
+location_examples_C1toC3_pca_proj_u <- location_examples %>%
+  dplyr::filter(dependent_var_id %in% c(
+    "C1_pca_proj_u", "C2_pca_proj_u", "C3_pca_proj_u"
+  )) %>%
+  mobest::multiply_dependent_probabilities()
+
+location_examples_C1toC4_pca_proj_u <- location_examples %>%
+  dplyr::filter(dependent_var_id %in% c(
+    "C1_pca_proj_u", "C2_pca_proj_u", "C3_pca_proj_u", "C4_pca_proj_u"
+  )) %>%
+  mobest::multiply_dependent_probabilities()
+
+location_examples_C1toC5_pca_proj_u <- location_examples %>%
+  dplyr::filter(dependent_var_id %in% c(
+    "C1_pca_proj_u", "C2_pca_proj_u", "C3_pca_proj_u", "C4_pca_proj_u", "C5_pca_proj_u"
+  )) %>%
+  mobest::multiply_dependent_probabilities()
+
+#### output ####
+
 save(janno_search, file = "data/origin_search/janno_search.RData")
-save(location_examples, file = "data/origin_search/location_examples.RData")
+save(
+  location_examples,
+  location_examples_C1toC2_mds_u,
+  location_examples_C1toC2_pca_proj_u,
+  location_examples_C1toC3_pca_proj_u,
+  location_examples_C1toC4_pca_proj_u,
+  location_examples_C1toC5_pca_proj_u,
+  file = "data/origin_search/location_examples.RData"
+)
