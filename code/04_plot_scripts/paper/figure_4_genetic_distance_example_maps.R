@@ -12,30 +12,42 @@ loc <- location_examples_C1toC2_mds_u
 p <- ggplot() +
   facet_wrap(
     ~search_id,
-    ncol = 2,
+    ncol = 3,
     labeller = ggplot2::labeller(search_id = c(
       "Stuttgart_published.DG" = paste(
-        "Stuttgart ~5250BC",
+        "Stuttgart ~5250BC (-1500y)",
         "Early Neolithic, Linear Pottery culture",
         "Lazaridis et al. 2014",
         sep = "\n"
       ),
       "RISE434.SG" = paste(
-        "RISE434 ~2750BC",
+        "RISE434 ~2750BC (-300y)",
         "Late Neolithic, Corded Ware culture",
         "Allentoft et al. 2015",
         sep = "\n"
       ),
       "3DT26.SG" = paste(
-        "3DRIF-26 ~200AD",
+        "3DRIF-26 ~200AD (0y)",
         "Roman Britain",
         "Martiniano et al. 2016",
         sep = "\n"
       ),
       "SI-40.SG" = paste(
-        "SI-40 ~1150AD",
+        "SI-40 ~1150AD (0y)",
         "Medieval Period, Crusades",
         "Haber et al. 2019",
+        sep = "\n"
+      ),
+      "I8341" = paste(
+        "I8341 ~400BC (-100y)",
+        "Iron Age, Greek colony",
+        "Olalde et al. 2019",
+        sep = "\n"
+      ),
+      "I8215" = paste(
+        "I8215 ~550BC (-100y)",
+        "Iron Age, Greek colony",
+        "Olalde et al. 2019",
         sep = "\n"
       )
     ))
@@ -83,12 +95,12 @@ p <- ggplot() +
   )
 
 ggsave(
-  "plots/figure_4_genetic_distance_example_maps.pdf",
+  "plots/figure_4_genetic_distance_example_maps3.pdf",
   plot = p,
   device = "pdf",
-  scale = 0.75,
+  scale = 0.9,
   dpi = 300,
-  width = 300, height = 300, units = "mm",
+  width = 400, height = 250, units = "mm",
   limitsize = F
 )
 
