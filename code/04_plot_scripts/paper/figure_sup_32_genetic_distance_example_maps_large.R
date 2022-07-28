@@ -7,7 +7,7 @@ load("data/spatial/epsg3035.RData")
 load("data/origin_search/janno_search.RData")
 load("data/origin_search/location_examples.RData")
 
-p_loc <- function(loc, loc_name) {
+p_loc <- function(loc, loc_name, show_dots = F) {
   p <- ggplot() +
     facet_wrap(
       ~search_id, ncol = 3,
@@ -32,15 +32,6 @@ p_loc <- function(loc, loc_name) {
       fill = "red", colour = "black", shape = 21,
       size = 3
     ) +
-    geom_point(
-      data = loc %>% 
-        dplyr::group_by(search_id) %>%
-        dplyr::slice_max(probability) %>%
-        dplyr::ungroup(),
-      mapping = aes(x = field_x, y = field_y),
-      fill = "orange", colour = "black", shape = 21,
-      size = 3
-    ) +
     theme_bw() +
     coord_sf(
       expand = FALSE,
@@ -59,6 +50,19 @@ p_loc <- function(loc, loc_name) {
       title = element_text(size = 15, face = "bold")
     ) +
     ggtitle(loc_name)
+  # add search dots
+  if (show_dots) {
+    p <- p + 
+        geom_point(
+        data = loc %>% 
+          dplyr::group_by(search_id) %>%
+          dplyr::slice_max(probability) %>%
+          dplyr::ungroup(),
+        mapping = aes(x = field_x, y = field_y),
+        fill = "orange", colour = "black", shape = 21,
+        size = 3
+      )
+  }
   # hack to colour the facet strips
   g <- ggplot_gtable(ggplot_build(p))
   stripr <- which(grepl('strip-', g$layout$name))
@@ -75,16 +79,16 @@ p_loc <- function(loc, loc_name) {
 
 p_C1_pca <- location_examples %>% dplyr::filter(dependent_var_id == "C1_pca_proj_u") %>% p_loc("PCA C1")
 p_C2_pca <- location_examples %>% dplyr::filter(dependent_var_id == "C2_pca_proj_u") %>% p_loc("PCA C2")
-p_C1toC2_pca <- location_examples_C1toC2_pca_proj_u %>% p_loc("PCA C1*C2")
+p_C1toC2_pca <- location_examples_C1toC2_pca_proj_u %>% p_loc("PCA C1*C2", T)
 p_C3_pca <- location_examples %>% dplyr::filter(dependent_var_id == "C3_pca_proj_u") %>% p_loc("PCA C3")
-p_C1toC3_pca <- location_examples_C1toC3_pca_proj_u %>% p_loc("PCA C1*C2*C3")
+p_C1toC3_pca <- location_examples_C1toC3_pca_proj_u %>% p_loc("PCA C1*C2*C3", T)
 
 p_C4_pca <- location_examples %>% dplyr::filter(dependent_var_id == "C4_pca_proj_u") %>% p_loc("PCA C4")
-p_C1toC4_pca <- location_examples_C1toC4_pca_proj_u %>% p_loc("PCA C1*C2*C3*C4")
+p_C1toC4_pca <- location_examples_C1toC4_pca_proj_u %>% p_loc("PCA C1*C2*C3*C4", T)
 p_C5_pca <- location_examples %>% dplyr::filter(dependent_var_id == "C5_pca_proj_u") %>% p_loc("PCA C5")
-p_C1toC5_pca <- location_examples_C1toC5_pca_proj_u %>% p_loc("PCA C1*C2*C3*C4*C5")
+p_C1toC5_pca <- location_examples_C1toC5_pca_proj_u %>% p_loc("PCA C1*C2*C3*C4*C5", T)
 p_C6_pca <- location_examples %>% dplyr::filter(dependent_var_id == "C6_pca_proj_u") %>% p_loc("PCA C6")
-p_C1toC6_pca <- location_examples_C1toC6_pca_proj_u %>% p_loc("PCA C1*C2*C3*C4*C5*C6")
+p_C1toC6_pca <- location_examples_C1toC6_pca_proj_u %>% p_loc("PCA C1*C2*C3*C4*C5*C6", T)
 
 p1 <- cowplot::plot_grid(
   p_C1_pca, NULL,
