@@ -95,7 +95,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  "plots/figure_4_genetic_distance_example_maps3.pdf",
+  "plots/figure_4_genetic_distance_example_maps.pdf",
   plot = p,
   device = "pdf",
   scale = 0.9,
