@@ -12,7 +12,7 @@ sample_run <- as.numeric(args[1])
 
 load("data/genotype_data/janno_final.RData")
 load("data/spatial/extended_area.RData")
-load("data/origin_search/default_kernset_mds2.RData")
+load("data/origin_search/default_kernset.RData")
 load("data/origin_search/retrospection_distances.RData")
 
 age_resampling_runs <- 5
@@ -72,7 +72,7 @@ probability_grid <- mobest::locate_multi(
     )
   ),
   kernel = mobest::create_kernset_multi(
-    MDS2 = default_kernset_mds2
+    MDS2 = default_kernset
   ),
   search_independent = janno_search_spatpos_multi,
   search_dependent = mobest::create_obs_multi(
