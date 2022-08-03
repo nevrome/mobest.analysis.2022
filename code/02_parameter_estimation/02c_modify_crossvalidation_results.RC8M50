@@ -29,7 +29,7 @@ crossvalidation_kernel_comparison <- furrr::future_map_dfr(patterns, function(p)
   cur_interpol_comparison_group <- cur_interpol_comparison %>%
     dplyr::group_by(dependent_var_id, dim, multivar_method, multivar_fstate, dsx, dsy, dt) %>%
     dplyr::summarise(
-      g = unique(g),
+      g = mean(g), # actually it would be unique, but that seems to run into float comparison issues
       mean_squared_difference = mean(difference^2),
       .groups = "drop"
     )
