@@ -28,14 +28,14 @@ p_multivar <- function(v1, v2, plot_order_dim, rev_x = F, rev_y = F) {
   return(p2)
 }
 
+p_emu_u <- p_multivar("C1_emu_u", "C2_emu_u", "C3_emu_u", T, F)
+p_emu_f <- p_multivar("C1_emu_f", "C2_emu_f", "C3_emu_f", T, F)
+p_mds_u <- p_multivar("C1_mds_u", "C2_mds_u", "C3_mds_u")
+p_mds_f <- p_multivar("C1_mds_f", "C2_mds_f", "C3_mds_f")
 p_pca_u <- p_multivar("C1_pca_u", "C2_pca_u", "C3_pca_u", F, T)
 p_pca_f <- p_multivar("C1_pca_f", "C2_pca_f", "C3_pca_f", F, T)
 p_pca_proj_u <- p_multivar("C1_pca_proj_u", "C2_pca_proj_u", "C3_pca_proj_u", F, T)
 p_pca_proj_f <- p_multivar("C1_pca_proj_f", "C2_pca_proj_f", "C3_pca_proj_f", F, T)
-p_mds_u <- p_multivar("C1_mds_u", "C2_mds_u", "C3_mds_u")
-p_mds_f <- p_multivar("C1_mds_f", "C2_mds_f", "C3_mds_f")
-p_emu_u <- p_multivar("C1_emu_u", "C2_emu_u", "C3_emu_u", T, F)
-p_emu_f <- p_multivar("C1_emu_f", "C2_emu_f", "C3_emu_f", T, F)
 
 
 p_legend <- cowplot::get_legend(
@@ -59,10 +59,10 @@ p_legend <- cowplot::get_legend(
 )
 
 p_left <- cowplot::plot_grid(
-  cowplot::plot_grid(p_pca_u, p_pca_f, ncol = 2, labels = c("A", "B")),
-  cowplot::plot_grid(p_pca_proj_u, p_pca_proj_f, ncol = 2, labels = c("C", "D")),
-  cowplot::plot_grid(p_mds_u, p_mds_f, ncol = 2, labels = c("E", "F")),
-  cowplot::plot_grid(p_emu_u, p_emu_f, ncol = 2, labels = c("G", "H")),
+  cowplot::plot_grid(p_emu_u, p_emu_f, ncol = 2, labels = c("A", "B")),
+  cowplot::plot_grid(p_mds_u, p_mds_f, ncol = 2, labels = c("C", "D")),
+  cowplot::plot_grid(p_pca_u, p_pca_f, ncol = 2, labels = c("E", "F")),
+  cowplot::plot_grid(p_pca_proj_u, p_pca_proj_f, ncol = 2, labels = c("G", "H")),
   nrow = 4, rel_heights = c(1,1,1,1)#,0.635)
 )
 
