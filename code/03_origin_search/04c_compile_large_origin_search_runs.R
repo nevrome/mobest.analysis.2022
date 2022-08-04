@@ -8,7 +8,7 @@ load("data/genotype_data/janno_final.RData")
 
 origin_vectors_raw <- lapply(
   list.files(
-    "data/origin_search/age_resampling+one_kernel_setting", 
+    "data/origin_search/large_origin_search", 
     pattern = "^ovs\\_sample\\_[0-9]+",
     full.names = T
   ), function(x) {
@@ -26,7 +26,7 @@ origin_vectors_region <- dplyr::left_join(
 origin_vectors <- dplyr::mutate(
     origin_vectors_region,
     dplyr::across(tidyselect::any_of(
-      c("field_x", "field_y", "search_x", "search_y", "ov_x", "ov_y", "ov_dist", "ov_dist_sd")
+      c("field_x", "field_y", "search_x", "search_y", "ov_x", "ov_y", "ov_dist", "ov_dist_se", "ov_dist_sd")
     ), function(x) { x/1000 })
   )
 
