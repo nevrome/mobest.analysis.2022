@@ -6,7 +6,7 @@ library(magrittr)
 
 args <- unlist(strsplit(commandArgs(trailingOnly = TRUE), " "))
 sample_run <- 5
-sample_run <- as.numeric(args[1])
+sample_run <- as.numeric(args[1]) + 1
 
 #### data ####
 
