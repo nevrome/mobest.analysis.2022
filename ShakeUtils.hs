@@ -86,6 +86,7 @@ infixl 4 -->
 
 -- #### set up file paths #### --
 
+-- code dirs
 code x = "code" </> x
 code01 x = code "01_data_preparation" </> x
 code0101 x = code01 "01_acquire_input_data" </> x
@@ -94,23 +95,22 @@ code0103 x = code01 "03_remove_related_individuals" </> x
 code0104 x = code01 "04_prepare_snp_selections" </> x
 code0105 x = code01 "05_run_multivariate_analysis" </> x
 code02 x = code "02_parameter_estimation" </> x
+code03 x = code "03_origin_search" </> x
 code04Paper x = code "04_plot_scripts" </> "paper" </> x
 code07 x = code "07_simulation" </> x
 
-
-
-code03 x = code "03_origin_search" </> x
-
+-- probably outdated
 code05 x = code "05_table_scripts" </> x
 code06MDS3 x = code "06_alternative_parameter_exploration" </> "MDS_3_dimensions" </> x
 code06Rearview x = code "06_alternative_parameter_exploration" </> "different_rearview_distances" </> x
 
+-- general data dirs
 dataTracked x = "data_tracked" </> x
-
 _data x = "data" </> x
 dataSpatial x = _data "spatial" </> x
 dataPlotReferenceData x = _data "plot_reference_data" </> x
 
+-- data download dirs
 dataGeno x = _data "genotype_data" </> x
 dataGenoAADRv501240K x = dataGeno "aadrv50_1240K" </> x
 dataGenoAADRv501240KHO x = dataGeno "aadrv50_1240K_HO" </> x
@@ -118,6 +118,7 @@ dataGenoInitialSelection x = dataGeno "initial_selection" </> x
 dataGenoRemoveRelatedIndividuals x = dataGeno "remove_related_individuals" </> x
 dataGenoRemoveRelatedIndividualsSelection x = dataGenoRemoveRelatedIndividuals "remove_related_selection" </> x
 
+-- data filter dirs
 dataGenoSnpSub x = dataGeno "snp_subsets" </> x 
 dataGenoSnpSubUnfilteredPre x = dataGenoSnpSub "unfiltered_snp_selection_pre_ind_correction" </> x
 dataGenoSnpSubFilteredPre x = dataGenoSnpSub "filtered_snp_selection_pre_ind_correction" </> x
@@ -127,6 +128,7 @@ dataGenoAADRModern x = dataGeno "aadrv50_1240K_HO_Western_Eurasia_modern" </> x
 dataGenoSnpSubUnfilteredModern x = dataGenoSnpSub "unfiltered_snp_selection_with_modern_reference_pops" </> x
 dataGenoSnpSubFilteredModern x = dataGenoSnpSub "filtered_snp_selection_with_modern_reference_pops" </> x
 
+-- multivar analysis dirs
 dataGenoMultivar x = dataGeno "multivariate_analysis" </> x
 dataGenoMultivarMDSUnfiltered x = dataGenoMultivar "MDS_unfiltered_snp_selection" </> x
 dataGenoMultivarMDSFiltered x = dataGenoMultivar "MDS_filtered_snp_selection" </> x
@@ -137,10 +139,16 @@ dataGenoMultivarEMUFiltered x = dataGenoMultivar "EMU_filtered_snp_selection" </
 dataGenoMultivarPCAProjUnfiltered x = dataGenoMultivar "PCA_projected_unfiltered_snp_selection" </> x
 dataGenoMultivarPCAProjFiltered x = dataGenoMultivar "PCA_projected_filtered_snp_selection" </> x
 
+-- param exploration dirs
 dataParamExp x = _data "parameter_exploration" </> x
 dataParamExpCrossval x = dataParamExp "crossvalidation" </> x
 dataParamExpTargeted x = dataParamExp "targeted" </> x
 
+-- origin search dirs
+dataOriginSearch x =  _data "origin_search" </> x
+dataOriginSearchLarge x = dataOriginSearch "large_origin_search" </> x
+
+-- simulation dirs
 dataSimulation x = _data "simulation" </> x
 
 -- dataPoseidonDataPoseidonExtractedPreIdenticalsFilter x = dataPoseidonData "poseidon_extracted_pre_identicals_filter" </> x
@@ -154,6 +162,7 @@ dataSimulation x = _data "simulation" </> x
 -- dataOriginSearchAROKS x = dataOriginSearch "age_resampling+one_kernel_setting" </> x
 -- dataGPR x = _data "gpr" </> x
 
+-- table and figure output dirs
 tables x = "tables" </> x
 plots x = "plots" </> x
 figures x = "figures" </> x
