@@ -28,7 +28,7 @@ From: rocker/geospatial:4.1
   pip3 install -e .
   cd ..
   # install the mobest R package
-  R --slave -e 'remotes::install_github("nevrome/mobest", dependencies = TRUE)'
+  R --slave -e 'remotes::install_github("nevrome/mobest@norm", dependencies = TRUE)'
   # install all dependencies of the analysis repo
   R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2020@more_strict_data_cleaning", dependencies = TRUE)'
   #R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2020", dependencies = TRUE)'
