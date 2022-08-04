@@ -15,7 +15,7 @@ load("data/spatial/extended_area.RData")
 load("data/origin_search/default_kernset.RData")
 load("data/origin_search/retrospection_distances.RData")
 
-age_resampling_runs <- 5
+age_resampling_runs <- 100
 
 janno_final_spatpos <- purrr::map(
   seq_len(age_resampling_runs), function(age_resampling_run) {
@@ -88,10 +88,25 @@ probability_grid <- mobest::locate_multi(
 
 prob_product_grid <- mobest::multiply_dependent_probabilities(probability_grid)
 
+# library(ggplot2)
+# p <- prob_product_grid %>%
+#   ggplot() +
+#   geom_raster(aes(x = field_x, y = field_y, fill = probability)) +
+#   facet_wrap(~independent_table_id) +
+#   geom_point(
+#     data = janno_search,
+#     mapping = aes(x = x, y = y), colour = "red"
+#   )
+
 origin_vectors <- mobest::determine_origin_vectors(prob_product_grid, independent_table_id)
+
+# p + geom_point(
+#     data = origin_vectors,
+#     mapping = aes(x = field_x, y = field_y), colour = "orange"
+#   )
 
 #### save result ####
 
 save(origin_vectors, file = paste0(
-  "data/origin_search/age_resampling+one_kernel_setting/ovs_sample_", sample_run, ".RData"
+  "data/origin_search/large_origin_search/ovs_sample_", sample_run, ".RData"
 ))
