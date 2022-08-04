@@ -90,4 +90,4 @@ model_grid <- mobest::create_model_grid(
 
 interpol_grid_examples <- mobest::run_model_grid(model_grid)
 
-save(interpol_grid_examples, file = "data/gpr/interpol_grid_examples.RData")
+save(interpol_grid_examples, file = "data/origin_search/interpol_grid_specific_places.RData")

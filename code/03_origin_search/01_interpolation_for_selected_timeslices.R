@@ -43,4 +43,4 @@ model_grid <- mobest::create_model_grid(
 
 interpol_grid <- mobest::run_model_grid(model_grid)
 
-save(interpol_grid, file = "data/gpr/interpol_grid_median_selected_timeslices.RData")
+save(interpol_grid, file = "data/origin_search/interpol_grid_selected_timeslices.RData")

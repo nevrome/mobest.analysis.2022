@@ -152,7 +152,7 @@ location_examples_C1toC6_pca_proj_u <- location_examples %>%
 
 #### output ####
 
-save(janno_search, file = "data/origin_search/janno_search.RData")
+save(janno_search, file = "data/origin_search/janno_search_selected_individuals.RData")
 save(
   location_examples,
   location_examples_C1toC2_mds_u,
@@ -161,5 +161,5 @@ save(
   location_examples_C1toC4_pca_proj_u,
   location_examples_C1toC5_pca_proj_u,
   location_examples_C1toC6_pca_proj_u,
-  file = "data/origin_search/location_examples.RData"
+  file = "data/origin_search/search_result_selected_individuals.RData"
 )
