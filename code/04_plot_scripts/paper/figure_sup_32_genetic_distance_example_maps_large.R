@@ -123,7 +123,7 @@ ggsave(
   device = "pdf",
   scale = 1.2,
   dpi = 300,
-  width = 400, height = 580, units = "mm",
+  width = 420, height = 580, units = "mm",
   limitsize = F
 )
 
@@ -133,6 +133,6 @@ ggsave(
   device = "pdf",
   scale = 1.2,
   dpi = 300,
-  width = 400, height = 580, units = "mm",
+  width = 420, height = 580, units = "mm",
   limitsize = F
 )
