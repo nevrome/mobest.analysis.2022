@@ -70,6 +70,7 @@ spatial_pred_grid <- mobest::create_prediction_grid(
 location_examples <- purrr::map2_dfr(
   janno_search %>% dplyr::group_split(Poseidon_ID), rearview_dists,
   function(janno_search, rearview) {
+    message("Working on sample: ", janno_search$Poseidon_ID %>% unique)
     mobest::locate(
       independent = mobest::create_spatpos(
         id = janno_final$Poseidon_ID,
@@ -85,7 +86,11 @@ location_examples <- purrr::map2_dfr(
         C3_pca_proj_u = janno_final$C3_pca_proj_u,
         C4_pca_proj_u = janno_final$C4_pca_proj_u,
         C5_pca_proj_u = janno_final$C5_pca_proj_u,
-        C6_pca_proj_u = janno_final$C6_pca_proj_u
+        C6_pca_proj_u = janno_final$C6_pca_proj_u,
+        C7_pca_proj_u = janno_final$C7_pca_proj_u,
+        C8_pca_proj_u = janno_final$C8_pca_proj_u,
+        C9_pca_proj_u = janno_final$C9_pca_proj_u,
+        C10_pca_proj_u = janno_final$C10_pca_proj_u
       ),
       kernel = default_kernset,
       search_independent = mobest::create_spatpos(
@@ -102,7 +107,11 @@ location_examples <- purrr::map2_dfr(
         C3_pca_proj_u = janno_search$C3_pca_proj_u,
         C4_pca_proj_u = janno_search$C4_pca_proj_u,
         C5_pca_proj_u = janno_search$C5_pca_proj_u,
-        C6_pca_proj_u = janno_search$C6_pca_proj_u
+        C6_pca_proj_u = janno_search$C6_pca_proj_u,
+        C7_pca_proj_u = janno_search$C7_pca_proj_u,
+        C8_pca_proj_u = janno_search$C8_pca_proj_u,
+        C9_pca_proj_u = janno_search$C9_pca_proj_u,
+        C10_pca_proj_u = janno_search$C10_pca_proj_u
       ),
       search_space_grid = spatial_pred_grid,
       search_time = rearview
@@ -112,43 +121,30 @@ location_examples <- purrr::map2_dfr(
 
 #### prepare probability products
 
+multiply_dims <- function(x) {
+  location_examples %>%
+    dplyr::filter(dependent_var_id %in% x) %>%
+    mobest::multiply_dependent_probabilities()
+}
+
 # mds
-location_examples_C1toC2_mds_u <- location_examples %>%
-  dplyr::filter(dependent_var_id %in% c(
-    "C1_mds_u", "C2_mds_u"
-  )) %>%
-  mobest::multiply_dependent_probabilities()
+location_examples_C1toC2_mds_u <- multiply_dims(c("C1_mds_u", "C2_mds_u"))
 
 # pca
-location_examples_C1toC2_pca_proj_u <- location_examples %>%
-  dplyr::filter(dependent_var_id %in% c(
-    "C1_pca_proj_u", "C2_pca_proj_u"
-  )) %>%
-  mobest::multiply_dependent_probabilities()
+pca_vars <- c(
+  "C1_pca_proj_u", "C2_pca_proj_u", "C3_pca_proj_u", "C4_pca_proj_u", "C5_pca_proj_u",
+  "C6_pca_proj_u", "C7_pca_proj_u", "C8_pca_proj_u", "C9_pca_proj_u", "C10_pca_proj_u"
+)
 
-location_examples_C1toC3_pca_proj_u <- location_examples %>%
-  dplyr::filter(dependent_var_id %in% c(
-    "C1_pca_proj_u", "C2_pca_proj_u", "C3_pca_proj_u"
-  )) %>%
-  mobest::multiply_dependent_probabilities()
-
-location_examples_C1toC4_pca_proj_u <- location_examples %>%
-  dplyr::filter(dependent_var_id %in% c(
-    "C1_pca_proj_u", "C2_pca_proj_u", "C3_pca_proj_u", "C4_pca_proj_u"
-  )) %>%
-  mobest::multiply_dependent_probabilities()
-
-location_examples_C1toC5_pca_proj_u <- location_examples %>%
-  dplyr::filter(dependent_var_id %in% c(
-    "C1_pca_proj_u", "C2_pca_proj_u", "C3_pca_proj_u", "C4_pca_proj_u", "C5_pca_proj_u"
-  )) %>%
-  mobest::multiply_dependent_probabilities()
-
-location_examples_C1toC6_pca_proj_u <- location_examples %>%
-  dplyr::filter(dependent_var_id %in% c(
-    "C1_pca_proj_u", "C2_pca_proj_u", "C3_pca_proj_u", "C4_pca_proj_u", "C5_pca_proj_u", "C6_pca_proj_u"
-  )) %>%
-  mobest::multiply_dependent_probabilities()
+location_examples_C1toC2_pca_proj_u <- multiply_dims(pca_vars[1:2])
+location_examples_C1toC3_pca_proj_u <- multiply_dims(pca_vars[1:3])
+location_examples_C1toC4_pca_proj_u <- multiply_dims(pca_vars[1:4])
+location_examples_C1toC5_pca_proj_u <- multiply_dims(pca_vars[1:5])
+location_examples_C1toC6_pca_proj_u <- multiply_dims(pca_vars[1:6])
+location_examples_C1toC7_pca_proj_u <- multiply_dims(pca_vars[1:7])
+location_examples_C1toC8_pca_proj_u <- multiply_dims(pca_vars[1:8])
+location_examples_C1toC9_pca_proj_u <- multiply_dims(pca_vars[1:9])
+location_examples_C1toC10_pca_proj_u <- multiply_dims(pca_vars[1:10])
 
 #### output ####
 
@@ -161,5 +157,9 @@ save(
   location_examples_C1toC4_pca_proj_u,
   location_examples_C1toC5_pca_proj_u,
   location_examples_C1toC6_pca_proj_u,
+  location_examples_C1toC7_pca_proj_u,
+  location_examples_C1toC8_pca_proj_u,
+  location_examples_C1toC9_pca_proj_u,
+  location_examples_C1toC10_pca_proj_u,
   file = "data/origin_search/search_result_selected_individuals.RData"
 )

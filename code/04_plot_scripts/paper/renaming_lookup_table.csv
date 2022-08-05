@@ -4,12 +4,16 @@ paper_names,code_output
 #figure_3_interpolation_map_matrix.pdf,Figure_04.pdf
 #figure_4_genetic_distance_example_maps.pdf,Figure_05.pdf
 #figure_5_mobility_curves.pdf,Figure_06.pdf
+
 Supp_Figure_01.pdf,    figure_sup_25_multivar_comparison_scatter.pdf
 Supp_Figure_02.pdf,    figure_sup_26_multivar_comparison_capture_shotgun_mds_emu.pdf
 Supp_Figure_03.pdf,    figure_sup_14_pca_proj.pdf
 Supp_Figure_04.pdf,    figure_sup_23_mds_with_highlighted_individuals.pdf
 Supp_Figure_05.pdf,    figure_sup_18_interpolation_map_matrix_pca_proj.pdf
 Supp_Figure_06.pdf,    figure_sup_11_timepillars.pdf
+Supp_Figure_07.pdf,    figure_sup_32_1_genetic_distance_example_maps_large.pdf
+Supp_Figure_08.pdf,    figure_sup_32_2_genetic_distance_example_maps_large.pdf
+
 Supp_Figure_I.pdf,     figure_sup_24_multivar_comparison_summary.pdf
 Supp_Figure_II.pdf,    figure_sup_15_distance_correlation.pdf
 Supp_Figure_III.pdf,   figure_sup_1_semivariogram.pdf
