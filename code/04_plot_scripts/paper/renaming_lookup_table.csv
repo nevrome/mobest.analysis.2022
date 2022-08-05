@@ -4,21 +4,25 @@ paper_names,code_output
 #figure_3_interpolation_map_matrix.pdf,Figure_04.pdf
 #figure_4_genetic_distance_example_maps.pdf,Figure_05.pdf
 #figure_5_mobility_curves.pdf,Figure_06.pdf
-Supp_Figure_01.pdf,  figure_sup_25_multivar_comparison_scatter.pdf
-Supp_Figure_02.pdf,  figure_sup_26_multivar_comparison_capture_shotgun_mds_emu.pdf
-Supp_Figure_03.pdf,  figure_sup_14_pca_proj.pdf
-Supp_Figure_04.pdf,  figure_sup_23_mds_with_highlighted_individuals.pdf
-Supp_Figure_05.pdf,  figure_sup_18_interpolation_map_matrix_pca_proj.pdf
-Supp_Figure_06.pdf,  figure_sup_11_timepillars.pdf
-#figure_sup_1_semivariogram.pdf,Supp_Figure_I.pdf
-#figure_sup_2_semivariogram_space_time.pdf,Supp_Figure_II.pdf
-#figure_sup_3_semivariogram_fitting.pdf,Supp_Figure_III.pdf
-#figure_sup_4_semivariogram_nugget.pdf,Supp_Figure_IV.pdf
-#figure_sup_5_mle_anisotropic.pdf,Supp_Figure_V.pdf
-#figure_sup_6_kernel_size_meaning.pdf,Supp_Figure_VI.pdf
-#figure_sup_7_mle_isotropic.pdf,Supp_Figure_VII.pdf
-#figure_sup_8_crossvalidation_prediction_accuracy.pdf,Supp_Figure_VIII.pdf
-#figure_sup_9_crossvalidation_rasters.pdf,Supp_Figure_IX.pdf
+Supp_Figure_01.pdf,   figure_sup_25_multivar_comparison_scatter.pdf
+Supp_Figure_02.pdf,   figure_sup_26_multivar_comparison_capture_shotgun_mds_emu.pdf
+Supp_Figure_03.pdf,   figure_sup_14_pca_proj.pdf
+Supp_Figure_04.pdf,   figure_sup_23_mds_with_highlighted_individuals.pdf
+Supp_Figure_05.pdf,   figure_sup_18_interpolation_map_matrix_pca_proj.pdf
+Supp_Figure_06.pdf,   figure_sup_11_timepillars.pdf
+Supp_Figure_I.pdf,    figure_sup_24_multivar_comparison_summary.pdf
+Supp_Figure_II.pdf,   figure_sup_15_distance_correlation.pdf
+Supp_Figure_III.pdf,  figure_sup_1_semivariogram.pdf
+Supp_Figure_IV.pdf,   figure_sup_2_semivariogram_space_time.pdf
+Supp_Figure_V.pdf,    figure_sup_3_semivariogram_fitting.pdf
+Supp_Figure_VI.pdf,   figure_sup_4_semivariogram_nugget.pdf
+Supp_Figure_VII.pdf,  figure_sup_5_mle_anisotropic.pdf
+Supp_Figure_VIII.pdf, figure_sup_6_kernel_size_meaning.pdf
+Supp_Figure_IX.pdf,   figure_sup_7_mle_isotropic.pdf
+Supp_Figure_X.pdf,    figure_sup_8_crossvalidation_prediction_accuracy.pdf
+Supp_Figure_XI.pdf,   figure_sup_9_crossvalidation_rasters.pdf
+
+
 #figure_sup_10_rearview_distance.pdf,Supp_Figure_XIX.pdf
 #figure_sup_11_timepillars.pdf,Supp_Figure_04.pdf
 #figure_sup_12_direction_windrose_matrix.pdf,Supp_Figure_05.pdf
