@@ -21,37 +21,37 @@ i=$((SGE_TASK_ID - 1))
 echo Index: ${i}
 
 # parameters
+dimension_to_explore=(C1 C2 C3 C4 C5 C6 C7 C8 C9 C10)
 multivar_to_explore=(mds emu pca_proj)
 snpset_to_explore=(u f)
-dimension_to_explore=(C1 C2 C3 C4 C5 C6 C7 C8 C9 C10)
 ds_to_explore=($(seq 100 100 1500))
 dt_to_explore=($(seq 100 100 1500))
-# 3*2*10*15*15 = 13500
+# 10*3*2*15*15 = 13500
 
-jobs=$((${#multivar_to_explore[@]}*${#snpset_to_explore[@]}*${#dimension_to_explore[@]}*${#ds_to_explore[@]}*${#dt_to_explore[@]}))
+jobs=$((${#dimension_to_explore[@]}*${#multivar_to_explore[@]}*${#snpset_to_explore[@]}*${#ds_to_explore[@]}*${#dt_to_explore[@]}))
 
 echo Number of jobs: $jobs
 
+dimensions=()
 mutivars=()
 snpsets=()
-dimensions=()
 dss=()
 dts=()
 
 # parameter permutations
-for multivar in "${multivar_to_explore[@]}"
+for multivar in "${dimension_to_explore[@]}"
 do
-  for snpset in "${snpset_to_explore[@]}"
+  for snpset in "${multivar_to_explore[@]}"
   do
-    for dimension in "${dimension_to_explore[@]}"
+    for dimension in "${snpset_to_explore[@]}"
     do
       for ds in "${ds_to_explore[@]}"
       do
         for dt in "${dt_to_explore[@]}"
         do
+          dimensions+=($dimension)
           multivars+=($multivar)
           snpsets+=($snpset)
-          dimensions+=($dimension)
           dss+=($ds)
           dts+=($dt)
         done
@@ -60,15 +60,15 @@ do
   done
 done
 
+current_dimensions=${dimensions[${i}]}
 current_multivar=${multivars[${i}]}
 current_snpset=${snpsets[${i}]}
-current_dimensions=${dimensions[${i}]}
 current_ds=${dss[${i}]}
 current_dt=${dts[${i}]}
 
+echo dim: ${current_dimensions}
 echo multivar: ${current_multivar}
 echo snpset: ${current_snpset}
-echo dim: ${current_dimensions}
 echo ds: ${current_ds}
 echo dt: ${current_dt}
 
