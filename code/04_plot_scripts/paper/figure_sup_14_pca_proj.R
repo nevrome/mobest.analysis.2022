@@ -58,7 +58,7 @@ p_C1C5 <- p_pca(C1, C5, C1, -1) + theme(legend.position = "none")
 
 total <- cowplot::plot_grid(
   p_C1C2, p_C3C2, p_C1C3, p_legend, p_C1C4, p_C1C5,
-  nrow = 3, ncol = 2, labels = c("A", "B", "C", NA),
+  nrow = 3, ncol = 2, labels = c("A", "B", "C", NA, "D", "E"),
   rel_heights = c(1,1,1), align = "hv", axis = "l"
 )
 

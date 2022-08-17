@@ -30,7 +30,7 @@ assoc <- read_assoc("data/genotype_data/snp_subsets/plink.assoc")
 
 # select SNPs to remove based on a simple threshold 
 bad_snps <- assoc %>%
-  dplyr::filter(P < 10^-3) %$%
+  dplyr::filter(P < 0.001) %$%
   SNP
 
 # read current .bim file to create a bim file without the bad snps
