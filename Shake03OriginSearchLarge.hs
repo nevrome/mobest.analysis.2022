@@ -16,14 +16,14 @@ main = shakeArgs myShakeOpts $ do
     , dataOriginSearch "no_data_windows.RData"
     ]
 
-  code03 "04b_sge_large_origin_search.shq" %$
-    [ code03 "04a_large_origin_search.R"
-    , dataGeno "janno_final.RData"
-    , dataSpatial "extended_area.RData"
-    , dataOriginSearch "default_kernset.RData"
-    , dataOriginSearch "retrospection_distances.RData"
-    ] -->
-    [ dataOriginSearchLarge "ovs_sample_1.RData" ]
+--  code03 "04b_sge_large_origin_search.shq" %$
+--    [ code03 "04a_large_origin_search.R"
+--    , dataGeno "janno_final.RData"
+--    , dataSpatial "extended_area.RData"
+--    , dataOriginSearch "default_kernset.RData"
+--    , dataOriginSearch "retrospection_distances.RData"
+--    ] -->
+--    [ dataOriginSearchLarge "ovs_sample_1.RData" ]
 
   code03 "04c_compile_large_origin_search_runs.R" %$
     [ dataOriginSearchLarge "ovs_sample_1.RData"
