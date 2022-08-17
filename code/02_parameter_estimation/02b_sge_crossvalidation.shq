@@ -39,11 +39,11 @@ dss=()
 dts=()
 
 # parameter permutations
-for multivar in "${dimension_to_explore[@]}"
+for dimension in "${dimension_to_explore[@]}"
 do
-  for snpset in "${multivar_to_explore[@]}"
+  for multivar in "${multivar_to_explore[@]}"
   do
-    for dimension in "${snpset_to_explore[@]}"
+    for snpset in "${snpset_to_explore[@]}"
     do
       for ds in "${ds_to_explore[@]}"
       do
