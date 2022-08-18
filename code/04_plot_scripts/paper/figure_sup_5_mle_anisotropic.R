@@ -32,10 +32,9 @@ p_theta <- mle_ani_theta %>%
     scales = "free_y",
     labeller = label_parsed
   ) +
-  geom_jitter(
+  geom_point(
     aes(x = mle_method, y = value, fill = mle_method),
     size = 2,
-    height = 0,
     shape = 21
   ) +
   guides(fill = "none") +
@@ -55,10 +54,9 @@ p_nugget <- mle_ani_nugget %>%
     scales = "free_y",
     labeller = label_parsed
   ) +
-  geom_jitter(
+  geom_point(
     aes(x = mle_method, y = value, fill = mle_method),
     size = 2,
-    height = 0,
     shape = 21
   ) +
   guides(fill = "none") +
