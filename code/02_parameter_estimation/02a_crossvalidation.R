@@ -1,4 +1,8 @@
+# run all:
 # qsub code/02_parameter_estimation/02b_sge_crossvalidation.shq
+
+# run one (in case a script randomly fails when running all): 
+# qsub -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=50G -now n -V -j y -o ~/log -N fillGaps singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/02a_crossvalidation.R "11772" "pca_proj" "u" "C9" "500" "1300"
 
 library(magrittr)
 
