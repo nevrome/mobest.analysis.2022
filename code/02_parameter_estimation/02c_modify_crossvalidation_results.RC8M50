@@ -82,17 +82,19 @@ crossvalidation_multivar_comparison <- furrr::future_pmap_dfr(
         names_from = "dependent_var_id",
         values_from = "difference"
       )
+    # order columns, because it matters below
+    multivar_comparison_raw_wide_ordered <- multivar_comparison_raw_wide %>%
+      dplyr::select(
+        tidyselect::starts_with("C")
+      ) %>%
+        dplyr::select(., colnames(.) %>% readr::parse_number() %>% order())
     # calculate multidim differences
     multivar_comparison_with_multidim_dists <- dplyr::bind_cols(
       dplyr::select(
         multivar_comparison_raw_wide, 
         -tidyselect::starts_with("C")
       ),
-      dplyr::select(
-        multivar_comparison_raw_wide, 
-        -id, -mixing_iteration, -multivar_method, -multivar_fstate
-      ) %>%
-        d_cum_df()
+      multivar_comparison_raw_wide_ordered %>% d_cum_df()
     ) %>%
       tidyr::pivot_longer(
         cols = tidyselect::starts_with("C"),
