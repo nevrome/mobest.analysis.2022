@@ -40,11 +40,11 @@ p2 <- mle_mean_across_iterations %>%
   ) +
   facet_wrap(~dependent_var_id, scales = "free_y") +
   theme_bw() +
-  ylab("Gaussian process log likelihood") +
+  ylab("log likelihood") +
   xlab("Scaling factor") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-p <- cowplot::plot_grid(p1, p2, nrow = 2, align = "v", axis = "lr", rel_heights = c(0.9, 1))
+p <- cowplot::plot_grid(p1, p2, nrow = 2, align = "v", axis = "lr", rel_heights = c(0.9, 1), labels = c("A", "B"))
 
 ggsave(
   "plots/figure_sup_7_mle_isotropic.pdf",

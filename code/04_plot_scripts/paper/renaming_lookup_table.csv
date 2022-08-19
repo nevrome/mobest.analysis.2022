@@ -16,6 +16,7 @@ Supp_Figure_08.pdf,    figure_sup_32_2_genetic_distance_example_maps_large.pdf
 
 Supp_Figure_I.pdf,     figure_sup_24_multivar_comparison_summary.pdf
 Supp_Figure_II.pdf,    figure_sup_15_distance_correlation.pdf
+
 Supp_Figure_III.pdf,   figure_sup_1_semivariogram.pdf
 Supp_Figure_IV.pdf,    figure_sup_3_semivariogram_fitting.pdf
 Supp_Figure_V.pdf,     figure_sup_4_semivariogram_nugget.pdf
@@ -24,7 +25,9 @@ Supp_Figure_VII.pdf,   figure_sup_6_kernel_size_meaning.pdf
 Supp_Figure_VIII.pdf,  figure_sup_7_mle_isotropic.pdf
 Supp_Figure_IX.pdf,    figure_sup_8_crossvalidation_prediction_accuracy.pdf
 Supp_Figure_X.pdf,     figure_sup_9_crossvalidation_rasters.pdf
+
 # Supp_Figure_XI.pdf is the origin search algorithm schema
+
 Supp_Figure_XII.pdf,   figure_sup_27_simulation_real_world_examples.pdf
 Supp_Figure_XIII.pdf,  figure_sup_28_simulation_setup.pdf
 Supp_Figure_XIV.pdf,   figure_sup_29_simulation_scenarios.pdf
