@@ -16,98 +16,77 @@ janno_final <- janno_final %>%
     )))
   )
 
-p_C1 <- interpol_grid %>%
-  dplyr::filter(dependent_var_id %in% "C1_mds_u") %>%
-  ggplot() +
-  geom_sf(data = extended_area, fill = "black") +
-  geom_raster(aes(x, y, fill = mean)) +
-  facet_grid(cols = dplyr::vars(z), rows = dplyr::vars(dependent_var_id)) +
-  geom_sf(data = extended_area, fill = NA, colour = "black") +
-  # geom_point(
-  #   data = . %>% dplyr::filter(sd > (0.15 * diff(range(mean)))),
-  #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
-  # ) +
-  geom_point(
-    data = janno_final,
-    aes(x, y),
-    size = 0.5,
-    color = "white"
-  ) +
-  scale_fill_viridis_c(
-    breaks = seq(-0.1, 0.1, 0.02)
-  ) +
-  theme_bw() +
-  coord_sf(
-    expand = FALSE,
-    crs = epsg3035
-  ) +
-  guides(
-    fill = guide_colorbar(title = "Prediction C1  ", barwidth = 25)
-  ) +
-  theme(
-    legend.position = "bottom",
-    legend.box = "horizontal",
-    legend.title = element_text(size = 12),
-    axis.title = element_blank(),
-    axis.text = element_blank(),
-    legend.text = element_text(size = 12),
-    strip.text = element_text(size = 15),
-    axis.ticks = element_blank(),
-    panel.background = element_rect(fill = "#BFD5E3")
-  )
+p_func <- function(cur_dependent_var, vis_var, legend_label, fill_scale) {
+  interpol_grid %>%
+    dplyr::filter(dependent_var_id %in% cur_dependent_var) %>%
+    ggplot() +
+    geom_sf(data = extended_area, fill = "black") +
+    geom_raster(aes(x, y, fill = .data[[vis_var]])) +
+    facet_grid(cols = dplyr::vars(z), rows = dplyr::vars(dependent_var_id)) +
+    geom_sf(data = extended_area, fill = NA, colour = "black") + 
+    theme_bw() +
+    fill_scale +
+    coord_sf(
+      expand = FALSE,
+      crs = epsg3035
+    ) +
+    guides(
+      fill = guide_colorbar(title = legend_label, barwidth = 25)
+    ) +
+    theme(
+      legend.position = "bottom",
+      legend.box = "horizontal",
+      legend.title = element_text(size = 12),
+      axis.title = element_blank(),
+      axis.text = element_blank(),
+      legend.text = element_text(size = 12),
+      strip.text = element_text(size = 15),
+      axis.ticks = element_blank(),
+      panel.background = element_rect(fill = "#BFD5E3")
+    ) +
+    if (vis_var == "sd") {
+      geom_point(
+        data = janno_final,
+        aes(x, y),
+        size = 0.5,
+        color = "red"
+      )
+    } else {
+      NULL
+    }
+}
 
-p_C2 <- interpol_grid %>%
-  dplyr::filter(dependent_var_id %in% "C2_mds_u") %>%
-  ggplot() +
-  geom_sf(data = extended_area, fill = "black") +
-  geom_raster(aes(x, y, fill = mean)) +
-  facet_grid(cols = dplyr::vars(z), rows = dplyr::vars(dependent_var_id)) +
-  geom_sf(data = extended_area, fill = NA, colour = "black") +
-  # geom_point(
-  #   data = . %>% dplyr::filter(sd > (0.15 * diff(range(mean)))),
-  #   aes(x, y), alpha = 0.8, color = "grey", shape = 4
-  # ) +
-  geom_point(
-    data = janno_final,
-    aes(x, y),
-    size = 0.5,
-    color = "white"
-  ) +
-  scale_fill_viridis_c(
-    breaks = seq(-0.1, 0.1, 0.02),
-    option = "magma"
-  ) +
-  theme_bw() +
-  coord_sf(
-    expand = FALSE,
-    crs = epsg3035
-  ) +
-  guides(
-    fill = guide_colorbar(title = "Prediction C2  ", barwidth = 25)
-  ) +
-  theme(
-    legend.position = "bottom",
-    legend.box = "horizontal",
-    legend.title = element_text(size = 12),
-    axis.title = element_blank(),
-    axis.text = element_blank(),
-    legend.text = element_text(size = 12),
-    strip.text = element_text(size = 15),
-    axis.ticks = element_blank(),
-    panel.background = element_rect(fill = "#BFD5E3")
-  )
-  
+p_C1_mean <- p_func("C1_mds_u", "mean", "Prediction C1  ",
+                    scale_fill_viridis_c(breaks = seq(-0.1, 0.1, 0.02)))
+p_C2_mean <- p_func("C2_mds_u", "mean", "Prediction C2  ",
+                    scale_fill_viridis_c(breaks = seq(-0.1, 0.1, 0.02), option = "magma"))
+p_C1_sd   <- p_func("C1_mds_u", "sd", "Standard deviation C1  ",
+                    scale_fill_gradientn(breaks = seq(0, 0.1, 0.01),
+                                         colours = c("#424242", "#cccccc", "white")))
+p_C2_sd   <- p_func("C2_mds_u", "sd", "Standard deviation C2  ",
+                    scale_fill_gradientn(breaks = seq(0, 0.1, 0.01),
+                                        colours = c("#424242", "#cccccc", "white")))
 
 # merge plots
-C1_legend <- cowplot::get_legend(p_C1)
-p_C1 <- p_C1 + theme(legend.position = "none")
-C2_legend <- cowplot::get_legend(p_C2)
-p_C2 <- p_C2 + theme(legend.position = "none")
+C1_mean_legend <- cowplot::get_legend(p_C1_mean)
+p_C1_mean <- p_C1_mean + theme(legend.position = "none")
+C2_mean_legend <- cowplot::get_legend(p_C2_mean)
+p_C2_mean <- p_C2_mean + theme(legend.position = "none")
 
-plots <- cowplot::plot_grid(p_C1, p_C2, nrow = 2)
-legends <- cowplot::plot_grid(C1_legend, C2_legend, nrow = 1)
+C1_sd_legend <- cowplot::get_legend(p_C1_sd)
+p_C1_sd <- p_C1_sd + theme(legend.position = "none")
+C2_sd_legend <- cowplot::get_legend(p_C2_sd)
+p_C2_sd <- p_C2_sd + theme(legend.position = "none")
 
-p <- cowplot::plot_grid(plots, legends, nrow = 2, rel_heights = c(1, 0.15))
+plots_C1 <- cowplot::plot_grid(p_C1_mean, p_C1_sd, nrow = 2)
+legends_C1 <- cowplot::plot_grid(C1_mean_legend, C1_sd_legend, nrow = 1)
+p_C1 <- cowplot::plot_grid(plots_C1, legends_C1, nrow = 2, rel_heights = c(1, 0.15))
+
+plots_C2 <- cowplot::plot_grid(p_C2_mean, p_C2_sd, nrow = 2)
+legends_C2 <- cowplot::plot_grid(C2_mean_legend, C2_sd_legend, nrow = 1)
+p_C2 <- cowplot::plot_grid(plots_C2, legends_C2, nrow = 2, rel_heights = c(1, 0.15))
+
+p <- cowplot::plot_grid(p_C1, p_C2, nrow = 2, rel_heights = c(1, 1))
 
 ggsave(
   "plots/figure_3_interpolation_map_matrix.pdf",
@@ -115,7 +94,7 @@ ggsave(
   device = "pdf",
   scale = 0.5,
   dpi = 300,
-  width = 770, height = 300, units = "mm",
+  width = 770, height = 600, units = "mm",
   limitsize = F,
   bg = "white"
 )
