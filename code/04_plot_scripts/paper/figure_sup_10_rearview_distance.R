@@ -1,16 +1,24 @@
 library(ggplot2)
 library(magrittr)
 
-load("data/origin_search/kernel_theta_data.RData")
-ktd_mds2 <- kernel_theta_data %>% dplyr::mutate(run = "2D MDS")
-load("data/origin_search/kernel_theta_data_mds3.RData")
-ktd_mds3 <- kernel_theta_data %>% dplyr::mutate(run = "3D MDS")
+load("data/parameter_exploration/crossvalidation_best_kernels.RData")
+load("data/origin_search/retrospection_distances.RData")
 
-get_dist <- function(x, ktd) {
-  ktd %>%
-    dplyr::filter(k < x) %>%
-    head(1) %$% dist_p1_p2
-}
+crossvalidation_best_kernels %>%
+  dplyr::filter(
+    dependent_var_id %in% c("C1_mds_u", "C2_mds_u") |
+      dependent_var_id %in% c(
+        "C1_pca_proj_u",
+        "C2_pca_proj_u",
+        "C3_pca_proj_u",
+        "C4_pca_proj_u",
+        "C5_pca_proj_u"
+      )
+  )
+
+tidyr::crossing()
+
+# WIP
 
 settings <- dplyr::bind_rows(
     tibble::tibble(
@@ -23,7 +31,7 @@ settings <- dplyr::bind_rows(
       )
     ),
     tibble::tibble(
-      run = "3D MDS",
+      run = "5D projected PCA",
       ptitle = "3D\\,MDS",
       k = c(0.5),
       kernel_width = purrr::map_dbl(k, get_dist, ktd_mds3),
