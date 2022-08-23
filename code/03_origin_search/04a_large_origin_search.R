@@ -66,30 +66,48 @@ spatial_pred_grid <- mobest::create_prediction_grid(
 probability_grid <- mobest::locate_multi(
   independent = janno_final_spatpos_multi,
   dependent = mobest::create_obs_multi(
-    MDS2 = mobest::create_obs(
+    mobi = mobest::create_obs(
       C1_mds_u = janno_final$C1_mds_u,
-      C2_mds_u = janno_final$C2_mds_u
+      C2_mds_u = janno_final$C2_mds_u,
+      C1_pca_proj_u = janno_final$C1_pca_proj_u,
+      C2_pca_proj_u = janno_final$C2_pca_proj_u,
+      C3_pca_proj_u = janno_final$C3_pca_proj_u,
+      C4_pca_proj_u = janno_final$C4_pca_proj_u,
+      C5_pca_proj_u = janno_final$C5_pca_proj_u
     )
   ),
   kernel = mobest::create_kernset_multi(
-    MDS2 = default_kernset
+    mobi = default_kernset
   ),
   search_independent = janno_search_spatpos_multi,
   search_dependent = mobest::create_obs_multi(
-    MDS2 = mobest::create_obs(
+    mobi = mobest::create_obs(
       C1_mds_u = janno_search$C1_mds_u,
-      C2_mds_u = janno_search$C2_mds_u
+      C2_mds_u = janno_search$C2_mds_u,
+      C1_pca_proj_u = janno_search$C1_pca_proj_u,
+      C2_pca_proj_u = janno_search$C2_pca_proj_u,
+      C3_pca_proj_u = janno_search$C3_pca_proj_u,
+      C4_pca_proj_u = janno_search$C4_pca_proj_u,
+      C5_pca_proj_u = janno_search$C5_pca_proj_u
     )
   ),
   search_space_grid = spatial_pred_grid,
-  search_time = -retrospection_distances["default"],
+  search_time = -retrospection_distances,#["default"],
   search_time_mode = "relative"
 )
 
-prob_product_grid <- mobest::multiply_dependent_probabilities(probability_grid)
+prob_product_grid_mds2 <- probability_grid %>%
+  dplyr::filter(dependent_var_id %in% c("C1_mds_u", "C2_mds_u")) %>%
+  mobest::multiply_dependent_probabilities()
+
+prob_product_grid_pca5 <- probability_grid %>%
+  dplyr::filter(dependent_var_id %in% c(
+    "C1_pca_proj_u", "C2_pca_proj_u", "C3_pca_proj_u", "C4_pca_proj_u", "C5_pca_proj_u"
+  )) %>%
+  mobest::multiply_dependent_probabilities()
 
 # library(ggplot2)
-# p <- prob_product_grid %>%
+# p <- prob_product_grid_pca5 %>%
 #   ggplot() +
 #   geom_raster(aes(x = field_x, y = field_y, fill = probability)) +
 #   facet_wrap(~independent_table_id) +

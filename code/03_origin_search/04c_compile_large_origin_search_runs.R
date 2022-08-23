@@ -53,7 +53,7 @@ no_data_windows <- mobest::find_no_data_windows(origin_summary, region_id)
 #     data = packed_origin_vectors,
 #     mapping = aes(search_z, ov_dist, color = ov_angle_deg)
 #   ) +
-#   facet_wrap(~region_id) +
+#   facet_wrap(~region_id, nrow = 4) +
 #   scale_color_gradientn(colours = c("red", "green", "blue", "red"))
 
 #### save output ####
