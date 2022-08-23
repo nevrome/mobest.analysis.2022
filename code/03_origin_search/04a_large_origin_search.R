@@ -15,7 +15,7 @@ load("data/spatial/extended_area.RData")
 load("data/origin_search/default_kernset.RData")
 load("data/origin_search/retrospection_distances.RData")
 
-age_resampling_runs <- 5 # change to 100 for final run!
+age_resampling_runs <- 3 # change to 100 for final run!
 
 janno_final_spatpos <- purrr::map(
   seq_len(age_resampling_runs), function(age_resampling_run) {
@@ -35,7 +35,7 @@ janno_final_spatpos_multi <- do.call(
 
 janno_search <- dplyr::filter(
     janno_final,
-    region_id != "Other region",
+    region_id %in% c("Britain and Ireland", "Central Europe", "Italy", "Southeastern Europe"),
     Date_BC_AD_Median_Derived >= -7300 &
       Date_BC_AD_Median_Derived <= 1500
   ) %>% dplyr::slice(sample_run)
@@ -58,7 +58,7 @@ janno_search_spatpos_multi <- do.call(
 
 spatial_pred_grid <- mobest::create_prediction_grid(
   extended_area,
-  spatial_cell_size = 100000
+  spatial_cell_size = 100000 # adjust for final run!
 )
 
 #### calculate locate probability ####
