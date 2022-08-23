@@ -3,6 +3,7 @@ library(magrittr)
 load("data/genotype_data/janno_final.RData")
 load("data/spatial/area.RData")
 load("data/spatial/search_area.RData")
+load("data/origin_search/default_kernset.RData")
 
 janno_search <- janno_final %>%
   dplyr::mutate(
@@ -16,6 +17,7 @@ janno_search <- janno_final %>%
 #### basic plot of observations ####
 
 threed <- janno_final %>%
+  tibble::as_tibble() %>%
   dplyr::transmute(
     x = x/1000, 
     y = y/1000,
@@ -66,13 +68,13 @@ model_grid <- mobest::create_model_grid(
       z = janno_final$Date_BC_AD_Median_Derived
     )
   ),
-  dependent = mobest::create_obs(
-    C1_mds_u = janno_final$C1_mds_u
+  dependent = mobest::create_obs_multi(
+    age_median = mobest::create_obs(
+      C1_mds_u = janno_final$C1_mds_u
+    )
   ),
   kernel = mobest::create_kernset_multi(
-    kernel1 = mobest::create_kernset(
-      C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
-    )
+    age_median = default_kernset
   ),
   prediction_grid = mobest::create_spatpos_multi(
     timeslice = mobest::create_prediction_grid(
@@ -104,8 +106,17 @@ threedinter <- interpol_grid %>%
     ],
     alpha = (1 - (sd - min(sd)) / (max(sd) - min(sd))) * 0.9,
     mean = mean,
-    sd = sd
-  )
+    sd = sd,
+    sd_color = #grDevices::colorRampPalette(c("black", "white"))
+      viridis::plasma(direction = -1, 50)[
+        as.numeric(cut(sd, breaks = 50))
+      ]
+  ) %>%
+  dplyr::filter(
+    x >= min(threed$x) & x <= max(threed$x) &
+      y >= min(threed$y) & y <= max(threed$y)
+  ) %>%
+  dplyr::arrange(dplyr::desc(x))
 
 # plot
 png(filename = "plots/presentation/3D_plot_gpr_C1.png", width = 22, height = 14, units = "cm", res = 300)
@@ -122,7 +133,7 @@ s <- scatterplot3d::scatterplot3d(
 
 cs <- s$xyz.convert(threedinter$x, threedinter$y, threedinter$z)
 points(
-  cs$x, cs$y, lwd = 0.1, pch = 18, cex = 0.8,
+  cs$x, cs$y, lwd = 0.1, pch = 16, cex = 0.7,
   col = ggplot2::alpha(threedinter$color, threedinter$alpha * 0.2)
 )
 
@@ -139,9 +150,10 @@ png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice.png", width = 22, he
 
 s <- scatterplot3d::scatterplot3d(
   threedinter_timeslice$x, threedinter_timeslice$y, threedinter_timeslice$z, 
-  color = ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
+  #color = ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
+  color = threedinter_timeslice$color,
   xlim = range(threed$x), ylim = range(threed$y),
-  lwd = 0.1, pch = 18, cex.symbols = 0.8,
+  lwd = 0.1, pch = 16, cex.symbols = 0.7,
   angle = 70,
   xlab = "x", ylab = "y", zlab = "time calBC/AD",
   col.axis = "grey",
@@ -152,24 +164,93 @@ s <- scatterplot3d::scatterplot3d(
 s$box3d()
 dev.off()
 
-#### plot with one timeslice, z-axis C1, old angle ####
+#### error plot ####
 
-png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1a.png", width = 22, height = 14, units = "cm", res = 300)
+z_dist <- 1000
+
+threed_around_z_below <- threed %>%
+  dplyr::filter(z > -5600-z_dist & z < -5600)
+threed_around_z_above <- threed %>%
+  dplyr::filter(z > -5600 & z < -5600+z_dist)
+
+png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_error.png", width = 22, height = 14, units = "cm", res = 300)
 
 s <- scatterplot3d::scatterplot3d(
-  threedinter_timeslice$x, threedinter_timeslice$y, threedinter_timeslice$mean, 
-  color = threedinter_timeslice$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
+  threed_around_z_below$x, threed_around_z_below$y, threed_around_z_below$z, 
+  color = "grey",
   xlim = range(threed$x), ylim = range(threed$y),
   lwd = 0.1, pch = 18, cex.symbols = 0.8,
   angle = 70,
-  xlab = "x", ylab = "y", zlab = "MDS C1",
+  xlab = "x", ylab = "y", zlab = "time calBC/AD",
   col.axis = "grey",
-  zlim = c(-0.11, 0.11),
+  zlim = c(-8000, 2000),
   mar = c(2.7, 2.7, 0, 2)
+)
+
+error_plane <- s$xyz.convert(
+  threedinter_timeslice$x,
+  threedinter_timeslice$y,
+  threedinter_timeslice$z
+)
+points(
+  error_plane$x, error_plane$y,
+  col = ggplot2::alpha(threedinter_timeslice$sd_color, 0.4),
+  pch = 16, cex = 0.7,
+  xlim = range(threed$x), ylim = range(threed$y)
+)
+
+above <- s$xyz.convert(
+  threed_around_z_above$x,
+  threed_around_z_above$y,
+  threed_around_z_above$z
+)
+points(
+  above$x, above$y,
+  col = "red",
+  pch = 18, cex = 0.8
 )
 
 s$box3d()
 dev.off()
+
+#### rotated ####
+
+png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_rotated.png", width = 22, height = 14, units = "cm", res = 300)
+
+s <- scatterplot3d::scatterplot3d(
+  threedinter_timeslice$x, threedinter_timeslice$y, threedinter_timeslice$z, 
+  #color = ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
+  color = threedinter_timeslice$color,
+  xlim = range(threed$x), ylim = range(threed$y),
+  lwd = 0.1, pch = 16, cex.symbols = 0.7,
+  angle = -70,
+  xlab = "x", ylab = "y", zlab = "time calBC/AD",
+  col.axis = "grey",
+  zlim = c(-8000, 2000),
+  mar = c(2.7, 2, 0, 2.7)
+)
+
+s$box3d()
+dev.off()
+
+#### plot with one timeslice, z-axis C1, old angle ####
+
+# png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1a.png", width = 22, height = 14, units = "cm", res = 300)
+# 
+# s <- scatterplot3d::scatterplot3d(
+#   threedinter_timeslice$x, threedinter_timeslice$y, threedinter_timeslice$mean, 
+#   color = threedinter_timeslice$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
+#   xlim = range(threed$x), ylim = range(threed$y),
+#   lwd = 0.1, pch = 18, cex.symbols = 0.8,
+#   angle = 70,
+#   xlab = "x", ylab = "y", zlab = "MDS C1",
+#   col.axis = "grey",
+#   zlim = c(-0.11, 0.11),
+#   mar = c(2.7, 2.7, 0, 2)
+# )
+# 
+# s$box3d()
+# dev.off()
 
 #### plot with one timeslice, z-axis C1 ####
 
@@ -177,9 +258,9 @@ png(filename = "plots/presentation/3D_plot_gpr_C1_timeslice_zC1b.png", width = 2
 
 s <- scatterplot3d::scatterplot3d(
   threedinter_timeslice$x, threedinter_timeslice$y, threedinter_timeslice$mean, 
-  color = threedinter_timeslice$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
+  color = threedinter_timeslice$color,
   xlim = range(threed$x), ylim = range(threed$y),
-  lwd = 0.1, pch = 18, cex.symbols = 0.8,
+  lwd = 0.1, pch = 16, cex.symbols = 0.7,
   angle = -70,
   xlab = "x", ylab = "y", zlab = "MDS C1",
   col.axis = "grey",
@@ -207,7 +288,7 @@ s <- scatterplot3d::scatterplot3d(
   threedinter_timeslice$x, threedinter_timeslice$y, threedinter_timeslice$mean, 
   color = threedinter_timeslice$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
   xlim = range(threed$x), ylim = range(threed$y),
-  lwd = 0.1, pch = 18, cex.symbols = 0.8,
+  lwd = 0.1, pch = 16, cex.symbols = 0.7,
   angle = -70,
   xlab = "x", ylab = "y", zlab = "MDS C1",
   col.axis = "grey",
@@ -250,7 +331,7 @@ s <- scatterplot3d::scatterplot3d(
   threedinter_timeslice_below$x, threedinter_timeslice_below$y, threedinter_timeslice_below$mean, 
   color = threedinter_timeslice_below$color,#ggplot2::alpha(threedinter_timeslice$color, threedinter_timeslice$alpha),
   xlim = range(threed$x), ylim = range(threed$y),
-  lwd = 0.1, pch = 18, cex.symbols = 0.8,
+  lwd = 0.1, pch = 16, cex.symbols = 0.7,
   angle = -70,
   xlab = "x", ylab = "y", zlab = "MDS C1",
   col.axis = "grey",
@@ -266,7 +347,7 @@ below <- s$xyz.convert(
 points(
   below$x, below$y,
   col = threedinter_timeslice_below$color,
-  pch = 18, cex = 0.8
+  pch = 16, cex = 0.8
 )
 cut_segments(
   seglist[[2]]$x, seglist[[2]]$y,
@@ -296,7 +377,7 @@ above <- s$xyz.convert(
 points(
   above$x, above$y,
   col = threedinter_timeslice_above$color,
-  pch = 18, cex = 0.8
+  pch = 16, cex = 0.8
 )
 cut_segments(
   seglist[[1]]$x, seglist[[1]]$y,
@@ -316,21 +397,27 @@ dev.off()
 
 #### origin search example  ####
 
+library(ggplot2)
+
+load("data/spatial/research_area.RData")
+load("data/spatial/extended_area.RData")
+load("data/spatial/epsg3035.RData")
+
 janno_search <- janno_final %>%
   dplyr::mutate(
     search_z = Date_BC_AD_Median_Derived
   ) %>% dplyr::filter(
     Poseidon_ID %in% c(
-      "Stuttgart_published.DG"
+      #"Stuttgart_published.DG"
       #"RISE434.SG"
-      #"3DT26.SG"
       #"SI-40.SG"
+      "3DT26.SG"
     )
   )
 
 
 spatial_pred_grid <- mobest::create_prediction_grid(
-  area,
+  extended_area,
   spatial_cell_size = 20000
 )
 
@@ -343,14 +430,9 @@ search <- mobest::locate(
   ),
   dependent = mobest::create_obs(
     C1_mds_u = janno_final$C1_mds_u,
-    C2_mds_u = janno_final$C2_mds_u,
-    C3_mds_u = janno_final$C3_mds_u
+    C2_mds_u = janno_final$C2_mds_u
   ),
-  kernel = mobest::create_kernset(
-    C1_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
-    C2_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07),
-    C3_mds_u = mobest::create_kernel(800000, 800000, 800, 0.07)
-  ),
+  kernel = default_kernset,
   search_independent = mobest::create_spatpos(
     id = janno_search$Poseidon_ID,
     x = janno_search$x,
@@ -359,32 +441,25 @@ search <- mobest::locate(
   ),
   search_dependent = mobest::create_obs(
     C1_mds_u = janno_search$C1_mds_u,
-    C2_mds_u = janno_search$C2_mds_u,
-    C3_mds_u = janno_search$C3_mds_u
+    C2_mds_u = janno_search$C2_mds_u
   ),
   search_space_grid = spatial_pred_grid,
-  search_time = -5600,
+  search_time = 150,
   search_time_mode = "absolute"
 )
 
 search_prod <- mobest::multiply_dependent_probabilities(search, omit_dependent_details = F)
 
-library(ggplot2)
-
-load("data/spatial/research_area.RData")
-load("data/spatial/extended_area.RData")
-load("data/spatial/epsg3035.RData")
-
 p <- ggplot() +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(
     data = search_prod,
-    mapping = aes(x = field_x, y = field_y, fill = probability_product),
+    mapping = aes(x = field_x, y = field_y, fill = probability),
   ) +
   annotate(
     "text",
     x = 6700000, y = 4400000, size = 11,
-    label = "1150 calAD"
+    label = "150 calAD"
   ) +
   scale_fill_viridis_c(option = "mako", direction = -1) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
