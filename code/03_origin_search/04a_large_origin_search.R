@@ -15,7 +15,7 @@ load("data/spatial/extended_area.RData")
 load("data/origin_search/default_kernset.RData")
 load("data/origin_search/retrospection_distances.RData")
 
-age_resampling_runs <- 3 # change to 100 for final run!
+age_resampling_runs <- 10 # change to 100 for final run!
 
 janno_final_spatpos <- purrr::map(
   seq_len(age_resampling_runs), function(age_resampling_run) {
@@ -58,7 +58,7 @@ janno_search_spatpos_multi <- do.call(
 
 spatial_pred_grid <- mobest::create_prediction_grid(
   extended_area,
-  spatial_cell_size = 200000 # adjust for final run!
+  spatial_cell_size = 100000 # adjust for final run!
 )
 
 #### calculate locate probability ####

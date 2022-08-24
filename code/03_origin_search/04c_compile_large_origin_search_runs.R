@@ -52,14 +52,14 @@ no_data_windows <- mobest::find_no_data_windows(
 # library(ggplot2)
 # ggplot() +
 #   geom_line(
-#     data = origin_summary,
+#     data = origin_summary %>% dplyr::filter(multivar_method == "pca5"),
 #     mapping = aes(z, ov_dist)
 #   ) +
 #   geom_point(
-#     data = packed_origin_vectors,
+#     data = packed_origin_vectors %>% dplyr::filter(multivar_method == "pca5"),
 #     mapping = aes(search_z, ov_dist, color = ov_angle_deg)
 #   ) +
-#   facet_wrap(~region_id, nrow = 4) +
+#   facet_wrap(search_time~region_id) +
 #   scale_color_gradientn(colours = c("red", "green", "blue", "red"))
 
 #### save output ####
