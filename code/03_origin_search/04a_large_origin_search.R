@@ -58,7 +58,7 @@ janno_search_spatpos_multi <- do.call(
 
 spatial_pred_grid <- mobest::create_prediction_grid(
   extended_area,
-  spatial_cell_size = 100000 # adjust for final run!
+  spatial_cell_size = 200000 # adjust for final run!
 )
 
 #### calculate locate probability ####
@@ -99,7 +99,6 @@ probability_grid <- mobest::locate_multi(
 prob_product_grid_mds2 <- probability_grid %>%
   dplyr::filter(dependent_var_id %in% c("C1_mds_u", "C2_mds_u")) %>%
   mobest::multiply_dependent_probabilities()
-
 prob_product_grid_pca5 <- probability_grid %>%
   dplyr::filter(dependent_var_id %in% c(
     "C1_pca_proj_u", "C2_pca_proj_u", "C3_pca_proj_u", "C4_pca_proj_u", "C5_pca_proj_u"
@@ -116,7 +115,12 @@ prob_product_grid_pca5 <- probability_grid %>%
 #     mapping = aes(x = x, y = y), colour = "red"
 #   )
 
-origin_vectors <- mobest::determine_origin_vectors(prob_product_grid, independent_table_id)
+origin_vectors_mds2 <- prob_product_grid_mds2 %>%
+  mobest::determine_origin_vectors(independent_table_id, search_time) %>%
+  dplyr::mutate(multivar_method = "mds2")
+origin_vectors_pca5 <- prob_product_grid_pca5 %>%
+  mobest::determine_origin_vectors(independent_table_id, search_time) %>%
+  dplyr::mutate(multivar_method = "pca5")
 
 # p + geom_point(
 #     data = origin_vectors,
@@ -124,6 +128,7 @@ origin_vectors <- mobest::determine_origin_vectors(prob_product_grid, independen
 #   )
 
 #### save result ####
+origin_vectors <- rbind(origin_vectors_mds2, origin_vectors_pca5)
 
 save(origin_vectors, file = paste0(
   "data/origin_search/large_origin_search/ovs_sample_", sample_run, ".RData"

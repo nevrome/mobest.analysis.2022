@@ -30,18 +30,24 @@ origin_vectors <- dplyr::mutate(
     ), function(x) { x/1000 })
   )
 
-packed_origin_vectors <- mobest::pack_origin_vectors(origin_vectors, region_id)
+packed_origin_vectors <- mobest::pack_origin_vectors(
+  origin_vectors,
+  region_id, multivar_method, search_time
+)
 
 origin_summary <- mobest::summarize_origin_vectors(
   packed_origin_vectors,
-  region_id,
+  region_id, multivar_method, search_time,
   window_start = -8000,
   window_stop = 2000,
   window_width = 400,
   window_step = 50
 )
 
-no_data_windows <- mobest::find_no_data_windows(origin_summary, region_id)
+no_data_windows <- mobest::find_no_data_windows(
+  origin_summary,
+  region_id, multivar_method, search_time
+)
 
 # library(ggplot2)
 # ggplot() +
