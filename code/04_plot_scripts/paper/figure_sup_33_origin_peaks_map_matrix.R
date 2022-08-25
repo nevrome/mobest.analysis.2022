@@ -1,11 +1,12 @@
 library(magrittr)
+library(ggplot2)
 
 load("data/origin_search/packed_origin_vectors.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 
 packed_origin_vectors <- packed_origin_vectors %>%
-  dplyr::filter(multivar_method == "mds2", search_time == -667)
+  dplyr::filter(multivar_method == "pca5", search_time == -667)
 
 vecs_grouped <- packed_origin_vectors %>%
   dplyr::mutate(

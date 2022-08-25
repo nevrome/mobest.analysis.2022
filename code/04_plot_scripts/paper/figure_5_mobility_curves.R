@@ -6,11 +6,14 @@ load("data/origin_search/origin_summary.RData")
 load("data/origin_search/no_data_windows.RData")
 
 packed_origin_vectors <- packed_origin_vectors %>%
-  dplyr::filter(multivar_method == "mds2", search_time == -667)
+  dplyr::filter(multivar_method == "pca5", search_time == -667) %>%
+  dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Italy", "Southeastern Europe"))
 origin_summary <- origin_summary %>%
-  dplyr::filter(multivar_method == "mds2", search_time == -667)
+  dplyr::filter(multivar_method == "pca5", search_time == -667) %>%
+  dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Italy", "Southeastern Europe"))
 no_data_windows <- no_data_windows %>%
-  dplyr::filter(multivar_method == "mds2", search_time == -667)
+  dplyr::filter(multivar_method == "pca5", search_time == -667) %>%
+  dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Italy", "Southeastern Europe"))
 
 no_data_windows$region_id <- factor(
   no_data_windows$region_id, levels = levels(janno_final$region_id)
