@@ -35,7 +35,7 @@ janno_final_spatpos_multi <- do.call(
 
 janno_search <- dplyr::filter(
     janno_final,
-    !region_id %in% c("Britain and Ireland", "Central Europe", "Italy", "Southeastern Europe"), # edit!
+    region_id %in% c("Britain and Ireland", "Central Europe", "Italy", "Southeastern Europe"),
     Date_BC_AD_Median_Derived >= -7300 &
       Date_BC_AD_Median_Derived <= 1500
   ) %>% dplyr::slice(sample_run)
@@ -131,5 +131,5 @@ origin_vectors_pca5 <- prob_product_grid_pca5 %>%
 origin_vectors <- rbind(origin_vectors_mds2, origin_vectors_pca5)
 
 save(origin_vectors, file = paste0(
-  "data/origin_search/large_origin_search/ovs_sample_", 1631+sample_run, ".RData"
+  "data/origin_search/large_origin_search/ovs_sample_", sample_run, ".RData"
 ))
