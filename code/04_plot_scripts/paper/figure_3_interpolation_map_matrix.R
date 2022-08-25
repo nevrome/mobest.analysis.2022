@@ -20,9 +20,22 @@ p_func <- function(cur_dependent_var, vis_var, legend_label, fill_scale) {
   interpol_grid %>%
     dplyr::filter(dependent_var_id %in% cur_dependent_var) %>%
     ggplot() +
+    facet_grid(
+      cols = dplyr::vars(z), rows = dplyr::vars(dependent_var_id),
+      labeller = labeller(
+        z = as_labeller(
+          interpol_grid %>%
+            dplyr::mutate(
+              z_label = paste0(abs(z), " ", ifelse(z < 0, "BC", "AD"))
+            ) %>%
+            dplyr::select(z, z_label) %>%
+            unique %>%
+            tibble::deframe()
+        )
+      )
+    ) +
     geom_sf(data = extended_area, fill = "black") +
     geom_raster(aes(x, y, fill = .data[[vis_var]])) +
-    facet_grid(cols = dplyr::vars(z), rows = dplyr::vars(dependent_var_id)) +
     geom_sf(data = extended_area, fill = NA, colour = "black") + 
     theme_bw() +
     fill_scale +

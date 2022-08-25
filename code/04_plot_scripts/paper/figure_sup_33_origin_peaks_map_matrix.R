@@ -14,7 +14,10 @@ vecs_grouped <- packed_origin_vectors %>%
         breaks = seq(-7500, 1500, 500), 
         labels = seq(-7250, 1250, 500),
         include.lowest = T
-      )))
+      ))),
+    time_window_label = paste0(
+      abs(time_window-250), " - ", abs(time_window+250), " ", ifelse(time_window < 0, "BC", "AD")
+      )
   ) %>%
   dplyr::group_by(time_window) %>%
   dplyr::mutate(
@@ -23,13 +26,23 @@ vecs_grouped <- packed_origin_vectors %>%
   dplyr::ungroup()
 
 p <- ggplot() +
-  facet_wrap(~time_window, nrow = 3, ncol = 6) +
+  facet_wrap(
+    ~time_window, nrow = 3, ncol = 6,
+    labeller = labeller(
+      time_window = as_labeller(
+        vecs_grouped %>%
+          dplyr::select(time_window, time_window_label) %>%
+          unique %>%
+          tibble::deframe()
+      )
+    )
+  ) +
   geom_sf(data = extended_area, fill = "black") +
   geom_segment(
     data = vecs_grouped,
     aes(x = search_x * 1000, y = search_y * 1000, xend = field_x * 1000, yend = field_y * 1000),
     color = "white",
-    size = 0.05
+    size = 0.1
   ) +
   geom_point(data = vecs_grouped, aes(x = search_x * 1000, y = search_y * 1000), color = "white", size = 0.3) +
   geom_point(data = vecs_grouped, aes(x = field_x * 1000, y = field_y * 1000, color = search_z_in_window), size = 0.5) +
