@@ -5,16 +5,43 @@ library(ggplot2)
 
 # curves
 load("data/genotype_data/janno_final.RData")
-load("data/origin_search/origin_grid_mean.RData")
-load("data/origin_search/moving_origin_grid.RData")
+load("data/origin_search/packed_origin_vectors.RData")
+load("data/origin_search/origin_summary.RData")
 load("data/origin_search/no_data_windows.RData")
 
-# filter for central europe
+# filter and prep daza
 
 janno_final %<>% dplyr::filter(region_id == "Britain and Ireland")
-origin_grid_mean %<>% dplyr::filter(region_id == "Britain and Ireland")
-moving_origin_grid %<>% dplyr::filter(region_id == "Britain and Ireland")
-no_data_windows %<>% dplyr::filter(region_id == "Britain and Ireland")
+packed_origin_vectors <- packed_origin_vectors %>%
+  dplyr::filter(multivar_method == "pca5", search_time == -667) %>%
+  dplyr::filter(region_id == "Britain and Ireland")
+origin_summary <- origin_summary %>%
+  dplyr::filter(multivar_method == "pca5", search_time == -667) %>%
+  dplyr::filter(region_id == "Britain and Ireland")
+no_data_windows <- no_data_windows %>%
+  dplyr::filter(multivar_method == "pca5", search_time == -667) %>%
+  dplyr::filter(region_id == "Britain and Ireland")
+
+packed_origin_vectors_time <- packed_origin_vectors %>%
+  dplyr::left_join(
+    janno_final %>% dplyr::select(
+      search_id = Poseidon_ID,
+      Date_BC_AD_Median_Derived,
+      Date_BC_AD_Prob
+    ),
+    by = "search_id"
+  ) %>%
+  dplyr::bind_cols(
+    .,
+    purrr::map_dfr(.$Date_BC_AD_Prob, function(x) {
+      start_stop <- x %>% dplyr::filter(two_sigma) %>% dplyr::slice(c(1,dplyr::n()))
+      tibble::tibble(
+        Date_BC_AD_Start_Derived = start_stop$age[1],
+        Date_BC_AD_Stop_Derived = start_stop$age[2]
+      )
+    })
+  ) %>%
+  dplyr::select(-Date_BC_AD_Prob)
 
 #### mobility estimator curves ####
 
@@ -30,39 +57,39 @@ p_estimator <- ggplot() +
     fill = "lightgrey"
   ) +
   geom_ribbon(
-    data = moving_origin_grid,
+    data = origin_summary,
     mapping = aes(
       x = z,
-      ymin = directed_mean_spatial_distance - 2*se_spatial_distance,
-      ymax = directed_mean_spatial_distance + 2*se_spatial_distance
+      ymin = ov_dist - 2*ov_dist_se,
+      ymax = ov_dist + 2*ov_dist_se
     ),
     fill = "lightgrey",
   ) +
   geom_line(
-    data = moving_origin_grid,
-    mapping = aes(x = z, y = directed_mean_spatial_distance),
+    data = origin_summary,
+    mapping = aes(x = z, y = ov_dist),
     size = 0.4,
     colour = "darkgrey"
   ) +
   geom_errorbarh(
-    data = origin_grid_mean,
+    data = packed_origin_vectors_time,
     mapping = aes(
-      y = directed_mean_spatial_distance, 
-      xmax = mean_search_z + sd_search_z,
-      xmin = mean_search_z - sd_search_z,
-      color = mean_angle_deg
+      y = ov_dist,
+      xmax = Date_BC_AD_Stop_Derived,
+      xmin = Date_BC_AD_Start_Derived,
+      color = ov_angle_deg
     ),
     alpha = 1,
     size = 0.2,
     height = 40
   ) +
   geom_errorbar(
-    data = origin_grid_mean,
+    data = packed_origin_vectors,
     mapping = aes(
-      x = mean_search_z, 
-      ymax = directed_mean_spatial_distance + undirected_sd_spatial_distance,
-      ymin = directed_mean_spatial_distance - undirected_sd_spatial_distance,
-      color = mean_angle_deg
+      x = search_z, 
+      ymax = ov_dist + ov_dist_sd,
+      ymin = ov_dist - ov_dist_sd,
+      color = ov_angle_deg
     ),
     alpha = 1,
     size = 0.2,
@@ -77,9 +104,11 @@ p_estimator <- ggplot() +
     fill = "white"
   ) +
   geom_point(
-    data = origin_grid_mean,
+    data = packed_origin_vectors,
     mapping = aes(
-      x = mean_search_z, y = directed_mean_spatial_distance, color = mean_angle_deg
+      x = search_z,
+      y = ov_dist,
+      color = ov_angle_deg
     ),
     alpha = 1,
     size = 3,
@@ -91,10 +120,10 @@ p_estimator <- ggplot() +
         ~search_id, ~label_name,
         "3DT26.SG", "3DRIF-26"
       )
-      origin_grid_mean %>% dplyr::right_join(lookup, by = "search_id")
+      packed_origin_vectors %>% dplyr::right_join(lookup, by = "search_id")
     },
     mapping = aes(
-      x = mean_search_z, y = directed_mean_spatial_distance, label = label_name
+      x = search_z, y = ov_dist, label = label_name
     ),
     ylim = c(2500, NA),
     segment.size      = 0.3,
@@ -107,9 +136,10 @@ p_estimator <- ggplot() +
     alpha = 1
   ) +
   geom_point(
-    data = janno_final %>% dplyr::filter(region_id != "Other region"),
+    data = janno_final %>% dplyr::filter(region_id %in% unique(origin_summary$region_id)),
     aes(x = Date_BC_AD_Median_Derived, y = -100),
-    shape = "|"
+    shape = "|",
+    size = 3
   ) +
   theme_bw() +
   theme(
@@ -128,7 +158,7 @@ p_estimator <- ggplot() +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(
     xlim = c(-5000, 1000),
-    ylim = c(-30, max(origin_grid_mean$undirected_mean_spatial_distance, na.rm = T))
+    ylim = c(-30, max(packed_origin_vectors$ov_dist, na.rm = T) - 100)
   )
 
 #### direction legend ####
@@ -165,8 +195,8 @@ p_legend <- tibble::tibble(
 p <- cowplot::ggdraw(p_estimator) +
   cowplot::draw_plot(
     p_legend,
-    x = -0.03, y = 0.55, 
-    width = 0.4, height = 0.4
+    x = -0.035, y = 0.6, 
+    width = 0.37, height = 0.37
   )
 
 ggsave(
