@@ -33,6 +33,8 @@ kernel_theta_data <- expand.grid(
     k_cum = cumsum(k/sum(k))
   )
 
+save(kernel_theta_data, file = "data/origin_search/kernel_theta_data.RData")
+
 retrospection_distance_low <- kernel_theta_data %>%
   dplyr::filter(k < 0.8) %>%
   head(1) %$%
