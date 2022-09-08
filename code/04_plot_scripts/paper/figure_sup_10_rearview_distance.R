@@ -1,40 +1,24 @@
 library(ggplot2)
 library(magrittr)
 
-load("data/parameter_exploration/crossvalidation_best_kernels.RData")
+load("data/origin_search/kernel_theta_data.RData")
 load("data/origin_search/retrospection_distances.RData")
-
-crossvalidation_best_kernels %>%
-  dplyr::filter(
-    dependent_var_id %in% c("C1_mds_u", "C2_mds_u") |
-      dependent_var_id %in% c(
-        "C1_pca_proj_u",
-        "C2_pca_proj_u",
-        "C3_pca_proj_u",
-        "C4_pca_proj_u",
-        "C5_pca_proj_u"
-      )
-  )
-
-tidyr::crossing()
-
-# WIP
 
 settings <- dplyr::bind_rows(
     tibble::tibble(
-      run = "2D MDS",
-      ptitle = c("high-retro", "default", "low-retro"),
-      k = c(0.25, 0.5, 0.75),
-      kernel_width = purrr::map_dbl(k, get_dist, ktd_mds2),
+      run = "MDS2",
+      ptitle = c("MDS2\\ high-retro", "MDS2\\ default", "MDS2\\ low-retro"),
+      k = c(0.2, 0.5, 0.8),
+      kernel_width = rev(retrospection_distances),
       label = latex2exp::TeX(
         paste0("$\\overset{K = ", k, ",\\,\\sqrt{\\theta} = ", kernel_width, "}{", ptitle ,"}$")
       )
     ),
     tibble::tibble(
-      run = "5D projected PCA",
-      ptitle = "3D\\,MDS",
+      run = "PCA5",
+      ptitle = "PCA5",
       k = c(0.5),
-      kernel_width = purrr::map_dbl(k, get_dist, ktd_mds3),
+      kernel_width = retrospection_distances[2],
       label = c(latex2exp::TeX(
         paste0("$\\overset{K = ", k, ",\\,\\sqrt{\\theta} = ", kernel_width, "}{", ptitle ,"}$")
       ))
@@ -45,8 +29,8 @@ set.seed(127)
 
 p <- ggplot() +
   geom_line(
-    data = dplyr::bind_rows(ktd_mds2, ktd_mds3),
-    mapping = aes(dist_p1_p2, k, colour = run),
+    data = kernel_theta_data,
+    mapping = aes(dist_p1_p2, k),
     size = 1
   ) +
   geom_vline(
@@ -58,7 +42,7 @@ p <- ggplot() +
     shape = 4,
     size = 5,
     stroke = 1.5,
-    colour = "black"
+    colour = "red"
   ) +
   ggrepel::geom_label_repel(
     data = settings,
@@ -76,10 +60,11 @@ p <- ggplot() +
     legend.position = "bottom"
   ) +
   xlab("pairwise distance [years]") +
-  ylab("Covariance K")
+  ylab("Covariance K") +
+  scale_y_continuous(breaks = seq(0,1,0.2))
 
 ggsave(
-  "plots/figure_sup_10_rearview_distance.pdf",
+  "plots/figure_sup_10_rearview_distance2.pdf",
   plot = p,
   device = "pdf",
   scale = 0.7,

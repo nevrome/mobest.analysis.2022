@@ -48,7 +48,7 @@ p <- ovs %>% ggplot() +
   # ) +
   geom_point(
     mapping = aes(
-      x = search_z, y = ov_dist.x
+      x = search_z, y = ov_dist.y
     ),
     alpha = 1,
     size = 0.3,
