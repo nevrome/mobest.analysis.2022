@@ -20,28 +20,33 @@ load("data/spatial/epsg3035.RData")
 load("data/genotype_data/janno_final.RData")
 load("data/origin_search/packed_origin_vectors.RData")
 
-samples <- janno_final %>%
-  dplyr::left_join(
-    packed_origin_vectors %>%
-      dplyr::mutate(
-        search_time_mode = dplyr::case_when(
-          search_time == -1015 ~ "high",
-          search_time == -667 ~ "default",
-          search_time == -378 ~ "low"
-        )
-      ) %>%
-      dplyr::filter(ifelse(multivar_method == "pca5", search_time_mode == "default", TRUE)) %>%
-      #dplyr::filter(multivar_method == "mds2" & search_time == -667)
-      tidyr::pivot_wider(
-        id_cols = search_id,
-        names_from = tidyselect::all_of(c("multivar_method", "search_time_mode")),
-        values_from = tidyselect::all_of(c("field_x", "field_y"))
-      ),
-    by = c("Poseidon_ID" = "search_id") 
+packed_wide <- packed_origin_vectors %>%
+  dplyr::mutate(
+    search_time_mode = dplyr::case_when(
+      search_time == -1015 ~ "high",
+      search_time == -667 ~ "default",
+      search_time == -378 ~ "low"
+    )
+  ) %>%
+  dplyr::filter(ifelse(multivar_method == "pca5", search_time_mode == "default", TRUE)) %>%
+  #dplyr::filter(multivar_method == "mds2" & search_time == -667)
+  tidyr::pivot_wider(
+    id_cols = search_id,
+    names_from = tidyselect::all_of(c("multivar_method", "search_time_mode")),
+    values_from = tidyselect::all_of(c("field_x", "field_y"))
+  ) %>%
+  dplyr::mutate(
+    dplyr::across(
+      tidyselect:::where(is.numeric),
+      (\(x) x*1000)
+    )
   )
 
-samples$field_x <- samples$field_x * 1000
-samples$field_y <- samples$field_y * 1000
+samples <- janno_final %>%
+  dplyr::left_join(
+    packed_wide,
+    by = c("Poseidon_ID" = "search_id") 
+  )
 
 composite_dataset <- tibble::tibble(
   sampleID = samples$Poseidon_ID,
@@ -52,7 +57,10 @@ composite_dataset <- tibble::tibble(
   sampleC2MDS = samples$C2_mds_u,
   sampleC1PCA = samples$C1_pca_proj_u,
   sampleC2PCA = samples$C2_pca_proj_u,
-  samples %>% update_coords("field_x", "field_y") %>% set_names(c("sampleFieldX", "sampleFieldY"))
+  samples %>% update_coords("field_x_mds2_high", "field_y_mds2_high"),
+  samples %>% update_coords("field_x_mds2_default", "field_y_mds2_default"),
+  samples %>% update_coords("field_x_mds2_low", "field_y_mds2_low"),
+  samples %>% update_coords("field_x_pca5_default", "field_y_pca5_default")
 )
 
 readr::write_csv(
