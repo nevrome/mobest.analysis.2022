@@ -35,7 +35,7 @@ janno_final_spatpos_multi <- do.call(
 
 janno_search <- dplyr::filter(
     janno_final,
-    region_id %in% c("Britain and Ireland", "Central Europe", "Italy", "Southeastern Europe"),
+    #region_id %in% c("Britain and Ireland", "Central Europe", "Italy", "Southeastern Europe"),
     Date_BC_AD_Median_Derived >= -7300 &
       Date_BC_AD_Median_Derived <= 1500
   ) %>% dplyr::slice(sample_run)
