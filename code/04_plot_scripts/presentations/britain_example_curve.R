@@ -9,18 +9,29 @@ load("data/origin_search/packed_origin_vectors.RData")
 load("data/origin_search/origin_summary.RData")
 load("data/origin_search/no_data_windows.RData")
 
-# filter and prep daza
+# filter and prep data
 
-janno_final %<>% dplyr::filter(region_id == "Britain and Ireland")
+perms <- expand.grid(
+  cur_region_id = packed_origin_vectors$region_id %>% unique() %>%
+    purrr::discard(\(x) x == "Other region"),
+  cur_multivar_method = packed_origin_vectors$multivar_method %>% unique(),
+  cur_search_time = packed_origin_vectors$search_time %>% unique()
+)
+
+purrr::pwalk(
+perms,
+function(cur_region_id, cur_multivar_method, cur_search_time) {
+
+janno_final %<>% dplyr::filter(region_id == cur_region_id)
 packed_origin_vectors <- packed_origin_vectors %>%
-  dplyr::filter(multivar_method == "pca5", search_time == -667) %>%
-  dplyr::filter(region_id == "Britain and Ireland")
+  dplyr::filter(multivar_method == cur_multivar_method, search_time == cur_search_time) %>%
+  dplyr::filter(region_id == cur_region_id)
 origin_summary <- origin_summary %>%
-  dplyr::filter(multivar_method == "pca5", search_time == -667) %>%
-  dplyr::filter(region_id == "Britain and Ireland")
+  dplyr::filter(multivar_method == cur_multivar_method, search_time == cur_search_time) %>%
+  dplyr::filter(region_id == cur_region_id)
 no_data_windows <- no_data_windows %>%
-  dplyr::filter(multivar_method == "pca5", search_time == -667) %>%
-  dplyr::filter(region_id == "Britain and Ireland")
+  dplyr::filter(multivar_method == cur_multivar_method, search_time == cur_search_time) %>%
+  dplyr::filter(region_id == cur_region_id)
 
 packed_origin_vectors_time <- packed_origin_vectors %>%
   dplyr::left_join(
@@ -114,27 +125,27 @@ p_estimator <- ggplot() +
     size = 3,
     shape = 4
   ) +
-  ggrepel::geom_label_repel(
-    data = {
-      lookup <- tibble::tribble(
-        ~search_id, ~label_name,
-        "3DT26.SG", "3DRIF-26"
-      )
-      packed_origin_vectors %>% dplyr::right_join(lookup, by = "search_id")
-    },
-    mapping = aes(
-      x = search_z, y = ov_dist, label = label_name
-    ),
-    ylim = c(2500, NA),
-    segment.size      = 0.3,
-    segment.curvature = 0.3,
-    segment.square    = FALSE,
-    arrow = arrow(length = unit(0.015, "npc")),
-    min.segment.length = unit(0.015, "npc"),
-    point.padding = 20,
-    size = 5,
-    alpha = 1
-  ) +
+  # ggrepel::geom_label_repel(
+  #   data = {
+  #     lookup <- tibble::tribble(
+  #       ~search_id, ~label_name,
+  #       "3DT26.SG", "3DRIF-26"
+  #     )
+  #     packed_origin_vectors %>% dplyr::right_join(lookup, by = "search_id")
+  #   },
+  #   mapping = aes(
+  #     x = search_z, y = ov_dist, label = label_name
+  #   ),
+  #   ylim = c(2500, NA),
+  #   segment.size      = 0.3,
+  #   segment.curvature = 0.3,
+  #   segment.square    = FALSE,
+  #   arrow = arrow(length = unit(0.015, "npc")),
+  #   min.segment.length = unit(0.015, "npc"),
+  #   point.padding = 20,
+  #   size = 5,
+  #   alpha = 1
+  # ) +
   geom_point(
     data = janno_final %>% dplyr::filter(region_id %in% unique(origin_summary$region_id)),
     aes(x = Date_BC_AD_Median_Derived, y = -100),
@@ -157,8 +168,8 @@ p_estimator <- ggplot() +
   ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
   coord_cartesian(
-    xlim = c(-5000, 1000),
-    ylim = c(-30, max(packed_origin_vectors$ov_dist, na.rm = T) - 100)
+    xlim = c(-7500, 1500),
+    ylim = c(-30, 3000)#max(packed_origin_vectors$ov_dist, na.rm = T) - 100)
   )
 
 #### direction legend ####
@@ -200,7 +211,12 @@ p <- cowplot::ggdraw(p_estimator) +
   )
 
 ggsave(
-  "plots/presentation/britain_example.png",
+  sprintf(
+    "plots/presentation/curves/curve_%s_%s_%s.png",
+    cur_region_id,
+    cur_multivar_method,
+    abs(cur_search_time)
+  ),
   plot = p,
   device = "png",
   scale = 0.35,
@@ -209,3 +225,5 @@ ggsave(
   limitsize = F
 )
 
+}
+)
