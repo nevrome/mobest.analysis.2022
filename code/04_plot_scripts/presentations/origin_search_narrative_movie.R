@@ -1,4 +1,4 @@
-# qsub -b y -cwd -q archgen.q -pe smp 32 -l h_vmem=50G -now n -V -j y -o ~/log -N apple singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/04_plot_scripts/presentations/origin_search_narrative_movie.R
+# qsub -b y -cwd -q archgen.q -pe smp 32 -l h_vmem=100G -now n -V -j y -o ~/log -N apple singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/04_plot_scripts/presentations/origin_search_narrative_movie.R
 
 library(magrittr)
 library(ggplot2)
@@ -8,14 +8,14 @@ load("data/spatial/area.RData")
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
-load("data/origin_search/default_kernset_mds2.RData")
+load("data/origin_search/default_kernset.RData")
 
 janno_search <- janno_final %>%
   dplyr::mutate(
     search_z = Date_BC_AD_Median_Derived
   ) %>% dplyr::filter(
     Poseidon_ID %in% c(
-      "3DT26.SG"
+      "Stuttgart_published.DG"
     )
   )
 
@@ -27,39 +27,9 @@ toBCAD <- function(x) {
   )
 }
 
-plot_prob <- function(search_prod, path) {
+plot_prob <- function(id, search_prod) {
   
   p <- ggplot() +
-    facet_wrap(
-      ~search_id,
-      ncol = 2,
-      labeller = ggplot2::labeller(search_id = c(
-        "Stuttgart_published.DG" = paste(
-          "Stuttgart ~5250BC",
-          "Early Neolithic, Linear Pottery culture",
-          "Lazaridis et al. 2014",
-          sep = "\n"
-        ),
-        "RISE434.SG" = paste(
-          "RISE434 ~2750BC",
-          "Late Neolithic, Corded Ware culture",
-          "Allentoft et al. 2015",
-          sep = "\n"
-        ),
-        "3DT26.SG" = paste(
-          "3DRIF-26 ~200AD",
-          "Roman Britain",
-          "Martiniano et al. 2016",
-          sep = "\n"
-        ),
-        "SI-40.SG" = paste(
-          "SI-40 ~1150AD",
-          "Medieval Period, Crusades",
-          "Haber et al. 2019",
-          sep = "\n"
-        )
-      ))
-    ) +
     geom_sf(data = extended_area, fill = "black") +
     geom_raster(
       data = search_prod,
@@ -70,7 +40,7 @@ plot_prob <- function(search_prod, path) {
       x = 6700000, y = 4400000, size = 11,
       label = toBCAD(unique(search_prod$field_z))
     ) +
-    scale_fill_viridis_c(breaks = c(500, 1000), option = "mako", direction = -1) +
+    scale_fill_viridis_c(option = "mako", direction = -1) +
     geom_sf(data = extended_area, fill = NA, colour = "black") +
     geom_point(
       data = janno_search,
@@ -84,7 +54,7 @@ plot_prob <- function(search_prod, path) {
       crs = epsg3035
     ) +
     guides(
-      fill = guide_colorbar(title = "\"Origin\" probability  ", barwidth = 25)
+      fill = guide_colorbar(title = "Probability  ", barwidth = 25)
     ) +
     theme(
       legend.position = "bottom",
@@ -98,20 +68,26 @@ plot_prob <- function(search_prod, path) {
       panel.background = element_rect(fill = "#BFD5E3")
     )
   
+  path <- paste0(
+    "plots/presentation/movie/",
+    sprintf("frame_movie3_%04d", id),
+    ".jpeg"
+  )
+  
   ggsave(
     path,
     plot = p,
     device = "jpeg",
     scale = 0.6,
     dpi = 300,
-    width = 325, height = 300, units = "mm",
+    width = 370, height = 300, units = "mm",
     limitsize = F
   )
   
 }
 
 spatial_pred_grid <- mobest::create_prediction_grid(
-  area,
+  extended_area,
   spatial_cell_size = 20000
 )
 
@@ -128,7 +104,7 @@ search_movie1 <- mobest::locate(
     C1_mds_u = janno_final$C1_mds_u,
     C2_mds_u = janno_final$C2_mds_u
   ),
-  kernel = default_kernset_mds2,
+  kernel = default_kernset,
   search_independent = mobest::create_spatpos(
     id = janno_search$Poseidon_ID,
     x = janno_search$x,
@@ -140,7 +116,7 @@ search_movie1 <- mobest::locate(
     C2_mds_u = janno_search$C2_mds_u
   ),
   search_space_grid = spatial_pred_grid,
-  search_time = seq(-1000, 300, 10),
+  search_time = seq(-7500, -7400, 10),
   search_time_mode = "absolute"
 )
 
@@ -148,10 +124,9 @@ search_movie1_prod <- mobest::multiply_dependent_probabilities(search_movie1)
 
 search_movie1_prod %>%
   dplyr::group_split(field_z) %>%
-  purrr::walk2(
-    ., paste0("plots/presentation/movie/", sprintf("frame_movie3_%03d", 1:length(.)), ".jpeg"),
-    plot_prob
-  )
+  purrr::walk2(seq_along(.), ., plot_prob)
 
-# ffmpeg -r 10 -f image2 -s 720x480 -i frame_movie3_%03d.jpeg -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -vcodec libx264 -crf 40 -pix_fmt yuv420p example_movie.mp4
+# for Presentations:
+# ffmpeg -r 10 -f image2 -s 720x480 -i frame_movie3_%04d.jpeg -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -vcodec libx264 -crf 40 -pix_fmt yuv420p example_movie.mov
+# for github README:
 # ffmpeg -y -i frame_movie3_%03d.jpeg -filter_complex "fps=5,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=32[p];[s1][p]paletteuse=dither=bayer" example_movie.gif
