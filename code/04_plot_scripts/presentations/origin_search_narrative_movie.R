@@ -1,4 +1,4 @@
-# qsub -b y -cwd -q archgen.q -pe smp 32 -l h_vmem=100G -now n -V -j y -o ~/log -N apple singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/04_plot_scripts/presentations/origin_search_narrative_movie.R
+# qsub -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=100G -now n -V -j y -o ~/log -N apple 'date; singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/04_plot_scripts/presentations/origin_search_narrative_movie.R; date'
 
 library(magrittr)
 library(ggplot2)
@@ -116,7 +116,7 @@ search_movie1 <- mobest::locate(
     C2_mds_u = janno_search$C2_mds_u
   ),
   search_space_grid = spatial_pred_grid,
-  search_time = seq(-7500, -7400, 10),
+  search_time = seq(-7500, -5000, 10),
   search_time_mode = "absolute"
 )
 
