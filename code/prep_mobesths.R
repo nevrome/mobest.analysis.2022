@@ -28,7 +28,7 @@ packed_wide <- packed_origin_vectors %>%
       search_time == -378 ~ "low"
     )
   ) %>%
-  dplyr::filter(ifelse(multivar_method == "pca5", search_time_mode == "default", TRUE)) %>%
+  #dplyr::filter(ifelse(multivar_method == "pca5", search_time_mode == "default", TRUE)) %>%
   #dplyr::filter(multivar_method == "mds2" & search_time == -667)
   tidyr::pivot_wider(
     id_cols = search_id,
@@ -37,7 +37,7 @@ packed_wide <- packed_origin_vectors %>%
   ) %>%
   dplyr::mutate(
     dplyr::across(
-      tidyselect:::where(is.numeric),
+      tidyselect::starts_with("field_"),
       (\(x) x*1000)
     )
   )
@@ -51,6 +51,8 @@ samples <- janno_final %>%
 composite_dataset <- tibble::tibble(
   sampleID = samples$Poseidon_ID,
   sampleGroup = purrr::map_chr(samples$Group_Name, (\(x) x[[1]])),
+  sampleCountry = samples$Country,
+  sampleRegion = samples$region_id,
   samples %>% update_coords("x", "y") %>% set_names(c("sampleX", "sampleY")),
   sampleZ = samples$Date_BC_AD_Median_Derived,
   sampleC1MDS = samples$C1_mds_u,
@@ -60,11 +62,15 @@ composite_dataset <- tibble::tibble(
   samples %>% update_coords("field_x_mds2_high", "field_y_mds2_high"),
   samples %>% update_coords("field_x_mds2_default", "field_y_mds2_default"),
   samples %>% update_coords("field_x_mds2_low", "field_y_mds2_low"),
+  samples %>% update_coords("field_x_pca5_high", "field_y_pca5_high"),
   samples %>% update_coords("field_x_pca5_default", "field_y_pca5_default"),
+  samples %>% update_coords("field_x_pca5_low", "field_y_pca5_low"),
   ov_dist_mds2_high = samples$ov_dist_mds2_high,
   ov_dist_mds2_default = samples$ov_dist_mds2_default,
   ov_dist_mds2_low = samples$ov_dist_mds2_low,
-  ov_dist_pca5_default = samples$ov_dist_pca5_default
+  ov_dist_pca5_high = samples$ov_dist_pca5_high,
+  ov_dist_pca5_default = samples$ov_dist_pca5_default,
+  ov_dist_pca5_low = samples$ov_dist_pca5_low
 )
 
 readr::write_csv(
