@@ -44,7 +44,7 @@ p_func <- function(cur_dependent_var, vis_var, legend_label, fill_scale) {
       crs = epsg3035
     ) +
     guides(
-      fill = guide_colorbar(title = legend_label, barwidth = 25)
+      fill = guide_colorbar(title = legend_label, barwidth = 13)
     ) +
     theme(
       legend.position = "bottom",
@@ -69,16 +69,24 @@ p_func <- function(cur_dependent_var, vis_var, legend_label, fill_scale) {
     }
 }
 
-p_C1_mean <- p_func("C1_mds_u", "mean", "Prediction C1  ",
-                    scale_fill_viridis_c(breaks = seq(-0.1, 0.1, 0.02)))
-p_C2_mean <- p_func("C2_mds_u", "mean", "Prediction C2  ",
-                    scale_fill_viridis_c(breaks = seq(-0.1, 0.1, 0.02), option = "magma"))
-p_C1_sd   <- p_func("C1_mds_u", "sd", "Standard deviation C1  ",
-                    scale_fill_gradientn(breaks = seq(0, 0.1, 0.01),
-                                         colours = c("#424242", "#cccccc", "white")))
-p_C2_sd   <- p_func("C2_mds_u", "sd", "Standard deviation C2  ",
-                    scale_fill_gradientn(breaks = seq(0, 0.1, 0.01),
-                                        colours = c("#424242", "#cccccc", "white")))
+p_C1_mean <- p_func(
+  "C1_mds_u", "mean", "Prediction C1  ",
+  scale_fill_viridis_c(breaks = seq(-0.1, 0.1, 0.05))
+)
+p_C2_mean <- p_func(
+  "C2_mds_u", "mean", "Prediction C2  ",
+  scale_fill_viridis_c(breaks = seq(-0.1, 0.1, 0.05), option = "magma")
+)
+p_C1_sd   <- p_func(
+  "C1_mds_u", "sd", "Standard deviation C1  ",
+  scale_fill_gradientn(breaks = seq(0, 0.1, 0.01),
+  colours = c("#424242", "#cccccc", "white"))
+)
+# p_C2_sd   <- p_func(
+#   "C2_mds_u", "sd", "Standard deviation C2  ",
+#   scale_fill_gradientn(breaks = seq(0, 0.1, 0.01),
+#   colours = c("#424242", "#cccccc", "white"))
+# )
 
 # merge plots
 C1_mean_legend <- cowplot::get_legend(p_C1_mean)
@@ -88,18 +96,12 @@ p_C2_mean <- p_C2_mean + theme(legend.position = "none")
 
 C1_sd_legend <- cowplot::get_legend(p_C1_sd)
 p_C1_sd <- p_C1_sd + theme(legend.position = "none")
-C2_sd_legend <- cowplot::get_legend(p_C2_sd)
-p_C2_sd <- p_C2_sd + theme(legend.position = "none")
+# C2_sd_legend <- cowplot::get_legend(p_C2_sd)
+# p_C2_sd <- p_C2_sd + theme(legend.position = "none")
 
-plots_C1 <- cowplot::plot_grid(p_C1_mean, p_C1_sd, nrow = 2)
-legends_C1 <- cowplot::plot_grid(C1_mean_legend, C1_sd_legend, nrow = 1)
-p_C1 <- cowplot::plot_grid(plots_C1, legends_C1, nrow = 2, rel_heights = c(1, 0.15))
-
-plots_C2 <- cowplot::plot_grid(p_C2_mean, p_C2_sd, nrow = 2)
-legends_C2 <- cowplot::plot_grid(C2_mean_legend, C2_sd_legend, nrow = 1)
-p_C2 <- cowplot::plot_grid(plots_C2, legends_C2, nrow = 2, rel_heights = c(1, 0.15))
-
-p <- cowplot::plot_grid(p_C1, p_C2, nrow = 2, rel_heights = c(1, 1))
+plots <- cowplot::plot_grid(p_C1_mean, p_C2_mean, p_C1_sd, nrow = 3)
+legends <- cowplot::plot_grid(C1_mean_legend, C2_mean_legend, C1_sd_legend, nrow = 1)
+p <- cowplot::plot_grid(plots, legends, nrow = 2, rel_heights = c(1, 0.1))
 
 ggsave(
   "plots/figure_3_interpolation_map_matrix.pdf",
@@ -107,7 +109,7 @@ ggsave(
   device = "pdf",
   scale = 0.5,
   dpi = 300,
-  width = 770, height = 600, units = "mm",
+  width = 770, height = 430, units = "mm",
   limitsize = F,
   bg = "white"
 )
