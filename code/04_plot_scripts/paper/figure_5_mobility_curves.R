@@ -6,14 +6,14 @@ load("data/origin_search/origin_summary.RData")
 load("data/origin_search/no_data_windows.RData")
 
 packed_origin_vectors <- packed_origin_vectors %>%
-  dplyr::filter(multivar_method == "pca5", search_time == -667) %>%
-  dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Italy", "Southeastern Europe"))
+  dplyr::filter(multivar_method == "mds2", search_time == -667) %>%
+  dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Iberia", "Italy"))
 origin_summary <- origin_summary %>%
-  dplyr::filter(multivar_method == "pca5", search_time == -667) %>%
-  dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Italy", "Southeastern Europe"))
+  dplyr::filter(multivar_method == "mds2", search_time == -667) %>%
+  dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Iberia", "Italy"))
 no_data_windows <- no_data_windows %>%
-  dplyr::filter(multivar_method == "pca5", search_time == -667) %>%
-  dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Italy", "Southeastern Europe"))
+  dplyr::filter(multivar_method == "mds2", search_time == -667) %>%
+  dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Iberia", "Italy"))
 
 no_data_windows$region_id <- factor(
   no_data_windows$region_id, levels = levels(janno_final$region_id)
@@ -45,7 +45,7 @@ packed_origin_vectors_time <- packed_origin_vectors %>%
 #### mobility estimator curves ####
 
 p_estimator <- ggplot() +
-  lemon::facet_rep_wrap(~region_id, ncol = 1, repeat.tick.labels = T) +
+  lemon::facet_rep_wrap(~region_id, ncol = 2, repeat.tick.labels = T) +
   geom_rect(
     data = no_data_windows,
     mapping = aes(
@@ -94,8 +94,8 @@ p_estimator <- ggplot() +
       xmin = Date_BC_AD_Start_Derived,
       color = ov_angle_deg
     ),
-    alpha = 0.3,
-    size = 0.1,
+    alpha = 0.5,
+    size = 0.3,
     height = 40
   ) +
   geom_errorbar(
@@ -106,8 +106,8 @@ p_estimator <- ggplot() +
       ymin = ov_dist - ov_dist_sd,
       color = ov_angle_deg
     ),
-    alpha = 0.3,
-    size = 0.1,
+    alpha = 0.5,
+    size = 0.3,
     width = 40
   ) +
   geom_rect(
@@ -129,25 +129,25 @@ p_estimator <- ggplot() +
     size = 1.8,
     shape = 4
   ) +
-  # ggrepel::geom_label_repel(
-  #   data = lookup,
-  #   mapping = aes(
-  #     x = mean_search_z, y = directed_mean_spatial_distance, label = label_name
-  #   ),
-  #   # nudge_y + direction manage the fixed position of the labels
-  #   nudge_y = 2900 - lookup$directed_mean_spatial_distance,
-  #   direction = "x",
-  #   segment.size      = 0.4,
-  #   segment.curvature = 0.3,
-  #   segment.square    = FALSE,
-#   arrow = arrow(length = unit(0.02, "npc")),
-#   min.segment.length = unit(0.02, "npc"),
-#   point.padding = 1,
-#   label.padding = 0.3,
-#   size = 3,
-#   alpha = 0.35,
-#   seed = 345
-# ) +
+  ggrepel::geom_label_repel(
+    data = lookup,
+    mapping = aes(
+      x = search_z, y = ov_dist, label = label_name
+    ),
+    # nudge_y + direction manage the fixed position of the labels
+    nudge_y = 2900 - lookup$ov_dist,
+    direction = "x",
+    segment.size      = 0.4,
+    segment.curvature = 0.3,
+    segment.square    = FALSE,
+    arrow = arrow(length = unit(0.02, "npc")),
+    min.segment.length = unit(0.02, "npc"),
+    point.padding = 1,
+    label.padding = 0.3,
+    size = 3,
+    alpha = 0.35,
+    seed = 345
+  ) +
   geom_point(
     data = janno_final %>% dplyr::filter(region_id %in% unique(origin_summary$region_id)),
     aes(x = Date_BC_AD_Median_Derived, y = -100),
@@ -210,17 +210,17 @@ p_legend <- tibble::tibble(
 p <- cowplot::ggdraw(p_estimator) +
   cowplot::draw_plot(
     p_legend,
-    x = 0.06, y = 0.78, 
-    width = 0.18, height = 0.18
+    x = -0.01, y = 0.65, 
+    width = 0.3, height = 0.3
   )
 
 ggsave(
   paste0("plots/figure_5_mobility_curves.pdf"),
   plot = p,
   device = "pdf",
-  scale = 0.7,
+  scale = 0.6,
   dpi = 300,
-  width = 430, height = 350, units = "mm",
+  width = 500, height = 250, units = "mm",
   limitsize = F
 )
 
