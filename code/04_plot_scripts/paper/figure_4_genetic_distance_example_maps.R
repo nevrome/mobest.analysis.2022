@@ -4,8 +4,8 @@ library(ggplot2)
 load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
-load("data/origin_search/janno_search.RData")
-load("data/origin_search/location_examples.RData")
+load("data/origin_search/janno_search_selected_individuals.RData")
+load("data/origin_search/search_result_selected_individuals.RData")
 
 loc <- location_examples_C1toC2_mds_u
 
@@ -57,7 +57,7 @@ p <- ggplot() +
     data = loc,
     mapping = aes(x = field_x, y = field_y, fill = probability),
   ) +
-  scale_fill_viridis_c(option = "mako", direction = -1) +
+  scale_fill_viridis_c(option = "mako", direction = -1, labels = scales::comma) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
   geom_point(
     data = janno_search,
@@ -80,7 +80,9 @@ p <- ggplot() +
     crs = epsg3035
   ) +
   guides(
-    fill = guide_colorbar(title = "Probability  ", barwidth = 25, label = FALSE, ticks = FALSE)
+    fill = guide_colorbar(
+      title = "Similarity probability  ", barwidth = 25
+      ) #, label = FALSE, ticks = FALSE)
   ) +
   theme(
     legend.position = "bottom",

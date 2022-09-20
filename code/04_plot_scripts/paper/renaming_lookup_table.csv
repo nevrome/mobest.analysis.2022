@@ -3,7 +3,7 @@ paper_names,           code_output
 Figure_01.pdf,         figure_1_temporal_and_spatial_distribution_of_input_data.pdf
 Figure_02.pdf,         figure_2_mds.pdf
 Figure_03.pdf,         figure_3_interpolation_map_matrix.pdf
-#Figure_04.pdf,         figure_4_genetic_distance_example_maps.pdf
+Figure_04.pdf,         figure_4_genetic_distance_example_maps.pdf
 #Figure_05.pdf,         figure_5_mobility_curves.pdf
 
 # General Supplementary figures
