@@ -1,14 +1,20 @@
 library(magrittr)
 library(ggplot2)
 
-source("code/04_plot_scripts/paper/individuals_to_highlight.R")
-
-plot_curves <- function(
-  janno_final,
-  packed_origin_vectors,
-  origin_summary,
-  no_data_windows
-) {
+plot_curves <- function(filter_settings) {
+  
+  load("data/genotype_data/janno_final.RData")
+  load("data/origin_search/packed_origin_vectors.RData")
+  load("data/origin_search/origin_summary.RData")
+  load("data/origin_search/no_data_windows.RData")
+  individuals <- readr::read_csv(
+    "code/04_plot_scripts/paper/individuals_to_highlight.csv",
+    col_types = "cc"
+  )
+  
+  packed_origin_vectors %<>% filter_setting()
+  origin_summary        %<>% filter_setting()
+  no_data_windows       %<>% filter_setting()
   
   no_data_windows$region_id <- factor(
     no_data_windows$region_id, levels = levels(janno_final$region_id)
@@ -36,9 +42,9 @@ plot_curves <- function(
       })
     ) %>%
     dplyr::select(-Date_BC_AD_Prob)
-    
+  
   #### mobility estimator curves ####
-
+  
   p_estimator <- ggplot() +
     lemon::facet_rep_wrap(~region_id, ncol = 2, repeat.tick.labels = T) +
     geom_rect(
@@ -89,8 +95,8 @@ plot_curves <- function(
         xmin = Date_BC_AD_Start_Derived,
         color = ov_angle_deg
       ),
-      alpha = 0.7,
-      size = 0.1,
+      alpha = 0.5,
+      size = 0.3,
       height = 40
     ) +
     geom_errorbar(
@@ -101,8 +107,8 @@ plot_curves <- function(
         ymin = ov_dist - ov_dist_sd,
         color = ov_angle_deg
       ),
-      alpha = 0.7,
-      size = 0.1,
+      alpha = 0.5,
+      size = 0.3,
       width = 40
     ) +
     geom_rect(
@@ -124,27 +130,27 @@ plot_curves <- function(
       size = 1.8,
       shape = 4
     ) +
-    # ggrepel::geom_label_repel(
-    #   data = lookup,
-    #   mapping = aes(
-    #     x = mean_search_z, y = directed_mean_spatial_distance, label = label_name
-    #   ),
-    #   # nudge_y + direction manage the fixed position of the labels
-    #   nudge_y = 2900 - lookup$directed_mean_spatial_distance,
-    #   direction = "x",
-    #   segment.size      = 0.4,
-    #   segment.curvature = 0.3,
-    #   segment.square    = FALSE,
-    #   arrow = arrow(length = unit(0.02, "npc")),
-    #   min.segment.length = unit(0.02, "npc"),
-    #   point.padding = 1,
-    #   label.padding = 0.3,
-    #   size = 3,
-    #   alpha = 0.35,
-    #   seed = 345
-    # ) +
+    ggrepel::geom_label_repel(
+      data = lookup,
+      mapping = aes(
+        x = search_z, y = ov_dist, label = label_name
+      ),
+      # nudge_y + direction manage the fixed position of the labels
+      nudge_y = 2900 - lookup$ov_dist,
+      direction = "x",
+      segment.size      = 0.4,
+      segment.curvature = 0.3,
+      segment.square    = FALSE,
+      arrow = arrow(length = unit(0.02, "npc")),
+      min.segment.length = unit(0.02, "npc"),
+      point.padding = 1,
+      label.padding = 0.3,
+      size = 3,
+      alpha = 0.35,
+      seed = 345
+    ) +
     geom_point(
-      data = janno_final %>% dplyr::filter(region_id != "Other region"),
+      data = janno_final %>% dplyr::filter(region_id %in% unique(origin_summary$region_id)),
       aes(x = Date_BC_AD_Median_Derived, y = -100),
       shape = "|"
     ) +
