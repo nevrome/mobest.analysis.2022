@@ -2,32 +2,59 @@ library(ggplot2)
 library(magrittr)
 
 load("data/genotype_data/janno_final.RData")
-load("data/origin_search/moving_origin_grid.RData")
+load("data/origin_search/origin_summary.RData")
 
-moving_origin_grid_modified <- moving_origin_grid %>%
-  dplyr::mutate(
-    # ugly workaround for geom_ribbon, because geom_area can't deal well with 
-    # NA values
-    fraction_bigger_2000,
-    fraction_bigger_1000 = fraction_bigger_2000 + fraction_bigger_1000,
-    fraction_bigger_500  = fraction_bigger_1000 + fraction_bigger_500,
-    fraction_smaller_500 = fraction_bigger_500 + fraction_smaller_500
-  ) %>%
-  tidyr::pivot_longer(
-    cols = tidyselect::starts_with("fraction"),
-    names_to = "fraction_type",
-    values_to = "number"
-  ) %>%
-  dplyr::mutate(
-    fraction_type = factor(
-      fraction_type, levels = c(
-        "fraction_smaller_500",
-        "fraction_bigger_500",
-        "fraction_bigger_1000",
-        "fraction_bigger_2000"
-      )
-    )
-  )
+origin_summary %<>%
+  dplyr::filter(multivar_method == "mds2", search_time == -667) %>%
+  dplyr::filter(region_id != "Other region")
+
+origin_summary_unnested <- origin_summary %>%
+  dplyr::mutate(., moving_window = 1:nrow(.)) %>%
+  tidyr::unnest(cols = ov_dist_fractions, keep_empty = T) %>%
+  dplyr::select(-count)
+
+fillibus <- expand.grid(
+  ov_dist_length_upper_end = seq(500, 4000, 500),
+  moving_window = origin_summary_unnested$moving_window
+) %>% tibble::as_tibble()
+
+fillibuster <- dplyr::anti_join(
+  fillibus,
+  origin_summary_unnested,
+  by = c("moving_window", "ov_dist_length_upper_end")
+)
+
+origin_summary_unnested %>%
+  dplyr::left_join(
+    fillibuster,
+    by = c("moving_window")
+  ) %>% View()
+
+
+
+  # dplyr::mutate(
+  #   # ugly workaround for geom_ribbon, because geom_area can't deal well with 
+  #   # NA values
+  #   fraction_bigger_2000,
+  #   fraction_bigger_1000 = fraction_bigger_2000 + fraction_bigger_1000,
+  #   fraction_bigger_500  = fraction_bigger_1000 + fraction_bigger_500,
+  #   fraction_smaller_500 = fraction_bigger_500 + fraction_smaller_500
+  # ) %>%
+  # tidyr::pivot_longer(
+  #   cols = tidyselect::starts_with("fraction"),
+  #   names_to = "fraction_type",
+  #   values_to = "number"
+  # ) %>%
+  # dplyr::mutate(
+  #   fraction_type = factor(
+  #     fraction_type, levels = c(
+  #       "fraction_smaller_500",
+  #       "fraction_bigger_500",
+  #       "fraction_bigger_1000",
+  #       "fraction_bigger_2000"
+  #     )
+  #   )
+  # )
 
 p <- moving_origin_grid_modified %>%
   ggplot() +
@@ -36,8 +63,8 @@ p <- moving_origin_grid_modified %>%
     aes(
       x = z, 
       ymin = 0,
-      ymax = number, 
-      fill = fraction_type
+      ymax = fraction, 
+      fill = as.factor(ov_dist_length_upper_end)
     ),
     na.rm = F
   ) +
@@ -48,17 +75,17 @@ p <- moving_origin_grid_modified %>%
   ) +
   xlab("time in years calBC/calAD") +
   ylab("Distance class fractions") +
-  scale_fill_grey(
-    name = "Distance classes",
-    labels = c(
-      "Distances smaller then 500km",
-      "Distances between 500 and 1000km",
-      "Distances between 1000 and 2000km",
-      "Distances bigger than 2000km"
-    ),
-    start = 0.7,
-    end = 0.1
-  ) +
+  # scale_fill_grey(
+  #   name = "Distance classes",
+  #   labels = c(
+  #     "Distances smaller then 500km",
+  #     "Distances between 500 and 1000km",
+  #     "Distances between 1000 and 2000km",
+  #     "Distances bigger than 2000km"
+  #   ),
+  #   start = 0.7,
+  #   end = 0.1
+  # ) +
   theme_bw() +
   theme(legend.position = "bottom") +
   scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
