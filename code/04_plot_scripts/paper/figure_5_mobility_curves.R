@@ -1,19 +1,23 @@
-source("code/04_plot_scripts/paper/mobility_curves_plot_function.R")
+library(magrittr)
+library(ggplot2)
 
 load("data/genotype_data/janno_final.RData")
 load("data/origin_search/packed_origin_vectors.RData")
 load("data/origin_search/origin_summary.RData")
 load("data/origin_search/no_data_windows.RData")
+individuals <- readr::read_csv(
+  "code/04_plot_scripts/paper/individuals_to_highlight.csv",
+  col_types = "cc")
 
-packed_origin_vectors <- packed_origin_vectors %>%
-  dplyr::filter(multivar_method == "mds2", search_time == -667) %>%
-  dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Iberia", "Italy"))
-origin_summary <- origin_summary %>%
-  dplyr::filter(multivar_method == "mds2", search_time == -667) %>%
-  dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Iberia", "Italy"))
-no_data_windows <- no_data_windows %>%
-  dplyr::filter(multivar_method == "mds2", search_time == -667) %>%
-  dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Iberia", "Italy"))
+filter_setting <- function(x) {
+  x %>%
+    dplyr::filter(multivar_method == "mds2", search_time == -667) %>%
+    dplyr::filter(region_id %in% c("Britain and Ireland", "Central Europe", "Iberia", "Italy"))
+}
+
+packed_origin_vectors %<>% filter_setting()
+origin_summary %<>% filter_setting()
+no_data_windows %<>% filter_setting()
 
 no_data_windows$region_id <- factor(
   no_data_windows$region_id, levels = levels(janno_final$region_id)
