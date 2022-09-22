@@ -1,5 +1,6 @@
 paper_names,           code_output
 
+# Main text figures
 Figure_01.pdf,         figure_1_temporal_and_spatial_distribution_of_input_data.pdf
 Figure_02.pdf,         figure_2_mds.pdf
 Figure_03.pdf,         figure_3_interpolation_map_matrix.pdf
@@ -20,9 +21,8 @@ Supp_Figure_10.pdf,    figure_sup_19_mobility_curves_pca5_default.pdf
 Supp_Figure_11.pdf,    figure_sup_20_mobility_curves_mds2_low.pdf
 Supp_Figure_12.pdf,    figure_sup_21_mobility_curves_mds2_high.pdf
 Supp_Figure_13.pdf,    figure_sup_12_direction_windrose_matrix.pdf
-# Supp_Figure_14.pdf,  figure_sup_13_...
-# Supp_Figure_15.pdf,  figure_sup_33_...
-
+Supp_Figure_14.pdf,    figure_sup_13_distance_fraction_curves.pdf
+Supp_Figure_15.pdf,    figure_sup_33_origin_peaks_map_matrix.pdf
 
 # Supp. Text 1
 Supp_Figure_I.pdf,     figure_sup_24_multivar_comparison_summary.pdf
