@@ -6,7 +6,7 @@ load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 
 packed_origin_vectors <- packed_origin_vectors %>%
-  dplyr::filter(multivar_method == "pca5", search_time == -667)
+  dplyr::filter(multivar_method == "mds2", search_time == -667)
 
 vecs_grouped <- packed_origin_vectors %>%
   dplyr::mutate(
@@ -17,18 +17,24 @@ vecs_grouped <- packed_origin_vectors %>%
         include.lowest = T
       ))),
     time_window_label = paste0(
-      abs(time_window-250), " - ", abs(time_window+250), " ", ifelse(time_window < 0, "BC", "AD")
+      abs(time_window - 250), " - ", abs(time_window + 250), " ", ifelse(time_window < 0, "BC", "AD")
       )
   ) %>%
-  dplyr::group_by(time_window) %>%
+  # dplyr::group_by(time_window) %>%
+  # dplyr::mutate(
+  #   search_z_in_window = search_z - time_window + 250
+  # ) %>%
+  # dplyr::ungroup() %>%
   dplyr::mutate(
-    search_z_in_window = search_z - time_window + 250
-  ) %>%
-  dplyr::ungroup()
+    dplyr::across(
+      tidyselect::all_of(c("field_x", "field_y", "search_x", "search_y")),
+      \(x) x*1000
+    )
+  )
 
 p <- ggplot() +
   facet_wrap(
-    ~time_window, nrow = 3, ncol = 6,
+    ~time_window, nrow = 6, ncol = 3,
     labeller = labeller(
       time_window = as_labeller(
         vecs_grouped %>%
@@ -41,12 +47,12 @@ p <- ggplot() +
   geom_sf(data = extended_area, fill = "black") +
   geom_segment(
     data = vecs_grouped,
-    aes(x = search_x * 1000, y = search_y * 1000, xend = field_x * 1000, yend = field_y * 1000),
+    aes(x = search_x, y = search_y, xend = field_x, yend = field_y),
     color = "white",
     size = 0.1
   ) +
-  geom_point(data = vecs_grouped, aes(x = search_x * 1000, y = search_y * 1000), color = "white", size = 0.3) +
-  geom_point(data = vecs_grouped, aes(x = field_x * 1000, y = field_y * 1000, color = search_z_in_window), size = 0.5) +
+  geom_point(data = vecs_grouped, aes(x = search_x, y = search_y), color = "green", size = 0.7) +
+  geom_point(data = vecs_grouped, aes(x = field_x, y = field_y, color = search_z_in_window), size = 0.7) +
   scale_color_gradient(
     limits = c(0, 500),
     low = "#D44000",
@@ -77,9 +83,8 @@ ggsave(
   paste0("plots/figure_sup_33_origin_peaks_map_matrix.pdf"),
   plot = p,
   device = "pdf",
-  scale = 0.9,
+  scale = 0.7,
   dpi = 300,
-  width = 400, height = 200, units = "mm",
+  width = 350, height = 580, units = "mm",
   limitsize = F
 )
-
