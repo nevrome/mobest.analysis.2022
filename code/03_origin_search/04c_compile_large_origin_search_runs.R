@@ -42,7 +42,7 @@ origin_summary <- mobest::summarize_origin_vectors(
   window_stop = 2000,
   window_width = 400,
   window_step = 50,
-  dist_fraction_width = 500
+  dist_fraction_breaks = c(0, 500, 1000, 2000, Inf)
 )
 
 no_data_windows <- mobest::find_no_data_windows(
