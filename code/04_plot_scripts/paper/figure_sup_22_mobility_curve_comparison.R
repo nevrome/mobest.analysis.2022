@@ -5,9 +5,7 @@ load("data/origin_search/packed_origin_vectors.RData")
 
 prep <- packed_origin_vectors %>%
   dplyr::select(search_id, region_id, multivar_method, search_time, search_z, ov_dist) %>%
-  dplyr::filter(
-    region_id %in% c("Britain and Ireland", "Central Europe", "Italy", "Southeastern Europe")
-  )
+  dplyr::filter(region_id != "Other region" )
 
 ovs <- dplyr::left_join(
     prep,
@@ -60,7 +58,7 @@ p <- ovs %>% ggplot() +
     legend.position = "bottom"
   ) +   
   coord_cartesian(
-    xlim = c(-7400, 1400),
+    xlim = c(-7500, 1500),
     ylim = c(-100, 3000)
   ) +
   scale_x_continuous(breaks = seq(-7000, 1000, 2000)) +
@@ -70,7 +68,10 @@ p <- ovs %>% ggplot() +
     high = "#ca0020"
   ) +
   guides(
-    color = guide_colorbar(title = "Divergence from MDS2 [km]    ", barwidth = 20, barheight = 1.5),
+    color = guide_colorbar(
+      title = "Divergence from MDS2 with the default rearview distance [km]    ",
+      barwidth = 20, barheight = 1.5
+    )
   ) +
   xlab("time [years calBC/calAD]") +
   ylab("spatial distance to \"origin point\" (directed mean) [km]") 
@@ -81,6 +82,6 @@ ggsave(
   device = "pdf",
   scale = 0.6,
   dpi = 300,
-  width = 430, height = 300, units = "mm",
+  width = 430, height = 420, units = "mm",
   limitsize = F
 )

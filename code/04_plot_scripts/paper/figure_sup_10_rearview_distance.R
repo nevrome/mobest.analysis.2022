@@ -64,7 +64,7 @@ p <- ggplot() +
   scale_y_continuous(breaks = seq(0,1,0.2))
 
 ggsave(
-  "plots/figure_sup_10_rearview_distance2.pdf",
+  "plots/figure_sup_10_rearview_distance.pdf",
   plot = p,
   device = "pdf",
   scale = 0.7,
