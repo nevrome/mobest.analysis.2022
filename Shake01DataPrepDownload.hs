@@ -73,7 +73,7 @@ main = shakeArgs myShakeOpts $ do
 
   -- 03
 
-  code0103 "01_distance_plink.shlm" %$
+  code0103 "01_distance_plink.shC8M50" %$
     [ code01 "myrange.txt"
     , dataGenoInitialSelection "initial_selection.bed"
     ] -->
@@ -100,7 +100,7 @@ main = shakeArgs myShakeOpts $ do
 
   -- 04
 
-  code0104 "01_purify_genotype_data.shlm" %$
+  code0104 "01_purify_genotype_data.shC8M50" %$
     [ code01 "myrange.txt"
     , dataGenoRemoveRelatedIndividualsSelection "remove_related_selection.bed"
     ] -->

@@ -35,11 +35,11 @@ main = shakeArgs myShakeOpts $ do
     , "estimated_nuggets.RData"
     ]
 
-  code02 "04a_anisotropic_mle.Rq" %$
+  code02 "04a_anisotropic_mle.RC16M32" %$
     [ dataGeno "janno_final.RData" ] -->
     [ dataParamExpTargeted "mle_ani.RData" ]
 
-  code02 "04b_isotropic_mle.Rq" %$
+  code02 "04b_isotropic_mle.RC16M32" %$
     [ dataGeno "janno_final.RData"
     , dataParamExpTargeted "estimated_nuggets.RData"
     ] -->

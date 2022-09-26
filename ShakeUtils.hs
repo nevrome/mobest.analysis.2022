@@ -29,56 +29,53 @@ data Settings = Settings {
   -- Path to mount into the singularity container
   -- https://sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html
   , bindPath :: String
-  -- How to run normal commands
-  , qsubSmallCommand :: String
-  , qsubLargeMemoryCommand :: String
-  , qsubMediumCommand :: String
-  , qsubSmartSNP :: String
-  , qsubEMU :: String
-  , qsubPLINK :: String
-  , qsubRC8M50 :: String
-  , qsubRC48M50 :: String
+  -- How to run normal different scripts depending on extension
+  , c8m20    :: String
+  , c16m32   :: String
+  , c8m50    :: String
+  , c48m50   :: String
+  , smartSNP :: String
+  , emu      :: String
+  , plink    :: String
   -- How to run SGE scripts
   , qsubScript :: String
 }
 
 mpiEVAClusterSettings = Settings {
-    singularityContainer   = "singularity_mobest.sif"
-  , bindPath               = "--bind=/mnt/archgen/users/schmid"
-  , qsubSmallCommand       = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=20G -now n -V -j y -o ~/log -N small"
-  , qsubLargeMemoryCommand = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=50G -now n -V -j y -o ~/log -N lmemory"
-  , qsubMediumCommand      = "qsub -sync y -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=32G -now n -V -j y -o ~/log -N medium"
-  , qsubSmartSNP           = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=200G -now n -V -j y -o ~/log -N smartsnp"
-  , qsubEMU                = "qsub -sync y -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=100G -now n -V -j y -o ~/log -N emu"
-  , qsubPLINK              = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=100G -now n -V -j y -o ~/log -N plink"
-  , qsubRC8M50             = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=50G -now n -V -j y -o ~/log -N RC8M50"
-  , qsubRC48M50            = "qsub -sync y -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=50G -now n -V -j y -o ~/log -N RC48M50"
-  , qsubScript             = "qsub -sync y -N large " -- trailing space is meaningful!
+    singularityContainer = "singularity_mobest.sif"
+  , bindPath             = "--bind=/mnt/archgen/users/schmid"
+  , c8m20                = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=20G  -now n -V -j y -o ~/log -N c8m20"
+  , c16m32               = "qsub -sync y -b y -cwd -q archgen.q -pe smp 16 -l h_vmem=32G  -now n -V -j y -o ~/log -N c16m32"
+  , c8m50                = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=50G  -now n -V -j y -o ~/log -N c8m50"
+  , c48m50               = "qsub -sync y -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=50G  -now n -V -j y -o ~/log -N c48m50"
+  , smartSNP             = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=200G -now n -V -j y -o ~/log -N smartSNP"
+  , emu                  = "qsub -sync y -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=100G -now n -V -j y -o ~/log -N emu"
+  , plink                = "qsub -sync y -b y -cwd -q archgen.q -pe smp 8  -l h_vmem=100G -now n -V -j y -o ~/log -N plink"
+  , qsubScript           = "qsub -sync y -N large " -- trailing space is meaningful!
 }
 
 -- #### helper functions #### --
 
 relevantRunCommand :: Settings -> FilePath -> Action ()
-relevantRunCommand (Settings singularityContainer bindPath s lm m smartSNP emu plink rc8m50 rc48m50 qsubScript) x
-  | takeExtension x == ".R"         = cmd_ s "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".Rq"        = cmd_ m "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".shlm"      = cmd_ lm "singularity" "exec" bindPath singularityContainer x
-  | takeExtension x == ".sh"        = cmd_ s "singularity" "exec" bindPath singularityContainer x
+relevantRunCommand (Settings singularityContainer bindPath c8m20 c16m32 c8m50 c48m50 smartSNP emu plink qsubScript) x
+  | takeExtension x == ".R"         = cmd_ c8m20    "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".RC8M50"    = cmd_ c8m50    "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".RC16M32"   = cmd_ c16m32   "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".RC48M50"   = cmd_ c48m50   "singularity" "exec" bindPath singularityContainer "Rscript" x
   | takeExtension x == ".Rsmartsnp" = cmd_ smartSNP "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".shemu"     = cmd_ emu "singularity" "exec" bindPath singularityContainer x
-  | takeExtension x == ".shplink"   = cmd_ plink "singularity" "exec" bindPath singularityContainer x
-  | takeExtension x == ".RC8M50"    = cmd_ rc8m50 "singularity" "exec" bindPath singularityContainer "Rscript" x
-  | takeExtension x == ".RC48M50"   = cmd_ rc48m50 "singularity" "exec" bindPath singularityContainer "Rscript" x
+  | takeExtension x == ".sh"        = cmd_ c8m20    "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".shC8M50"   = cmd_ c8m50    "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".shemu"     = cmd_ emu      "singularity" "exec" bindPath singularityContainer x
+  | takeExtension x == ".shplink"   = cmd_ plink    "singularity" "exec" bindPath singularityContainer x
   | takeExtension x == ".shq"       = cmd_ $ qsubScript ++ x
   | otherwise = error $ "undefined file extension: " ++ x
 
 infixl 3 %$
 (%$) :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 (%$) script (input, output) =
-  let settings = mpiEVAClusterSettings
-  in output &%> \out -> do
+  output &%> \out -> do
     need $ [script, singularityContainer settings] ++ input
-    relevantRunCommand settings script
+    relevantRunCommand mpiEVAClusterSettings script
 
 infixl 4 -->
 (-->) :: a -> b -> (a,b)
@@ -150,17 +147,6 @@ dataOriginSearchLarge x = dataOriginSearch "large_origin_search" </> x
 
 -- simulation dirs
 dataSimulation x = _data "simulation" </> x
-
--- dataPoseidonDataPoseidonExtractedPreIdenticalsFilter x = dataPoseidonData "poseidon_extracted_pre_identicals_filter" </> x
--- dataPoseidonDataIdenticalFilter x = dataPoseidonData "identical_filter" </> x
--- dataPoseidonDataPoseidonExtracted x = dataPoseidonData "poseidon_extracted" </> x
--- dataPoseidonDataMDS x = dataPoseidonData "mds" </> x
--- dataParameterExplorationVariogram x = dataParameterExploration "variogram" </> x
--- dataParameterExplorationCrossvalidation x = dataParameterExploration "crossvalidation" </> x
--- dataParameterExplorationMLE x = dataParameterExploration "mle" </> x
--- dataOriginSearch x = _data "origin_search" </> x
--- dataOriginSearchAROKS x = dataOriginSearch "age_resampling+one_kernel_setting" </> x
--- dataGPR x = _data "gpr" </> x
 
 -- table and figure output dirs
 tables x = "tables" </> x
