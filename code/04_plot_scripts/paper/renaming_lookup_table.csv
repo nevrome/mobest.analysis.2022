@@ -8,10 +8,10 @@ Figure_04.pdf,         figure_4_genetic_distance_example_maps.pdf
 Figure_05.pdf,         figure_5_mobility_curves.pdf
 
 # General Supplementary figures
-Supp_Figure_01.pdf,    figure_sup_25_multivar_comparison_scatter.pdf
-Supp_Figure_02.pdf,    figure_sup_26_multivar_comparison_capture_shotgun_mds_emu.pdf
-Supp_Figure_03.pdf,    figure_sup_14_pca_proj.pdf
-Supp_Figure_04.pdf,    figure_sup_23_mds_with_highlighted_individuals.pdf
+Supp_Figure_01.pdf,    figure_sup_23_mds_with_highlighted_individuals.pdf
+Supp_Figure_02.pdf,    figure_sup_25_multivar_comparison_scatter.pdf
+Supp_Figure_03.pdf,    figure_sup_26_multivar_comparison_capture_shotgun_mds_emu.pdf
+Supp_Figure_04.pdf,    figure_sup_14_pca_proj.pdf
 Supp_Figure_05.pdf,    figure_sup_18_interpolation_map_matrix_pca_proj.pdf
 Supp_Figure_06.pdf,    figure_sup_11_timepillars.pdf
 Supp_Figure_07.pdf,    figure_sup_32_1_genetic_distance_example_maps_large.pdf
