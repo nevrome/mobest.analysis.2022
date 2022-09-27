@@ -74,7 +74,7 @@ infixl 3 %$
 (%$) :: FilePath -> ([FilePath], [FilePath]) -> Rules ()
 (%$) script (input, output) =
   output &%> \out -> do
-    need $ [script, singularityContainer settings] ++ input
+    need $ [script, singularityContainer mpiEVAClusterSettings] ++ input
     relevantRunCommand mpiEVAClusterSettings script
 
 infixl 4 -->
