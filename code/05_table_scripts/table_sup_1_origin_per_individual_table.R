@@ -1,112 +1,126 @@
 library(magrittr)
 
-load("data/origin_search/origin_grid_modified.RData")
 load("data/genotype_data/janno_final.RData")
+load("data/origin_search/packed_origin_vectors.RData")
 
-cut_angle <- function(x) {
-  dplyr::case_when(
-    x >= 0   & x <  45  ~ "N",
-    x >= 45  & x <  135 ~ "E",
-    x >= 135 & x <  225 ~ "S",
-    x >= 225 & x <  315 ~ "W",
-    x >= 315 & x <= 360 ~ "N",
-    TRUE ~ NA_character_
-  )
-}
-
-origins <- origin_grid_modified %>%
-  dplyr::group_by(
-    search_id
-  ) %>%
-  dplyr::summarise(
-    origin_centroid_x = mean(origin_x),
-    origin_centroid_y = mean(origin_y),
-    origin_z = mean(origin_z),
-    origin_C1 = mean(origin_mean_C1),
-    origin_C2 = mean(origin_mean_C2),
-    region_id = dplyr::first(region_id),
-    undirected_mean_spatial_distance = mean(spatial_distance),
-    directed_mean_spatial_distance = sqrt(
-      mean(search_x - origin_x)^2 +
-        mean(search_y - origin_y)^2
-    ) / 1000,
-    mean_angle_deg = mobest::vec2deg(
-      c(mean(origin_x - search_x), mean(origin_y - search_y))
+# sample context table
+table_sample_context <- janno_final %>%
+  dplyr::mutate(
+    Group_Name = purrr::map_chr(
+      Group_Name,
+      \(x) x[[1]]
     ),
-    mean_angle_deg_cut = cut_angle(mean_angle_deg),
-    .groups = "drop"
-  )
-
-origins_with_janno <- origins %>% dplyr::full_join(
-  janno_final %>% dplyr::transmute(
-    Poseidon_ID, 
-    Group_Name, 
-    Country, 
-    x, 
-    y, 
-    Date_BC_AD_Median_Derived, 
-    C1,
-    C2,
-    C3,
-    Publication_1 = purrr::map_chr(
+    Publication = purrr::map_chr(
       Publication, 
-      function(x){
-        x[[1]] %>%
-          gsub("\\(.*$", "", .) %>%
-          trimws
+      \(x) x[[1]] %>% gsub("\\(.*$", "", .) %>% trimws
+    ),
+    dplyr::across(
+      c(Latitude, Longitude),
+      \(x) round(x, 3)
+    ),
+    Date_C14 = purrr::pmap_chr(
+      list(Date_C14_Labnr, Date_C14_Uncal_BP, Date_C14_Uncal_BP_Err),
+      function(labnrs, bps, stds) {
+        if (all(is.na(labnrs))) {
+          return(NA_character_)
+        } else {
+          purrr::pmap_chr(
+            list(labnrs, bps, stds),
+            function(labnr, bp, std) {
+              paste0("(", labnr, ":", bp, "±", std, ")")
+            }
+          ) %>% paste(collapse = ";")
+        }
       }
     )
-  ),
-  by = c("search_id" = "Poseidon_ID")
-) %>%
-  dplyr::mutate(
-    Group_Name = sapply(Group_Name, function(x) { x[[1]] })
-  )
- 
-origin_table <- origins_with_janno %>%
-  dplyr::transmute(
-    Poseidon_ID = search_id,
-    Group_Name = Group_Name,
-    Country = Country,
+  ) %>%
+  dplyr::select(
+    Sample_ID = Poseidon_ID,
+    Genetic_Sex,
+    Group_Name,
+    Publication,
+    Country,
     Region = region_id,
-    Publication = Publication_1,
-    Search_x = x,
-    Search_y = y,
-    Search_z = Date_BC_AD_Median_Derived,
-    Search_C1 = C1,
-    Search_C2 = C2,
-    Search_C3 = C3,
-    Origin_x = origin_centroid_x,
-    Origin_y = origin_centroid_y,
-    Origin_z = origin_z,
-    Origin_C1 = origin_C1,
-    Origin_C2 = origin_C2,
-    Undirected_mean_spatial_distance = undirected_mean_spatial_distance,
-    Directed_mean_spatial_distance = directed_mean_spatial_distance,
-    Mean_angle = mean_angle_deg,
-    Mean_cardinal_direction = mean_angle_deg_cut
+    Latitude,
+    Longitude,
+    Age_Group = age_group_id,
+    Date_BC_AD_Start = Date_BC_AD_Start_Derived,
+    Date_BC_AD_Median = Date_BC_AD_Median_Derived,
+    Date_BC_AD_Stop = Date_BC_AD_Stop_Derived,
+    Date_C14
+  )
+
+# multivar result table
+
+# check ranges per column
+# janno_final %>%
+#   dplyr::select(
+#     Sample_ID = Poseidon_ID,
+#     tidyselect::matches("^C[0-9]+_.*")
+#   ) %>%
+#   dplyr::group_by() %>%
+#   dplyr::summarise(
+#       dplyr::across(
+#         tidyselect:::where(is.numeric),
+#         range
+#         )
+#       ) %>%
+#   t() %>%
+#   View()
+
+table_multivar_results <- janno_final %>%
+  dplyr::select(
+    Sample_ID = Poseidon_ID,
+    tidyselect::matches("^C[0-9]+_.*")
   ) %>%
   dplyr::mutate(
     dplyr::across(
-      c(Search_C1, Search_C2, Search_C3, Origin_C1, Origin_C2), 
-      function(x) { round(x, 4) }
+      tidyselect::contains(c("mds", "emu")),
+      \(x) round(x, 5)
     ),
     dplyr::across(
-      c(Search_x, Search_y, Origin_x, Origin_y), 
-      function(x) { round(x, -3) }
-    ),
+      tidyselect::contains("pca"),
+      \(x) round(x, 3)
+    )
+  )
+
+# origin search result table
+table_origin_search_results <- packed_origin_vectors %>%
+  dplyr::rename(Sample_ID = search_id) %>%
+  dplyr::mutate(
+    search_time = dplyr::case_when(
+      search_time == max(search_time) ~ "retro_high",
+      search_time == min(search_time) ~ "retro_low",
+      TRUE ~ "retro_default"
+    )
+  ) %>%
+  tidyr::pivot_wider(
+    id_cols = tidyselect::all_of(c("Sample_ID", "search_x", "search_y", "search_z")),
+    names_from = tidyselect::all_of(c("multivar_method", "search_time")),
+    values_from = tidyselect::matches(c("^field_.*", "^ov_.*"))
+  ) %>%
+  dplyr::mutate(
     dplyr::across(
-      c(Origin_z), 
-      function(x) { round(x, -1) }
-    ),
-    dplyr::across(
-      c(Undirected_mean_spatial_distance, Directed_mean_spatial_distance, Mean_angle), 
+      tidyselect:::where(is.numeric), 
       as.integer
     )
   )
 
-origin_table %>%
+# write results
+table_sample_context %>%
   readr::write_csv(
-    "tables/table_sup_1_origin_search_table.csv",
+    "tables/table_sup_1_sample_context.csv",
+    na = ""
+  )
+
+table_multivar_results %>%
+  readr::write_csv(
+    "tables/table_sup_2_multivar_results.csv",
+    na = ""
+  )
+
+table_origin_search_results %>%
+  readr::write_csv(
+    "tables/table_sup_3_search_results.csv",
     na = ""
   )
