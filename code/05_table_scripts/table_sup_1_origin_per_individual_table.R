@@ -85,7 +85,7 @@ table_multivar_results <- janno_final %>%
   )
 
 # origin search result table
-table_origin_search_results <- packed_origin_vectors %>%
+table_origin_search_results_unordered <- packed_origin_vectors %>%
   dplyr::rename(Sample_ID = search_id) %>%
   dplyr::mutate(
     search_time = dplyr::case_when(
@@ -106,6 +106,15 @@ table_origin_search_results <- packed_origin_vectors %>%
     )
   )
 
+table_origin_search_results <- table_origin_search_results_unordered[
+  order(
+    match(
+      table_origin_search_results_unordered$Sample_ID,
+      table_sample_context$Sample_ID
+    )
+  ),
+]
+
 # write results
 table_sample_context %>%
   readr::write_csv(
@@ -124,3 +133,4 @@ table_origin_search_results %>%
     "tables/table_sup_3_search_results.csv",
     na = ""
   )
+
