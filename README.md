@@ -21,7 +21,7 @@ The files in this long-term archive will generate the results as found in the pu
 
 This repository contains the following main top level directories:
 
-- `code`: The R and shell scripts necessary to reproduce the analysis and create the figures. They are organised in subdirectories for different domains and roughly ordered with a leading number. Some scripts provide code beyond what is required to reproduce figures and results in the publication (e.g. scripts to create didactic figures for presentations). See `Shakefile.hs` for what is strictly necessary and therefore fully maintained (more info below).
+- `code`: The R and shell scripts necessary to reproduce the analysis and create the figures. They are organised in subdirectories for different domains and roughly ordered with a leading number. Some scripts provide code beyond what is required to reproduce figures and results in the publication (e.g. scripts to create didactic figures for presentations).
 - `data`: The scaffold of a directory structure to hold the intermediate data output of the scripts. The actual data is too big to be uploaded here and therefore not part of the repository.
 - `data_tracked`: Small input data files manually created for this analysis.
 - `tables` & `plots`: Readily rendered versions of tables and plots for the publication (will be uploaded upon publication).
@@ -30,7 +30,7 @@ The `DESCRIPTION` and the `.Rbuildignore` file are defining this repository as a
 
 The other additional files are part of a mechanism to simplify running and reproducing the code. `singularity_mobest.def` defines a [singularity](https://singularity.hpcng.org/) container that includes all software necessary to run the code in this repository. It can be build with a script like `singularity_build_sif.sh`, which requires an empty directory for temporary data `stempdir`. To run arbitrary scripts through singularity and the [SGE](https://en.wikipedia.org/wiki/Oracle_Grid_Engine) scheduler of the HPC at the MPI-EVA, we used the script `singularity_qsub.sh`.
 
-The [Haskell](https://www.haskell.org/) [stack script](https://docs.haskellstack.org/en/stable/GUIDE/#script-interpreter) `Shakefile.hs` defines a build-pipeline for the complete analysis with the build tool [shake](https://shakebuild.com/). 
+The [Haskell](https://www.haskell.org/) [stack scripts](https://docs.haskellstack.org/en/stable/GUIDE/#script-interpreter) `Shake*.hs` define a build-pipeline for the complete analysis with the build tool [shake](https://shakebuild.com/). 
 
 ### How to reproduce:
 
