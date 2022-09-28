@@ -43,11 +43,11 @@ table_sample_context <- janno_final %>%
     Region = region_id,
     Latitude,
     Longitude,
-    Age_Group = age_group_id,
     Date_BC_AD_Start = Date_BC_AD_Start_Derived,
     Date_BC_AD_Median = Date_BC_AD_Median_Derived,
     Date_BC_AD_Stop = Date_BC_AD_Stop_Derived,
-    Date_C14
+    Date_C14,
+    Age_Group = age_group_id
   )
 
 # multivar result table
