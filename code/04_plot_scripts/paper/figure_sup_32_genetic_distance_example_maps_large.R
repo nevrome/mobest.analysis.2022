@@ -118,21 +118,23 @@ p2 <- cowplot::plot_grid(
 )
 
 ggsave(
-  "plots/figure_sup_32_1_genetic_distance_example_maps_large.pdf",
+  "plots/figure_sup_32_1_genetic_distance_example_maps_large.jpeg",
   plot = p1,
-  device = "pdf",
+  device = "jpeg",
   scale = 1.2,
-  dpi = 300,
+  dpi = 80,
   width = 420, height = 580, units = "mm",
-  limitsize = F
+  limitsize = F,
+  bg = "white"
 )
 
 ggsave(
-  "plots/figure_sup_32_2_genetic_distance_example_maps_large.pdf",
+  "plots/figure_sup_32_2_genetic_distance_example_maps_large.jpeg",
   plot = p2,
-  device = "pdf",
+  device = "jpeg",
   scale = 1.2,
-  dpi = 300,
+  dpi = 80,
   width = 420, height = 580, units = "mm",
-  limitsize = F
+  limitsize = F,
+  bg = "white"
 )
