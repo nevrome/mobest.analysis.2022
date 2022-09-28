@@ -12,12 +12,12 @@ p_loc <- function(loc, loc_name, show_dots = F) {
     facet_wrap(
       ~search_id, ncol = 3,
       labeller = ggplot2::labeller(search_id = c(
-       "Stuttgart_published.DG" = "Stuttgart ~5250BC (-1500y)",
-       "RISE434.SG" = "RISE434 ~2750BC (-300y)",
-       "3DT26.SG" = "3DRIF-26 ~200AD (0y)",
-       "SI-40.SG" = "SI-40 ~1150AD (0y)",
-       "I8341" = "I8341 ~400BC (-100y)",
-       "I8215" = "I8215 ~550BC (-100y)"
+       "Stuttgart_published.DG" = "Stuttgart: 5250BC (-1500y)",
+       "RISE434.SG" = "RISE434: 2750BC (-300y)",
+       "3DT26.SG" = "3DRIF-26: 200AD (0y)",
+       "SI-40.SG" = "SI-40: 1150AD (0y)",
+       "I8341" = "I8341: 400BC (-100y)",
+       "I8215" = "I8215: 550BC (-100y)"
       ))) +
     geom_sf(data = extended_area, fill = "black") +
     geom_raster(
@@ -118,21 +118,23 @@ p2 <- cowplot::plot_grid(
 )
 
 ggsave(
-  "plots/figure_sup_32_1_genetic_distance_example_maps_large.pdf",
+  "plots/figure_sup_32_1_genetic_distance_example_maps_large.jpeg",
   plot = p1,
-  device = "pdf",
+  device = "jpeg",
   scale = 1.2,
-  dpi = 300,
+  dpi = 80,
   width = 420, height = 580, units = "mm",
-  limitsize = F
+  limitsize = F,
+  bg = "white"
 )
 
 ggsave(
-  "plots/figure_sup_32_2_genetic_distance_example_maps_large.pdf",
+  "plots/figure_sup_32_2_genetic_distance_example_maps_large.jpeg",
   plot = p2,
-  device = "pdf",
+  device = "jpeg",
   scale = 1.2,
-  dpi = 300,
+  dpi = 80,
   width = 420, height = 580, units = "mm",
-  limitsize = F
+  limitsize = F,
+  bg = "white"
 )

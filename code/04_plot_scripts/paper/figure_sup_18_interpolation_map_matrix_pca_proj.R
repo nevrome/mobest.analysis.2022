@@ -1,7 +1,7 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/gpr/interpol_grid_median_selected_timeslices.RData")
+load("data/origin_search/interpol_grid_selected_timeslices.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/genotype_data/janno_final.RData")
@@ -73,11 +73,11 @@ p_C5 <- p_map_matrix("C5_pca_proj_u", "plasma", -1)
 p <- cowplot::plot_grid(p_C1, p_C2, p_C3, p_C4, p_C5, nrow = 5, ncol = 1)
 
 ggsave(
-  "plots/figure_sup_18_interpolation_map_matrix_pca_proj.pdf",
+  "plots/figure_sup_18_interpolation_map_matrix_pca_proj.jpeg",
   plot = p,
-  device = "pdf",
+  device = "jpeg",
   scale = 0.9,
-  dpi = 300,
+  dpi = 100,
   width = 450, height = 480, units = "mm",
   limitsize = F,
   bg = "white"
