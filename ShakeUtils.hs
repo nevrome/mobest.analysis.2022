@@ -94,7 +94,7 @@ code0105 x = code01 "05_run_multivariate_analysis" </> x
 code02 x = code "02_parameter_estimation" </> x
 code03 x = code "03_origin_search" </> x
 code04Paper x = code "04_plot_scripts" </> "paper" </> x
-code07 x = code "07_simulation" </> x
+code06 x = code "06_simulation" </> x
 
 -- probably outdated
 code05 x = code "05_table_scripts" </> x
