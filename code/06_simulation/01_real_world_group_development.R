@@ -2,7 +2,7 @@ library(magrittr)
 
 load("data/genotype_data/janno_final.RData")
 load("data/spatial/epsg3035.RData")
-load("data/origin_search/default_kernset_mds2.RData")
+load("data/origin_search/default_kernset.RData")
 
 #### define spatial groups ####
 
@@ -46,7 +46,7 @@ interpolation_circle_centers <- mobest::create_model_grid(
     )
   ),
   kernel = mobest::create_kernset_multi(
-    default_kernel = default_kernset_mds2
+    default_kernel = default_kernset
   ),
   prediction_grid = mobest::create_spatpos_multi(
     circles = mobest::create_geopos(
