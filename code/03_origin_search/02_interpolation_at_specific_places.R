@@ -15,19 +15,19 @@ Rome <- sf::st_as_sf(
   remove = FALSE
 ) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
 
-Budapest <- sf::st_as_sf(
-  tibble::tibble(lon = 19.05, lat = 47.50),
-  coords = c("lon", "lat"),
-  crs = 4326,
-  remove = FALSE
-) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
+# Budapest <- sf::st_as_sf(
+#   tibble::tibble(lon = 19.05, lat = 47.50),
+#   coords = c("lon", "lat"),
+#   crs = 4326,
+#   remove = FALSE
+# ) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
 
-Barcelona <- sf::st_as_sf(
-  tibble::tibble(lon = 2.17, lat = 41.40),
-  coords = c("lon", "lat"),
-  crs = 4326,
-  remove = FALSE
-) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
+# Barcelona <- sf::st_as_sf(
+#   tibble::tibble(lon = 2.17, lat = 41.40),
+#   coords = c("lon", "lat"),
+#   crs = 4326,
+#   remove = FALSE
+# ) %>% sf::st_transform(crs = epsg3035) %>% sf::st_coordinates()
 
 London <- sf::st_as_sf(
   tibble::tibble(lon = -0.11, lat = 51.50),
@@ -78,8 +78,8 @@ model_grid <- mobest::create_model_grid(
   ),
   prediction_grid = mobest::create_spatpos_multi(
     Rome      = make_spatpos(Rome),
-    Budapest  = make_spatpos(Budapest),
-    Barcelona = make_spatpos(Barcelona),
+    #Budapest  = make_spatpos(Budapest),
+    #Barcelona = make_spatpos(Barcelona),
     London    = make_spatpos(London),
     Jerusalem = make_spatpos(Jerusalem),
     Riga      = make_spatpos(Riga)
