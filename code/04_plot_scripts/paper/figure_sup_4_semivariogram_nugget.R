@@ -35,7 +35,7 @@ p <- ggplot() +
   theme_bw() +
   guides(fill = "none") +
   xlab("ancestry component distance type") +
-  ylab("log10 pairwise half mean squared normalized residual distance") +
+  ylab("pairwise half mean squared normalized residual distance") +
   scale_y_log10(labels = scales::comma) +
   scale_x_discrete(limits = rev(unique(lower_left_variogram$dist_type)))
 
