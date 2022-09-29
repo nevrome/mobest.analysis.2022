@@ -42,7 +42,7 @@ main = shakeArgs myShakeOpts $ do
     [ dataOriginSearch "interpol_grid_specific_places.RData"
     ]
 
-  code03 "03_origin_search_for_selected_individuals.R" %$
+  code03 "03a_origin_search_for_selected_individuals.R" %$
     [ dataGeno "janno_final.RData"
     , dataSpatial "extended_area.RData"
     , dataSpatial "epsg3035.RData"
@@ -50,4 +50,14 @@ main = shakeArgs myShakeOpts $ do
     ] -->
     [ dataOriginSearch "janno_search_selected_individuals.RData"
     , dataOriginSearch "search_result_selected_individuals.RData"
+    ]
+
+  code03 "03b_diachronic_origin_search_for_selected_individuals.R" %$
+    [ dataGeno "janno_final.RData"
+    , dataSpatial "extended_area.RData"
+    , dataSpatial "epsg3035.RData"
+    , dataOriginSearch "default_kernset.RData"
+    ] -->
+    [ dataOriginSearch "diachronic_janno_search_selected_individuals.RData"
+    , dataOriginSearch "diachronic_search_result_selected_individuals.RData"
     ]
