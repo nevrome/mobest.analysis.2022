@@ -24,7 +24,7 @@ diachronic_janno_search <- janno_final %>%
     search_id = Poseidon_ID
   )
 
-rearview_dists <- c(seq(-7500, -5500, 200), -5242)
+rearview_dists <- c(seq(-7500, -5500, 200), -5250)
 
 spatial_pred_grid <- mobest::create_prediction_grid(
   extended_area,
@@ -56,7 +56,8 @@ diachronic_locations <- mobest::locate(
     C2_mds_u = diachronic_janno_search$C2_mds_u
   ),
   search_space_grid = spatial_pred_grid,
-  search_time = rearview_dists
+  search_time = rearview_dists,
+  search_time_mode = "absolute"
 )
 
 #### prepare probability products
