@@ -9,8 +9,11 @@ From: rocker/geospatial:4.2.1
   PATH=$PATH:/additional_software
 
 %post
-  mkdir additional_software
   apt-get update
+  ## install all R dependencies of the analysis repo
+  R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2020@more_strict_data_cleaning", dependencies = TRUE, repos = "https://mran.microsoft.com/snapshot/2022-10-03")'
+  ## install additional software tools beyond R
+  mkdir additional_software
   # install eigensoft
   apt-get install -y eigensoft --no-install-recommends
   # install plink
@@ -28,5 +31,3 @@ From: rocker/geospatial:4.2.1
   python3 setup.py build_ext --inplace
   pip3 install -e .
   cd ..
-  # install all dependencies of the analysis repo
-  R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2020@more_strict_data_cleaning", dependencies = TRUE, repos = "https://mran.microsoft.com/snapshot/2022-10-03")'
