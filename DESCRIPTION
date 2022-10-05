@@ -35,4 +35,7 @@ Imports:
     tidyselect (>= 1.1.2),
     viridis (>= 0.6.2),
     mobest
-Remotes: nevrome/ggpointgrid, poseidon-framework/poseidonR, nevrome/mobest
+Remotes:
+    nevrome/ggpointgrid,
+    poseidon-framework/poseidonR,
+    nevrome/mobest
