@@ -51,7 +51,12 @@ kernel_for_this_run <- mobest::create_kernset_multi(
 
 #### run crossvalidation ####
 
+# the only random element of this analysis should be
+# the splitting into groups. With this seed the groups
+# should be identical for each parameter configuration
+# across parameter sets
 set.seed(24578)
+# or different with: set.seed(as.numeric(run))
 
 interpol_comparison_raw <- mobest::crossvalidate(
   independent = mobest::create_spatpos(
@@ -74,6 +79,14 @@ interpol_comparison_raw <- mobest::crossvalidate(
   groups = 10,
   quiet = F
 )
+
+# to test group randomization
+# interpol_comparison_raw %>%
+#   dplyr::group_by(
+#     mixing_iteration
+#   ) %>%
+#   dplyr::slice_head(n = 5) %$%
+#   id
 
 interpol_comparison <- interpol_comparison_raw %>%
   dplyr::select(-independent_table_id, -dependent_setting_id, -kernel_setting_id, -pred_grid_id) %>%
