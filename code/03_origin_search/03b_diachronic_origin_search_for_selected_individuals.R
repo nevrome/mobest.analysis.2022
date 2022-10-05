@@ -66,7 +66,7 @@ diachronic_location_examples <- mobest::multiply_dependent_probabilities(diachro
 
 #### output ####
 
-save(janno_search, file = "data/origin_search/diachronic_janno_search_selected_individuals.RData")
+save(diachronic_janno_search, file = "data/origin_search/diachronic_janno_search_selected_individuals.RData")
 save(
   diachronic_location_examples,
   file = "data/origin_search/diachronic_search_result_selected_individuals.RData"

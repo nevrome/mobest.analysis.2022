@@ -25,11 +25,11 @@ p <- ggplot() +
   ) +
   scale_fill_viridis_c(
     option = "mako", direction = -1, labels = scales::comma,
-    limits = c(0, 0.0015)
+    limits = c(0, 0.0015), oob = scales::squish
   ) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
   geom_point(
-    data = janno_search,
+    data = diachronic_janno_search,
     mapping = aes(x = x, y = y),
     fill = "red", colour = "black", shape = 21,
     size = 5
