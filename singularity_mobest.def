@@ -3,7 +3,7 @@ From: rocker/geospatial:4.2.1
 
 %labels
   Author clemens@nevrome.de
-  Version v1.2.1
+  Version v1.2.2
 
 %environment
   PATH=$PATH:/additional_software
@@ -29,4 +29,4 @@ From: rocker/geospatial:4.2.1
   pip3 install -e .
   cd ..
   # install all dependencies of the analysis repo
-  R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2020@more_strict_data_cleaning", dependencies = TRUE)'
+  R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2020@more_strict_data_cleaning", dependencies = TRUE, repos = "https://mran.microsoft.com/snapshot/2022-10-03")'
