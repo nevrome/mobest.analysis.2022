@@ -66,12 +66,11 @@ p <- ggplot() +
   )
 
 ggsave(
-  "plots/figure_sup_35_diachronic_search_example_maps.pdf",
+  "plots/figure_sup_35_diachronic_search_example_maps.jpeg",
   plot = p,
-  device = "pdf",
+  device = "jpeg",
   scale = 0.7,
-  dpi = 300,
+  dpi = 120,
   width = 350, height = 410, units = "mm",
   limitsize = F
 )
-
