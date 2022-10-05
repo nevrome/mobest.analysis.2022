@@ -15,7 +15,7 @@ load("data/spatial/extended_area.RData")
 load("data/origin_search/default_kernset.RData")
 load("data/origin_search/retrospection_distances.RData")
 
-age_resampling_runs <- 30 # change to 100 for final run!
+age_resampling_runs <- 25 # could be increased.
 
 janno_final_spatpos <- purrr::map(
   seq_len(age_resampling_runs), function(age_resampling_run) {
@@ -30,7 +30,10 @@ janno_final_spatpos <- purrr::map(
 
 janno_final_spatpos_multi <- do.call(
   mobest::create_spatpos_multi,
-  c(janno_final_spatpos, list(.names = paste0("age_resampling_run_", seq_len(age_resampling_runs))))
+  c(
+    janno_final_spatpos,
+    list(.names = paste0("age_resampling_run_", seq_len(age_resampling_runs)))
+  )
 )
 
 janno_search <- dplyr::filter(
@@ -46,19 +49,25 @@ janno_search_spatpos <- purrr::map(
       id = janno_search$Poseidon_ID,
       x = janno_search$x,
       y = janno_search$y,
-      z = purrr::map_int(janno_search$Date_BC_AD_Sample, function(x) {x[age_resampling_run]})
+      z = purrr::map_int(
+        janno_search$Date_BC_AD_Sample,
+        function(x) {x[age_resampling_run]}
+      )
     )
   }
 )
 
 janno_search_spatpos_multi <- do.call(
   mobest::create_spatpos_multi,
-  c(janno_search_spatpos, list(.names = paste0("age_resampling_run_", seq_len(age_resampling_runs))))
+  c(
+    janno_search_spatpos,
+    list(.names = paste0("age_resampling_run_", seq_len(age_resampling_runs)))
+  )
 )
 
 spatial_pred_grid <- mobest::create_prediction_grid(
   extended_area,
-  spatial_cell_size = 100000 # adjust for final run!
+  spatial_cell_size = 100000 # could be decreased.
 )
 
 #### calculate locate probability ####
