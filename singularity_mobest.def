@@ -3,7 +3,7 @@ From: rocker/geospatial:4.2.1
 
 %labels
   Author clemens@nevrome.de
-  Version v1.2.2
+  Version v1.2.3
 
 %environment
   PATH=$PATH:/additional_software
