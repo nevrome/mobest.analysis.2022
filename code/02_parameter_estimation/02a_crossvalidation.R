@@ -40,11 +40,18 @@ kernel_for_this_run <- mobest::create_kernset_multi(
       dt_for_this_run,
       nugget_for_this_run
     ),
-    .names = paste(dimension_for_this_run, multivar_for_this_run, snpset_for_this_run, sep = "_")
+    .names = paste(
+      dimension_for_this_run,
+      multivar_for_this_run,
+      snpset_for_this_run,
+      sep = "_"
+    )
   )
 )
 
 #### run crossvalidation ####
+
+set.seed(24578)
 
 interpol_comparison_raw <- mobest::crossvalidate(
   independent = mobest::create_spatpos(
@@ -55,7 +62,12 @@ interpol_comparison_raw <- mobest::crossvalidate(
   ),
   dependent = mobest::create_obs(
     multivar_method_observation_bundles[[mperm_id]][[dimension_for_this_run]],
-    .names = paste(dimension_for_this_run, multivar_for_this_run, snpset_for_this_run, sep = "_")
+    .names = paste(
+      dimension_for_this_run,
+      multivar_for_this_run,
+      snpset_for_this_run,
+      sep = "_"
+    )
   ),
   kernel = kernel_for_this_run,
   iterations = 10,
