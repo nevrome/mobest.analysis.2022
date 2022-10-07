@@ -10,7 +10,7 @@
 #$ -l h_vmem=10G #request XGb of memory
 #$ -V # load personal profile
 #$ -t 1-3086 # array job length
-#$ -tc 20 # number of concurrently running tasks in array
+#$ -tc 25 # number of concurrently running tasks in array
 
 # one job for each sample!
 
