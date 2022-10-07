@@ -103,9 +103,9 @@ p_estimator <- ggplot() +
     height = 40
   ) +
   geom_errorbar(
-    data = packed_origin_vectors,
+    data = packed_origin_vectors_time,
     mapping = aes(
-      x = search_z, 
+      x = Date_BC_AD_Median_Derived, 
       ymax = ov_dist + ov_dist_sd,
       ymin = ov_dist - ov_dist_sd,
       color = ov_angle_deg
@@ -123,9 +123,9 @@ p_estimator <- ggplot() +
     fill = "white"
   ) +
   geom_point(
-    data = packed_origin_vectors,
+    data = packed_origin_vectors_time,
     mapping = aes(
-      x = search_z,
+      x = Date_BC_AD_Median_Derived,
       y = ov_dist,
       color = ov_angle_deg
     ),
