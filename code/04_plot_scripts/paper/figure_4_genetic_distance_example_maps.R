@@ -63,7 +63,7 @@ p <- ggplot() +
     data = janno_search,
     mapping = aes(x = x, y = y),
     fill = "red", colour = "black", shape = 21,
-    size = 5
+    size = 6
   ) +
   geom_point(
     data = loc %>% 
@@ -72,7 +72,7 @@ p <- ggplot() +
       dplyr::ungroup(),
     mapping = aes(x = field_x, y = field_y),
     fill = "orange", colour = "black", shape = 21,
-    size = 3
+    size = 5
   ) +
   theme_bw() +
   coord_sf(

@@ -32,16 +32,16 @@ p <- ggplot() +
     data = diachronic_janno_search,
     mapping = aes(x = x, y = y),
     fill = "red", colour = "black", shape = 21,
-    size = 5
+    size = 6
   ) +
   geom_point(
     data = loc %>% 
-      dplyr::group_by(search_id) %>%
+      dplyr::group_by(search_id, search_time) %>%
       dplyr::slice_max(probability) %>%
       dplyr::ungroup(),
     mapping = aes(x = field_x, y = field_y),
     fill = "orange", colour = "black", shape = 21,
-    size = 3
+    size = 5
   ) +
   theme_bw() +
   coord_sf(
@@ -69,8 +69,8 @@ ggsave(
   "plots/figure_sup_35_diachronic_search_example_maps.jpeg",
   plot = p,
   device = "jpeg",
-  scale = 0.7,
+  scale = 0.9,
   dpi = 120,
-  width = 350, height = 410, units = "mm",
+  width = 400, height = 430, units = "mm",
   limitsize = F
 )
