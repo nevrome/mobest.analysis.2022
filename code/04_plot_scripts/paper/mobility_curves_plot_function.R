@@ -158,8 +158,8 @@ plot_curves <- function(filter_settings) {
     theme(
       legend.position = "bottom"
     ) +
-    xlab("time [years calBC/calAD]") +
-    ylab("spatial distance to \"origin point\" (directed mean) [km]") +
+    xlab("time in years calBC/calAD") +
+    ylab("spatial distance to \"origin point\" (directed mean) in km") +
     scale_color_gradientn(
       colours = c("#F5793A", "#85C0F9", "#A95AA1", "#33a02c", "#F5793A"),
       na.value = NA,

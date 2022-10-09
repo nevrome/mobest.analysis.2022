@@ -50,7 +50,7 @@ p_map_matrix <- function(depvar, viridis_option, viridis_direction) {
     scale_fill_viridis_c(option = viridis_option, direction = viridis_direction) +
     theme_bw() +
     coord_sf(expand = FALSE, crs = epsg3035) +
-    guides(fill = guide_colorbar(title = paste0("Prediction for ", depvar ," "), barwidth = 25)) +
+    guides(fill = guide_colorbar(title = paste0("Prediction for ", depvar ,"     "), barwidth = 25)) +
     theme(
       legend.position = "bottom",
       legend.box = "horizontal",

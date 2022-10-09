@@ -73,8 +73,8 @@ p <- ovs %>% ggplot() +
       barwidth = 20, barheight = 1.5
     )
   ) +
-  xlab("time [years calBC/calAD]") +
-  ylab("spatial distance to \"origin point\" (directed mean) [km]") 
+  xlab("time in years calBC/calAD") +
+  ylab("spatial distance to \"origin point\" (directed mean) in km") 
 
 ggsave(
   paste0("plots/figure_sup_22_mobility_curve_comparison.pdf"),
