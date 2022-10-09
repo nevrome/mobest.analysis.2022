@@ -20,11 +20,11 @@ vecs_grouped <- packed_origin_vectors %>%
       abs(time_window - 250), " - ", abs(time_window + 250), " ", ifelse(time_window < 0, "BC", "AD")
       )
   ) %>%
-  # dplyr::group_by(time_window) %>%
-  # dplyr::mutate(
-  #   search_z_in_window = search_z - time_window + 250
-  # ) %>%
-  # dplyr::ungroup() %>%
+  dplyr::group_by(time_window) %>%
+  dplyr::mutate(
+    search_z_in_window = search_z - time_window + 250
+  ) %>%
+  dplyr::ungroup() %>%
   dplyr::mutate(
     dplyr::across(
       tidyselect::all_of(c("field_x", "field_y", "search_x", "search_y")),
