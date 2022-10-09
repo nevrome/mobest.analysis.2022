@@ -17,6 +17,8 @@ main = shakeArgs myShakeOpts $ do
     , dataOriginSearch "interpol_grid_specific_places.RData"
     , dataOriginSearch "janno_search_selected_individuals.RData"
     , dataOriginSearch "search_result_selected_individuals.RData"
+    , dataOriginSearch "diachronic_janno_search_selected_individuals.RData"
+    , dataOriginSearch "diachronic_search_result_selected_individuals.RData"
     ]
 
   code03 "00_interpolation_and_origin_search_settings.R" %$
