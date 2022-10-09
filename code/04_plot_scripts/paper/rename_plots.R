@@ -8,6 +8,6 @@ purrr::walk2(
   name_lookup$code_output,
   name_lookup$paper_names,
   function(x, y) {
-    file.copy(file.path("plots", x), file.path("figures", y), overwrite = T) 
+    file.copy(file.path("plots", x), file.path("plots_renamed", y), overwrite = T) 
   }
 )
