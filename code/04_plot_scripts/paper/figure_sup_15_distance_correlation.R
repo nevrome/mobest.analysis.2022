@@ -50,8 +50,8 @@ p <- ggplot(
   scale_fill_gradient(low = "grey90", high = "black") +
   scale_colour_gradient(low = "grey90", high = "black", guide = "none") +
   theme_bw() +
-  xlab("Euclidean distance in space and time (1km=1year)") +
-  ylab("Euclidean distance in genetic MDS space")
+  xlab("euclidean distance in space and time (1km=1year)") +
+  ylab("euclidean distance in genetic MDS space")
 
 ggsave(
   "plots/figure_sup_15_distance_correlation.pdf",
