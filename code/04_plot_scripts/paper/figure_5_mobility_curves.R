@@ -7,7 +7,8 @@ load("data/origin_search/origin_summary.RData")
 load("data/origin_search/no_data_windows.RData")
 individuals <- readr::read_csv(
   "code/04_plot_scripts/paper/individuals_to_highlight.csv",
-  col_types = "cc")
+  col_types = "cc"
+)
 
 filter_setting <- function(x) {
   x %>%
@@ -161,8 +162,8 @@ p_estimator <- ggplot() +
   theme(
     legend.position = "bottom"
   ) +
-  xlab("time [years calBC/calAD]") +
-  ylab("spatial distance to \"origin point\" (directed mean) [km]") +
+  xlab("time in years calBC/calAD") +
+  ylab("spatial distance to \"origin point\" (directed mean) in km") +
   scale_color_gradientn(
     colours = c("#F5793A", "#85C0F9", "#A95AA1", "#33a02c", "#F5793A"),
     na.value = NA,
