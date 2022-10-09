@@ -11,7 +11,11 @@ settings <- dplyr::bind_rows(
       k = c(0.2, 0.5, 0.8),
       kernel_width = rev(retrospection_distances),
       label = latex2exp::TeX(
-        paste0("$\\overset{K = ", k, ",\\,\\sqrt{\\theta} = ", kernel_width, "}{", ptitle ,"}$")
+        paste0(
+          "$\\overset{K = ", k,
+          ",\\,\\sqrt{\\theta} = ",
+          kernel_width, "}{", ptitle ,"}$"
+        )
       )
     ),
     tibble::tibble(
@@ -20,7 +24,11 @@ settings <- dplyr::bind_rows(
       k = c(0.5),
       kernel_width = retrospection_distances[2],
       label = c(latex2exp::TeX(
-        paste0("$\\overset{K = ", k, ",\\,\\sqrt{\\theta} = ", kernel_width, "}{", ptitle ,"}$")
+        paste0(
+          "$\\overset{K = ", k,
+          ",\\,\\sqrt{\\theta} = ",
+          kernel_width, "}{", ptitle ,"}$"
+        )
       ))
     )
   )
@@ -60,7 +68,7 @@ p <- ggplot() +
     legend.position = "bottom"
   ) +
   xlab("pairwise distance [years]") +
-  ylab("Covariance K") +
+  ylab("covariance K") +
   scale_y_continuous(breaks = seq(0,1,0.2))
 
 ggsave(
