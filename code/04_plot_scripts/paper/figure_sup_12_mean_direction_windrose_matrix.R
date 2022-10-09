@@ -75,7 +75,7 @@ p <- mobility_maps %>%
     breaks = seq(0,315,45),
   ) +
   theme_bw() +
-  ylab("Spatial distance to \"origin\" point in [km]") +
+  ylab("spatial distance to \"origin point\" in km") +
   xlab(NULL) +
   theme(
     panel.grid = element_blank(),
