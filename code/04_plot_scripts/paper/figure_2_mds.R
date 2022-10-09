@@ -34,14 +34,14 @@ p <- ggplot() +
     fill = "black",
     color = "black",
     shape = 21,
-    grid_x = 23,
+    grid_x = 21,
     grid_y = 26
   ) +
   ggpointgrid::geom_pointgrid(
     data = region_age_group_mean,
     aes(x = mean_C1, y = mean_C2, color = z, shape = region_id),
     size = 2,
-    grid_x = 23,
+    grid_x = 21,
     grid_y = 26,
     stroke = 1
   ) +
