@@ -14,7 +14,7 @@ origin_summary_unnested <- origin_summary %>%
   dplyr::select(-count) %>%
   dplyr::mutate(
     ov_dist_fraction_label = dplyr::case_when(
-      ov_dist_length_lower_end == 0 ~ "Distances smaller then 500km",
+      ov_dist_length_lower_end == 0 ~ "Distances smaller than 500km",
       ov_dist_length_lower_end == 500 ~ "Distances between 500 and 1000km",
       ov_dist_length_lower_end == 1000 ~ "Distances between 1000 and 2000km",
       ov_dist_length_lower_end == 2000 ~ "Distances bigger than 2000km"
@@ -38,11 +38,11 @@ p <- origin_summary_unnested %>%
     shape = "|"
   ) +
   xlab("time in years calBC/calAD") +
-  ylab("Distance class fractions") +
+  ylab("distance class fractions") +
   scale_fill_grey(
     name = "Distance classes",
     labels = c(
-      "Distances smaller then 500km",
+      "Distances smaller than 500km",
       "Distances between 500 and 1000km",
       "Distances between 1000 and 2000km",
       "Distances bigger than 2000km"
