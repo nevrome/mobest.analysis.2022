@@ -43,7 +43,7 @@ data/
 
 # plots
 plots/
-figures/
+plots_renamed/
 
 # tables
 tables/
