@@ -57,7 +57,8 @@ p_funnel <- ggplot() +
   theme(
     legend.position = "none"
   ) +
-  xlab("time [years calBC/calAD]")
+  xlab("time in years calBC/calAD") +
+  scale_x_continuous(breaks = seq(-7000, 1000, 2000))
 
 p <- cowplot::plot_grid(
   p_map,
