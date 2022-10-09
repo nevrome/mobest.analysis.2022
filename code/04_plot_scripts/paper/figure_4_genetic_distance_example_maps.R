@@ -1,7 +1,6 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
 load("data/origin_search/janno_search_selected_individuals.RData")
