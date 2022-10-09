@@ -1,3 +1,5 @@
+# qsub -b y -cwd -q archgen.q -pe smp 4 -l h_vmem=20G -now n -V -j y -o ~/log -N plot singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/04_plot_scripts/paper/figure_sup_8_crossvalidation_prediction_accuracy.R
+
 library(magrittr)
 library(ggplot2)
 
@@ -38,8 +40,8 @@ p <- sample_interpol_comparison %>%
   theme_bw() +
   scale_y_discrete(limits = rev, expand = expansion(mult = c(0.1, 0.1), add = c(0.1, 1))) +
   scale_x_continuous(limits = c(-0.5, 0.5), breaks = seq(-0.5, 0.5, 0.1)) +
-  xlab("Normalized difference between predicted and measured ancestry") +
-  ylab("Density curves")
+  xlab("normalized difference between predicted and measured ancestry") +
+  ylab("density curves")
 
 ggsave(
   "plots/figure_sup_8_crossvalidation_prediction_accuracy.pdf",
