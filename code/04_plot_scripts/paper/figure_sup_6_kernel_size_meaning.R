@@ -36,7 +36,7 @@ p <- kernel_theta_data %>%
   ) +
   theme_bw() +
   xlab("pairwise distance") +
-  ylab("Covariance K")
+  ylab("covariance K")
 
 ggsave(
   "plots/figure_sup_6_kernel_size_meaning.pdf",

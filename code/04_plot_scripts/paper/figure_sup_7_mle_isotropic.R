@@ -41,7 +41,7 @@ p2 <- mle_mean_across_iterations %>%
   facet_wrap(~dependent_var_id, scales = "free_y") +
   theme_bw() +
   ylab("log likelihood") +
-  xlab("Scaling factor") +
+  xlab("scaling factor") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 p <- cowplot::plot_grid(p1, p2, nrow = 2, align = "v", axis = "lr", rel_heights = c(0.9, 1), labels = c("A", "B"))
