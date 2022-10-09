@@ -98,7 +98,7 @@ p_cross_diff <- multivar_comparison_summary_adjusted %>%
     position = position_dodge(width = 0.5), size = 2
   ) +
   common_elements +
-  ylab("Difference") +
+  ylab("difference") +
   ggtitle("Normalized difference between predicted and measured ancestry (CX means C1-CX)") +
   theme(legend.position = "right") +
   guides(
