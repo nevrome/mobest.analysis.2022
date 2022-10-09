@@ -11,7 +11,8 @@ main :: IO ()
 main = shakeArgs myShakeOpts $ do
 
   want $ [
-      dataSimulation "scenarios.RData"
+      dataSimulation "real_world_group_development.RData"
+    , dataSimulation "scenarios.RData"
     , dataSimulation "mock_data.RData"
     , dataSimulation "example_run.RData"
     , dataSimulation "permutations_accuracy_summary.RData"
