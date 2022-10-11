@@ -9,7 +9,8 @@ plot_curves <- function(filter_settings) {
   load("data/origin_search/no_data_windows.RData")
   individuals <- readr::read_csv(
     "code/04_plot_scripts/paper/individuals_to_highlight.csv",
-    col_types = "cc"
+    col_types = "cc",
+    comment = "#"
   )
   
   packed_origin_vectors %<>% filter_setting()
