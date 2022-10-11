@@ -6,7 +6,8 @@ load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 individuals <- readr::read_csv(
   "code/04_plot_scripts/paper/individuals_to_highlight.csv",
-  col_types = "cc"
+  col_types = "cc",
+  comment = "#"
 )
 
 lookup <- individuals %>% 
@@ -56,10 +57,10 @@ p <- ggplot() +
     aes(x = C1_mds_u, y = C2_mds_u, shape = region_id),
     size = 2, colour = "black"
   ) +
-  repel(lookup_right_top, direction = "x", nudge_y = 0.06 - lookup_right_top$C2_mds_u) +
-  repel(lookup_right_bottom, direction = "y", nudge_x = 0.06 - lookup_right_bottom$C1_mds_u) +
-  repel(lookup_left, direction = "y", nudge_x = -0.082 - lookup_left$C1_mds_u) +
-  repel(lookup_bottom, direction = "x", nudge_y = -0.064 - lookup_bottom$C2_mds_u) +
+  repel(lookup_right_top, direction = "x", nudge_y = 0.055 - lookup_right_top$C2_mds_u) +
+  repel(lookup_right_bottom, direction = "y", nudge_x = 0.08 - lookup_right_bottom$C1_mds_u) +
+  repel(lookup_left, direction = "y", nudge_x = -0.11 - lookup_left$C1_mds_u) +
+  repel(lookup_bottom, direction = "x", nudge_y = -0.075 - lookup_bottom$C2_mds_u) +
   scale_shape_manual(
     values = region_id_shapes,
     na.value = 3

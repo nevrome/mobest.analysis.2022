@@ -23,7 +23,7 @@ ovs <- dplyr::left_join(
       run_raw == "mds2 -1015" ~ "MDS2 High rearview distance",
       run_raw == "mds2 -378" ~ "MDS2 Low rearview distance",
       run_raw == "pca5 -667" ~ "PCA5"
-    ),
+    ) %>% factor(levels = c("MDS2 Low rearview distance", "MDS2 High rearview distance", "PCA5")),
     ovs_dist = ov_dist.y - ov_dist.x
   ) %>%
   # sort by ovs_dist
