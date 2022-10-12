@@ -19,9 +19,8 @@ search_id, label_name
 "CB13.SG", "CB13" # Early Neolithic
 "LugarCanto45.SG", "LugarCanto45" # Neolithic
 "I3239", "I3239" # Late Neolithic
-"I8344", "I8344" # Iron Age
-"I8338", "I8338" # Roman
-# Add the samples from the example search figures!
+"I8341", "I8341" # Local Iron Age
+"I8215", "I8215" # Greek
 
 # Italy
 "R2.SG", "R2" # Early Neolithic
