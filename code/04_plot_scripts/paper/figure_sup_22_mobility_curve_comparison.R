@@ -20,10 +20,10 @@ ovs <- dplyr::left_join(
   dplyr::mutate(
     run_raw = paste(multivar_method.y, search_time.y),
     run = dplyr::case_when(
-      run_raw == "mds2 -1015" ~ "MDS2 High rearview distance",
-      run_raw == "mds2 -378" ~ "MDS2 Low rearview distance",
+      run_raw == "mds2 -1015" ~ "MDS2 High retrospection distance",
+      run_raw == "mds2 -378" ~ "MDS2 Low retrospection distance",
       run_raw == "pca5 -667" ~ "PCA5"
-    ) %>% factor(levels = c("MDS2 Low rearview distance", "MDS2 High rearview distance", "PCA5")),
+    ) %>% factor(levels = c("MDS2 Low retrospection distance", "MDS2 High retrospection distance", "PCA5")),
     ovs_dist = ov_dist.y - ov_dist.x
   ) %>%
   # sort by ovs_dist
@@ -69,12 +69,12 @@ p <- ovs %>% ggplot() +
   ) +
   guides(
     color = guide_colorbar(
-      title = "Divergence from MDS2 with the default rearview distance [km]    ",
+      title = "Divergence from MDS2 with the default retrospection distance in km    ",
       barwidth = 20, barheight = 1.5
     )
   ) +
   xlab("time in years calBC/calAD") +
-  ylab("spatial distance to \"origin point\" (directed mean) in km") 
+  ylab("length of \"mobility vector\" (directed mean) in km") 
 
 ggsave(
   paste0("plots/figure_sup_22_mobility_curve_comparison.pdf"),
