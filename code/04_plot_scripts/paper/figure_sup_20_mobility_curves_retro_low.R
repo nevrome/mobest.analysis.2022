@@ -1,18 +1,15 @@
 source("code/04_plot_scripts/paper/mobility_curves_plot_function.R")
 
-load("data/poseidon_data/janno_final.RData")
-load("data/origin_search/origin_grid_derived_data_retro_low.RData")
-list2env(origin_grid_derived_data, envir = .GlobalEnv)
+filter_setting <- function(x) {
+  x %>%
+    dplyr::filter(multivar_method == "mds2", search_time == -378) %>% #-378   -1015    -667
+    dplyr::filter(region_id != "Other region")
+}
 
-p <- plot_curves(
-  janno_final,
-  origin_grid_mean,
-  moving_origin_grid,
-  no_data_windows
-)
+p <- plot_curves(filter_settings)
 
 ggsave(
-  paste0("plots/figure_sup_20_mobility_curves_retro_low.pdf"),
+  paste0("plots/figure_sup_20_mobility_curves_mds2_low.pdf"),
   plot = p,
   device = "pdf",
   scale = 0.7,

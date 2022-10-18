@@ -1,7 +1,7 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
 
@@ -10,8 +10,8 @@ region_age_group_mean <- janno_final %>%
   dplyr::filter(region_id != "Other region") %>%
   dplyr::group_by(region_id, age_group_id) %>%
   dplyr::summarise(
-    mean_C1 = mean(C1), 
-    mean_C2 = mean(C2), 
+    mean_C1 = mean(C1_mds_u), 
+    mean_C2 = mean(C2_mds_u), 
     z = mean(Date_BC_AD_Median_Derived),
     .groups = "drop"
   )
@@ -21,7 +21,7 @@ p <- ggplot() +
   geom_point(
     data = janno_final,
     aes(
-      x = C1, y = C2, 
+      x = C1_mds_u, y = C2_mds_u, 
       color = Date_BC_AD_Median_Derived,
       shape = region_id
     ),
@@ -34,14 +34,14 @@ p <- ggplot() +
     fill = "black",
     color = "black",
     shape = 21,
-    grid_x = 23,
+    grid_x = 21,
     grid_y = 26
   ) +
   ggpointgrid::geom_pointgrid(
     data = region_age_group_mean,
     aes(x = mean_C1, y = mean_C2, color = z, shape = region_id),
     size = 2,
-    grid_x = 23,
+    grid_x = 21,
     grid_y = 26,
     stroke = 1
   ) +

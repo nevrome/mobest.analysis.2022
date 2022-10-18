@@ -1,16 +1,19 @@
 Bootstrap: docker
-From: rocker/geospatial:4.1
+From: rocker/geospatial:4.2.1
 
 %labels
   Author clemens@nevrome.de
-  Version v1.1.0
+  Version v1.2.3
 
 %environment
   PATH=$PATH:/additional_software
 
 %post
-  mkdir additional_software
   apt-get update
+  ## install all R dependencies of the analysis repo
+  R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2020@more_strict_data_cleaning", dependencies = TRUE, repos = "https://mran.microsoft.com/snapshot/2022-10-03")'
+  ## install additional software tools beyond R
+  mkdir additional_software
   # install eigensoft
   apt-get install -y eigensoft --no-install-recommends
   # install plink
@@ -21,14 +24,10 @@ From: rocker/geospatial:4.1
   mv trident-Linux /additional_software/trident
   # install emu
   apt-get install -y python3-pip
-  pip3 install numpy cython scipy
+  pip install 'numpy>=1.18.5,<1.25.0' --force-reinstall # the base image has an old version installed
+  pip3 install cython scipy
   git clone https://github.com/Rosemeis/emu.git
   cd emu
   python3 setup.py build_ext --inplace
   pip3 install -e .
   cd ..
-  # install the mobest R package
-  R --slave -e 'remotes::install_github("nevrome/mobest", dependencies = TRUE)'
-  # install all dependencies of the analysis repo
-  R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2020", dependencies = TRUE)'
-

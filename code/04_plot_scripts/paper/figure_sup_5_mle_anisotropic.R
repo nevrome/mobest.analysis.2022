@@ -1,41 +1,40 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/parameter_exploration/mle/mlesep_out.RData")
+load("data/parameter_exploration/targeted/mle_ani.RData")
 
 # number of non-converging runs
-mlesep_out$conv %>% table() %>% `/`(4)
+mle_ani$converged %>% table() %>% `/`(4) # divided by 4, because this is a long dataset - see $parameter
 
-mlesep_out_theta <- mlesep_out %>% 
+mle_ani_theta <- mle_ani %>%
   dplyr::filter(parameter != "g")
 
-mlesep_out_nugget <- mlesep_out %>% 
+mle_ani_nugget <- mle_ani %>%
   dplyr::filter(parameter == "g")
 
-levels(mlesep_out_theta$parameter) <- levels(mlesep_out_nugget$parameter) <- c(
+levels(mle_ani_theta$parameter) <- levels(mle_ani_nugget$parameter) <- c(
   latex2exp::TeX("$\\sqrt{\\theta_x}$"), 
   latex2exp::TeX("$\\sqrt{\\theta_y}$"),
   latex2exp::TeX("$\\sqrt{\\theta_t}$"),
   latex2exp::TeX("$\\eta$")
 )
 
-p_theta <- mlesep_out_theta %>%
+p_theta <- mle_ani_theta %>%
   # remove non-convergence runs
-  dplyr::filter(conv == 0) %>%
+  dplyr::filter(converged == 0) %>%
   ggplot() +
   facet_wrap(
-    ancestry_component~parameter,
-    nrow = 2,
+    dependent_var_id~parameter,
+    nrow = 3,
     ncol = 3,
     # rows = dplyr::vars(mle_method),
     # cols = dplyr::vars(parameter),
     scales = "free_y",
     labeller = label_parsed
   ) +
-  geom_jitter(
+  geom_point(
     aes(x = mle_method, y = value, fill = mle_method),
     size = 2,
-    height = 0,
     shape = 21
   ) +
   guides(fill = "none") +
@@ -45,20 +44,19 @@ p_theta <- mlesep_out_theta %>%
   ylab(latex2exp::TeX("estimated $\\sqrt{\\theta_\\cdots}$"))# +
   # scale_y_continuous(sec.axis = sec_axis(~.^2, name = latex2exp::TeX("estimated $\\theta_\\cdots$")))
 
-p_nugget <- mlesep_out_nugget %>%
+p_nugget <- mle_ani_nugget %>%
   # remove non-convergence runs
-  dplyr::filter(conv == 0) %>%
+  dplyr::filter(converged == 0) %>%
   ggplot() +
   facet_wrap(
-    ancestry_component~parameter,
-    nrow = 2,
+    dependent_var_id~parameter,
+    nrow = 3,
     scales = "free_y",
     labeller = label_parsed
   ) +
-  geom_jitter(
+  geom_point(
     aes(x = mle_method, y = value, fill = mle_method),
     size = 2,
-    height = 0,
     shape = 21
   ) +
   guides(fill = "none") +
@@ -75,7 +73,7 @@ ggsave(
   device = "pdf",
   scale = 0.6,
   dpi = 300,
-  width = 320, height = 200, units = "mm",
+  width = 320, height = 270, units = "mm",
   limitsize = F
 )
 

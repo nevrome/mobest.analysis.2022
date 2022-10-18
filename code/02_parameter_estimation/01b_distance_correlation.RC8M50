@@ -1,0 +1,143 @@
+# qsub -b y -cwd -q archgen.q -pe smp 8 -l h_vmem=50G -now n -V -j y -o ~/log -N lambda_2D singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/02_parameter_estimation/01b_distance_correlation.RC8M50
+
+library(magrittr)
+
+load("data/genotype_data/janno_final.RData")
+load("data/genotype_data/multivar_perm_obs_bundles.RData")
+source("code/02_parameter_estimation/01a_distance_helper_functions.R")
+
+# calculate pairwise distances
+# space
+geo_pairwise_distances <- mobest::calculate_geo_pairwise_distances(
+  independent = mobest::create_spatpos(
+    id = janno_final$Poseidon_ID,
+    x = janno_final$x,
+    y = janno_final$y,
+    z = janno_final$Date_BC_AD_Median_Derived
+  )
+)
+
+# time
+time_pairwise_distances <- mobest::calculate_time_pairwise_distances(
+  independent = mobest::create_spatpos(
+    id = janno_final$Poseidon_ID,
+    x = janno_final$x,
+    y = janno_final$y,
+    z = janno_final$Date_BC_AD_Median_Derived
+  )
+)
+
+# get all small distances <50 years & < 50km
+small_spatiotemporal_dists <- dplyr::full_join(
+  geo_pairwise_distances, time_pairwise_distances, by = c("id1", "id2")
+) %>% 
+  dplyr::filter(time_dist < 50 & geo_dist < 50) %>%
+  dplyr::filter(id1 != id2) %>%
+  # remove duplicates
+  igraph::graph_from_data_frame(directed = F) %>%
+  igraph::simplify(remove.multiple = T, remove.loops = F) %>%
+  igraph::as_data_frame(what = "edges")
+
+# spatiotemporal distances (euclidean with km == year)
+spatiotemp_dist <- d(geo_pairwise_distances[,3], time_pairwise_distances[,3])
+
+# calculate different genetic distances for the different multivar settings
+future::plan(future::multisession, workers = 8)
+distance_products <- furrr::future_pmap_dfr(
+  list(
+    multivar_method_permutations$method,
+    multivar_method_permutations$fstate,
+    multivar_method_observation_bundles
+  ),
+  function(method, fstate, observation_bundle) {
+    # calculate genetic pairwise distances
+    dim_pairwise_distances_all <- mobest::calculate_dependent_pairwise_distances(
+      ids = janno_final$Poseidon_ID,
+      dependent = observation_bundle,
+      with_resid = T,
+      independent = mobest::create_spatpos(
+        id = janno_final$Poseidon_ID,
+        x = janno_final$x,
+        y = janno_final$y,
+        z = janno_final$Date_BC_AD_Median_Derived
+      )
+    )
+    # split normal distances and residual distances
+    dim_pairwise_distances <- dim_pairwise_distances_all %>%
+      dplyr::select(-id1, -id2, -tidyselect::contains("resid"))
+    dim_pairwise_distances_resid <- dim_pairwise_distances_all %>%
+      dplyr::select(id1, id2, tidyselect::contains("resid"))
+    # Nugget determination via variogram
+    lower_left_distances <- small_spatiotemporal_dists %>%
+      dplyr::left_join(
+        dim_pairwise_distances_resid,
+        by = c("from" = "id1", "to" = "id2")
+      )
+    variances <- janno_final %>%
+      dplyr::select(tidyselect::ends_with(paste0("_", method, "_", fstate))) %>%
+      tidyr::pivot_longer(
+        cols = tidyselect::everything(),
+        names_to = "dependent_var_id"
+      ) %>%
+      dplyr::group_by(dependent_var_id) %>%
+      dplyr::summarise(variance = var(value)) %>%
+      dplyr::mutate(
+        dim = purrr::map_chr(strsplit(dependent_var_id, "_"), function(x) { x[[1]] })
+      )
+    nuggets <- lower_left_distances %>% tidyr::pivot_longer(
+        cols = tidyselect::contains("resid"),
+        names_to = "dist_type", values_to = "dist_val"
+      ) %>%
+      dplyr::mutate(
+        dim = purrr::map_chr(strsplit(dist_type, "_"), function(x) { x[[1]] })
+      ) %>%
+      dplyr::left_join(variances, by = "dim") %>%
+      dplyr::mutate(
+        dist_val_adjusted = 0.5*(dist_val^2/variance)
+      ) %>%
+      dplyr::group_by(dim, dependent_var_id) %>%
+      dplyr::summarise(
+        estimated_nugget = mean(dist_val_adjusted),
+        .groups = "drop"
+      )
+    # prepare cum: cumulation here means "distances in multi-dim spaces"
+    cum_across_dim_pairwise_distances <- d_cum_df(dim_pairwise_distances)
+    # cum: mean pairwise distances in different genetic spaces
+    distance_mean <- cum_across_dim_pairwise_distances %>%
+      dplyr::summarise(
+        dplyr::across(.fns = function(x) { mean(x) } )
+      ) %>%
+      tidyr::pivot_longer(
+        cols = tidyselect::everything(),
+        names_to = "dim_range",
+        values_to = "mean_pairwise_distances"
+      )
+    # cum: correlation of different pairwise spaces with spatiotemporal distance
+    distance_correlation <- cum_across_dim_pairwise_distances %>%
+      dplyr::summarise(
+        dplyr::across(.fns = function(x) { cor(spatiotemp_dist, x)^2 } )
+      ) %>%
+      tidyr::pivot_longer(
+        cols = tidyselect::everything(),
+        names_to = "dim_range",
+        values_to = "r_squared_genetic_spatiotemporal_distance"
+      )
+    # combine results in a common output data structure
+    dplyr::full_join(
+      nuggets,
+      dplyr::full_join(
+        distance_mean, distance_correlation, by = "dim_range"
+      ) %>%
+        dplyr::mutate(
+          dim = gsub("C1to", "", dim_range)
+        ),
+      by = "dim"
+    ) %>%
+      dplyr::mutate(
+        multivar_method = method,
+        multivar_fstate = fstate
+      )
+  }
+)
+
+save(distance_products, file = "data/parameter_exploration/distance_products.RData")

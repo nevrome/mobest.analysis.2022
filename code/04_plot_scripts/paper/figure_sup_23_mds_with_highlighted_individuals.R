@@ -1,25 +1,29 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/poseidon_data/janno_final.RData")
+load("data/genotype_data/janno_final.RData")
 load("data/plot_reference_data/region_id_shapes.RData")
 load("data/plot_reference_data/age_colors_gradient.RData")
-source("code/04_plot_scripts/paper/individuals_to_highlight.R")
+individuals <- readr::read_csv(
+  "code/04_plot_scripts/paper/individuals_to_highlight.csv",
+  col_types = "cc",
+  comment = "#"
+)
 
 lookup <- individuals %>% 
   dplyr::inner_join(janno_final, by = c("search_id" = "Poseidon_ID"))
 
-lookup_top          <- lookup %>% dplyr::filter(C2 > -0.01)
-lookup_left         <- lookup_top %>% dplyr::filter(C1 < mean(C1))
-lookup_right        <- lookup_top %>% dplyr::filter(C1 >= mean(C1))
-lookup_right_top    <- lookup_right %>% dplyr::filter(C2 > 0.015)
-lookup_right_bottom <- lookup_right %>% dplyr::filter(C2 <= 0.015)
-lookup_bottom       <- lookup %>% dplyr::filter(C2 <= -0.01)
+lookup_top          <- lookup %>% dplyr::filter(C2_mds_u > -0.01)
+lookup_left         <- lookup_top %>% dplyr::filter(C1_mds_u < mean(C1_mds_u))
+lookup_right        <- lookup_top %>% dplyr::filter(C1_mds_u >= mean(C1_mds_u))
+lookup_right_top    <- lookup_right %>% dplyr::filter(C2_mds_u > 0.015)
+lookup_right_bottom <- lookup_right %>% dplyr::filter(C2_mds_u <= 0.015)
+lookup_bottom       <- lookup %>% dplyr::filter(C2_mds_u <= -0.01)
 
 repel <- function(data, direction, nudge_y = 0, nudge_x = 0) {
   ggrepel::geom_text_repel(
     data = data,
-    mapping = aes(x = C1, y = C2, label = label_name),
+    mapping = aes(x = C1_mds_u, y = C2_mds_u, label = label_name),
     force_pull = 0,
     nudge_y = nudge_y,
     nudge_x = nudge_x,
@@ -36,7 +40,7 @@ p <- ggplot() +
   geom_point(
     data = janno_final,
     aes(
-      x = C1, y = C2, 
+      x = C1_mds_u, y = C2_mds_u, 
       color = Date_BC_AD_Median_Derived,
       shape = region_id
     ),
@@ -44,19 +48,19 @@ p <- ggplot() +
   ) +
   geom_point(
     data = lookup,
-    aes(x = C1, y = C2),
+    aes(x = C1_mds_u, y = C2_mds_u),
     size = 4, shape = 21, fill = "white", alpha = 0.8, 
     colour = "white", stroke = 0
   ) +
   geom_point(
     data = lookup,
-    aes(x = C1, y = C2, shape = region_id),
+    aes(x = C1_mds_u, y = C2_mds_u, shape = region_id),
     size = 2, colour = "black"
   ) +
-  repel(lookup_right_top, direction = "x", nudge_y = 0.06 - lookup_right_top$C2) +
-  repel(lookup_right_bottom, direction = "y", nudge_x = 0.06 - lookup_right_bottom$C1) +
-  repel(lookup_left, direction = "y", nudge_x = -0.082 - lookup_left$C1) +
-  repel(lookup_bottom, direction = "x", nudge_y = -0.064 - lookup_bottom$C2) +
+  repel(lookup_right_top, direction = "x", nudge_y = 0.055 - lookup_right_top$C2_mds_u) +
+  repel(lookup_right_bottom, direction = "y", nudge_x = 0.08 - lookup_right_bottom$C1_mds_u) +
+  repel(lookup_left, direction = "y", nudge_x = -0.11 - lookup_left$C1_mds_u) +
+  repel(lookup_bottom, direction = "x", nudge_y = -0.075 - lookup_bottom$C2_mds_u) +
   scale_shape_manual(
     values = region_id_shapes,
     na.value = 3

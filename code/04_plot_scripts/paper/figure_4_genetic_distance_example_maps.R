@@ -1,79 +1,77 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/spatial/research_area.RData")
 load("data/spatial/extended_area.RData")
 load("data/spatial/epsg3035.RData")
-load("data/origin_search/janno_search.RData")
-load("data/origin_search/closest_points_examples.RData")
-load("data/origin_search/distance_grid_examples.RData")
+load("data/origin_search/janno_search_selected_individuals.RData")
+load("data/origin_search/search_result_selected_individuals.RData")
+
+loc <- location_examples_C1toC2_mds_u
 
 p <- ggplot() +
   facet_wrap(
-    ~Poseidon_ID,
-    ncol = 2,
-    labeller = ggplot2::labeller(Poseidon_ID = c(
+    ~search_id,
+    ncol = 3,
+    labeller = ggplot2::labeller(search_id = c(
       "Stuttgart_published.DG" = paste(
-        "Stuttgart ~5250BC",
+        "Stuttgart: 5250BC (-1500y)",
         "Early Neolithic, Linear Pottery culture",
         "Lazaridis et al. 2014",
         sep = "\n"
       ),
       "RISE434.SG" = paste(
-        "RISE434 ~2750BC",
+        "RISE434: 2750BC (-300y)",
         "Late Neolithic, Corded Ware culture",
         "Allentoft et al. 2015",
         sep = "\n"
       ),
       "3DT26.SG" = paste(
-        "3DRIF-26 ~200AD",
+        "3DRIF-26: 200AD (0y)",
         "Roman Britain",
         "Martiniano et al. 2016",
         sep = "\n"
       ),
       "SI-40.SG" = paste(
-        "SI-40 ~1150AD",
+        "SI-40: 1150AD (0y)",
         "Medieval Period, Crusades",
         "Haber et al. 2019",
+        sep = "\n"
+      ),
+      "I8341" = paste(
+        "I8341: 400BC (-100y)",
+        "Iron Age, Greek colony",
+        "Olalde et al. 2019",
+        sep = "\n"
+      ),
+      "I8215" = paste(
+        "I8215: 550BC (-100y)",
+        "Iron Age, Greek colony",
+        "Olalde et al. 2019",
         sep = "\n"
       )
     ))
   ) +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(
-    data = distance_grid_examples %>%
-      dplyr::group_by(Poseidon_ID, x, y, z) %>%
-      dplyr::summarise(
-        gen_dist = mean(gen_dist),
-        .groups = "drop"
-      ),
-    mapping = aes(x = x, y = y, fill = gen_dist),
+    data = loc,
+    mapping = aes(x = field_x, y = field_y, fill = probability),
   ) +
-  scale_fill_viridis_c(option = "mako", direction = -1) +
+  scale_fill_viridis_c(option = "mako", direction = -1, labels = scales::comma) +
   geom_sf(data = extended_area, fill = NA, colour = "black") +
   geom_point(
     data = janno_search,
     mapping = aes(x = x, y = y),
-    colour = "red",
-    size = 5
+    fill = "red", colour = "black", shape = 21,
+    size = 6
   ) +
   geom_point(
-    data = closest_points_examples,
-    mapping = aes(x = x, y = y),
-    colour = "orange",
-    size = 4,
-    shape = 4,
-    stroke = 2
-  ) +
-  geom_text(
-    data = data.frame(
-      Poseidon_ID = janno_search$Poseidon_ID,
-      plot_label = LETTERS[seq_len(nrow(janno_search))]
-    ),
-    aes(label = plot_label),
-    x = -Inf, y = Inf, hjust = -0.4, vjust = 1.4,
-    inherit.aes = FALSE,
-    size = 7
+    data = loc %>% 
+      dplyr::group_by(search_id) %>%
+      dplyr::slice_max(probability) %>%
+      dplyr::ungroup(),
+    mapping = aes(x = field_x, y = field_y),
+    fill = "orange", colour = "black", shape = 21,
+    size = 5
   ) +
   theme_bw() +
   coord_sf(
@@ -81,7 +79,9 @@ p <- ggplot() +
     crs = epsg3035
   ) +
   guides(
-    fill = guide_colorbar(title = "Genetic distance  ", barwidth = 25)
+    fill = guide_colorbar(
+      title = "Similarity probability  ", barwidth = 25
+      ) #, label = FALSE, ticks = FALSE)
   ) +
   theme(
     legend.position = "bottom",
@@ -99,9 +99,9 @@ ggsave(
   "plots/figure_4_genetic_distance_example_maps.pdf",
   plot = p,
   device = "pdf",
-  scale = 0.75,
+  scale = 0.9,
   dpi = 300,
-  width = 300, height = 300, units = "mm",
+  width = 400, height = 260, units = "mm",
   limitsize = F
 )
 

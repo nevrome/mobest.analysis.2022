@@ -1,0 +1,46 @@
+library(magrittr)
+library(laGP)
+
+load("data/genotype_data/janno_final.RData")
+
+#janno_final %<>% dplyr::slice_head(n = 100)
+
+mleGPsep_out <- mobest::laGP_mle_anisotropic(
+  independent = mobest::create_spatpos(
+    id = janno_final$Poseidon_ID,
+    x = janno_final$x / 1000,
+    y = janno_final$y / 1000,
+    z = janno_final$Date_BC_AD_Median_Derived
+  ),
+  dependent = mobest::create_obs(
+    C1_mds_u = janno_final$C1_mds_u,
+    C2_mds_u = janno_final$C2_mds_u,
+    C3_mds_u = janno_final$C3_mds_u
+  ),
+  iterations = 5
+)
+
+jmleGPsep_out <- mobest::laGP_jmle_anisotropic(
+  independent = mobest::create_spatpos(
+    id = janno_final$Poseidon_ID,
+    x = janno_final$x / 1000,
+    y = janno_final$y / 1000,
+    z = janno_final$Date_BC_AD_Median_Derived
+  ),
+  dependent = mobest::create_obs(
+    C1_mds_u = janno_final$C1_mds_u,
+    C2_mds_u = janno_final$C2_mds_u,
+    C3_mds_u = janno_final$C3_mds_u
+  ),
+  iterations = 5
+)
+
+mle_ani <- rbind(mleGPsep_out, jmleGPsep_out) %>%
+  tidyr::pivot_longer(cols = c("dsx", "dsy", "dt", "g"), names_to = "parameter", values_to = "value") %>% 
+  dplyr::mutate(
+    parameter = factor(parameter, levels = c("dsx", "dsy", "dt", "g")),
+    mle_method = factor(mle_method, levels = c("mleGPsep", "jmleGPsep")),
+    dependent_var_id = factor(dependent_var_id, levels = c("C1_mds_u", "C2_mds_u", "C3_mds_u"))
+  )
+
+save(mle_ani, file = "data/parameter_exploration/targeted/mle_ani.RData")

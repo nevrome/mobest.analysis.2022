@@ -1,0 +1,48 @@
+search_id, label_name
+
+# Britain and Ireland
+# "SRA62.SG", "SRA62" # Mesolithic
+"I2657", "I2657" # Early Neolithic
+"I5367", "I5367" # Late Neolithic
+"3DT26.SG", "3DRIF-26" # Roman Britain
+"VK546.SG", "VK546" # Viking Age
+
+# Central Europe
+"Stuttgart_published.DG", "Stuttgart" # Early Neolithic
+"N22.SG", "N22" # The last hunter-gatherer?
+"RISE434.SG", "RISE434" # Late Neolithic
+"WEZ35.SG", "WEZ35" # Bronze Age Tollense battlefield
+"AED1108.SG", "AED1108" # Early Medieval with deformed skull
+
+# Iberia
+"Chan.SG", "Chan" # Mesolithic
+"CB13.SG", "CB13" # Early Neolithic
+"LugarCanto45.SG", "LugarCanto45" # Neolithic
+"I3239", "I3239" # Late Neolithic
+"I8341", "I8341" # Local Iron Age
+"I8215", "I8215" # Greek
+
+# Italy
+"R2.SG", "R2" # Early Neolithic
+"LON003", "LON003" # Neolithic
+"I11443", "I11443" # Bronze Age
+"I15940_published", "I15940" # Bronze Age
+"VIL011", "VIL011" # Carthaginian/Phoenician-Punic
+"R850.SG", "R850" # Iron Age
+"R67.SG", "R67" # Imperial Rome
+
+# Southeastern Europe
+"M96.SG", "M96" # Mesolithic Iron Gates
+"I3948", "I3948" # Neolithic
+"I2534", "I2534" # Neolithic outlier
+"I4175", "I4175" # Late Neolithic
+"I2787", "I2787" # Bell Beaker
+"DA197.SG", "DA197" # Scythian
+"HUN001", "HUN001" # Hunnic
+
+# Western Pontic Steppe
+"I3719_published", "I3719" # Anatolia Neolithic ancestry
+"ILK003", "ILK003" # Globular Amphora
+"cim359.SG", "cim359" # Iron Age
+"MJ-13.SG", "MJ-13" # Iron Age
+"VK542.SG", "VK542" # Medieval Period, Viking Age

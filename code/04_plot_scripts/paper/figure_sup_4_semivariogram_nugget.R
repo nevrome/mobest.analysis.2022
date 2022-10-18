@@ -1,11 +1,8 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/parameter_exploration/variogram/lower_left_variogram.RData")
-load("data/parameter_exploration/variogram/estimated_nuggets.RData")
-
-lower_left_variogram %<>% dplyr::filter(dist_type %in% c("C1", "C2"))
-estimated_nuggets %<>% dplyr::filter(dist_type %in% c("C1", "C2"))
+load("data/parameter_exploration/targeted/lower_left_variogram.RData")
+load("data/parameter_exploration/targeted/estimated_nuggets.RData")
 
 p <- ggplot() +
   geom_violin(
@@ -17,28 +14,28 @@ p <- ggplot() +
   geom_boxplot(
     data = lower_left_variogram,
     mapping = aes(x = dist_type, y = dist_val_adjusted),
-    width = 0.1
+    width = 0.1, outlier.size = 1
   ) +
   geom_point(
     data = estimated_nuggets,
-    mapping = aes(x = dist_type, y = mean),
+    mapping = aes(x = dist_type, y = nugget),
     size = 4, shape = 18
   ) +
   geom_point(
     data = estimated_nuggets,
-    mapping = aes(x = dist_type, y = mean),
+    mapping = aes(x = dist_type, y = nugget),
     size = 6, shape = "|"
   ) +
   geom_text(
     data = estimated_nuggets,
-    mapping = aes(x = dist_type, y = mean, label = paste0("mean: ~", round(mean, 3))),
+    mapping = aes(x = dist_type, y = nugget, label = paste0("mean: ~", round(nugget, 3))),
     nudge_x = -0.5
   ) +
   coord_flip() +
   theme_bw() +
   guides(fill = "none") +
   xlab("ancestry component distance type") +
-  ylab("log10 pairwise half mean squared normalized residual distance") +
+  ylab("pairwise half mean squared normalized residual distance") +
   scale_y_log10(labels = scales::comma) +
   scale_x_discrete(limits = rev(unique(lower_left_variogram$dist_type)))
 
@@ -48,6 +45,7 @@ ggsave(
   device = "pdf",
   scale = 0.6,
   dpi = 300,
-  width = 300, height = 120, units = "mm",
+  width = 300, height = 150, units = "mm",
   limitsize = F
 )
+

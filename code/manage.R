@@ -22,9 +22,13 @@ up("singularity_mobest.sif")
 down("ShakeReport.html")
 down("plots/")
 down("tables/")
-down("data/poseidon_data/poseidon_extracted/")
+down("data/genotype_data/poseidon_extracted/")
 down("data/")
 
+down("data/parameter_exploration/distance_products.RData")
+down("data/parameter_exploration/crossvalidation_best_kernels.RData")
+down("data/parameter_exploration/crossvalidation_kernel_comparison.RData")
+down("data/parameter_exploration/crossvalidation_multivar_comparison.RData")
 
 #### run all plotting scripts ####
 

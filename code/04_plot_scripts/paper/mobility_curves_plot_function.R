@@ -1,23 +1,51 @@
 library(magrittr)
 library(ggplot2)
 
-source("code/04_plot_scripts/paper/individuals_to_highlight.R")
-
-plot_curves <- function(
-  janno_final,
-  origin_grid_mean,
-  moving_origin_grid,
-  no_data_windows
-) {
+plot_curves <- function(filter_settings) {
+  
+  load("data/genotype_data/janno_final.RData")
+  load("data/origin_search/packed_origin_vectors.RData")
+  load("data/origin_search/origin_summary.RData")
+  load("data/origin_search/no_data_windows.RData")
+  individuals <- readr::read_csv(
+    "code/04_plot_scripts/paper/individuals_to_highlight.csv",
+    col_types = "cc",
+    comment = "#"
+  )
+  
+  packed_origin_vectors %<>% filter_setting()
+  origin_summary        %<>% filter_setting()
+  no_data_windows       %<>% filter_setting()
   
   no_data_windows$region_id <- factor(
     no_data_windows$region_id, levels = levels(janno_final$region_id)
   )
   
-  lookup <- individuals %>% dplyr::inner_join(origin_grid_mean, by = "search_id")
+  lookup <- individuals %>% dplyr::inner_join(packed_origin_vectors, by = "search_id")
+  
+  packed_origin_vectors_time <- packed_origin_vectors %>%
+    dplyr::left_join(
+      janno_final %>% dplyr::select(
+        search_id = Poseidon_ID,
+        Date_BC_AD_Median_Derived,
+        Date_BC_AD_Prob
+      ),
+      by = "search_id"
+    ) %>%
+    dplyr::bind_cols(
+      .,
+      purrr::map_dfr(.$Date_BC_AD_Prob, function(x) {
+        start_stop <- x %>% dplyr::filter(two_sigma) %>% dplyr::slice(c(1,dplyr::n()))
+        tibble::tibble(
+          Date_BC_AD_Start_Derived = start_stop$age[1],
+          Date_BC_AD_Stop_Derived = start_stop$age[2]
+        )
+      })
+    ) %>%
+    dplyr::select(-Date_BC_AD_Prob)
   
   #### mobility estimator curves ####
-
+  
   p_estimator <- ggplot() +
     lemon::facet_rep_wrap(~region_id, ncol = 2, repeat.tick.labels = T) +
     geom_rect(
@@ -41,17 +69,17 @@ plot_curves <- function(
     #   alpha = 0.3
     # ) +
     geom_ribbon(
-      data = moving_origin_grid,
+      data = origin_summary,
       mapping = aes(
         x = z,
-        ymin = directed_mean_spatial_distance - 2*se_spatial_distance,
-        ymax = directed_mean_spatial_distance + 2*se_spatial_distance
+        ymin = ov_dist - 2*ov_dist_se,
+        ymax = ov_dist + 2*ov_dist_se
       ),
       fill = "lightgrey",
     ) +
     geom_line(
-      data = moving_origin_grid,
-      mapping = aes(x = z, y = directed_mean_spatial_distance),
+      data = origin_summary,
+      mapping = aes(x = z, y = ov_dist),
       size = 0.4,
       colour = "darkgrey"
     ) +
@@ -61,27 +89,27 @@ plot_curves <- function(
     #   size = 0.4
     # ) +
     geom_errorbarh(
-      data = origin_grid_mean,
+      data = packed_origin_vectors_time,
       mapping = aes(
-        y = directed_mean_spatial_distance, 
-        xmax = mean_search_z + sd_search_z,
-        xmin = mean_search_z - sd_search_z,
-        color = mean_angle_deg
+        y = ov_dist,
+        xmax = Date_BC_AD_Stop_Derived,
+        xmin = Date_BC_AD_Start_Derived,
+        color = ov_angle_deg
       ),
-      alpha = 0.7,
-      size = 0.1,
+      alpha = 0.5,
+      size = 0.3,
       height = 40
     ) +
     geom_errorbar(
-      data = origin_grid_mean,
+      data = packed_origin_vectors_time,
       mapping = aes(
-        x = mean_search_z, 
-        ymax = directed_mean_spatial_distance + undirected_sd_spatial_distance,
-        ymin = directed_mean_spatial_distance - undirected_sd_spatial_distance,
-        color = mean_angle_deg
+        x = Date_BC_AD_Median_Derived, 
+        ymax = ov_dist + ov_dist_sd,
+        ymin = ov_dist - ov_dist_sd,
+        color = ov_angle_deg
       ),
-      alpha = 0.7,
-      size = 0.1,
+      alpha = 0.5,
+      size = 0.3,
       width = 40
     ) +
     geom_rect(
@@ -93,9 +121,11 @@ plot_curves <- function(
       fill = "white"
     ) +
     geom_point(
-      data = origin_grid_mean,
+      data = packed_origin_vectors_time,
       mapping = aes(
-        x = mean_search_z, y = directed_mean_spatial_distance, color = mean_angle_deg
+        x = Date_BC_AD_Median_Derived,
+        y = ov_dist,
+        color = ov_angle_deg
       ),
       alpha = 1,
       size = 1.8,
@@ -104,10 +134,10 @@ plot_curves <- function(
     ggrepel::geom_label_repel(
       data = lookup,
       mapping = aes(
-        x = mean_search_z, y = directed_mean_spatial_distance, label = label_name
+        x = search_z, y = ov_dist, label = label_name
       ),
       # nudge_y + direction manage the fixed position of the labels
-      nudge_y = 2900 - lookup$directed_mean_spatial_distance,
+      nudge_y = 2900 - lookup$ov_dist,
       direction = "x",
       segment.size      = 0.4,
       segment.curvature = 0.3,
@@ -121,7 +151,7 @@ plot_curves <- function(
       seed = 345
     ) +
     geom_point(
-      data = janno_final %>% dplyr::filter(region_id != "Other region"),
+      data = janno_final %>% dplyr::filter(region_id %in% unique(origin_summary$region_id)),
       aes(x = Date_BC_AD_Median_Derived, y = -100),
       shape = "|"
     ) +
@@ -129,8 +159,8 @@ plot_curves <- function(
     theme(
       legend.position = "bottom"
     ) +
-    xlab("time [years calBC/calAD]") +
-    ylab("spatial distance to \"origin point\" (directed mean) [km]") +
+    xlab("time in years calBC/calAD") +
+    ylab("length of \"mobility vector\" (directed mean) in km") +
     scale_color_gradientn(
       colours = c("#F5793A", "#85C0F9", "#A95AA1", "#33a02c", "#F5793A"),
       na.value = NA,
@@ -139,7 +169,7 @@ plot_curves <- function(
     scale_x_continuous(breaks = seq(-7000, 1000, 1000)) +
     coord_cartesian(
       xlim = c(-7400, 1400),
-      ylim = c(-100, 3000) #max(origin_grid_mean$directed_mean_spatial_distance, na.rm = T))
+      ylim = c(-100, 2700) #max(origin_grid_mean$directed_mean_spatial_distance, na.rm = T))
     )
   
   #### direction legend ####

@@ -1,39 +1,32 @@
 library(magrittr)
 
-load("data/parameter_exploration/crossvalidation/best_kernel.RData")
-best_kernel_mds2 <- best_kernel[[1]]
+load("data/parameter_exploration/crossvalidation_best_kernels.RData")
 
-#### kernel size ####
+#### construct default kernel list ####
 
-spatial_kernel_size_km <- best_kernel_mds2$ds
-temporal_kernel_size_years <- best_kernel_mds2$dt
-nugget <- best_kernel_mds2$g
+default_kernset <- purrr::pmap(
+  as.list(crossvalidation_best_kernels), function(dsx, dsy, dt, g, ...) {
+    mobest::create_kernel(
+      dsx = dsx * 1000, dsy = dsy * 1000, dt = dt,
+      g = g,
+      on_residuals = T, auto = F
+    )
+  }
+) %>%
+  setNames(crossvalidation_best_kernels$dependent_var_id) %>%
+  do.call(mobest::create_kernset, .)
 
-default_kernel <- mobest::create_kernset_multi(
-  d = list(c(
-    spatial_kernel_size_km * 1000, 
-    spatial_kernel_size_km * 1000, 
-    temporal_kernel_size_years
-  )), 
-  g = nugget, 
-  on_residuals = T, 
-  auto = F,
-  it = paste0(
-    "ds", spatial_kernel_size_km, 
-    "_dt", temporal_kernel_size_years, 
-    "_g", as.character(nugget) %>% gsub("\\.", "", .)
-  )
-)
-
-save(default_kernel, file = "data/origin_search/default_kernel.RData")
+save(default_kernset, file = "data/origin_search/default_kernset.RData")
 
 #### retrospection_distance ####
+
+temporal_kernel_size_years <- 800
 
 kernel_theta <- Vectorize(function(distance, d) { exp(-(distance^2) / d) })
 
 kernel_theta_data <- expand.grid(
   dist_p1_p2 = seq(0, 2000, 1),
-  d          = temporal_kernel_size_years^2
+  d = temporal_kernel_size_years^2
 ) %>%
   dplyr::mutate(
     k = kernel_theta(dist_p1_p2, d),
@@ -42,9 +35,25 @@ kernel_theta_data <- expand.grid(
 
 save(kernel_theta_data, file = "data/origin_search/kernel_theta_data.RData")
 
-retrospection_distance <- kernel_theta_data %>%
+retrospection_distance_low <- kernel_theta_data %>%
+  dplyr::filter(k < 0.8) %>%
+  head(1) %$%
+  dist_p1_p2
+
+retrospection_distance_default <- kernel_theta_data %>%
   dplyr::filter(k < 0.5) %>%
   head(1) %$%
   dist_p1_p2
 
-save(retrospection_distance, file = "data/origin_search/retrospection_distance.RData")
+retrospection_distance_high <- kernel_theta_data %>%
+  dplyr::filter(k < 0.2) %>%
+  head(1) %$%
+  dist_p1_p2
+
+retrospection_distances <- c(
+  low = retrospection_distance_low,
+  default = retrospection_distance_default,
+  high = retrospection_distance_high
+)
+
+save(retrospection_distances, file = "data/origin_search/retrospection_distances.RData")
