@@ -24,6 +24,7 @@ vecs_grouped <- packed_origin_vectors %>%
   dplyr::mutate(
     search_z_in_window = search_z - time_window + 250
   ) %>%
+  dplyr::arrange(search_z_in_window) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(
     dplyr::across(
@@ -44,18 +45,25 @@ p <- ggplot() +
       )
     )
   ) +
-  geom_sf(data = extended_area, fill = "black") +
+  geom_sf(data = extended_area, fill = "black", color = NA) +
   geom_segment(
     data = vecs_grouped,
     aes(x = search_x, y = search_y, xend = field_x, yend = field_y),
     color = "white",
-    size = 0.1
+    size = 0.4,
+    alpha = 0.6
   ) +
-  geom_point(data = vecs_grouped, aes(x = search_x, y = search_y), color = "green", size = 0.7) +
-  geom_point(data = vecs_grouped, aes(x = field_x, y = field_y, color = search_z_in_window), size = 0.7) +
+  geom_point(
+    data = vecs_grouped,
+    aes(x = field_x, y = field_y, color = search_z_in_window),
+    size = 0.8) +
+  geom_point(
+    data = vecs_grouped,
+    aes(x = search_x, y = search_y),
+    color = "green", size = 0.8, shape = 15) +
   scale_color_gradient(
     limits = c(0, 500),
-    low = "#D44000",
+    low = "red",
     high = "#FFC93C"
   ) +
   guides(
