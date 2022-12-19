@@ -6,11 +6,11 @@
 
 A preprint based on the analysis in [this](https://github.com/nevrome/mobest.analysis.2022/releases/tag/0.4) release is available here: https://doi.org/10.1101/2021.12.20.473345
 
-### Compendium DOI:
+### Compendium DOI (long-term archive):
 
-<http://dx.doi.org/...> (to be added upon publication)
+<http://dx.doi.org/10.17605/OSF.IO/6UWM5>
 
-The files in this long-term archive will generate the results as found in the publication. The files hosted at <https://github.com/nevrome/mobest.analysis.2022> are the development versions and may have changed since the paper was published.
+The files in this archived storage will generate the results as found in the publication. The files hosted on GitHub are the development versions and may have changed since the paper was published.
 
 ### Authors of this repository:
 
