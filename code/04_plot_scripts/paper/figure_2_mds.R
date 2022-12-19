@@ -64,7 +64,10 @@ p <- ggplot() +
     legend.text = element_text(size = 10),
   ) +
   guides(
-    color = guide_colorbar(title = "Time", barwidth = 20, barheight = 1.5),
+    color = guide_colorbar(
+      title = "Time", barwidth = 20, barheight = 1.5,
+      label.theme = element_text(angle = 20, hjust = 1, vjust = 1, size = 10)
+    ),
     shape = guide_legend(
       title = "Region", nrow = 3, ncol = 3, byrow = T,
       override.aes = aes(size = 3, stroke = 1)
@@ -77,7 +80,7 @@ ggsave(
   device = "pdf",
   scale = 0.7,
   dpi = 300,
-  width = 220, height = 300, units = "mm",
+  width = 220, height = 310, units = "mm",
   limitsize = F
 )
 
