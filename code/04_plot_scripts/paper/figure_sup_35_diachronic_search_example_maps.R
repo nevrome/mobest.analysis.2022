@@ -15,7 +15,7 @@ p <- ggplot() +
     ncol = 3,
     labeller = ggplot2::labeller(
       search_time = purrr::map_chr(unique(loc$search_time), function(x) {
-      paste0("Stuttgart: 5250BC (", abs(x), " BC)")
+      paste0("Stuttgart: 5250BC (", abs(x), "BC)")
     }) %>% set_names(unique(loc$search_time))
   )) +
   geom_sf(data = extended_area, fill = "black") +
