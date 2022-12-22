@@ -111,5 +111,6 @@ ggsave(
   dpi = 300,
   width = 770, height = 430, units = "mm",
   limitsize = F,
-  bg = "white"
+  bg = "white",
+  compress = FALSE
 )

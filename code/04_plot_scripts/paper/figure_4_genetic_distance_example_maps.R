@@ -102,6 +102,7 @@ ggsave(
   scale = 0.9,
   dpi = 300,
   width = 400, height = 260, units = "mm",
-  limitsize = F
+  limitsize = F,
+  compress = FALSE
 )
 
