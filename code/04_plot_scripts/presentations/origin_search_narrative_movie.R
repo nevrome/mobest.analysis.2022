@@ -1,4 +1,4 @@
-# qsub -b y -cwd -q archgen.q -pe smp 48 -l h_vmem=100G -now n -V -j y -o ~/log -N apple 'date; singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/04_plot_scripts/presentations/origin_search_narrative_movie.R; date'
+# qsub -b y -cwd -q archgen.q -pe smp 60 -l h_vmem=100G -now n -V -j y -o ~/log -N apple 'date; singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/04_plot_scripts/presentations/origin_search_narrative_movie.R; date'
 
 library(magrittr)
 library(ggplot2)
@@ -40,7 +40,7 @@ plot_prob <- function(id, search_prod) {
       x = 6700000, y = 4400000, size = 11,
       label = toBCAD(unique(search_prod$field_z))
     ) +
-    scale_fill_viridis_c(option = "mako", direction = -1) +
+    scale_fill_viridis_c(option = "mako", direction = -1, labels = scales::scientific) +
     geom_sf(data = extended_area, fill = NA, colour = "black") +
     geom_point(
       data = janno_search,
@@ -129,4 +129,4 @@ search_movie1_prod %>%
 # for Presentations:
 # ffmpeg -r 10 -f image2 -s 720x480 -i frame_movie3_%04d.jpeg -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -vcodec libx264 -crf 40 -pix_fmt yuv420p example_movie.mov
 # for github README:
-# ffmpeg -y -i frame_movie3_%03d.jpeg -filter_complex "fps=5,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=32[p];[s1][p]paletteuse=dither=bayer" example_movie.gif
+# ffmpeg -y -i frame_movie3_%04d.jpeg -filter_complex "fps=20,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=32[p];[s1][p]paletteuse=dither=bayer" example_movie.gif

@@ -30,6 +30,9 @@ down("data/parameter_exploration/crossvalidation_best_kernels.RData")
 down("data/parameter_exploration/crossvalidation_kernel_comparison.RData")
 down("data/parameter_exploration/crossvalidation_multivar_comparison.RData")
 
+down("plots/presentation/movie/example_movie.gif")
+down("plots/presentation/movie/example_movie.mov")
+
 #### run all plotting scripts ####
 
 purrr::walk(
