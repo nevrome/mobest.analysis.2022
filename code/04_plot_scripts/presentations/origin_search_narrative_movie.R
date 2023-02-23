@@ -129,4 +129,4 @@ search_movie1_prod %>%
 # for Presentations:
 # ffmpeg -r 10 -f image2 -s 720x480 -i frame_movie3_%04d.jpeg -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -vcodec libx264 -crf 40 -pix_fmt yuv420p example_movie.mov
 # for github README:
-# ffmpeg -y -i frame_movie3_%04d.jpeg -filter_complex "fps=20,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=32[p];[s1][p]paletteuse=dither=bayer" example_movie.gif
+# ffmpeg -y -i frame_movie3_%04d.jpeg -filter_complex "fps=15,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=32[p];[s1][p]paletteuse=dither=bayer" example_movie.gif
