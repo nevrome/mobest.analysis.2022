@@ -2,7 +2,7 @@
 
 ### Published in:
 
-**(in Review)**: Schmid C., Schiffels S., Estimating human mobility in Holocene Western Eurasia with large-scale ancient genomic data
+Schmid, C., & Schiffels, S. (2023). Estimating human mobility in Holocene Western Eurasia with large-scale ancient genomic data. Proceedings of the National Academy of Sciences, 120(9), e2218375120. doi:[10.1073/pnas.2218375120](https://doi.org/10.1073/pnas.2218375120)
 
 A preprint based on the analysis in [this](https://github.com/nevrome/mobest.analysis.2022/releases/tag/0.4) old release is available here: https://doi.org/10.1101/2021.12.20.473345
 
