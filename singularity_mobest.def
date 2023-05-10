@@ -11,7 +11,7 @@ From: rocker/geospatial:4.2.1
 %post
   apt-get update
   ## install all R dependencies of the analysis repo
-  R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2020@more_strict_data_cleaning", dependencies = TRUE, repos = "https://mran.microsoft.com/snapshot/2022-10-03")'
+  R --slave -e 'remotes::install_github("nevrome/mobest.analysis.2022", dependencies = TRUE, repos = "https://mran.microsoft.com/snapshot/2022-10-03")'
   ## install additional software tools beyond R
   mkdir additional_software
   # install eigensoft
