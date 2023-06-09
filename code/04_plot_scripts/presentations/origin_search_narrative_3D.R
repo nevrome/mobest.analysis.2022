@@ -414,11 +414,19 @@ janno_search <- janno_final %>%
       "3DT26.SG"
     )
   )
+search_time <- 150
 
+toBCAD <- function(x) {
+  dplyr::case_when(
+    x < 0 ~ paste(abs(x), "calBC"),
+    x == 0 ~ paste(x, "calBC/AD"),
+    x > 0 ~ paste(x, "calAD")
+  )
+}
 
 spatial_pred_grid <- mobest::create_prediction_grid(
   extended_area,
-  spatial_cell_size = 20000
+  spatial_cell_size = 15000
 )
 
 search <- mobest::locate(
@@ -444,7 +452,7 @@ search <- mobest::locate(
     C2_mds_u = janno_search$C2_mds_u
   ),
   search_space_grid = spatial_pred_grid,
-  search_time = 150,
+  search_time = search_time,
   search_time_mode = "absolute"
 )
 
@@ -453,16 +461,16 @@ search_prod <- mobest::multiply_dependent_probabilities(search, omit_dependent_d
 p <- ggplot() +
   geom_sf(data = extended_area, fill = "black") +
   geom_raster(
-    data = search_prod,
+    data = search_prod,#search %>% dplyr::filter(dependent_var_id == "C2_mds_u"),
     mapping = aes(x = field_x, y = field_y, fill = probability),
   ) +
   annotate(
     "text",
     x = 6700000, y = 4400000, size = 11,
-    label = "150 calAD"
+    label = toBCAD(search_time)
   ) +
   scale_fill_viridis_c(option = "mako", direction = -1) +
-  geom_sf(data = extended_area, fill = NA, colour = "black") +
+  geom_sf(data = extended_area, fill = NA, colour = "black", linewidth = 0.4) +
   geom_point(
     data = janno_search,
     mapping = aes(x = x, y = y),
@@ -490,7 +498,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  "plots/presentation/search_map.png",
+  "plots/presentation/search_map_3DRIF26_150.png",
   plot = p,
   device = "png",
   scale = 0.6,
