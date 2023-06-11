@@ -34,11 +34,11 @@ png(
 s <- scatterplot3d::scatterplot3d(
   threed$x, threed$y, threed$z, color = threed$color,
   pch = 18, cex.symbols = 1.5,
-  angle = 70,
+  angle = -70, # 70 for view from Africa
   xlab = "x", ylab = "y", zlab = "time calBC/AD",
   col.axis = "grey",
   zlim = c(-8000, 2000),
-  mar = c(2.7, 2.7, 0, 2)
+  mar = c(2.7, 2, 0, 2.7)
 )
 
 # cs <- s$xyz.convert(threed_roman$x, threed_roman$y, threed_roman$z)
@@ -124,11 +124,11 @@ png(filename = "plots/presentation/3D_plot_gpr_C1.png", width = 22, height = 14,
 s <- scatterplot3d::scatterplot3d(
   threed$x, threed$y, threed$z, color = threed$color,
   pch = 18, cex.symbols = 1.6,
-  angle = 70,
+  angle = -70,
   xlab = "x", ylab = "y", zlab = "time calBC/AD",
   col.axis = "grey",
   zlim = c(-8000, 2000),
-  mar = c(2.7, 2.7, 0, 2)
+  mar = c(2.7, 2, 0, 2.7)
 )
 
 cs <- s$xyz.convert(threedinter$x, threedinter$y, threedinter$z)
@@ -410,11 +410,11 @@ janno_search <- janno_final %>%
     Poseidon_ID %in% c(
       #"Stuttgart_published.DG"
       #"RISE434.SG"
-      #"SI-40.SG"
-      "3DT26.SG"
+      "SI-40.SG"
+      #"3DT26.SG"
     )
   )
-search_time <- 150
+search_time <- 1100
 
 toBCAD <- function(x) {
   dplyr::case_when(
@@ -498,7 +498,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  "plots/presentation/search_map_3DRIF26_150.png",
+  "plots/presentation/search_map_SI40.png",
   plot = p,
   device = "png",
   scale = 0.6,
@@ -507,3 +507,29 @@ ggsave(
   limitsize = F
 )
 
+#### empty map canvas ####
+
+p <- ggplot() +
+  geom_sf(data = extended_area, fill = "white", colour = "black", linewidth = 0.4) +
+  theme_bw() +
+  coord_sf(
+    expand = FALSE,
+    crs = epsg3035
+  ) +
+  theme(
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.background = element_rect(fill = "#BFD5E3")
+  )
+
+ggsave(
+  "plots/presentation/search_map_canvas.png",
+  plot = p,
+  device = "png",
+  scale = 0.6,
+  dpi = 300,
+  width = 370, height = 260, units = "mm",
+  limitsize = F
+)
