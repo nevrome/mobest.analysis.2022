@@ -1,3 +1,9 @@
+
+> [!IMPORTANT]
+> If you want to perform spatio-temporal similary search with the **mobest R package** as presented in the paper, then you can directly check the documentation here: https://nevrome.de/mobest
+
+***
+
 ## Research compendium for 'Estimating human mobility in Holocene Western Eurasia with large-scale ancient genomic data'
 
 ### Published in:
