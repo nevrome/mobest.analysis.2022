@@ -39,6 +39,7 @@ p_map <- ggplot() +
     legend.title = element_text(size = 13),
     legend.spacing.y = unit(0.2, 'cm'),
     legend.key.height = unit(0.4, 'cm'),
+    legend.key = element_rect(fill = NA, color = NA),
     legend.text = element_text(size = 10),
     panel.background = element_rect(fill = "#BFD5E3"),
     plot.margin = unit(c(5.5, 1, 5.5, 5.5), "points")
@@ -119,7 +120,7 @@ right <- cowplot::plot_grid(p_space_time, p_tempdist, ncol = 2, labels = c(NA, N
 
 top <- cowplot::plot_grid(p_map, right, nrow = 1, ncol = 2, rel_widths = c(1, 0.4), labels = c("A", "B"), scale = 0.97)
 
-legend <- cowplot::get_legend(p_map + theme(legend.position = "bottom"))
+legend <- cowplot::get_plot_component(p_map + theme(legend.position = "bottom"), "guide-box-bottom")
 
 p <- cowplot::plot_grid(top, legend, nrow = 2, rel_heights = c(0.9, 0.1))
 
