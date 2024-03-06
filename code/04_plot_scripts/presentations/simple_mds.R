@@ -8,7 +8,7 @@ p <- ggplot() +
   geom_point(
     data = janno_final,
     aes(
-      x = C1, y = C2, 
+      x = C1_mds_u, y = C2_mds_u, 
       color = Date_BC_AD_Median_Derived
     ),
     size = 2,
