@@ -33,10 +33,10 @@ p <- ggplot() +
   )
 
 ggsave(
-  paste0("plots/presentation/simple_mds.jpeg"),
+  paste0("plots/presentation/simple_mds.png"),
   plot = p,
-  device = "jpeg",
-  scale = 0.7,
+  device = "png",
+  scale = 0.6,
   dpi = 300,
   width = 300, height = 300, units = "mm",
   limitsize = F
