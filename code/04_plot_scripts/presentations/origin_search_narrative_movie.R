@@ -1,4 +1,54 @@
-# qsub -b y -cwd -q archgen.q -pe smp 60 -l h_vmem=100G -now n -V -j y -o ~/log -N apple 'date; singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/04_plot_scripts/presentations/origin_search_narrative_movie.R; date'
+load("data/genotype_data/janno_final.RData")
+load("data/plot_reference_data/region_id_shapes.RData")
+load("data/plot_reference_data/age_colors_gradient.RData")
+
+ggplot() +
+  geom_point(
+    data = janno_final,
+    aes(
+      x = C1_mds_u, y = C2_mds_u, 
+      color = Date_BC_AD_Median_Derived,
+      shape = region_id
+    ),
+    size = 2
+  ) +
+  scale_shape_manual(
+    values = region_id_shapes,
+    na.value = 3
+  ) +
+  age_colors_gradient +
+  coord_fixed() +
+  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
+  scale_x_continuous(breaks = seq(-0.1, 0.1, 0.02)) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom",
+    legend.box = "vertical",
+    legend.background = element_blank(),
+    legend.title = element_text(size = 13),
+    legend.spacing.y = unit(0.2, 'cm'),
+    legend.key.height = unit(0.4, 'cm'),
+    legend.text = element_text(size = 10),
+  ) +
+  guides(
+    color = guide_colorbar(
+      title = "Time", barwidth = 20, barheight = 1.5,
+      label.theme = element_text(angle = 20, hjust = 1, vjust = 1, size = 10)
+    ),
+    shape = guide_legend(
+      title = "Region", nrow = 3, ncol = 3, byrow = T,
+      override.aes = aes(size = 3, stroke = 1)
+    )
+  ) +
+  geom_point(
+    data = janno_search,
+    mapping = aes(x = C1_mds_u, y = C2_mds_u),
+    color = "red",
+    size = 4
+  )
+
+
+# qsub -b y -cwd -q archgen.q -pe smp 45 -l h_vmem=100G -now n -V -j y -o ~/log -N apple 'date; singularity exec --bind=/mnt/archgen/users/schmid singularity_mobest.sif Rscript code/04_plot_scripts/presentations/origin_search_narrative_movie.R; date'
 
 library(magrittr)
 library(ggplot2)
@@ -15,7 +65,7 @@ janno_search <- janno_final %>%
     search_z = Date_BC_AD_Median_Derived
   ) %>% dplyr::filter(
     Poseidon_ID %in% c(
-      "Stuttgart_published.DG"
+      "RISE434.SG"
     )
   )
 
@@ -116,7 +166,7 @@ search_movie1 <- mobest::locate(
     C2_mds_u = janno_search$C2_mds_u
   ),
   search_space_grid = spatial_pred_grid,
-  search_time = seq(-7500, -5000, 10),
+  search_time = seq(-4500, -1500, 10),
   search_time_mode = "absolute"
 )
 
