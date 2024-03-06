@@ -408,13 +408,13 @@ janno_search <- janno_final %>%
     search_z = Date_BC_AD_Median_Derived
   ) %>% dplyr::filter(
     Poseidon_ID %in% c(
-      #"Stuttgart_published.DG"
+      "Stuttgart_published.DG"
       #"RISE434.SG"
-      "SI-40.SG"
+      #"SI-40.SG"
       #"3DT26.SG"
     )
   )
-search_time <- 1100
+search_time <- -5600
 
 toBCAD <- function(x) {
   dplyr::case_when(
@@ -498,7 +498,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  "plots/presentation/search_map_SI40.png",
+  "plots/presentation/search_map_Stuttgart.png",
   plot = p,
   device = "png",
   scale = 0.6,
@@ -533,3 +533,4 @@ ggsave(
   width = 370, height = 260, units = "mm",
   limitsize = F
 )
+
